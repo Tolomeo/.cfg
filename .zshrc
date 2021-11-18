@@ -14,3 +14,4 @@ fi
 
 
 alias config='/usr/bin/git --git-dir=/Users/diegofrattini/.cfg/ --work-tree=/Users/diegofrattini'
+alias ll='ls -la'
