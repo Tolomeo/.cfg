@@ -12,11 +12,13 @@ else
   load-nvm
 fi
 
+# propmpt customisation, see ~/.zsh/pure directory
 fpath+=$HOME/.zsh/pure
 autoload -U promptinit; promptinit
 prompt pure
-zstyle :prompt:pure:path color 121
+zstyle :prompt:pure:path color 014 
 
+# aliases
 alias config='/usr/bin/git --git-dir=/Users/diegofrattini/.cfg/ --work-tree=/Users/diegofrattini'
 alias ll='ls -la'
 
