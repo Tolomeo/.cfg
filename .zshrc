@@ -20,7 +20,8 @@ zstyle :prompt:pure:path color 014
 
 # aliases
 alias config='/usr/bin/git --git-dir=/Users/diegofrattini/.cfg/ --work-tree=/Users/diegofrattini'
-alias ll='ls -la'
+alias ll='ls -l'
+alias la='ls -la'
 
 # zsh sytax highlighting, needs to stay at the end, see .zsh/zsh-syntax-highlighting directory
 source $HOME/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
