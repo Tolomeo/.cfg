@@ -136,7 +136,23 @@ require('gitsigns').setup {
 }
 
 -- NvimTree
-require'nvim-tree'.setup {}
+require'nvim-tree'.setup {
+  disable_netrw = true,
+  hijack_netrw = true,
+  open_on_setup = true,
+  auto_close = true,
+  hijack_cursor = true,
+  update_focused_file = {
+    enable = true
+  },
+  diagnostics = {
+    enable = true
+  },
+  view = {
+    side = 'right',
+    auto_resize = true
+  }
+}
 vim.api.nvim_set_keymap('n', '<C-e>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
 
 -- Telescope
