@@ -1,0 +1,5 @@
+{
+  "diagnostic.checkCurrentLine": true,
+  "eslint.alwaysShowStatus": true,
+  "sumneko-lua.enableNvimLuaDev": true
+}
