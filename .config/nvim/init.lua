@@ -2,6 +2,7 @@ require('base')
 require('theme')
 require('editor')
 require('intellisense')
+require('versioning')
 
 -- Install packer
 local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
@@ -21,10 +22,8 @@ local use = require('packer').use
 require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
 
-  -- Git commands in nvim
-  use 'tpope/vim-fugitive'
-  -- Fugitive-companion to interact with github
-  use 'tpope/vim-rhubarb'
+  -- Parentheses, brackets, quotes, XML tags, and more
+  use 'tpope/vim-surround'
 
   -- "gc" to comment visual regions/lines
   use 'b3nj5m1n/kommentary'

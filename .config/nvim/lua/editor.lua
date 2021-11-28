@@ -10,8 +10,20 @@ vim.cmd [[
   augroup end
 ]]
 
--- Y yank until the end of line  (note: this is now a default on master)
+-- Yank until the end of line  (note: this is now a default on master)
 vim.api.nvim_set_keymap('n', 'Y', 'y$', { noremap = true })
+-- Select all
+vim.api.nvim_set_keymap('n', '<C-y>', ':%y<CR>', { silent = true, noremap = true })
+
+-- Moving among windows with arrows
+vim.api.nvim_set_keymap('n', '<up>', '<C-w><up>', { noremap = false, silent = true })
+vim.api.nvim_set_keymap('n', '<down>', '<C-w><down>', { noremap = false, silent = true })
+vim.api.nvim_set_keymap('n', '<left>', '<C-w><left>', { noremap = false, silent = true })
+vim.api.nvim_set_keymap('n', '<right>', '<C-w><right>', { noremap = false, silent = true })
+
+-- Replace word under cursor in buffer
+vim.api.nvim_set_keymap('n', '<leader>sr', ':%s/<C-r><C-w>//gI<left><left><left>', { noremap = false, silent = false })
+vim.api.nvim_set_keymap('n', '<leader>sl', ':s/<C-r><C-w>//gI<left><left><left>', { noremap = false, silent = false })
 
 --Map blankline
 vim.opt.list = true
@@ -21,13 +33,14 @@ require("indent_blankline").setup {
   space_char_blankline = " ",
   show_current_context = true,
   show_current_context_start = true,
+  use_treesitter = true
 }
 
 -- KOMMENTARY
 -- see https://github.com/b3nj5m1n/kommentary
 vim.g.kommentary_create_default_mappings = false
-vim.api.nvim_set_keymap("n", "<leader>cc", "<Plug>kommentary_line_default", {})
-vim.api.nvim_set_keymap("n", "<leader>c", "<Plug>kommentary_motion_default", {})
+vim.api.nvim_set_keymap("n", "<leader>c", "<Plug>kommentary_line_default", {})
+vim.api.nvim_set_keymap("n", "<leader>C", "<Plug>kommentary_motion_default", {})
 vim.api.nvim_set_keymap("x", "<leader>c", "<Plug>kommentary_visual_default", {})
 
 -- TELESCOPE

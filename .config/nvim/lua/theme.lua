@@ -1,6 +1,6 @@
 -- Set theme options
 vim.g.nord_contrast = true
-vim.g.nord_borders = false
+vim.g.nord_borders = true
 vim.g.nord_disable_background = true
 
 vim.cmd [[colorscheme nord]]
@@ -10,16 +10,6 @@ require('lualine').setup({
   options = { theme = 'nord' }
 })
 
--- Gitsigns
-require('gitsigns').setup {
-  signs = {
-    add = { hl = 'GitGutterAdd', text = '+' },
-    change = { hl = 'GitGutterChange', text = '~' },
-    delete = { hl = 'GitGutterDelete', text = '_' },
-    topdelete = { hl = 'GitGutterDelete', text = '‾' },
-    changedelete = { hl = 'GitGutterChange', text = '~' },
-  },
-}
 
 -- NvimTree
 require'nvim-tree'.setup {
