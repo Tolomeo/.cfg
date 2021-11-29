@@ -30,6 +30,12 @@ vim.wo.signcolumn = 'yes'
 --Set colorscheme (order is important here)
 vim.o.termguicolors = true
 
+--Indent size
+vim.o.shiftwidth = 2
+vim.o.tabstop = 2
+vim.o.autoindent = true
+vim.o.smartindent = true
+
 --Remap space as leader key
 vim.api.nvim_set_keymap('', '<Space>', '<Nop>', { noremap = true, silent = true })
 vim.g.mapleader = ' '

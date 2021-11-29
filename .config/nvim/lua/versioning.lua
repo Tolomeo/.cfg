@@ -1,7 +1,5 @@
--- GitSigns maps
+-- GitSigns
 -- see https://github.com/whatsthatsmell/dots/blob/master/public%20dots/vim-nvim/lua/joel/mappings.lua
-
--- Gitsigns
 require('gitsigns').setup {
   current_line_blame = true,
   current_line_blame_opts = {
@@ -9,25 +7,42 @@ require('gitsigns').setup {
   }
 }
 
--- toggle hunk line highlight
+-- Git blame
 vim.api.nvim_set_keymap(
   "n",
-  "<Leader>gh",
-  [[<Cmd>lua require'gitsigns'.toggle_linehl()<CR>]],
-  { noremap = true, silent = true }
-)
--- toggle hunk line Num highlight
-vim.api.nvim_set_keymap(
-  "n",
-  "<Leader>gn",
-  [[<Cmd>lua require'gitsigns'.toggle_numhl()<CR>]],
+  "gb",
+  ':Git blame<CR>',
   { noremap = true, silent = true }
 )
 
--- toggle hunk line Num highlight
+-- Git log
 vim.api.nvim_set_keymap(
   "n",
-  "<Leader>gp",
+  "gl",
+  ':Git log<CR>',
+  { noremap = true, silent = true }
+)
+
+-- Git diff
+vim.api.nvim_set_keymap(
+  "n",
+  "gd",
+  ':Git diff<CR>',
+  { noremap = true, silent = true }
+)
+
+-- Git merge
+vim.api.nvim_set_keymap(
+  "n",
+  "gm",
+  ':Git mergetool<CR>',
+  { noremap = true, silent = true }
+)
+
+-- Toggle hunk preview
+vim.api.nvim_set_keymap(
+  "n",
+  "gh",
   [[<Cmd>lua require'gitsigns'.preview_hunk()<CR>]],
   { noremap = true, silent = true }
 )

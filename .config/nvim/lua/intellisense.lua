@@ -1,4 +1,3 @@
-
 -- CONQUER OF COMPLETION
 -- Extensions, see https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions#install-extensions
 vim.cmd([[
