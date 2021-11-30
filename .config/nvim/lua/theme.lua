@@ -12,7 +12,7 @@ require('lualine').setup({
 
 
 -- NvimTree
-require'nvim-tree'.setup {
+--[[ require'nvim-tree'.setup {
   disable_netrw = true,
   hijack_netrw = true,
   open_on_setup = true,
@@ -32,4 +32,4 @@ require'nvim-tree'.setup {
 vim.api.nvim_set_keymap('n', '<C-n>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>n', ':NvimTreeFocus<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>r', ':NvimTreeRefresh<CR>', { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>n', ':NvimTreeFindFile<CR>', { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>n', ':NvimTreeFindFile<CR>', { noremap = true, silent = true }) ]]

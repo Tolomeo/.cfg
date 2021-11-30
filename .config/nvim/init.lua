@@ -1,6 +1,7 @@
 require('base')
 require('theme')
 require('editor')
+require('finder')
 require('intellisense')
 require('versioning')
 
@@ -20,7 +21,14 @@ vim.cmd [[
 
 local use = require('packer').use
 require('packer').startup(function()
-  use 'wbthomason/packer.nvim' -- Package manager
+	-- Package manager maninging itself
+  use 'wbthomason/packer.nvim'
+
+	-- Automatically changing cwd based on the root of the project
+	use { 'airblade/vim-rooter', setup = function ()
+		-- Setting files/dirs to look for to understand what the root dir is
+		vim.api.nvim_set_var('rooter_patterns', { '.git', 'package.json', 'init.lua' })
+	end }
 
   -- Git integration
   use 'tpope/vim-fugitive'
@@ -38,6 +46,7 @@ require('packer').startup(function()
 
   -- UI to select things (files, grep results, open buffers...)
   use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
+	use { "nvim-telescope/telescope-file-browser.nvim" }
 
   -- theme based off of the Nord Color Palette.
   use 'shaunsingh/nord.nvim'
@@ -49,7 +58,7 @@ require('packer').startup(function()
   }
 
   -- File explorer
-  use { 'kyazdani42/nvim-tree.lua', requires = 'kyazdani42/nvim-web-devicons' }
+  -- use { 'kyazdani42/nvim-tree.lua', requires = 'kyazdani42/nvim-web-devicons' }
   -- Add indentation guide even on blank lines
   use 'lukas-reineke/indent-blankline.nvim'
 

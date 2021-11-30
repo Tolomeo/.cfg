@@ -52,3 +52,4 @@ vim.api.nvim_set_keymap("n", "<Leader>W", ":wqall<CR>", { noremap = true, silent
 
 -- Join lines and restore cursor location
 vim.api.nvim_set_keymap("n", "J", "mjJ`j", { noremap = true })
+
