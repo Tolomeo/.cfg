@@ -5,6 +5,8 @@ require('finder')
 require('intellisense')
 require('versioning')
 
+local au = require('au')
+
 -- Install packer
 local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 
@@ -19,15 +21,26 @@ vim.cmd [[
   augroup end
 ]]
 
+-- Opening the file browser on startup when nvim is opened against a directory
+au.VimEnter = function()
+	if vim.fn.isdirectory(vim.fn.expand('%:p')) > 0 then require 'telescope'.extensions.file_browser.file_browser({ hidden = true }) end
+end
+
 local use = require('packer').use
 require('packer').startup(function()
 	-- Package manager maninging itself
   use 'wbthomason/packer.nvim'
 
 	-- Automatically changing cwd based on the root of the project
+	-- see https://github.com/airblade/vim-rooter
 	use { 'airblade/vim-rooter', setup = function ()
 		-- Setting files/dirs to look for to understand what the root dir is
 		vim.api.nvim_set_var('rooter_patterns', { '.git', 'package.json', 'init.lua' })
+	end }
+
+	-- Welcome dashboard
+	use { 'glepnir/dashboard-nvim', setup = function ()
+		vim.api.nvim_set_var('dashboard_default_executive', 'telescope')
 	end }
 
   -- Git integration

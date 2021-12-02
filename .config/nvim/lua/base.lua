@@ -41,6 +41,12 @@ vim.api.nvim_set_keymap('', '<Space>', '<Nop>', { noremap = true, silent = true 
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+vim.g.netrw_banner = 0
+vim.g.netrw_menu = 0
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.cmd 'let g:netrw_banner = 0'
+
 -- write only if changed
 vim.api.nvim_set_keymap("n", "<Leader>w", ":up<CR>", { noremap = true })
 -- quit (or close window)
