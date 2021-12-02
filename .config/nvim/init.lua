@@ -38,11 +38,6 @@ require('packer').startup(function()
 		vim.api.nvim_set_var('rooter_patterns', { '.git', 'package.json', 'init.lua' })
 	end }
 
-	-- Welcome dashboard
-	use { 'glepnir/dashboard-nvim', setup = function ()
-		vim.api.nvim_set_var('dashboard_default_executive', 'telescope')
-	end }
-
   -- Git integration
   use 'tpope/vim-fugitive'
   -- Add git related info in the signs columns and popups
