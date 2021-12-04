@@ -55,6 +55,9 @@ require('packer').startup(function()
   -- UI to select things (files, grep results, open buffers...)
   use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
 	use { "nvim-telescope/telescope-file-browser.nvim" }
+	use { "AckslD/nvim-neoclip.lua", config = function()
+		require('neoclip').setup()
+	end }
 	-- General qf and loc lists improvements
 	use { 'romainl/vim-qf', setup = function()
 		vim.api.nvim_set_var('qf_mapping_ack_style', true)

@@ -16,6 +16,7 @@ require('telescope').setup {
 }
 -- Extensions
 require("telescope").load_extension "file_browser"
+require('telescope').load_extension 'neoclip'
 -- Keybindings
 -- see https://github.com/albingroen/quick.nvim/blob/main/lua/telescope-config.lua
 vim.api.nvim_set_keymap('n', '<C-p>', "<cmd>lua require('telescope.builtin').find_files()<CR>", { noremap = true })
@@ -38,6 +39,9 @@ vim.api.nvim_set_keymap('n', '<C-Tab>', "<cmd>lua require('telescope.builtin').b
 -- vim.api.nvim_set_keymap('n', '<leader>sp', [[<cmd>lua require('telescope.builtin').live_grep()<CR>]], { noremap = true, silent = true })
 -- vim.api.nvim_set_keymap('n', '<leader>so', [[<cmd>lua require('telescope.builtin').tags{ only_current_buffer = true }<CR>]], { noremap = true, silent = true })
 -- vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<CR>]], { noremap = true, silent = true })
+
+-- Neoclip keybindings
+vim.api.nvim_set_keymap('n', '<C-y>', "<cmd>lua require('telescope').extensions.neoclip.default()<CR>", { silent = true })
 
 -- Quickfix and location lists keybindings
 vim.api.nvim_set_keymap('n', '<C-]>', '<Plug>(qf_qf_next)', {})

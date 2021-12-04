@@ -11,9 +11,9 @@ vim.cmd [[
 ]]
 
 -- Yank until the end of line  (note: this is now a default on master)
-vim.api.nvim_set_keymap('n', 'Y', 'y$', { noremap = true })
+-- vim.api.nvim_set_keymap('n', 'Y', 'y$', { noremap = true })
 -- Select all
-vim.api.nvim_set_keymap('n', '<C-y>', ':%y<CR>', { silent = true, noremap = true })
+vim.api.nvim_set_keymap('n', 'YY', ':%y<CR>', { silent = true, noremap = true })
 
 -- Moving among windows with arrows
 vim.api.nvim_set_keymap('n', '<up>', '<C-w><up>', { noremap = false, silent = true })
