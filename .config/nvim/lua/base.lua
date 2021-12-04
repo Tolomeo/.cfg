@@ -41,11 +41,11 @@ vim.api.nvim_set_keymap('', '<Space>', '<Nop>', { noremap = true, silent = true 
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- Killing netrw
 vim.g.netrw_banner = 0
 vim.g.netrw_menu = 0
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-vim.cmd 'let g:netrw_banner = 0'
 
 -- write only if changed
 vim.api.nvim_set_keymap("n", "<Leader>w", ":up<CR>", { noremap = true })
@@ -56,6 +56,5 @@ vim.api.nvim_set_keymap("n", "<Leader>Q", ":qall!<CR>", { noremap = true, silent
 -- write all and quit
 vim.api.nvim_set_keymap("n", "<Leader>W", ":wqall<CR>", { noremap = true, silent = true })
 
--- Join lines and restore cursor location
-vim.api.nvim_set_keymap("n", "J", "mjJ`j", { noremap = true })
-
+-- Using system clipbard as default register
+vim.o.clipboard = 'unnamedplus'

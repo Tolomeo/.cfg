@@ -10,6 +10,10 @@ vim.cmd [[
   augroup end
 ]]
 
+
+-- Join lines and restore cursor location
+vim.api.nvim_set_keymap("n", "J", "mjJ`j", { noremap = true })
+
 -- Yank until the end of line  (note: this is now a default on master)
 -- vim.api.nvim_set_keymap('n', 'Y', 'y$', { noremap = true })
 -- Select all
