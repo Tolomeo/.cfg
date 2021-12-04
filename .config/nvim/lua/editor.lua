@@ -41,9 +41,9 @@ require("indent_blankline").setup {
 -- KOMMENTARY
 -- see https://github.com/b3nj5m1n/kommentary
 vim.g.kommentary_create_default_mappings = false
-vim.api.nvim_set_keymap("n", "<leader>c", "<Plug>kommentary_line_default", {})
-vim.api.nvim_set_keymap("n", "<leader>C", "<Plug>kommentary_motion_default", {})
-vim.api.nvim_set_keymap("x", "<leader>c", "<Plug>kommentary_visual_default", {})
+vim.api.nvim_set_keymap("n", "<leader>/", "<Plug>kommentary_line_default", {})
+-- vim.api.nvim_set_keymap("n", "<leader>C", "<Plug>kommentary_motion_default", {})
+vim.api.nvim_set_keymap("x", "<leader>/", "<Plug>kommentary_visual_default", {})
 
 -- Treesitter configuration
 -- Parsers must be installed manually via :TSInstall
