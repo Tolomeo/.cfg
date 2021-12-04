@@ -15,8 +15,9 @@ require('telescope').setup {
   },
 }
 -- Extensions
-require("telescope").load_extension "file_browser"
-require('telescope').load_extension 'neoclip'
+require"telescope".load_extension "file_browser"
+require'telescope'.load_extension 'neoclip'
+require'telescope'.load_extension 'project'
 -- Keybindings
 -- see https://github.com/albingroen/quick.nvim/blob/main/lua/telescope-config.lua
 vim.api.nvim_set_keymap('n', '<C-p>', "<cmd>lua require('telescope.builtin').find_files()<CR>", { noremap = true })
@@ -51,3 +52,11 @@ vim.api.nvim_set_keymap('n', '<C-{>', '<Plug>(qf_qf_previous_file)', {})
 -- vim.api.nvim_set_keymap('n', '<C-c>', '<Plug>(qf_qf_toggle_stay)', {})
 vim.api.nvim_set_keymap('n', '<C-c>', '<Plug>(qf_qf_toggle)', {})
 vim.api.nvim_set_keymap('n', '<leader>c', '<Plug>(qf_qf_switch)', {})
+
+-- Project keybindings
+vim.api.nvim_set_keymap(
+    'n',
+    '<C-p>',
+    ":lua require'telescope'.extensions.project.project{}<CR>",
+    {noremap = true, silent = true}
+)

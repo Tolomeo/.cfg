@@ -58,6 +58,8 @@ require('packer').startup(function()
 	use { "AckslD/nvim-neoclip.lua", config = function()
 		require('neoclip').setup()
 	end }
+	use 'nvim-telescope/telescope-project.nvim'
+
 	-- General qf and loc lists improvements
 	use { 'romainl/vim-qf', setup = function()
 		vim.api.nvim_set_var('qf_mapping_ack_style', true)
