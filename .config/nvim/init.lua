@@ -48,6 +48,7 @@ require('packer').startup(function()
 
   -- "gc" to comment visual regions/lines
   use 'b3nj5m1n/kommentary'
+	use 'JoosepAlviste/nvim-ts-context-commentstring'
 
   -- Automatic tags management
   use 'ludovicchabant/vim-gutentags'

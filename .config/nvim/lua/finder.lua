@@ -57,7 +57,7 @@ vim.api.nvim_set_keymap('n', '<leader>c', '<Plug>(qf_qf_switch)', {})
 vim.api.nvim_set_keymap(
     'n',
     '<C-p>',
-    ":lua require'telescope'.extensions.project.project{}<CR>",
+    ":lua require'telescope'.extensions.project.project{ display_type = 'full' }<CR>",
     {noremap = true, silent = true}
 )
 
