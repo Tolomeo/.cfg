@@ -60,3 +60,5 @@ vim.api.nvim_set_keymap(
     ":lua require'telescope'.extensions.project.project{}<CR>",
     {noremap = true, silent = true}
 )
+
+vim.api.nvim_set_keymap('n', '<C-t>', '<cmd>TodoTelescope<CR>', { silent = true, noremap = true })

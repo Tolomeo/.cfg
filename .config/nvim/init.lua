@@ -59,6 +59,13 @@ require('packer').startup(function()
 		require('neoclip').setup()
 	end }
 	use 'nvim-telescope/telescope-project.nvim'
+	use {
+		"folke/todo-comments.nvim",
+		requires = "nvim-lua/plenary.nvim",
+		config = function()
+			require("todo-comments").setup {
+		}
+  end }
 
 	-- General qf and loc lists improvements
 	use { 'romainl/vim-qf', setup = function()
@@ -81,9 +88,10 @@ require('packer').startup(function()
   use 'nvim-treesitter/nvim-treesitter'
   -- Additional textobjects for treesitter
   use 'nvim-treesitter/nvim-treesitter-textobjects'
+	use 'windwp/nvim-ts-autotag'
+	use {'edluffy/specs.nvim'}
 
   -- Conquer of completion
   use {'neoclide/coc.nvim', branch = 'release'}
 end)
-
 
