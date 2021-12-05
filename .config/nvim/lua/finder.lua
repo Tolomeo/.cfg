@@ -20,7 +20,7 @@ require'telescope'.load_extension 'neoclip'
 require'telescope'.load_extension 'project'
 -- Keybindings
 -- see https://github.com/albingroen/quick.nvim/blob/main/lua/telescope-config.lua
-vim.api.nvim_set_keymap('n', '<C-p>', "<cmd>lua require('telescope.builtin').find_files()<CR>", { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>p', "<cmd>lua require('telescope.builtin').find_files()<CR>", { noremap = true })
 vim.api.nvim_set_keymap(
   "n",
   "<C-o>",
