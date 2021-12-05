@@ -22,8 +22,14 @@ vim.api.nvim_set_keymap('n', 'YY', ':%y<CR>', { silent = true, noremap = true })
 -- Opening new lines with Enter in normal mode
 vim.api.nvim_set_keymap('n', '<Enter>', 'o<ESC>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<S-Enter>', 'O<ESC>', { noremap = true, silent = true })
--- Deleting lines with del in normal mode
-vim.api.nvim_set_keymap('n', '<BS>', 'dd', { noremap = true, silent = true })
+-- Moving lines with ALT key
+-- see https://vim.fandom.com/wiki/Moving_lines_up_or_down#Reordering_up_to_nine_lines
+vim.api.nvim_set_keymap('n', '<A-j>', ':m .+1<CR>==', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<A-k>', ':m .-2<CR>==', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('i', '<A-j>', '<Esc>:m .+1<CR>==gi', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('i', '<A-k>', '<Esc>:m .-2<CR>==gi', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('v', '<A-j>', ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
+vim.api.nvim_set_keymap('v', '<A-k>', ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
 
 -- Moving among windows with arrows
 vim.api.nvim_set_keymap('n', '<up>', '<C-w><up>', { noremap = false, silent = true })
