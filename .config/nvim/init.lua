@@ -21,6 +21,10 @@ vim.cmd [[
   augroup end
 ]]
 
+vim.cmd [[
+	autocmd BufRead,BufNewFile *.md setlocal spell
+]]
+
 -- Opening the file browser on startup when nvim is opened against a directory
 au.VimEnter = function()
 	if vim.fn.isdirectory(vim.fn.expand('%:p')) > 0 then require 'telescope'.extensions.file_browser.file_browser({ hidden = true }) end
@@ -49,9 +53,6 @@ require('packer').startup(function()
   -- "gc" to comment visual regions/lines
   use 'b3nj5m1n/kommentary'
 	use 'JoosepAlviste/nvim-ts-context-commentstring'
-
-  -- Automatic tags management
-  use 'ludovicchabant/vim-gutentags'
 
   -- UI to select things (files, grep results, open buffers...)
   use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }

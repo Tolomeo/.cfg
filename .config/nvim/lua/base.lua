@@ -58,3 +58,7 @@ vim.api.nvim_set_keymap("n", "<Leader>W", ":wqall<CR>", { noremap = true, silent
 
 -- Using system clipbard as default register
 vim.o.clipboard = 'unnamedplus'
+
+-- Spellcheck
+vim.o.spell = false
+vim.o.spelllang = 'en_gb'
