@@ -1,5 +1,5 @@
 require('base')
-require('theme')
+require('theme').setup()
 require('editor')
 require('finder')
 require('intellisense')
