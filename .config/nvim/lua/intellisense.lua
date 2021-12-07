@@ -2,7 +2,7 @@ local M = {}
 
 M.plugins = {
 	-- Conquer of completion
-	{'neoclide/coc.nvim', branch = 'release'}
+	'neoclide/coc.nvim'
 }
 
 function M.setup()

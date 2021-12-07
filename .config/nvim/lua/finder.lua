@@ -1,3 +1,4 @@
+local au = require('au')
 local M = {}
 
 M.plugins = {
@@ -88,6 +89,12 @@ function M.setup()
 	)
 
 	vim.api.nvim_set_keymap('n', '<C-t>', '<cmd>TodoTelescope<CR>', { silent = true, noremap = true })
+
+
+	-- Opening the file browser on startup when nvim is opened against a directory
+	au.VimEnter = function()
+		if vim.fn.isdirectory(vim.fn.expand('%:p')) > 0 then require 'telescope'.extensions.file_browser.file_browser({ hidden = true }) end
+	end
 end
 
 return M
