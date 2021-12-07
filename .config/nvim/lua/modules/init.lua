@@ -14,6 +14,12 @@ function M.for_each(callback)
 	end
 end
 
+function M.setup()
+	M.for_each(function(module)
+		module.setup()
+	end)
+end
+
 setmetatable(M, { __index = modules })
 
 return M
