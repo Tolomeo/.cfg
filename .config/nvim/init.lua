@@ -1,28 +1,30 @@
-require('base')
-require('theme').setup()
-require('editor')
-require('finder')
-require('intellisense')
-require('versioning')
-
+local base = require('base')
+local theme = require('theme')
+local editor = require('editor')
+local vcs = require('vcs')
+local finder = require('finder')
+local intellisense = require('intellisense')
 local au = require('au')
+
+base.setup()
+theme.setup()
+editor.setup()
+vcs.setup()
+finder.setup()
+intellisense.setup()
 
 -- Install packer
 local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-  vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
+	vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
 end
 
 vim.cmd [[
-  augroup Packer
-    autocmd!
-    autocmd BufWritePost ~/.config/nvim/** PackerCompile
-  augroup end
-]]
-
-vim.cmd [[
-	autocmd BufRead,BufNewFile *.md setlocal spell
+augroup Packer
+autocmd!
+autocmd BufWritePost ~/.config/nvim/** PackerCompile
+augroup end
 ]]
 
 -- Opening the file browser on startup when nvim is opened against a directory
@@ -33,67 +35,30 @@ end
 local use = require('packer').use
 require('packer').startup(function()
 	-- Package manager maninging itself
-  use 'wbthomason/packer.nvim'
+	use 'wbthomason/packer.nvim'
 
-	-- Automatically changing cwd based on the root of the project
-	-- see https://github.com/airblade/vim-rooter
-	use { 'airblade/vim-rooter', setup = function ()
-		-- Setting files/dirs to look for to understand what the root dir is
-		vim.api.nvim_set_var('rooter_patterns', {'=nvim', '.git', 'package.json' })
-	end }
+	for _, plugin in ipairs(base.plugins) do
+		use(plugin)
+	end
 
-  -- Git integration
-  use 'tpope/vim-fugitive'
-  -- Add git related info in the signs columns and popups
-  use { 'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' } }
+	for _, plugin in ipairs(theme.plugins) do
+		use(plugin)
+	end
 
-  -- Parentheses, brackets, quotes, XML tags, and more
-  use 'tpope/vim-surround'
+	for _, plugin in ipairs(editor.plugins) do
+		use(plugin)
+	end
 
-  -- "gc" to comment visual regions/lines
-  use 'b3nj5m1n/kommentary'
-	use 'JoosepAlviste/nvim-ts-context-commentstring'
+	for _, plugin in ipairs(vcs.plugins) do
+		use(plugin)
+	end
 
-  -- UI to select things (files, grep results, open buffers...)
-  use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
-	use { "nvim-telescope/telescope-file-browser.nvim" }
-	use { "AckslD/nvim-neoclip.lua", config = function()
-		require('neoclip').setup()
-	end }
-	use 'nvim-telescope/telescope-project.nvim'
-	use {
-		"folke/todo-comments.nvim",
-		requires = "nvim-lua/plenary.nvim",
-		config = function()
-			require("todo-comments").setup {
-		}
-  end }
+	for _, plugin in ipairs(finder.plugins) do
+		use(plugin)
+	end
 
-	-- General qf and loc lists improvements
-	use { 'romainl/vim-qf', setup = function()
-		vim.api.nvim_set_var('qf_mapping_ack_style', true)
-	end }
-
-  -- theme based off of the Nord Color Palette.
-  use 'shaunsingh/nord.nvim'
-  -- fancy status line
-  -- use 'itchyny/lightline.vim'
-  use {
-  'nvim-lualine/lualine.nvim',
-   requires = {'kyazdani42/nvim-web-devicons', opt = true}
-  }
-
-  -- Add indentation guide even on blank lines
-  use 'lukas-reineke/indent-blankline.nvim'
-
-  -- Highlight, edit, and navigate code using a fast incremental parsing library
-  use 'nvim-treesitter/nvim-treesitter'
-  -- Additional textobjects for treesitter
-  use 'nvim-treesitter/nvim-treesitter-textobjects'
-	use 'windwp/nvim-ts-autotag'
-	use {'edluffy/specs.nvim'}
-
-  -- Conquer of completion
-  use {'neoclide/coc.nvim', branch = 'release'}
+	for _, plugin in ipairs(intellisense.plugins) do
+		use(plugin)
+	end
 end)
 
