@@ -1,4 +1,4 @@
-local au = require('au')
+local au = require('utils.au')
 local M = {}
 
 M.plugins = {
