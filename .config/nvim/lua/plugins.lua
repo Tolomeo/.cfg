@@ -20,13 +20,14 @@ function M.setup(setupPlugins)
 			require('packer').sync()
 		end
 	end)
-end
 
-vim.cmd [[
-augroup Packer
-autocmd!
-autocmd BufWritePost ~/.config/nvim/** PackerCompile
-augroup end
-]]
+	vim.cmd [[
+	augroup Packer
+	autocmd!
+	autocmd BufWritePost ~/.config/nvim/** PackerCompile
+	augroup end
+	]]
+
+end
 
 return M

@@ -1,11 +1,13 @@
 {
-	// showing a diagnostic error on the entire line
+  // showing a diagnostic error on the entire line
+  "diagnostic.enable": true,
   "diagnostic.checkCurrentLine": true,
-	//
+	"diagnostic.refreshOnInsertMode": true,
+  //
   "eslint.alwaysShowStatus": true,
-	// autocompletion for lua nvim config files
+  // autocompletion for lua nvim config files
   "sumneko-lua.enableNvimLuaDev": true,
-	// autocompletion icons
+  // autocompletion icons
   "suggest.completionItemKindLabels": {
     "keyword": "\uf1de",
     "variable": "\ue79b",
@@ -34,6 +36,6 @@
     "typeParameter": "\uf728",
     "default": "\uf29c"
   },
-	// saving changes to file when modifying in refactor view
-	"refactor.saveToFile": true
+  // saving changes to file when modifying in refactor view
+  "refactor.saveToFile": true
 }

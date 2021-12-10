@@ -2,10 +2,10 @@ local M = {}
 
 M.plugins = {
 	'shaunsingh/nord.nvim',
-	{
+	--[[ {
   'nvim-lualine/lualine.nvim',
    requires = {'kyazdani42/nvim-web-devicons', opt = true}
-  }
+  } ]]
 }
 
 function M.setup()
@@ -16,7 +16,7 @@ function M.setup()
 	vim.cmd [[colorscheme nord]]
 
 	-- Statusbar
-	require('lualine').setup()
+	-- require('lualine').setup()
 end
 
 return M

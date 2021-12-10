@@ -10,6 +10,10 @@
 	--Do not save when switching buffers (note: this is now a default on master)
 	vim.o.hidden = true
 
+	-- Do not automatically create backup files
+	vim.o.backup = false
+	vim.o.writebackup = false
+
 	--Enable mouse mode
 	vim.o.mouse = 'a'
 
@@ -25,6 +29,8 @@
 
 	--Decrease update time
 	vim.o.updatetime = 250
+
+	-- Always show signcolumn
 	vim.wo.signcolumn = 'yes'
 
 	--Set colorscheme (order is important here)
@@ -35,6 +41,9 @@
 	vim.o.tabstop = 2
 	vim.o.autoindent = true
 	vim.o.smartindent = true
+
+	-- Avoid word wrap because it's weird
+	vim.o.wrap = false
 
 	--Remap space as leader key
 	vim.api.nvim_set_keymap('', '<Space>', '<Nop>', { noremap = true, silent = true })
