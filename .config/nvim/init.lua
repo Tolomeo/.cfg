@@ -1,19 +1,20 @@
 require('defaults')
-_G.user = {
-	modules = require('modules'),
-	plugins = require('plugins')
-}
+local modules = require('modules')
+local plugins = require('plugins')
 
-user.modules.setup()
+modules.setup()
 
-user.plugins.setup(function(use)
-	user.modules.for_each(function (module)
+plugins.setup(function(use)
+	modules.for_each(function (module)
 		use(module.plugins)
 	end)
 end)
 
-
+-- Keymapping
 local key = require('utils.key')
+_G.user = {
+	modules = modules
+}
 
 -- Remapping arrows to nothing
 key.map { "i", "<left>", "<nop>" }
@@ -35,14 +36,14 @@ key.map { "n", "<CR>", "O<ESC>j"}
 key.map { "n", "<A-CR>", "o<ESC>k"}
 
 -- Intellisense
-key.map { "n", "<C-Space>", "v:lua.user.modules.intellisense.openCodeActions()", expr = true }
-key.map { "n", "<leader>b", "v:lua.user.modules.intellisense.prettierFormat()", expr = true }
+key.map { "n", "<C-Space>", "v:lua.user.modules.intellisense.open_code_actions()", expr = true }
+key.map { "n", "<leader>b", "v:lua.user.modules.intellisense.prettier_format()", expr = true }
 
-key.map { "n", "<leader>l", "v:lua.user.modules.intellisense.eslintFix()", expr = true }
-key.map { "n", "<leader>d", "v:lua.user.modules.intellisense.goToDefinition()", expr = true }
-key.map { "n", "<leader>k", "v:lua.user.modules.intellisense.showSymbolDocumentation()", expr = true }
-key.map { "n", "<leader>rn", "v:lua.user.modules.intellisense.renameSymbol()", expr = true }
-key.map { "i", "<C-Space>", "v:lua.user.modules.intellisense.openSuggestions()", expr = true }
-key.map { "i", "<TAB>", "v:lua.user.modules.intellisense.nextSuggestion('<TAB>')", expr = true }
-key.map { "i", "<S-TAB>","v:lua.user.modules.intellisense.prevSuggestion()", expr = true }
-key.map { "i", "<CR>", "v:lua.user.modules.intellisense.confirmSuggestion()", expr = true }
+key.map { "n", "<leader>l", "v:lua.user.modules.intellisense.eslint_fix()", expr = true }
+key.map { "n", "<leader>d", "v:lua.user.modules.intellisense.go_to_definition()", expr = true }
+key.map { "n", "<leader>k", "v:lua.user.modules.intellisense.show_symbol_doc()", expr = true }
+key.map { "n", "<leader>rn", "v:lua.user.modules.intellisense.rename_symbol()", expr = true }
+key.map { "i", "<C-Space>", "v:lua.user.modules.intellisense.open_suggestions()", expr = true }
+key.map { "i", "<TAB>", "v:lua.user.modules.intellisense.next_suggestion('<TAB>')", expr = true }
+key.map { "i", "<S-TAB>","v:lua.user.modules.intellisense.prev_suggestion()", expr = true }
+key.map { "i", "<CR>", "v:lua.user.modules.intellisense.confirm_suggestion()", expr = true }

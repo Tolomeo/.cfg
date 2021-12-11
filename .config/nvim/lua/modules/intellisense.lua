@@ -27,27 +27,27 @@ function M.setup()
 end
 
 -- Module actions
-function M.openCodeActions()
+function M.open_code_actions()
 	return key.feed(key.to_term_code('<Plug>(coc-codeaction)'))
 end
 
-function M.prettierFormat()
+function M.prettier_format()
 	return key.to_term_code(':CocCommand prettier.formatFile<CR>')
 end
 
-function M.eslintFix()
+function M.eslint_fix()
 	return key.to_term_code(':CocCommand eslint.executeAutofix<CR>')
 end
 
-function M.goToDefinition()
+function M.go_to_definition()
 	return key.feed(key.to_term_code('<Plug>(coc-definition)'))
 end
 
-function M.showSymbolDocumentation()
+function M.show_symbol_doc()
 	return key.to_term_code(':call CocActionAsync("doHover")<CR>')
 end
 
-function M.renameSymbol()
+function M.rename_symbol()
 	return key.feed(key.to_term_code('<Plug>(coc-rename)'))
 end
 
@@ -55,11 +55,11 @@ function M.has_suggestions()
 	return vim.fn.pumvisible() ~= 0
 end
 
-function M.openSuggestions()
+function M.open_suggestions()
 	return vim.fn['coc#refresh']()
 end
 
-function M.nextSuggestion(next)
+function M.next_suggestion(next)
 	if(M.has_suggestions())	then
 		return key.to_term_code('<C-n>')
 	end
@@ -67,7 +67,7 @@ function M.nextSuggestion(next)
 	return key.to_term_code(next)
 end
 
-function M.prevSuggestion()
+function M.prev_suggestion()
 	if(M.has_suggestions()) then
 		return key.to_term_code('<C-p>')
 	end
@@ -75,7 +75,7 @@ function M.prevSuggestion()
 	return key.to_term_code('<C-h>')
 end
 
-function M.confirmSuggestion()
+function M.confirm_suggestion()
 	if(M.has_suggestions()) then
 		return vim.fn['coc#_select_confirm']()
 	end
