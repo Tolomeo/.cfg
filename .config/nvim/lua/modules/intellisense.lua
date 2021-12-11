@@ -1,3 +1,4 @@
+local key = require('utils.key')
 local M = {}
 
 M.plugins = {
@@ -27,27 +28,31 @@ end
 
 -- Module actions
 function M.openCodeActions()
-	return vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>(coc-codeaction)', true, true, true))
+	return key.feed(key.to_term_code('<Plug>(coc-codeaction)'))
 end
 
 function M.prettierFormat()
-	return vim.api.nvim_replace_termcodes(':CocCommand prettier.formatFile<CR>', true, true, true)
+	return key.to_term_code(':CocCommand prettier.formatFile<CR>')
 end
 
 function M.eslintFix()
-	return vim.api.nvim_replace_termcodes(':CocCommand eslint.executeAutofix<CR>', true, true, true)
+	return key.to_term_code(':CocCommand eslint.executeAutofix<CR>')
 end
 
 function M.goToDefinition()
-	return vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>(coc-definition)', true, true, true))
+	return key.feed(key.to_term_code('<Plug>(coc-definition)'))
 end
 
 function M.showSymbolDocumentation()
-	return vim.api.nvim_replace_termcodes(':call CocActionAsync("doHover")<CR>', true, true, true)
+	return key.to_term_code(':call CocActionAsync("doHover")<CR>')
 end
 
 function M.renameSymbol()
-	return vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>(coc-rename)', true, true, true))
+	return key.feed(key.to_term_code('<Plug>(coc-rename)'))
+end
+
+function M.has_suggestions()
+	return vim.fn.pumvisible() ~= 0
 end
 
 function M.openSuggestions()
@@ -55,27 +60,27 @@ function M.openSuggestions()
 end
 
 function M.nextSuggestion(next)
-	if(vim.fn.pumvisible() ~= 0)	then
-		return vim.api.nvim_replace_termcodes('<C-n>', true, true, true)
+	if(M.has_suggestions())	then
+		return key.to_term_code('<C-n>')
 	end
 
-	return vim.api.nvim_replace_termcodes(next, true, true, true)
+	return key.to_term_code(next)
 end
 
 function M.prevSuggestion()
-	if(vim.fn.pumvisible() ~= 0) then
-		return vim.api.nvim_replace_termcodes('<C-p>', true, true, true)
+	if(M.has_suggestions()) then
+		return key.to_term_code('<C-p>')
 	end
 
-	return vim.api.nvim_replace_termcodes('<C-h>', true, true, true)
+	return key.to_term_code('<C-h>')
 end
 
 function M.confirmSuggestion()
-	if(vim.fn.pumvisible() ~= 0) then
+	if(M.has_suggestions()) then
 		return vim.fn['coc#_select_confirm']()
 	end
 
-	return vim.api.nvim_replace_termcodes('<C-G>u<CR><C-R>=coc#on_enter()<CR>', true, true, true)
+	return key.to_term_code('<C-G>u<CR><C-R>=coc#on_enter()<CR>')
 end
 
 return M

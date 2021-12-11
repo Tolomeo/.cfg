@@ -12,20 +12,37 @@ user.plugins.setup(function(use)
 	end)
 end)
 
--- Remapping arrows to nothing
-vim.api.nvim_set_keymap("i", "<left>", "<nop>", { noremap = true })
-vim.api.nvim_set_keymap("i", "<right>", "<nop>", { noremap = true })
-vim.api.nvim_set_keymap("i", "<up>", "<nop>", { noremap = true })
-vim.api.nvim_set_keymap("i", "<down>", "<nop>", { noremap = true })
 
-local keymapOpts = { noremap = true, silent = true, expr = true }
-vim.api.nvim_set_keymap("n", "<C-Space>", "v:lua.user.modules.intellisense.openCodeActions()", keymapOpts )
-vim.api.nvim_set_keymap("n", "<leader>b", "v:lua.user.modules.intellisense.prettierFormat()", keymapOpts )
-vim.api.nvim_set_keymap("n", "<leader>l", "v:lua.user.modules.intellisense.eslintFix()", keymapOpts )
-vim.api.nvim_set_keymap("n", "<leader>d", "v:lua.user.modules.intellisense.goToDefinition()", keymapOpts )
-vim.api.nvim_set_keymap("n", "K", "v:lua.user.modules.intellisense.showSymbolDocumentation()", keymapOpts )
-vim.api.nvim_set_keymap("n", "<leader>rn", "v:lua.user.modules.intellisense.renameSymbol()", keymapOpts )
-vim.api.nvim_set_keymap("i", "<C-Space>", "v:lua.user.modules.intellisense.openSuggestions()", keymapOpts )
-vim.api.nvim_set_keymap("i", "<TAB>", "v:lua.user.modules.intellisense.nextSuggestion('<TAB>')", keymapOpts )
-vim.api.nvim_set_keymap("i", "<S-TAB>","v:lua.user.modules.intellisense.prevSuggestion()", keymapOpts )
-vim.api.nvim_set_keymap("i", "<CR>", "v:lua.user.modules.intellisense.confirmSuggestion()", keymapOpts )
+local key = require('utils.key')
+
+-- Remapping arrows to nothing
+key.map { "i", "<left>", "<nop>" }
+key.map { "i", "<left>", "<nop>" }
+key.map { "i", "<right>", "<nop>" }
+key.map { "i", "<up>", "<nop>" }
+key.map { "i", "<down>", "<nop>" }
+
+-- Movement multipliers
+key.map { "n", "H", "0" }
+key.map { "n", "<A-h>", "b" }
+key.map { "n", "L", "$" }
+key.map { "n", "<A-l>", "w" }
+key.map { "n", "J", "<C-d>" }
+key.map { "n", "K", "<C-u>" }
+
+-- Adding empty lines in normal mode
+key.map { "n", "<CR>", "O<ESC>j"}
+key.map { "n", "<A-CR>", "o<ESC>k"}
+
+-- Intellisense
+key.map { "n", "<C-Space>", "v:lua.user.modules.intellisense.openCodeActions()", expr = true }
+key.map { "n", "<leader>b", "v:lua.user.modules.intellisense.prettierFormat()", expr = true }
+
+key.map { "n", "<leader>l", "v:lua.user.modules.intellisense.eslintFix()", expr = true }
+key.map { "n", "<leader>d", "v:lua.user.modules.intellisense.goToDefinition()", expr = true }
+key.map { "n", "<leader>k", "v:lua.user.modules.intellisense.showSymbolDocumentation()", expr = true }
+key.map { "n", "<leader>rn", "v:lua.user.modules.intellisense.renameSymbol()", expr = true }
+key.map { "i", "<C-Space>", "v:lua.user.modules.intellisense.openSuggestions()", expr = true }
+key.map { "i", "<TAB>", "v:lua.user.modules.intellisense.nextSuggestion('<TAB>')", expr = true }
+key.map { "i", "<S-TAB>","v:lua.user.modules.intellisense.prevSuggestion()", expr = true }
+key.map { "i", "<CR>", "v:lua.user.modules.intellisense.confirmSuggestion()", expr = true }
