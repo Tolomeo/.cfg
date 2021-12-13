@@ -1,7 +1,29 @@
-local M = {}
+local Maps = {
+	_set = {}
+}
 
-function M.feed(keys)
-	return vim.fn.feedkeys(keys)
+function Maps.set(fn)
+	local id = string.format('%p', fn)
+	Maps._set[id] = fn
+	return string.format('<Cmd>lua require("utils.key").exec("%s")<CR>', id)
+end
+
+function Maps.exec(id)
+	return Maps._set[id]()
+end
+
+function Maps.clear()
+	Maps._set = {}
+end
+
+local M = setmetatable({}, {
+	__index = Maps
+})
+
+function M.feed(keys, mode)
+	-- Noremap by default
+	local m = mode or 'n'
+	return vim.fn.feedkeys(keys, m)
 end
 
 function M.to_term_code(keys)
@@ -9,21 +31,29 @@ function M.to_term_code(keys)
 end
 
 function M.map(config)
-	local opts = {noremap = true, silent = true}
+	local mode, lhs, rhs = config[1], config[2], config[3]
+	local opts = { noremap = true, silent = true }
+
+	-- Overriding default opts
 	for i, v in pairs(config) do
 		if type(i) == 'string' then opts[i] = v end
 	end
 
-	return vim.api.nvim_set_keymap(config[1], config[2], config[3], opts)
-end
-
-function M.map_buffer(config)
-	local opts = {noremap = true, silent = true}
-	for i, v in pairs(config) do
-		if type(i) == 'string' then opts[i] = v end
+	-- Registering handler in case a function was passed
+	if(type(rhs) == 'function') then
+		rhs = Maps.set(rhs)
+		opts.expr = false
 	end
 
-	return vim.api.nvim_buf_set_keymap(0, config[1], config[2], config[3], opts)
+	-- Basic support for buffer-scoped keybindings
+  local buffer = opts.buffer
+  opts.buffer = nil
+
+	if buffer then
+    return vim.api.nvim_buf_set_keymap(buffer, mode, lhs, rhs, opts)
+	end
+
+  return vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
 end
 
 return M
