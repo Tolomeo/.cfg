@@ -28,53 +28,54 @@ end
 
 -- Module actions
 function M.open_code_actions()
-	return key.feed(key.to_term_code('<Plug>(coc-codeaction)'), 'm')
+	return key.input('<Plug>(coc-codeaction)', 'm')
 end
 
 function M.prettier_format()
-	return key.feed(key.to_term_code(':CocCommand prettier.formatFile<CR>'))
+	return key.input(':CocCommand prettier.formatFile<CR>')
 end
 
 function M.eslint_fix()
-	return key.feed(key.to_term_code(':CocCommand eslint.executeAutofix<CR>'))
+	return key.input(':CocCommand eslint.executeAutofix<CR>')
 end
 
 function M.go_to_definition()
-	return key.feed(key.to_term_code('<Plug>(coc-definition)'), 'm')
+	return key.input('<Plug>(coc-definition)', 'm')
 end
 
 function M.show_symbol_doc()
-	return key.feed(key.to_term_code(':call CocActionAsync("doHover")<CR>'))
+	return key.input(':call CocActionAsync("doHover")<CR>')
 end
 
 function M.rename_symbol()
-	return key.feed(key.to_term_code('<Plug>(coc-rename)'), 'm')
+	return key.input('<Plug>(coc-rename)', 'm')
 end
 
+-- TODO: move this check into core module
 function M.has_suggestions()
 	return vim.fn.pumvisible() ~= 0
 end
 
 function M.open_suggestions()
-	return key.feed(key.to_term_code(vim.fn['coc#refresh']()))
+	return key.input(vim.fn['coc#refresh']())
 end
 
 function M.next_suggestion(next)
 	return function()
 		if(M.has_suggestions())	then
-			return key.feed(key.to_term_code('<C-n>'))
+			return key.input('<C-n>')
 		end
 
-		return key.feed(key.to_term_code(next))
+		return key.input(next)
 	end
 end
 
 function M.prev_suggestion()
 	if(M.has_suggestions()) then
-		return key.feed(key.to_term_code('<C-p>'))
+		return key.input('<C-p>')
 	end
 
-	return key.feed(key.to_term_code('<C-h>'))
+	return key.input('<C-h>')
 end
 -- vim.api.nvim_set_keymap("i", "<CR>", "pumvisible() ? coc#_select_confirm() : '<C-G>u<CR><C-R>=coc#on_enter()<CR>'", {silent = true, expr = true, noremap = true})
 function M.confirm_suggestion()
@@ -82,7 +83,7 @@ function M.confirm_suggestion()
 		return key.feed(vim.fn['coc#_select_confirm']())
   end
 
-	return key.feed(key.to_term_code '<C-G>u<CR>' .. vim.fn['coc#on_enter']())
+	return key.feed(key.to_term_code '<C-G>u<CR>' .. vim.fn['coc#on_enter'](), 'n')
 end
 
 return M

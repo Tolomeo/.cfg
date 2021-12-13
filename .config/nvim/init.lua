@@ -10,7 +10,7 @@ plugins.setup(function(use)
 	end)
 end)
 
--- Autocmds
+-- AUTOCMDS
 local au = require('utils.au')
 
 au.group('NvimConfigChange', {
@@ -21,7 +21,7 @@ au.group('NvimConfigChange', {
 	}
 })
 
--- Keymapping
+-- KEYMAPPING
 local key = require('utils.key')
 
 -- Remapping arrows to nothing

@@ -1,36 +1,27 @@
-local Maps = {
+local Keymap = {
 	_set = {}
 }
 
-function Maps.set(fn)
+function Keymap.set(fn)
 	local id = string.format('%p', fn)
-	Maps._set[id] = fn
-	return string.format('<Cmd>lua require("utils.key").exec("%s")<CR>', id)
+	Keymap._set[id] = fn
+	return string.format('<Cmd>lua require("utils.key").map.exec("%s")<CR>', id)
 end
 
-function Maps.exec(id)
-	return Maps._set[id]()
+function Keymap.exec(id)
+	return Keymap._set[id]()
 end
 
-function Maps.clear()
-	Maps._set = {}
+function Keymap.clear(id)
+	if(id) then
+		Keymap._set[id] = nil
+		return
+	end
+
+	Keymap._set = {}
 end
 
-local M = setmetatable({}, {
-	__index = Maps
-})
-
-function M.feed(keys, mode)
-	-- Noremap by default
-	local m = mode or 'n'
-	return vim.fn.feedkeys(keys, m)
-end
-
-function M.to_term_code(keys)
-	return vim.api.nvim_replace_termcodes(keys, true, true, true)
-end
-
-function M.map(config)
+function Keymap.create(config)
 	local mode, lhs, rhs = config[1], config[2], config[3]
 	local opts = { noremap = true, silent = true }
 
@@ -41,7 +32,7 @@ function M.map(config)
 
 	-- Registering handler in case a function was passed
 	if(type(rhs) == 'function') then
-		rhs = Maps.set(rhs)
+		rhs = Keymap.set(rhs)
 		opts.expr = false
 	end
 
@@ -54,6 +45,26 @@ function M.map(config)
 	end
 
   return vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
+end
+
+local M = {}
+
+M.map = setmetatable({}, {
+	__index = Keymap,
+	__call = function(_, config) return Keymap.create(config) end
+})
+
+function M.feed(keys, mode)
+	return vim.fn.feedkeys(keys, mode)
+end
+
+function M.to_term_code(keys)
+	return vim.api.nvim_replace_termcodes(keys, true, true, true)
+end
+
+function M.input(keys, input_mode)
+	local mode = input_mode or 'n' -- Noremap mode by default
+	return M.feed(M.to_term_code(keys), mode)
 end
 
 return M
