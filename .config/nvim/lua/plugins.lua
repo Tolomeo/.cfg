@@ -4,6 +4,7 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
 	Packer_bootstrap = vim.fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
 end
 
+local key = require('utils.key')
 local M = {}
 
 function M.setup(setupPlugins)
@@ -21,12 +22,9 @@ function M.setup(setupPlugins)
 		end
 	end)
 
-	vim.cmd [[
-	augroup Packer
-	autocmd!
-	autocmd BufWritePost ~/.config/nvim/** PackerCompile
-	augroup end
-	]]
+	function M.compile()
+		key.feed(key.to_term_code(':PackerCompile<CR>'))
+	end
 
 end
 

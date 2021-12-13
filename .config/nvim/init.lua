@@ -10,11 +10,21 @@ plugins.setup(function(use)
 	end)
 end)
 
+-- Autocmds
+local au = require('utils.au')
+
+au.group('NvimConfigChange', {
+	{
+		'BufWritePost',
+		'~/.config/nvim/**',
+		plugins.compile
+	}
+})
+
 -- Keymapping
 local key = require('utils.key')
 
 -- Remapping arrows to nothing
-key.map { "i", "<left>", "<nop>" }
 key.map { "i", "<left>", "<nop>" }
 key.map { "i", "<right>", "<nop>" }
 key.map { "i", "<up>", "<nop>" }
