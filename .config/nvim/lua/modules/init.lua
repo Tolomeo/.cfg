@@ -2,7 +2,7 @@ local modules = {
 	core = require('modules.core'),
 	theme = require('modules.theme'),
 	editor = require('modules.editor'),
-	vcs = require('modules.vcs'),
+	git = require('modules.git'),
 	finder = require('modules.finder'),
 	intellisense = require('modules.intellisense')
 }
@@ -13,12 +13,6 @@ function M.for_each(callback)
 		callback(module)
 	end
 end
-
---[[ function M.setup()
-	M.for_each(function(module)
-		module.setup()
-	end)
-end ]]
 
 setmetatable(M, { __index = modules })
 

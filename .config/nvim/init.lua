@@ -1,6 +1,7 @@
 local config = require('config')
 local modules = require('modules')
 
+-- INITIALISATION
 config.setup(modules)
 
 -- AUTOCMDS
@@ -22,17 +23,17 @@ au.group('SpellCheck', {
 	}
 })
 
--- KEYMAPPING
+-- KEYMAPS
 local key = require('utils.key')
 
 -- write only if changed
-vim.api.nvim_set_keymap("n", "<Leader>w", ":up<CR>", { noremap = true })
+key.map { "n", "<Leader>w", ":up<CR>", silent = false }
 -- quit (or close window)
-vim.api.nvim_set_keymap("n", "<Leader>q", ":q<CR>", { noremap = true, silent = true })
+key.map { "n", "<Leader>q", ":q<CR>", }
 -- Discard all changed buffers & quit
-vim.api.nvim_set_keymap("n", "<Leader>Q", ":qall!<CR>", { noremap = true, silent = true })
+key.map { "n", "<Leader>Q", ":qall!<CR>", }
 -- write all and quit
-vim.api.nvim_set_keymap("n", "<Leader>W", ":wqall<CR>", { noremap = true, silent = true })
+key.map { "n", "<Leader>W", ":wqall<CR>", }
 
 -- Remapping arrows to nothing
 key.map { "i", "<left>", "<nop>" }
@@ -68,4 +69,17 @@ key.map { 'i', '<C-Space>', modules.intellisense.open_suggestions }
 key.map { "i", "<TAB>", modules.intellisense.next_suggestion '<TAB>' }
 key.map { "i", "<S-TAB>",modules.intellisense.prev_suggestion }
 key.map { "i", "<CR>", modules.intellisense.confirm_suggestion }
-
+-- git
+-- Git blame
+key.map { 'n', 'gb', modules.git.git_blame }
+-- Git log
+key.map { 'n', 'gl', modules.git.git_log }
+-- Git diff
+key.map { 'n', 'gd', modules.git.git_diff }
+-- Git merge
+key.map { 'n', 'gm', modules.git.git_mergetool }
+-- Toggle hunk preview
+key.map { 'n', 'gh', modules.git.show_hunk_preview }
+-- Cycling through hunks with TAB and S-TAB
+key.map { 'n', ']c', modules.git.next_hunk_preview ']c' }
+key.map { 'n', '[c', modules.git.prev_hunk_preview '[c' }
