@@ -13,6 +13,8 @@ M.plugins = {
 	'windwp/nvim-ts-autotag',
 	-- Parentheses, brackets, quotes, XML tags
 	'tpope/vim-surround',
+	-- Shows where your cursor moves
+	'edluffy/specs.nvim'
 }
 
 function M.setup ()
@@ -139,6 +141,26 @@ function M.setup ()
 	-- Autotag
 	require('nvim-ts-autotag').setup()
 
+	-- Specs
+	require('specs').setup({
+		show_jumps  = true,
+		min_jump = 30,
+		popup = {
+			delay_ms = 100, -- delay before popup displays
+			inc_ms = 15, -- time increments used for fade/resize effects
+			blend = 15, -- starting blend, between 0-100 (fully transparent), see :h winblend
+			width = 10,
+			winhl = "PMenu",
+			fader = require('specs').pulse_fader,
+			resizer = require('specs').slide_resizer
+		},
+		ignore_filetypes = {},
+		ignore_buftypes = {
+			nofile = true,
+		}
+	})
+
+	vim.api.nvim_set_keymap('n', '<leader><space>', ':lua require("specs").show_specs()<CR>', { noremap = true, silent = true })
 end
 
 return M

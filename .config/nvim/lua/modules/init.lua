@@ -1,5 +1,4 @@
 local modules = {
-	base = require('modules.base'),
 	theme = require('modules.theme'),
 	editor = require('modules.editor'),
 	vcs = require('modules.vcs'),
@@ -14,11 +13,11 @@ function M.for_each(callback)
 	end
 end
 
-function M.setup()
+--[[ function M.setup()
 	M.for_each(function(module)
 		module.setup()
 	end)
-end
+end ]]
 
 setmetatable(M, { __index = modules })
 

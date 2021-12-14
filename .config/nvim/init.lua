@@ -1,14 +1,7 @@
-require('defaults')
+local config = require('config')
 local modules = require('modules')
-local plugins = require('plugins')
 
-modules.setup()
-
-plugins.setup(function(use)
-	modules.for_each(function (module)
-		use(module.plugins)
-	end)
-end)
+config.setup(modules)
 
 -- AUTOCMDS
 local au = require('utils.au')
@@ -17,12 +10,29 @@ au.group('NvimConfigChange', {
 	{
 		'BufWritePost',
 		'~/.config/nvim/**',
-		plugins.compile
+		config.compile
+	}
+})
+
+au.group('SpellCheck', {
+	{
+		{'BufRead','BufNewFile'},
+		'*.md',
+		'setlocal spell'
 	}
 })
 
 -- KEYMAPPING
 local key = require('utils.key')
+
+-- write only if changed
+vim.api.nvim_set_keymap("n", "<Leader>w", ":up<CR>", { noremap = true })
+-- quit (or close window)
+vim.api.nvim_set_keymap("n", "<Leader>q", ":q<CR>", { noremap = true, silent = true })
+-- Discard all changed buffers & quit
+vim.api.nvim_set_keymap("n", "<Leader>Q", ":qall!<CR>", { noremap = true, silent = true })
+-- write all and quit
+vim.api.nvim_set_keymap("n", "<Leader>W", ":wqall<CR>", { noremap = true, silent = true })
 
 -- Remapping arrows to nothing
 key.map { "i", "<left>", "<nop>" }
