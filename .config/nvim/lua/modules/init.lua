@@ -1,4 +1,5 @@
 local modules = {
+	core = require('modules.core'),
 	theme = require('modules.theme'),
 	editor = require('modules.editor'),
 	vcs = require('modules.vcs'),
