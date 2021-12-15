@@ -2,6 +2,8 @@ local M = {}
 
 M.plugins = {
 	'shaunsingh/nord.nvim',
+	'navarasu/onedark.nvim',
+	'sainnhe/edge',
 	{
   'nvim-lualine/lualine.nvim',
    requires = {'kyazdani42/nvim-web-devicons', opt = true}
@@ -9,12 +11,6 @@ M.plugins = {
 }
 
 function M.setup()
-	-- Colortheme
-	vim.g.nord_contrast = true
-	vim.g.nord_borders = true
-	vim.g.nord_disable_background = true
-	vim.cmd [[colorscheme nord]]
-
 	-- Statusbar
 	require'lualine'.setup {
 		options = {
@@ -45,5 +41,30 @@ function M.setup()
 		extensions = {}
 	}
 end
+
+M.color_scheme = setmetatable({
+	nord = function()
+		vim.g.nord_contrast = true
+		vim.g.nord_borders = true
+		vim.g.nord_disable_background = true
+		vim.cmd [[colorscheme nord]]
+	end,
+	onedark = function ()
+		vim.g.onedark_transparent_background = true
+		vim.g.onedark_style = 'darker'
+		vim.cmd [[colorscheme onedark]]
+	end,
+	edge = function ()
+		vim.g.edge_transparent_background = true
+		vim.g.edge_diagnostic_text_highlight = true
+		vim.g.edge_better_performance = true
+		vim.cmd [[colorscheme edge]]
+	end
+}, {
+		__call = function (_, themeName)
+			M.color_scheme[themeName]()
+			require'lualine'.setup {options = {theme = themeName }}
+		end
+})
 
 return M

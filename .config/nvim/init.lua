@@ -4,6 +4,9 @@ local modules = require('modules')
 -- INITIALISATION
 config.setup(modules)
 
+-- COLOR SCHEME
+modules.theme.color_scheme('edge')
+
 -- AUTOCMDS
 local au = require('utils.au')
 
