@@ -35,6 +35,14 @@ au.VimEnter = function ()
 	end
 end
 
+au.group('YankHighlight', {
+	{
+		'TextYankPost',
+		'*',
+		vim.highlight.on_yank
+	}
+})
+
 -- KEYMAPS
 
 -- write only if changed
@@ -128,3 +136,44 @@ key.map { 'n', '<C-{>', modules.finder.prev_quickfixes_file }
 key.map {  'n', '<C-o>', modules.finder.find_projects }
 -- Todos
 key.map { 'n', '<C-t>', modules.finder.find_todos }
+
+--Remap for dealing with word wrap
+vim.api.nvim_set_keymap('n', 'k', "v:count == 0 ? 'gk' : 'k'", { noremap = true, expr = true, silent = true })
+vim.api.nvim_set_keymap('n', 'j', "v:count == 0 ? 'gj' : 'j'", { noremap = true, expr = true, silent = true })
+
+
+-- Join lines and restore cursor location
+key.map { "n", "J", "mjJ`j" }
+
+-- Yank until the end of line  (note: this is now a default on master)
+-- TODO: add o map for all. Ex: yaa to select all
+-- vim.api.nvim_set_keymap('n', 'Y', 'y$', { noremap = true })
+-- vim.api.nvim_set_keymap('n', 'YY', ':%y<CR>', { silent = true, noremap = true })
+
+-- Moving lines with ALT key
+-- see https://vim.fandom.com/wiki/Moving_lines_up_or_down#Reordering_up_to_nine_lines
+key.map { 'n', '<A-j>', modules.editor.move_line_down }
+key.map { 'n', '<A-k>', modules.editor.move_line_up }
+key.map { 'i', '<A-j>', function ()
+	key.input '<ESC>'
+	modules.editor.move_line_down()
+	key.input 'gi'
+end }
+key.map { 'i', '<A-k>', function ()
+	key.input '<ESC>'
+	modules.editor.move_line_up()
+	key.input 'gi'
+end }
+key.map { 'v', '<A-j>', modules.editor.move_selected_lines_down }
+key.map { 'v', '<A-k>', modules.editor.move_selected_lines_up }
+
+
+-- Replace word under cursor in buffer
+key.map { 'n', '<leader>sr', modules.editor.replace_current_word_in_buffer }
+-- Replace word under cursor in line
+key.map { 'n', '<leader>sl', modules.editor.replace_current_word_in_line }
+
+key.map { "n", "<leader>/", modules.editor.comment_line }
+key.map { "x", "<leader>/", modules.editor.comment_selection }
+key.map { 'n', '<leader><space>' , modules.editor.find_cursor }
+
