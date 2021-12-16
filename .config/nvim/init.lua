@@ -1,4 +1,6 @@
-local modules = require('modules') local au = require('utils.au') local key = require('utils.key')
+local modules = require('modules')
+local au = require('utils.au')
+local key = require('utils.key')
 local config = require('config')
 -- INITIALISATION
 
@@ -45,7 +47,7 @@ au.group('YankHighlight', {
 })
 
 -- KEYMAPS
-
+key.map { "n", "<Leader>n", "<cmd>enew<CR>" }
 -- write only if changed
 key.map { "n", "<Leader>w", ":up<CR>", silent = false }
 -- quit (or close window)
@@ -79,6 +81,22 @@ key.map { "n", "J", "G" }
 key.map { "n", "<CR>", "O<ESC>j"}
 key.map { "n", "<A-CR>", "o<ESC>k"}
 
+-- Keep search results centred
+key.map { "n", "n", "nzzzv" }
+key.map { "n", "N", "Nzzzv" }
+--After searching, pressing escape stops the highlight
+key.map { "n", "\\", ":noh<CR><ESC>", noremap = false }
+
+-- Easier split mappings
+key.map { "n", "<Leader><Down>", "<C-W><C-J>" }
+key.map { "n", "<Leader><Up>", "<C-W><C-K>" }
+key.map { "n", "<Leader><Right>", "<C-W><C-L>" }
+key.map { "n", "<Leader><Left>", "<C-W><C-H>" }
+key.map { "n", "<Leader>;", "<C-W>R" }
+key.map { "n", "<Leader>[", "<C-W>_" }
+key.map { "n", "<Leader>]", "<C-W>|" }
+key.map { "n", "<Leader>=", "<C-W>=" }
+
 -- Intellisense
 key.map { "n", "<C-Space>", modules.intellisense.open_code_actions }
 key.map { "n", "<leader>b", modules.intellisense.prettier_format }
@@ -105,40 +123,44 @@ key.map { 'n', 'gh', modules.git.show_hunk_preview }
 key.map { 'n', ']c', modules.git.next_hunk_preview ']c' }
 key.map { 'n', '[c', modules.git.prev_hunk_preview '[c' }
 
+-- Finder
 key.map { 'n', '<C-p>', modules.finder.find_files }
-key.map { 'n', '<C-b>', modules.finder.browse_files }
-key.map { 'n', '<C-f>', modules.finder.find_in_files }
-key.map { 'n', '<leader>f', modules.finder.find_in_buffer }
-key.map { 'n', '<leader>f', modules.finder.find_buffers }
-
--- Neoclip keybindings
+key.map { 'n', '<C-A-p>', modules.finder.find_commands }
+key.map { 'n', '<C-o>', modules.finder.browse_files }
+key.map { 'n', '<C-A-o>', modules.finder.find_projects }
+key.map { 'n', '<C-f>', modules.finder.find_in_buffer }
+key.map { 'n', '<C-A-f>', modules.finder.find_in_files }
 key.map { 'n', '<C-y>', modules.finder.find_yanks }
+key.map { 'n', '<C-h>', modules.finder.find_in_documentation }
+key.map { 'n', '<C-z>', modules.finder.find_commands }
+key.map { 'n', '<C-TAB>', modules.finder.find_buffers }
+
 -- Quickfix and location lists keybindings
-key.map { 'n', '<C-c>', modules.finder.toggle_quickfixes }
-key.map { 'n', '<leader>c', modules.finder.jump_to_quickfixes }
-key.map { 'n', '<C-]>', modules.finder.next_quickfix }
-key.map { 'n', '<C-[>', modules.finder.prev_quickfix }
+key.map { 'n', '<C-c>', modules.core.toggle_quickfixes }
+key.map { 'n', '<leader>c', modules.core.jump_to_quickfixes }
+key.map { 'n', '<C-]>', modules.core.next_quickfix }
+key.map { 'n', '<C-[>', modules.core.prev_quickfix }
 -- TODO: these mappings are not working
-key.map { 'n', '<C-}>', modules.finder.next_quickfixes_file }
-key.map { 'n', '<C-{>', modules.finder.prev_quickfixes_file }
+key.map { 'n', '<C-}>', modules.core.next_quickfixes_file }
+key.map { 'n', '<C-{>', modules.core.prev_quickfixes_file }
 -- key.map { 'n', '<C-c>', '<Plug>(qf_qf_toggle)' }
 
--- Project keybindings
-key.map {  'n', '<C-o>', modules.finder.find_projects }
 -- Todos
 key.map { 'n', '<C-t>', modules.finder.find_todos }
 
 --Remap for dealing with word wrap
-key.map { 'n', 'k', "v:count == 0 ? 'gk' : 'k'", expr = true }
+key.map { 'n', 'k', "v:count == 0 ? 'gk' : 'k'", expr = true  }
 key.map { 'n', 'j', "v:count == 0 ? 'gj' : 'j'", expr = true }
 
 -- Join lines and restore cursor location
 -- key.map { "n", "J", "mjJ`j" }
 
 -- Yank until the end of line  (note: this is now a default on master)
--- TODO: add o map for all. Ex: yaa to select all
--- vim.api.nvim_set_keymap('n', 'Y', 'y$', { noremap = true })
--- vim.api.nvim_set_keymap('n', 'YY', ':%y<CR>', { silent = true, noremap = true })
+key.map { 'n', 'Y', 'y$' }
+-- Easy select all of file
+key.map { "n", "<Leader>a", "ggVG<c-$>" }
+-- Make visual yanks place the cursor back where started
+key.map { "v", "y", "ygv<Esc>" }
 
 -- Moving lines with ALT key
 -- see https://vim.fandom.com/wiki/Moving_lines_up_or_down#Reordering_up_to_nine_lines
