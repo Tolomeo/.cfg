@@ -1,14 +1,17 @@
 local config = require('config')
 local modules = require('modules')
+local au = require('utils.au')
+local key = require('utils.key')
 
 -- INITIALISATION
+
 config.setup(modules)
 
 -- COLOR SCHEME
-modules.theme.color_scheme('edge')
+
+modules.theme.color_scheme('rose-pine')
 
 -- AUTOCMDS
-local au = require('utils.au')
 
 au.group('NvimConfigChange', {
 	{
@@ -25,13 +28,14 @@ au.group('SpellCheck', {
 		'setlocal spell'
 	}
 })
--- Opening the file browser on startup when nvim is opened against a directory
-au.VimEnter = function()
-	if vim.fn.isdirectory(vim.fn.expand('%:p')) > 0 then require 'telescope'.extensions.file_browser.file_browser({ hidden = true }) end
+
+au.VimEnter = function ()
+	if vim.fn.isdirectory(vim.fn.expand('%:p')) > 0 then
+		modules.finder.browse_files()
+	end
 end
 
 -- KEYMAPS
-local key = require('utils.key')
 
 -- write only if changed
 key.map { "n", "<Leader>w", ":up<CR>", silent = false }

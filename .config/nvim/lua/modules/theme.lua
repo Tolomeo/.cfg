@@ -5,6 +5,7 @@ M.plugins = {
 	'navarasu/onedark.nvim',
 	'sainnhe/edge',
 	'Shatur/neovim-ayu',
+	'rose-pine/neovim',
 	{
   'nvim-lualine/lualine.nvim',
    requires = {'kyazdani42/nvim-web-devicons', opt = true}
@@ -13,7 +14,7 @@ M.plugins = {
 
 function M.setup()
 	-- Statusbar
-	require'lualine'.setup {
+	require('lualine').setup {
 		options = {
 			icons_enabled = true,
 			theme = 'auto',
@@ -49,11 +50,12 @@ M.color_scheme = setmetatable({
 		vim.g.nord_borders = true
 		vim.g.nord_disable_background = true
 		vim.cmd [[colorscheme nord]]
+		require('lualine').setup {options = {theme = 'nord' }}
 	end,
 	onedark = function ()
 		vim.g.onedark_transparent_background = true
-		vim.g.onedark_style = 'darker'
 		vim.cmd [[colorscheme onedark]]
+		require('lualine').setup {options = {theme = 'onedark' }}
 	end,
 	edge = function ()
 		vim.g.edge_transparent_background = true
@@ -61,16 +63,24 @@ M.color_scheme = setmetatable({
 		vim.g.edge_diagnostic_text_highlight = true
 		vim.cmd [[colorscheme edge]]
 	end,
-	ayu_dark = function ()
-		vim.g.ayucolor = 'dark'
+	ayu = function ()
 		require('ayu').colorscheme()
 		require('ayu').setup({ mirage = false, overrides = {} })
+		require('lualine').setup {options = {theme = 'ayu_dark' }}
+	end,
+	['rose-pine'] = function ()
+		vim.g.rose_pine_variant = 'main'
+		vim.g.rose_pine_disable_background = true
+		vim.g.rose_pine_disable_italics = true
+		vim.g.rose_pine_bold_vertical_split_line = true
+		vim.cmd [[colorscheme rose-pine]]
+		require('lualine').setup {options = {theme = 'rose-pine' }}
 	end
 }, {
-		__call = function (_, themeName)
-			M.color_scheme[themeName]()
-			require'lualine'.setup {options = {theme = themeName }}
-		end
+	__call = function (color_schemes, scheme_name)
+		if (color_schemes[scheme_name] == nil ) then return end
+		color_schemes[scheme_name]()
+	end
 })
 
 return M
