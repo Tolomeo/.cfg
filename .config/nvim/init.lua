@@ -1,8 +1,5 @@
+local modules = require('modules') local au = require('utils.au') local key = require('utils.key')
 local config = require('config')
-local modules = require('modules')
-local au = require('utils.au')
-local key = require('utils.key')
-
 -- INITIALISATION
 
 config.setup(modules)
@@ -13,6 +10,7 @@ modules.theme.color_scheme('rose-pine')
 
 -- AUTOCMDS
 
+-- Recompiling config whenever something changes
 au.group('NvimConfigChange', {
 	{
 		'BufWritePost',
@@ -21,6 +19,7 @@ au.group('NvimConfigChange', {
 	}
 })
 
+-- Spellchecking only some files
 au.group('SpellCheck', {
 	{
 		{'BufRead','BufNewFile'},
@@ -29,12 +28,14 @@ au.group('SpellCheck', {
 	}
 })
 
+-- Opening file browser when nvim is opened against a directory
 au.VimEnter = function ()
 	if vim.fn.isdirectory(vim.fn.expand('%:p')) > 0 then
 		modules.finder.browse_files()
 	end
 end
 
+-- Yank visual feedback
 au.group('YankHighlight', {
 	{
 		'TextYankPost',
@@ -60,20 +61,21 @@ key.map { "i", "<right>", "<nop>" }
 key.map { "i", "<up>", "<nop>" }
 key.map { "i", "<down>", "<nop>" }
 
--- We lost 'J'oin lines, that's a good one we want to keep
-key.map { "n", "M", "J" }
-
 -- Movement multipliers
-key.map { "n", "H", "b" }
-key.map { "n", "<A-h>", "0" }
-key.map { "n", "L", "w" }
-key.map { "n", "<A-l>", "$" }
-key.map { "n", "J", "<C-d>" }
--- key.map { "n", "<A-j>", "G" }
-key.map { "n", "K", "<C-u>" }
--- key.map { "n", "<A-k>", "gg" }
+-- Left
+key.map { "n", "<A-h>", "b" }
+key.map { "n", "H", "0" }
+-- Right
+key.map { "n", "<A-l>", "w" }
+key.map { "n", "L", "$" }
+-- Up
+key.map { "n", "<A-k>", "(" }
+key.map { "n", "K", "gg" }
+-- Down
+key.map { "n", "<A-j>", ")" }
+key.map { "n", "J", "G" }
 
--- Adding empty lines in normal mode
+-- Adding empty lines in normal mode with enter
 key.map { "n", "<CR>", "O<ESC>j"}
 key.map { "n", "<A-CR>", "o<ESC>k"}
 
@@ -88,7 +90,7 @@ key.map { 'i', '<C-Space>', modules.intellisense.open_suggestions }
 key.map { "i", "<TAB>", modules.intellisense.next_suggestion '<TAB>' }
 key.map { "i", "<S-TAB>",modules.intellisense.prev_suggestion }
 key.map { "i", "<CR>", modules.intellisense.confirm_suggestion }
--- git
+
 -- Git blame
 key.map { 'n', 'gb', modules.git.git_blame }
 -- Git log
@@ -103,22 +105,11 @@ key.map { 'n', 'gh', modules.git.show_hunk_preview }
 key.map { 'n', ']c', modules.git.next_hunk_preview ']c' }
 key.map { 'n', '[c', modules.git.prev_hunk_preview '[c' }
 
--- Keybindings
--- see https://github.com/albingroen/quick.nvim/blob/main/lua/telescope-config.lua
 key.map { 'n', '<C-p>', modules.finder.find_files }
 key.map { 'n', '<C-b>', modules.finder.browse_files }
 key.map { 'n', '<C-f>', modules.finder.find_in_files }
 key.map { 'n', '<leader>f', modules.finder.find_in_buffer }
 key.map { 'n', '<leader>f', modules.finder.find_buffers }
---Add leader shortcut
--- vim.api.nvim_set_keymap('n', '<leader><space>', [[<cmd>lua require('telescope.builtin').buffers()<CR>]], { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>sf', [[<cmd>lua require('telescope.builtin').find_files({previewer = false})<CR>]], { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>sh', [[<cmd>lua require('telescope.builtin').help_tags()<CR>]], { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>st', [[<cmd>lua require('telescope.builtin').tags()<CR>]], { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>sd', [[<cmd>lua require('telescope.builtin').grep_string()<CR>]], { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>sp', [[<cmd>lua require('telescope.builtin').live_grep()<CR>]], { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>so', [[<cmd>lua require('telescope.builtin').tags{ only_current_buffer = true }<CR>]], { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<CR>]], { noremap = true, silent = true })
 
 -- Neoclip keybindings
 key.map { 'n', '<C-y>', modules.finder.find_yanks }
@@ -138,12 +129,11 @@ key.map {  'n', '<C-o>', modules.finder.find_projects }
 key.map { 'n', '<C-t>', modules.finder.find_todos }
 
 --Remap for dealing with word wrap
-vim.api.nvim_set_keymap('n', 'k', "v:count == 0 ? 'gk' : 'k'", { noremap = true, expr = true, silent = true })
-vim.api.nvim_set_keymap('n', 'j', "v:count == 0 ? 'gj' : 'j'", { noremap = true, expr = true, silent = true })
-
+key.map { 'n', 'k', "v:count == 0 ? 'gk' : 'k'", expr = true }
+key.map { 'n', 'j', "v:count == 0 ? 'gj' : 'j'", expr = true }
 
 -- Join lines and restore cursor location
-key.map { "n", "J", "mjJ`j" }
+-- key.map { "n", "J", "mjJ`j" }
 
 -- Yank until the end of line  (note: this is now a default on master)
 -- TODO: add o map for all. Ex: yaa to select all
@@ -152,28 +142,38 @@ key.map { "n", "J", "mjJ`j" }
 
 -- Moving lines with ALT key
 -- see https://vim.fandom.com/wiki/Moving_lines_up_or_down#Reordering_up_to_nine_lines
-key.map { 'n', '<A-j>', modules.editor.move_line_down }
-key.map { 'n', '<A-k>', modules.editor.move_line_up }
-key.map { 'i', '<A-j>', function ()
+key.map { 'n', '<C-j>', modules.editor.move_line_down }
+key.map { 'n', '<C-k>', modules.editor.move_line_up }
+key.map { 'i', '<C-j>', function ()
 	key.input '<ESC>'
 	modules.editor.move_line_down()
 	key.input 'gi'
 end }
-key.map { 'i', '<A-k>', function ()
+key.map { 'i', '<C-k>', function ()
 	key.input '<ESC>'
 	modules.editor.move_line_up()
 	key.input 'gi'
 end }
-key.map { 'v', '<A-j>', modules.editor.move_selected_lines_down }
-key.map { 'v', '<A-k>', modules.editor.move_selected_lines_up }
+key.map { 'v', '<C-j>', modules.editor.move_selected_lines_down }
+key.map { 'v', '<C-k>', modules.editor.move_selected_lines_up }
 
 
 -- Replace word under cursor in buffer
 key.map { 'n', '<leader>sr', modules.editor.replace_current_word_in_buffer }
 -- Replace word under cursor in line
 key.map { 'n', '<leader>sl', modules.editor.replace_current_word_in_line }
-
+-- Commenting lines
 key.map { "n", "<leader>/", modules.editor.comment_line }
 key.map { "x", "<leader>/", modules.editor.comment_selection }
 key.map { 'n', '<leader><space>' , modules.editor.find_cursor }
 
+
+--Add leader shortcut
+-- vim.api.nvim_set_keymap('n', '<leader><space>', [[<cmd>lua require('telescope.builtin').buffers()<CR>]], { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>sf', [[<cmd>lua require('telescope.builtin').find_files({previewer = false})<CR>]], { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>sh', [[<cmd>lua require('telescope.builtin').help_tags()<CR>]], { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>st', [[<cmd>lua require('telescope.builtin').tags()<CR>]], { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>sd', [[<cmd>lua require('telescope.builtin').grep_string()<CR>]], { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>sp', [[<cmd>lua require('telescope.builtin').live_grep()<CR>]], { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>so', [[<cmd>lua require('telescope.builtin').tags{ only_current_buffer = true }<CR>]], { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<CR>]], { noremap = true, silent = true })
