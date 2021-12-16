@@ -25,6 +25,10 @@ au.group('SpellCheck', {
 		'setlocal spell'
 	}
 })
+-- Opening the file browser on startup when nvim is opened against a directory
+au.VimEnter = function()
+	if vim.fn.isdirectory(vim.fn.expand('%:p')) > 0 then require 'telescope'.extensions.file_browser.file_browser({ hidden = true }) end
+end
 
 -- KEYMAPS
 local key = require('utils.key')
@@ -86,3 +90,37 @@ key.map { 'n', 'gh', modules.git.show_hunk_preview }
 -- Cycling through hunks with TAB and S-TAB
 key.map { 'n', ']c', modules.git.next_hunk_preview ']c' }
 key.map { 'n', '[c', modules.git.prev_hunk_preview '[c' }
+
+-- Keybindings
+-- see https://github.com/albingroen/quick.nvim/blob/main/lua/telescope-config.lua
+key.map { 'n', '<C-p>', modules.finder.find_files }
+key.map { 'n', '<C-b>', modules.finder.browse_files }
+key.map { 'n', '<C-f>', modules.finder.find_in_files }
+key.map { 'n', '<leader>f', modules.finder.find_in_buffer }
+key.map { 'n', '<leader>f', modules.finder.find_buffers }
+--Add leader shortcut
+-- vim.api.nvim_set_keymap('n', '<leader><space>', [[<cmd>lua require('telescope.builtin').buffers()<CR>]], { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>sf', [[<cmd>lua require('telescope.builtin').find_files({previewer = false})<CR>]], { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>sh', [[<cmd>lua require('telescope.builtin').help_tags()<CR>]], { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>st', [[<cmd>lua require('telescope.builtin').tags()<CR>]], { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>sd', [[<cmd>lua require('telescope.builtin').grep_string()<CR>]], { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>sp', [[<cmd>lua require('telescope.builtin').live_grep()<CR>]], { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>so', [[<cmd>lua require('telescope.builtin').tags{ only_current_buffer = true }<CR>]], { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<CR>]], { noremap = true, silent = true })
+
+-- Neoclip keybindings
+key.map { 'n', '<C-y>', modules.finder.find_yanks }
+-- Quickfix and location lists keybindings
+key.map { 'n', '<C-c>', modules.finder.toggle_quickfixes }
+key.map { 'n', '<leader>c', modules.finder.jump_to_quickfixes }
+key.map { 'n', '<C-]>', modules.finder.next_quickfix }
+key.map { 'n', '<C-[>', modules.finder.prev_quickfix }
+-- TODO: these mappings are not working
+key.map { 'n', '<C-}>', modules.finder.next_quickfixes_file }
+key.map { 'n', '<C-{>', modules.finder.prev_quickfixes_file }
+-- key.map { 'n', '<C-c>', '<Plug>(qf_qf_toggle)' }
+
+-- Project keybindings
+key.map {  'n', '<C-o>', modules.finder.find_projects }
+-- Todos
+key.map { 'n', '<C-t>', modules.finder.find_todos }

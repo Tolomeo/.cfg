@@ -1,27 +1,19 @@
-local au = require('utils.au')
+local key = require('utils.key')
 local M = {}
 
 M.plugins = {
+	-- General qf and loc lists improvements
+	{ 'romainl/vim-qf', setup = function() vim.api.nvim_set_var('qf_mapping_ack_style', true) end },
 	-- UI to select things (files, grep results, open buffers...)
 	{ 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } },
-	{ "nvim-telescope/telescope-file-browser.nvim" },
-	{ "AckslD/nvim-neoclip.lua", config = function()
-		require('neoclip').setup()
-	end },
+	"nvim-telescope/telescope-file-browser.nvim",
 	'nvim-telescope/telescope-project.nvim',
+	{ "AckslD/nvim-neoclip.lua", config = function() require('neoclip').setup() end },
 	{
 		"folke/todo-comments.nvim",
 		requires = "nvim-lua/plenary.nvim",
-		config = function()
-			require("todo-comments").setup {
-			}
-		end },
-
-	-- General qf and loc lists improvements
-	{ 'romainl/vim-qf', setup = function()
-		vim.api.nvim_set_var('qf_mapping_ack_style', true)
-	end }
-
+		config = function() require("todo-comments").setup {} end
+	},
 }
 
 function M.setup()
@@ -41,60 +33,82 @@ function M.setup()
 			},
 		},
 	}
-	-- Extensions
+	-- Telescope extensions
 	require"telescope".load_extension "file_browser"
 	require'telescope'.load_extension 'neoclip'
 	require'telescope'.load_extension 'project'
-	-- Keybindings
-	-- see https://github.com/albingroen/quick.nvim/blob/main/lua/telescope-config.lua
-	vim.api.nvim_set_keymap('n', '<C-p>', "<cmd>lua require('telescope.builtin').find_files()<CR>", { noremap = true })
-	vim.api.nvim_set_keymap(
-		"n",
-		"<C-b>",
-		"<cmd>lua require 'telescope'.extensions.file_browser.file_browser({ hidden = true })<CR>",
-		{noremap = true}
-	)
-	vim.api.nvim_set_keymap('n', '<C-f>', "<cmd>lua require('telescope.builtin').live_grep()<CR>", { noremap = true })
-	vim.api.nvim_set_keymap('n', '<leader>f', [[<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find({previewer = false})<CR>]], { noremap = true, silent = true })
-	vim.api.nvim_set_keymap('n', '<C-Tab>', "<cmd>lua require('telescope.builtin').buffers()<CR>", { noremap = true })
-	-- vim.api.nvim_set_keymap('n', '<C-f>', "<cmd>lua require('telescope.builtin').file_browser()<CR>", { noremap = true })
-	--Add leader shortcuts
-	-- vim.api.nvim_set_keymap('n', '<leader><space>', [[<cmd>lua require('telescope.builtin').buffers()<CR>]], { noremap = true, silent = true })
-	-- vim.api.nvim_set_keymap('n', '<leader>sf', [[<cmd>lua require('telescope.builtin').find_files({previewer = false})<CR>]], { noremap = true, silent = true })
-	-- vim.api.nvim_set_keymap('n', '<leader>sh', [[<cmd>lua require('telescope.builtin').help_tags()<CR>]], { noremap = true, silent = true })
-	-- vim.api.nvim_set_keymap('n', '<leader>st', [[<cmd>lua require('telescope.builtin').tags()<CR>]], { noremap = true, silent = true })
-	-- vim.api.nvim_set_keymap('n', '<leader>sd', [[<cmd>lua require('telescope.builtin').grep_string()<CR>]], { noremap = true, silent = true })
-	-- vim.api.nvim_set_keymap('n', '<leader>sp', [[<cmd>lua require('telescope.builtin').live_grep()<CR>]], { noremap = true, silent = true })
-	-- vim.api.nvim_set_keymap('n', '<leader>so', [[<cmd>lua require('telescope.builtin').tags{ only_current_buffer = true }<CR>]], { noremap = true, silent = true })
-	-- vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<CR>]], { noremap = true, silent = true })
+end
 
-	-- Neoclip keybindings
-	vim.api.nvim_set_keymap('n', '<C-y>', "<cmd>lua require('telescope').extensions.neoclip.default()<CR>", { silent = true })
+function M.find_files()
+	require('telescope.builtin').find_files()
+end
 
-	-- Quickfix and location lists keybindings
-	vim.api.nvim_set_keymap('n', '<C-]>', '<Plug>(qf_qf_next)', {})
-	vim.api.nvim_set_keymap('n', '<C-[>', '<Plug>(qf_qf_previous)', {})
-	vim.api.nvim_set_keymap('n', '<C-}>', '<Plug>(qf_qf_next_file)', {})
-	vim.api.nvim_set_keymap('n', '<C-{>', '<Plug>(qf_qf_previous_file)', {})
-	-- vim.api.nvim_set_keymap('n', '<C-c>', '<Plug>(qf_qf_toggle_stay)', {})
-	vim.api.nvim_set_keymap('n', '<C-c>', '<Plug>(qf_qf_toggle)', {})
-	vim.api.nvim_set_keymap('n', '<leader>c', '<Plug>(qf_qf_switch)', {})
+function M.browse_files()
+	require('telescope').extensions.file_browser.file_browser({ hidden = true })
+end
 
-	-- Project keybindings
-	vim.api.nvim_set_keymap(
-		'n',
-		'<C-o>',
-		":lua require'telescope'.extensions.project.project{ display_type = 'full' }<CR>",
-		{noremap = true, silent = true}
-	)
+-- vim.api.nvim_set_keymap('n', '<C-f>', "<cmd>lua require('telescope.builtin').live_grep()<CR>", { noremap = true })
+function M.find_in_files()
+	require('telescope.builtin').live_grep()
+end
+-- vim.api.nvim_set_keymap('n', '<leader>f', [[<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find({previewer = false})<CR>]], { noremap = true, silent = true })
+function M.find_in_buffer()
+	require('telescope.builtin').current_buffer_fuzzy_find()
+end
+-- vim.api.nvim_set_keymap('n', '<C-Tab>', "<cmd>lua require('telescope.builtin').buffers()<CR>", { noremap = true })
+function M.find_buffers()
+	require('telescope.builtin').buffers()
+end
 
-	vim.api.nvim_set_keymap('n', '<C-t>', '<cmd>TodoTelescope<CR>', { silent = true, noremap = true })
+-- Project keybindings
+--[[ vim.api.nvim_set_keymap(
+	'n',
+	'<C-o>',
+	":lua require'telescope'.extensions.project.project{ display_type = 'full' }<CR>",
+	{noremap = true, silent = true}
+) ]]
+function M.find_projects()
+	require'telescope'.extensions.project.project { display_type = 'full' }
+end
 
+-- vim.api.nvim_set_keymap('n', '<C-y>', "<cmd>lua require('telescope').extensions.neoclip.default()<CR>", { silent = true })
+function M.find_yanks()
+	require('telescope').extensions.neoclip.default()
+end
 
-	-- Opening the file browser on startup when nvim is opened against a directory
-	au.VimEnter = function()
-		if vim.fn.isdirectory(vim.fn.expand('%:p')) > 0 then require 'telescope'.extensions.file_browser.file_browser({ hidden = true }) end
-	end
+-- vim.api.nvim_set_keymap('n', '<C-t>', '<cmd>TodoTelescope<CR>', { silent = true, noremap = true })
+function M.find_todos()
+	key.input(':TodoTelescope<CR>')
+end
+
+-- vim.api.nvim_set_keymap('n', '<C-c>', '<Plug>(qf_qf_toggle_stay)', {})
+function M.toggle_quickfixes()
+	key.input('<Plug>(qf_qf_toggle', 'm')
+end
+
+-- vim.api.nvim_set_keymap('n', '<leader>c', '<Plug>(qf_qf_switch)', {})
+function M.jump_to_quickfixes()
+	key.input( '<Plug>(qf_qf_switch)', 'm')
+end
+
+-- vim.api.nvim_set_keymap('n', '<C-]>', '<Plug>(qf_qf_next)', {})
+function M.next_quickfix()
+	key.input( '<Plug>(qf_qf_next)', 'm')
+end
+
+-- vim.api.nvim_set_keymap('n', '<C-[>', '<Plug>(qf_qf_previous)', {})
+function M.prev_quickfix()
+	key.input( '<Plug>(qf_qf_previous)', 'm')
+end
+
+-- vim.api.nvim_set_keymap('n', '<C-}>', '<Plug>(qf_qf_next_file)', {})
+function M.next_quickfixes_file()
+	key.input( '<Plug>(qf_qf_next_file)', 'm')
+end
+
+-- vim.api.nvim_set_keymap('n', '<C-{>', '<Plug>(qf_qf_previous_file)', {}) ]]
+function M.prev_quickfixes_file()
+	key.input( '<Plug>(qf_qf_previous_file)', 'm')
 end
 
 return M

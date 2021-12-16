@@ -4,6 +4,7 @@ M.plugins = {
 	'shaunsingh/nord.nvim',
 	'navarasu/onedark.nvim',
 	'sainnhe/edge',
+	'Shatur/neovim-ayu',
 	{
   'nvim-lualine/lualine.nvim',
    requires = {'kyazdani42/nvim-web-devicons', opt = true}
@@ -23,7 +24,7 @@ function M.setup()
 		},
 		sections = {
 			lualine_a = {'mode'},
-			lualine_b = {'branch', { 'diff', colored = false }, { 'diagnostics', sources = { 'coc'}, colored = false, update_in_insert = true } },
+			lualine_b = {'branch', { 'diff', colored = false }, { 'diagnostics', sources = { 'coc' }, colored = false, update_in_insert = true } },
 			lualine_c = {'filename'},
 			lualine_x = {'encoding', 'fileformat', 'filetype'},
 			lualine_y = {'progress'},
@@ -56,9 +57,14 @@ M.color_scheme = setmetatable({
 	end,
 	edge = function ()
 		vim.g.edge_transparent_background = true
-		vim.g.edge_diagnostic_text_highlight = true
 		vim.g.edge_better_performance = true
+		vim.g.edge_diagnostic_text_highlight = true
 		vim.cmd [[colorscheme edge]]
+	end,
+	ayu_dark = function ()
+		vim.g.ayucolor = 'dark'
+		require('ayu').colorscheme()
+		require('ayu').setup({ mirage = false, overrides = {} })
 	end
 }, {
 		__call = function (_, themeName)
