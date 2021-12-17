@@ -2,6 +2,7 @@ local modules = require('modules')
 local au = require('utils.au')
 local key = require('utils.key')
 local config = require('config')
+
 -- INITIALISATION
 
 config.setup(modules)
@@ -101,13 +102,19 @@ key.map { "n", "<Leader>=", "<C-W>=" }
 key.map { "n", "<C-Space>", modules.intellisense.open_code_actions }
 key.map { "n", "<leader>b", modules.intellisense.prettier_format }
 key.map { "n", "<leader>l", modules.intellisense.eslint_fix }
-key.map { "n", "<leader>d", modules.intellisense.go_to_definition }
+key.map { "n", "<leader>gd", modules.intellisense.go_to_definition }
+key.map { "n", "<leader>gt", modules.intellisense.go_to_type_definition }
+key.map { "n", "<leader>gi", modules.intellisense.go_to_implementation }
+key.map { "n", "<leader>K", modules.intellisense.show_references }
 key.map { "n", "<leader>k", modules.intellisense.show_symbol_doc }
-key.map { "n", "<leader>rn", modules.intellisense.rename_symbol }
+key.map { "n", "<leader>r", modules.intellisense.rename_symbol }
 key.map { 'i', '<C-Space>', modules.intellisense.open_suggestions }
 key.map { "i", "<TAB>", modules.intellisense.next_suggestion '<TAB>' }
 key.map { "i", "<S-TAB>",modules.intellisense.prev_suggestion }
 key.map { "i", "<CR>", modules.intellisense.confirm_suggestion }
+key.map { "n", "<leader>d", modules.intellisense.show_diagnostics }
+key.map { "n", "<leader>[d", modules.intellisense.next_diagnostic }
+key.map { "n", "<leader>]d", modules.intellisense.prev_diagnostic }
 
 -- Git blame
 key.map { 'n', 'gb', modules.git.git_blame }
@@ -133,16 +140,16 @@ key.map { 'n', '<C-A-f>', modules.finder.find_in_files }
 key.map { 'n', '<C-y>', modules.finder.find_yanks }
 key.map { 'n', '<C-h>', modules.finder.find_in_documentation }
 key.map { 'n', '<C-z>', modules.finder.find_commands }
-key.map { 'n', '<C-TAB>', modules.finder.find_buffers }
+key.map { 'n', '<C-b>', modules.finder.find_buffers }
 
 -- Quickfix and location lists keybindings
-key.map { 'n', '<C-c>', modules.core.toggle_quickfixes }
-key.map { 'n', '<leader>c', modules.core.jump_to_quickfixes }
-key.map { 'n', '<C-]>', modules.core.next_quickfix }
-key.map { 'n', '<C-[>', modules.core.prev_quickfix }
+key.map { 'n', '<C-c>', modules.core.toggle_quickfix_list }
+key.map { 'n', '<leader>c', modules.core.jump_to_quickfix_list }
+key.map { 'n', '<C-]>', modules.core.next_list_item }
+key.map { 'n', '<C-[>', modules.core.prev_list_item }
 -- TODO: these mappings are not working
-key.map { 'n', '<C-}>', modules.core.next_quickfixes_file }
-key.map { 'n', '<C-{>', modules.core.prev_quickfixes_file }
+key.map { 'n', '<C-A-]>', modules.core.next_quickfix_group }
+key.map { 'n', '<C-A-[>', modules.core.prev_quickfix_group }
 -- key.map { 'n', '<C-c>', '<Plug>(qf_qf_toggle)' }
 
 -- Todos
@@ -185,8 +192,8 @@ key.map { 'n', '<leader>sr', modules.editor.replace_current_word_in_buffer }
 -- Replace word under cursor in line
 key.map { 'n', '<leader>sl', modules.editor.replace_current_word_in_line }
 -- Commenting lines
-key.map { "n", "<leader>/", modules.editor.comment_line }
-key.map { "x", "<leader>/", modules.editor.comment_selection }
+key.map { "n", "<leader>\\", modules.editor.comment_line }
+key.map { "x", "<leader>\\", modules.editor.comment_selection }
 key.map { 'n', '<leader><space>' , modules.editor.find_cursor }
 
 

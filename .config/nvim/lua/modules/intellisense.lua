@@ -43,12 +43,36 @@ function M.go_to_definition()
 	return key.input('<Plug>(coc-definition)', 'm')
 end
 
+function M.go_to_type_definition()
+	return key.input('<Plug>(coc-type-definition)', 'm')
+end
+
+function M.go_to_implementation()
+	return key.input('<Plug>(coc-implementation)', 'm')
+end
+
+function M.show_references()
+	return key.input('<Plug>(coc-references)', 'm')
+end
+
 function M.show_symbol_doc()
 	return key.input(':call CocActionAsync("doHover")<CR>')
 end
 
 function M.rename_symbol()
 	return key.input('<Plug>(coc-rename)', 'm')
+end
+ 
+function M.show_diagnostics()
+	return key.input(':CocDiagnostics<CR>')
+end
+
+function M.next_diagnostic()
+	return key.input('<Plug>(coc-diagnostic-next)', 'm')
+end
+   
+function M.prev_diagnostic()
+	return key.input('<Plug>(coc-diagnostic-prev)', 'm')
 end
 
 -- TODO: move this check into core module
@@ -81,7 +105,7 @@ end
 function M.confirm_suggestion()
 	if(M.has_suggestions()) then
 		return key.feed(vim.fn['coc#_select_confirm']())
-  end
+	end
 
 	return key.feed(key.to_term_code '<C-G>u<CR>' .. vim.fn['coc#on_enter'](), 'n')
 end

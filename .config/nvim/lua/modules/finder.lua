@@ -34,9 +34,8 @@ function M.setup()
 	-- Telescope
 	require('telescope').setup {
 		defaults = {
-			defaults = {
-				color_devicons = true,
-			},
+			dynamic_preview_title = true,
+			color_devicons = true,
 			mappings = {
 				i = {},
 				n = {},
@@ -45,27 +44,22 @@ function M.setup()
 		pickers = {
 			find_files = {
 				theme = "dropdown",
-				previewer = false
 			},
-			find_buffers = {
+			buffers = {
 				theme = "dropdown",
-				previewer = false
 			},
 			commands = {
 				theme = "dropdown",
-				previewer = false
 			},
 			spell_suggest = {
 				theme = "cursor",
-				preview = false
+			},
+			help_tags = {
+				theme = 'dropdown'
 			}
 		},
-		extensions = {
-			neoclip = {
-				theme = "cursor"
-			}
-		}
 	}
+
 	-- Telescope extensions
 	require"telescope".load_extension "file_browser"
 	require'telescope'.load_extension 'neoclip'
