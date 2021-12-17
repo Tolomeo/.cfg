@@ -1,3 +1,4 @@
+local au = require('utils.au')
 local key = require('utils.key')
 local M = {}
 
@@ -15,6 +16,18 @@ M.plugins = {
 function M.setup()
 	-- Setting files/dirs to look for to understand what the root dir is
 	vim.api.nvim_set_var('rooter_patterns', {'=nvim', '.git', 'package.json' })
+	
+	-- Attaching additional commands to qf lists
+	-- TODO: completely migrate to lua syntax
+	au.group('CoreQFListAdditionalCommands', {
+		{
+			{'BufRead','BufNewFile'},
+			'quickfix',
+			function() 
+				vim.cmd [[command! -buffer -nargs=0 RejectAll lua require('modules.core').clear_list()]]
+			end
+		}
+	})
 end
 
 function M.toggle_location_list()
@@ -33,7 +46,7 @@ function M.toggle_quickfix_list()
 	key.input('<Plug>(qf_qf_toggle)', 'm')
 end
 
-function M.jump_to_quickfix_list()
+function M.jump_to_from_list()
 	key.input( '<Plug>(qf_qf_switch)', 'm')
 end
 
@@ -55,19 +68,41 @@ end
 
 -- the followings are inspired by https://github.com/romainl/vim-qf/pull/90/files
 
+function M.has_locations()
+	return #(vim.fn.getloclist(0)) > 0
+end
+
+function M.toggle_list()
+	if ((vim.fn['qf#IsLocWindowOpen'](0) ~= 0) or M.has_locations()) then 
+		M.toggle_location_list()
+	end
+
+	M.toggle_quickfix_list()
+end
+
 function M.next_list_item()
-	if vim.fn['qf#IsQfWindowOpen']() ~= 0 then
-		M.next_quickfix()
-	else
+	if (M.has_locations()) then 
 		M.next_location()
 	end
+
+	M.next_quickfix()
 end
 
 function M.prev_list_item()
-	if vim.fn['qf#IsQfWindowOpen']() ~= 0 then
-		M.prev_quickfix()
-	else
+	if (M.has_locations()) then 
 		M.prev_location()
+	end
+
+	M.prev_quickfix()
+end
+
+function M.clear_list() 
+	vim.fn['qf#SetList']({})
+
+	if(vim.fn['qf#IsLocWindow'](0)) ~= 0 then
+		M.toggle_location_list()
+	else
+		M.toggle_quickfix_list()
 	end
 end
 
