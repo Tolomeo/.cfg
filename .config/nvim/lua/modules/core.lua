@@ -16,14 +16,14 @@ M.plugins = {
 function M.setup()
 	-- Setting files/dirs to look for to understand what the root dir is
 	vim.api.nvim_set_var('rooter_patterns', {'=nvim', '.git', 'package.json' })
-	
+
 	-- Attaching additional commands to qf lists
 	-- TODO: completely migrate to lua syntax
 	au.group('CoreQFListAdditionalCommands', {
 		{
 			{'BufRead','BufNewFile'},
 			'quickfix',
-			function() 
+			function()
 				vim.cmd [[command! -buffer -nargs=0 RejectAll lua require('modules.core').clear_list()]]
 			end
 		}
@@ -73,7 +73,7 @@ function M.has_locations()
 end
 
 function M.toggle_list()
-	if ((vim.fn['qf#IsLocWindowOpen'](0) ~= 0) or M.has_locations()) then 
+	if ((vim.fn['qf#IsLocWindowOpen'](0) ~= 0) or M.has_locations()) then
 		M.toggle_location_list()
 	end
 
@@ -81,7 +81,7 @@ function M.toggle_list()
 end
 
 function M.next_list_item()
-	if (M.has_locations()) then 
+	if (M.has_locations()) then
 		M.next_location()
 	end
 
@@ -89,14 +89,14 @@ function M.next_list_item()
 end
 
 function M.prev_list_item()
-	if (M.has_locations()) then 
+	if (M.has_locations()) then
 		M.prev_location()
 	end
 
 	M.prev_quickfix()
 end
 
-function M.clear_list() 
+function M.clear_list()
 	vim.fn['qf#SetList']({})
 
 	if(vim.fn['qf#IsLocWindow'](0)) ~= 0 then

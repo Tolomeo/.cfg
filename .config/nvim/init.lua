@@ -192,12 +192,12 @@ key.map { 'i', '<C-k>', function ()
 	modules.editor.move_line_up()
 	key.input 'gi'
 end }
-key.map { 'v', '<C-j>', modules.editor.move_selected_lines_down }
-key.map { 'v', '<C-k>', modules.editor.move_selected_lines_up }
+key.map { 'v', '<C-j>', modules.editor.move_selection_down }
+key.map { 'v', '<C-k>', modules.editor.move_selection_up }
 
 
 -- Replace word under cursor in buffer
-key.map { 'n', '<leader>sr', modules.editor.replace_current_word_in_buffer }
+key.map { 'n', '<leader>sb', modules.editor.replace_current_word_in_buffer }
 -- Replace word under cursor in line
 key.map { 'n', '<leader>sl', modules.editor.replace_current_word_in_line }
 -- Commenting lines

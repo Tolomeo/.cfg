@@ -16,6 +16,8 @@ M.plugins = {
 	'windwp/nvim-autopairs',
 	-- Parentheses, brackets, quotes, XML tags
 	'tpope/vim-surround',
+	-- Change case and handles variants of a word
+	'tpope/vim-abolish',
 	-- Shows where your cursor moves
 	'edluffy/specs.nvim'
 }
@@ -160,12 +162,12 @@ function M.move_line_up()
 end
 
 -- vim.api.nvim_set_keymap('v', '<A-j>', ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
-function M.move_selected_lines_up()
+function M.move_selection_up()
 	key.input ":m '<-2<CR>gv=gv"
 end
 
 -- vim.api.nvim_set_keymap('v', '<A-k>', ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
-function M.move_selected_lines_down()
+function M.move_selection_down()
 	key.input ":m '>+1<CR>gv=gv"
 end
 
