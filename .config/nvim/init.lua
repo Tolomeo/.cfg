@@ -38,6 +38,15 @@ au.VimEnter = function ()
 	end
 end
 
+-- vim.cmd [[autocmd CursorHold * silent call CocActionAsync('highlight')]]
+au.group('CursorSymbolHighlight', {
+	{
+		'CursorHold',
+		'*',
+		modules.intellisense.highlight_symbol
+	}
+})
+
 -- Yank visual feedback
 au.group('YankHighlight', {
 	{

@@ -32,11 +32,11 @@ function M.open_code_actions()
 end
 
 function M.prettier_format()
-	return key.input(':CocCommand prettier.formatFile<CR>')
+	return vim.api.nvim_command('CocCommand prettier.formatFile')
 end
 
 function M.eslint_fix()
-	return key.input(':CocCommand eslint.executeAutofix<CR>')
+	return vim.api.nvim_command('CocCommand eslint.executeAutofix')
 end
 
 function M.go_to_definition()
@@ -56,15 +56,19 @@ function M.show_references()
 end
 
 function M.show_symbol_doc()
-	return key.input(':call CocActionAsync("doHover")<CR>')
+	return vim.api.nvim_command('call CocActionAsync("doHover")')
 end
 
 function M.rename_symbol()
 	return key.input('<Plug>(coc-rename)', 'm')
 end
- 
+
+function M.highlight_symbol()
+	return vim.api.nvim_command("call CocActionAsync('highlight')")
+end
+
 function M.show_diagnostics()
-	return key.input(':CocDiagnostics<CR>')
+	return vim.api.nvim_command('CocDiagnostics')
 end
 
 function M.next_diagnostic()
