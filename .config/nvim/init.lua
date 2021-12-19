@@ -147,7 +147,7 @@ key.map { 'n', '<C-A-o>', modules.finder.find_projects }
 key.map { 'n', '<C-f>', modules.finder.find_in_buffer }
 key.map { 'n', '<C-A-f>', modules.finder.find_in_files }
 key.map { 'n', '<C-y>', modules.finder.find_yanks }
-key.map { 'n', '<C-h>', modules.finder.find_in_documentation }
+key.map { 'n', '<F1>', modules.finder.find_in_documentation }
 key.map { 'n', '<C-z>', modules.finder.find_commands }
 key.map { 'n', '<C-b>', modules.finder.find_buffers }
 
@@ -178,7 +178,7 @@ key.map { "n", "<Leader>a", "ggVG<c-$>" }
 -- Make visual yanks place the cursor back where started
 key.map { "v", "y", "ygv<Esc>" }
 
--- Moving lines with ALT key
+-- Moving lines up and down
 -- see https://vim.fandom.com/wiki/Moving_lines_up_or_down#Reordering_up_to_nine_lines
 key.map { 'n', '<C-j>', modules.editor.move_line_down }
 key.map { 'n', '<C-k>', modules.editor.move_line_up }
@@ -195,6 +195,13 @@ end }
 key.map { 'v', '<C-j>', modules.editor.move_selection_down }
 key.map { 'v', '<C-k>', modules.editor.move_selection_up }
 
+-- Controlling indentation with C-h and C-l
+key.map { 'n', '<C-h>', '<<' }
+key.map { 'n', '<C-l>', '>>' }
+key.map { 'i', '<C-h>', '<C-d>' }
+key.map { 'i', '<C-l>', '<C-t>' }
+key.map { 'v', '<C-h>', '<gv' }
+key.map { 'v', '<C-l>', '>gv' }
 
 -- Replace word under cursor in buffer
 key.map { 'n', '<leader>sb', modules.editor.replace_current_word_in_buffer }
