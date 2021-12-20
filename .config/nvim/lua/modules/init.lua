@@ -1,5 +1,6 @@
 local modules = {
 	core = require('modules.core'),
+	quickfix = require('modules.quickfix'),
 	theme = require('modules.theme'),
 	editor = require('modules.editor'),
 	git = require('modules.git'),

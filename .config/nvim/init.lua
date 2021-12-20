@@ -152,14 +152,10 @@ key.map { 'n', '<C-z>', modules.finder.find_commands }
 key.map { 'n', '<C-b>', modules.finder.find_buffers }
 
 -- Quickfix and location lists keybindings
-key.map { 'n', '<C-c>', modules.core.toggle_list }
-key.map { 'n', '<leader>c', modules.core.jump_to_from_list }
-key.map { 'n', '<C-]>', modules.core.next_list_item }
-key.map { 'n', '<C-[>', modules.core.prev_list_item }
--- TODO: these mappings are not working
---[[ key.map { 'n', '<C-A-]>', modules.core.next_quickfix_group }
-key.map { 'n', '<C-A-[>', modules.core.prev_quickfix_group } ]]
--- key.map { 'n', '<C-c>', '<Plug>(qf_qf_toggle)' }
+key.map { 'n', '<C-c>', modules.quickfix.toggle }
+key.map { 'n', '<leader>c', modules.quickfix.jump }
+key.map { 'n', '<C-]>', modules.quickfix.next }
+key.map { 'n', '<C-[>', modules.quickfix.prev }
 
 -- Todos
 key.map { 'n', '<C-t>', modules.finder.find_todos }
