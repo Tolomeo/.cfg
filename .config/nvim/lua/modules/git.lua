@@ -5,7 +5,9 @@ M.plugins = {
 	-- Git integration
 	'tpope/vim-fugitive',
 	-- Add git related info in the signs columns and popups
-	{ 'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' } }
+	{ 'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' } },
+	-- Github issues and reviews
+	'pwntester/octo.nvim'
 }
 
 function M.setup()
@@ -17,6 +19,8 @@ function M.setup()
 			delay = 100,
 		}
 	}
+
+	require"octo".setup()
 end
 
 function M.blame()
