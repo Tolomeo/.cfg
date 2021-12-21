@@ -19,7 +19,9 @@ M.plugins = {
 	-- Change case and handles variants of a word
 	'tpope/vim-abolish',
 	-- Automatically highlights the line the cursor is in
-	'yamatsum/nvim-cursorline'
+	'yamatsum/nvim-cursorline',
+	-- Highlighting color strings
+	'norcalli/nvim-colorizer.lua'
 }
 
 function M.setup ()
@@ -107,6 +109,9 @@ function M.setup ()
 
 	-- CursorLine
 	vim.g.cursorline_timeout = 0
+
+	-- Colorizer
+	require'colorizer'.setup()
 end
 
 -- vim.api.nvim_set_keymap("n", "<leader>/", "<Plug>kommentary_line_default", {})
