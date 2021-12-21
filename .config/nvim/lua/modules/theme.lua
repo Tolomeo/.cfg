@@ -7,12 +7,35 @@ M.plugins = {
 	'Shatur/neovim-ayu',
 	'rose-pine/neovim',
 	{
+    'kyazdani42/nvim-tree.lua',
+    requires = {
+      'kyazdani42/nvim-web-devicons', -- optional, for file icon
+    },
+	},
+	{
   'nvim-lualine/lualine.nvim',
-   requires = {'kyazdani42/nvim-web-devicons', opt = true}
+   requires = {'kyazdani42/nvim-web-devicons', opt = true }
   }
 }
 
 function M.setup()
+	-- NvimTree
+	require'nvim-tree'.setup {
+		open_on_setup = true,
+		hijack_cursor = true,
+		update_cwd = true,
+		diagnostics = {
+			enable = true,
+		},
+		update_focused_file = {
+			enable = true,
+			update_cwd = true,
+		},
+		view = {
+			auto_resize = true
+		}
+	}
+
 	-- Statusbar
 	require('lualine').setup {
 		options = {
@@ -82,5 +105,13 @@ M.color_scheme = setmetatable({
 		color_schemes[scheme_name]()
 	end
 })
+
+function M.toggle_tree()
+	return vim.api.nvim_command('NvimTreeToggle')
+end
+
+function M.focus_tree()
+	return vim.api.nvim_command('NvimTreeFocus')
+end
 
 return M

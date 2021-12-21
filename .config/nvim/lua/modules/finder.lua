@@ -4,7 +4,6 @@ local M = {}
 M.plugins = {
 	-- UI to select things (files, grep results, open buffers...)
 	{ 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } },
-	"nvim-telescope/telescope-file-browser.nvim",
 	'nvim-telescope/telescope-project.nvim',
 	{ "AckslD/nvim-neoclip.lua", config = function() require('neoclip').setup {
 		content_spec_column = true,
@@ -36,32 +35,31 @@ function M.setup()
 		defaults = {
 			dynamic_preview_title = true,
 			color_devicons = true,
+			layout_strategy = 'vertical',
+			layout_config = { prompt_position = 'bottom' },
 			mappings = {
-				i = {},
+				i = {
+					["<esc>"] = require("telescope.actions").close
+				},
 				n = {},
 			},
 		},
 		pickers = {
-			find_files = {
-				theme = "dropdown",
+			find_files = {},
+			live_grep = {},
+			current_buffer_fuzzy_find = {
+				layout_strategy = 'horizontal'
 			},
-			buffers = {
-				theme = "dropdown",
-			},
-			commands = {
-				theme = "dropdown",
-			},
+			buffers = {},
+			commands = {},
 			spell_suggest = {
-				theme = "cursor",
+				theme = 'cursor'
 			},
-			help_tags = {
-				theme = 'dropdown'
-			}
+			help_tags = {},
 		},
 	}
 
 	-- Telescope extensions
-	require"telescope".load_extension "file_browser"
 	require'telescope'.load_extension 'neoclip'
 	require'telescope'.load_extension 'project'
 end
@@ -70,14 +68,9 @@ function M.find_files()
 	require('telescope.builtin').find_files()
 end
 
-function M.browse_files()
-	require('telescope').extensions.file_browser.file_browser({
-		hidden = true,
-	})
-end
-
 function M.find_in_files()
 	require('telescope.builtin').live_grep()
+
 end
 
 function M.find_in_buffer()

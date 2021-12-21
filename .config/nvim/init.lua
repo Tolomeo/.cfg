@@ -57,7 +57,6 @@ au.group('YankHighlight', {
 })
 
 -- KEYMAPS
-key.map { "n", "<Leader>n", "<cmd>enew<CR>" }
 -- write only if changed
 key.map { "n", "<Leader>w", ":up<CR>", silent = false }
 -- quit (or close window)
@@ -74,6 +73,7 @@ key.map { "i", "<up>", "<nop>" }
 key.map { "i", "<down>", "<nop>" }
 
 -- Movement multipliers
+-- TODO: making this work in visual mode too
 -- Left
 key.map { "n", "<A-h>", "b" }
 key.map { "n", "H", "0" }
@@ -87,9 +87,23 @@ key.map { "n", "K", "gg" }
 key.map { "n", "<A-j>", ")" }
 key.map { "n", "J", "G" }
 
+-- Duplicating lines up and down
+-- TODO: making this work in visual mode too
+key.map { 'n', '<C-A-k>', 'mayyP`a' }
+key.map { 'n', '<C-A-j>', 'mayyp`a' }
+
 -- Adding empty lines in normal mode with enter
+-- TODO: making this work in visual mode too
 key.map { "n", "<CR>", "O<ESC>j"}
 key.map { "n", "<A-CR>", "o<ESC>k"}
+
+-- Controlling indentation with C-h and C-l
+key.map { 'n', '<C-h>', '<<' }
+key.map { 'n', '<C-l>', '>>' }
+key.map { 'i', '<C-h>', '<C-d>' }
+key.map { 'i', '<C-l>', '<C-t>' }
+key.map { 'v', '<C-h>', '<gv' }
+key.map { 'v', '<C-l>', '>gv' }
 
 -- Keep search results centred
 key.map { "n", "n", "nzzzv" }
@@ -106,6 +120,21 @@ key.map { "n", "<Leader>;", "<C-W>R" }
 key.map { "n", "<Leader>[", "<C-W>_" }
 key.map { "n", "<Leader>]", "<C-W>|" }
 key.map { "n", "<Leader>=", "<C-W>=" }
+
+-- Join lines and restore cursor location
+-- key.map { "n", "J", "mjJ`j" }
+
+-- Yank until the end of line  (note: this is now a default on master)
+key.map { 'n', 'Y', 'y$' }
+-- Easy select all of file
+key.map { "n", "<Leader>a", "ggVG<c-$>" }
+-- Make visual yanks place the cursor back where started
+key.map { "v", "y", "ygv<Esc>" }
+
+-- Todos
+-- nnoremap <C-n> :NvimTreeToggle<CR>
+key.map { 'n', '<C-n>', modules.theme.toggle_tree }
+key.map { 'n', '<leader>n', modules.theme.focus_tree }
 
 -- Intellisense
 key.map { "n", "<C-Space>", modules.intellisense.open_code_actions }
@@ -125,31 +154,26 @@ key.map { "n", "<leader>d", modules.intellisense.show_diagnostics }
 key.map { "n", "<leader>[d", modules.intellisense.next_diagnostic }
 key.map { "n", "<leader>]d", modules.intellisense.prev_diagnostic }
 
--- Git blame
+-- Git
 key.map { 'n', 'gb', modules.git.git_blame }
--- Git log
 key.map { 'n', 'gl', modules.git.git_log }
--- Git diff
 key.map { 'n', 'gd', modules.git.git_diff }
--- Git merge
 key.map { 'n', 'gm', modules.git.git_mergetool }
--- Toggle hunk preview
 key.map { 'n', 'gh', modules.git.show_hunk_preview }
--- Cycling through hunks with TAB and S-TAB
 key.map { 'n', ']c', modules.git.next_hunk_preview ']c' }
 key.map { 'n', '[c', modules.git.prev_hunk_preview '[c' }
 
 -- Finder
 key.map { 'n', '<C-p>', modules.finder.find_files }
 key.map { 'n', '<C-A-p>', modules.finder.find_commands }
-key.map { 'n', '<C-o>', modules.finder.browse_files }
-key.map { 'n', '<C-A-o>', modules.finder.find_projects }
+key.map { 'n', '<C-A-n>', modules.finder.find_projects }
 key.map { 'n', '<C-f>', modules.finder.find_in_buffer }
 key.map { 'n', '<C-A-f>', modules.finder.find_in_files }
 key.map { 'n', '<C-y>', modules.finder.find_yanks }
 key.map { 'n', '<F1>', modules.finder.find_in_documentation }
-key.map { 'n', '<C-z>', modules.finder.find_commands }
+key.map { 'n', '<C-z>', modules.finder.find_spelling }
 key.map { 'n', '<C-b>', modules.finder.find_buffers }
+key.map { 'n', '<C-t>', modules.finder.find_todos }
 
 -- Quickfix and location lists keybindings
 key.map { 'n', '<C-c>', modules.quickfix.toggle }
@@ -157,22 +181,6 @@ key.map { 'n', '<leader>c', modules.quickfix.jump }
 key.map { 'n', '<C-]>', modules.quickfix.next }
 key.map { 'n', '<C-[>', modules.quickfix.prev }
 
--- Todos
-key.map { 'n', '<C-t>', modules.finder.find_todos }
-
---Remap for dealing with word wrap
-key.map { 'n', 'k', "v:count == 0 ? 'gk' : 'k'", expr = true  }
-key.map { 'n', 'j', "v:count == 0 ? 'gj' : 'j'", expr = true }
-
--- Join lines and restore cursor location
--- key.map { "n", "J", "mjJ`j" }
-
--- Yank until the end of line  (note: this is now a default on master)
-key.map { 'n', 'Y', 'y$' }
--- Easy select all of file
-key.map { "n", "<Leader>a", "ggVG<c-$>" }
--- Make visual yanks place the cursor back where started
-key.map { "v", "y", "ygv<Esc>" }
 
 -- Moving lines up and down
 -- see https://vim.fandom.com/wiki/Moving_lines_up_or_down#Reordering_up_to_nine_lines
@@ -191,13 +199,6 @@ end }
 key.map { 'v', '<C-j>', modules.editor.move_selection_down }
 key.map { 'v', '<C-k>', modules.editor.move_selection_up }
 
--- Controlling indentation with C-h and C-l
-key.map { 'n', '<C-h>', '<<' }
-key.map { 'n', '<C-l>', '>>' }
-key.map { 'i', '<C-h>', '<C-d>' }
-key.map { 'i', '<C-l>', '<C-t>' }
-key.map { 'v', '<C-h>', '<gv' }
-key.map { 'v', '<C-l>', '>gv' }
 
 -- Replace word under cursor in buffer
 key.map { 'n', '<leader>sb', modules.editor.replace_current_word_in_buffer }
@@ -208,13 +209,3 @@ key.map { "n", "<leader>\\", modules.editor.comment_line }
 key.map { "x", "<leader>\\", modules.editor.comment_selection }
 key.map { 'n', '<leader><space>' , modules.editor.find_cursor }
 
-
---Add leader shortcut
--- vim.api.nvim_set_keymap('n', '<leader><space>', [[<cmd>lua require('telescope.builtin').buffers()<CR>]], { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>sf', [[<cmd>lua require('telescope.builtin').find_files({previewer = false})<CR>]], { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>sh', [[<cmd>lua require('telescope.builtin').help_tags()<CR>]], { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>st', [[<cmd>lua require('telescope.builtin').tags()<CR>]], { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>sd', [[<cmd>lua require('telescope.builtin').grep_string()<CR>]], { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>sp', [[<cmd>lua require('telescope.builtin').live_grep()<CR>]], { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>so', [[<cmd>lua require('telescope.builtin').tags{ only_current_buffer = true }<CR>]], { noremap = true, silent = true })
--- vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<CR>]], { noremap = true, silent = true })
