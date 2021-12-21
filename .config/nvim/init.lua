@@ -31,13 +31,6 @@ au.group('SpellCheck', {
 	}
 })
 
--- Opening file browser when nvim is opened against a directory
-au.VimEnter = function ()
-	if vim.fn.isdirectory(vim.fn.expand('%:p')) > 0 then
-		modules.finder.browse_files()
-	end
-end
-
 -- vim.cmd [[autocmd CursorHold * silent call CocActionAsync('highlight')]]
 au.group('CursorSymbolHighlight', {
 	{
@@ -132,7 +125,6 @@ key.map { "n", "<Leader>a", "ggVG<c-$>" }
 key.map { "v", "y", "ygv<Esc>" }
 
 -- Todos
--- nnoremap <C-n> :NvimTreeToggle<CR>
 key.map { 'n', '<C-n>', modules.theme.toggle_tree }
 key.map { 'n', '<leader>n', modules.theme.focus_tree }
 
@@ -155,10 +147,10 @@ key.map { "n", "<leader>[d", modules.intellisense.next_diagnostic }
 key.map { "n", "<leader>]d", modules.intellisense.prev_diagnostic }
 
 -- Git
-key.map { 'n', 'gb', modules.git.git_blame }
-key.map { 'n', 'gl', modules.git.git_log }
-key.map { 'n', 'gd', modules.git.git_diff }
-key.map { 'n', 'gm', modules.git.git_mergetool }
+key.map { 'n', 'gb', modules.git.blame }
+key.map { 'n', 'gl', modules.git.log }
+key.map { 'n', 'gd', modules.git.diff }
+key.map { 'n', 'gm', modules.git.mergetool }
 key.map { 'n', 'gh', modules.git.show_hunk_preview }
 key.map { 'n', ']c', modules.git.next_hunk_preview ']c' }
 key.map { 'n', '[c', modules.git.prev_hunk_preview '[c' }

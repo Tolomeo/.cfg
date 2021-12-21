@@ -1,21 +1,24 @@
 local M = {}
 
 M.plugins = {
+	-- Color themes
 	'shaunsingh/nord.nvim',
 	'navarasu/onedark.nvim',
 	'sainnhe/edge',
 	'Shatur/neovim-ayu',
 	'rose-pine/neovim',
+	-- File tree
 	{
     'kyazdani42/nvim-tree.lua',
     requires = {
       'kyazdani42/nvim-web-devicons', -- optional, for file icon
     },
 	},
+	-- Status line
 	{
   'nvim-lualine/lualine.nvim',
    requires = {'kyazdani42/nvim-web-devicons', opt = true }
-  }
+  },
 }
 
 function M.setup()

@@ -18,8 +18,8 @@ M.plugins = {
 	'tpope/vim-surround',
 	-- Change case and handles variants of a word
 	'tpope/vim-abolish',
-	-- Shows where your cursor moves
-	'edluffy/specs.nvim'
+	-- Automatically highlights the line the cursor is in
+	'yamatsum/nvim-cursorline'
 }
 
 function M.setup ()
@@ -90,25 +90,6 @@ function M.setup ()
 		disable_filetype = { "TelescopePrompt" , "vim" },
 	})
 
-	-- Specs
-	require('specs').setup({
-		show_jumps  = true,
-		min_jump = 30,
-		popup = {
-			delay_ms = 100, -- delay before popup displays
-			inc_ms = 15, -- time increments used for fade/resize effects
-			blend = 15, -- starting blend, between 0-100 (fully transparent), see :h winblend
-			width = 10,
-			winhl = "PMenu",
-			fader = require('specs').pulse_fader,
-			resizer = require('specs').slide_resizer
-		},
-		ignore_filetypes = {},
-		ignore_buftypes = {
-			nofile = true,
-		}
-	})
-
 	--Map blankline
 	vim.opt.list = true
 	vim.opt.listchars:append("space:⋅")
@@ -121,9 +102,11 @@ function M.setup ()
 		context_char = '┃'
 	}
 
-	-- KOMMENTARY
-	-- see https://github.com/b3nj5m1n/kommentary
+	-- Kommentary
 	vim.g.kommentary_create_default_mappings = false
+
+	-- CursorLine
+	vim.g.cursorline_timeout = 0
 end
 
 -- vim.api.nvim_set_keymap("n", "<leader>/", "<Plug>kommentary_line_default", {})

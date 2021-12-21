@@ -19,19 +19,19 @@ function M.setup()
 	}
 end
 
-function M.git_blame()
+function M.blame()
 	key.input(':Git blame<CR>')
 end
 
-function M.git_log()
+function M.log()
 	key.input(':Git log<CR>')
 end
 
-function M.git_diff()
+function M.diff()
 	key.input(':Git diff<CR>')
 end
 
-function M.git_mergetool()
+function M.mergetool()
 	key.input(':Git mergetool<CR>')
 end
 

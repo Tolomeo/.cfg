@@ -29,6 +29,7 @@ M.plugins = {
 	},
 }
 
+
 function M.setup()
 	-- Telescope
 	require('telescope').setup {
@@ -50,7 +51,9 @@ function M.setup()
 			current_buffer_fuzzy_find = {
 				layout_strategy = 'horizontal'
 			},
-			buffers = {},
+			buffers = {
+				sort_lastused = true
+			},
 			commands = {},
 			spell_suggest = {
 				theme = 'cursor'
