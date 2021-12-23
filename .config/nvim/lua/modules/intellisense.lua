@@ -1,16 +1,17 @@
-local key = require('utils.key')
+local key = require("utils.key")
 local M = {}
 
 M.plugins = {
 	-- Conquer of completion
-	'neoclide/coc.nvim',
-	branch = 'release'
+	"neoclide/coc.nvim",
+	branch = "release",
 }
 
 function M.setup()
 	-- Extensions, see https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions#install-extensions
 	vim.g.coc_global_extensions = {
 		"coc-sumneko-lua",
+		"coc-stylua",
 		"coc-json",
 		"coc-yaml",
 		"coc-html",
@@ -22,37 +23,37 @@ function M.setup()
 		"coc-diagnostic",
 		"coc-eslint",
 		"coc-prettier",
-		"coc-calc"
+		"coc-calc",
 	}
 end
 
 -- Module actions
 function M.open_code_actions()
-	return key.input('<Plug>(coc-codeaction)', 'm')
+	return key.input("<Plug>(coc-codeaction)", "m")
 end
 
-function M.prettier_format()
-	return vim.api.nvim_command('CocCommand prettier.formatFile')
+function M.format()
+	return vim.api.nvim_command('call CocAction("format")')
 end
 
 function M.eslint_fix()
-	return vim.api.nvim_command('CocCommand eslint.executeAutofix')
+	return vim.api.nvim_command("CocCommand eslint.executeAutofix")
 end
 
 function M.go_to_definition()
-	return key.input('<Plug>(coc-definition)', 'm')
+	return key.input("<Plug>(coc-definition)", "m")
 end
 
 function M.go_to_type_definition()
-	return key.input('<Plug>(coc-type-definition)', 'm')
+	return key.input("<Plug>(coc-type-definition)", "m")
 end
 
 function M.go_to_implementation()
-	return key.input('<Plug>(coc-implementation)', 'm')
+	return key.input("<Plug>(coc-implementation)", "m")
 end
 
 function M.show_references()
-	return key.input('<Plug>(coc-references)', 'm')
+	return key.input("<Plug>(coc-references)", "m")
 end
 
 function M.show_symbol_doc()
@@ -60,7 +61,7 @@ function M.show_symbol_doc()
 end
 
 function M.rename_symbol()
-	return key.input('<Plug>(coc-rename)', 'm')
+	return key.input("<Plug>(coc-rename)", "m")
 end
 
 function M.highlight_symbol()
@@ -68,15 +69,15 @@ function M.highlight_symbol()
 end
 
 function M.show_diagnostics()
-	return vim.api.nvim_command('CocDiagnostics')
+	return vim.api.nvim_command("CocDiagnostics")
 end
 
 function M.next_diagnostic()
-	return key.input('<Plug>(coc-diagnostic-next)', 'm')
+	return key.input("<Plug>(coc-diagnostic-next)", "m")
 end
-   
+
 function M.prev_diagnostic()
-	return key.input('<Plug>(coc-diagnostic-prev)', 'm')
+	return key.input("<Plug>(coc-diagnostic-prev)", "m")
 end
 
 -- TODO: move this check into core module
@@ -85,13 +86,13 @@ function M.has_suggestions()
 end
 
 function M.open_suggestions()
-	return key.input(vim.fn['coc#refresh']())
+	return key.input(vim.fn["coc#refresh"]())
 end
 
 function M.next_suggestion(next)
 	return function()
-		if(M.has_suggestions())	then
-			return key.input('<C-n>')
+		if M.has_suggestions() then
+			return key.input("<C-n>")
 		end
 
 		return key.input(next)
@@ -99,19 +100,19 @@ function M.next_suggestion(next)
 end
 
 function M.prev_suggestion()
-	if(M.has_suggestions()) then
-		return key.input('<C-p>')
+	if M.has_suggestions() then
+		return key.input("<C-p>")
 	end
 
-	return key.input('<C-h>')
+	return key.input("<C-h>")
 end
 -- vim.api.nvim_set_keymap("i", "<CR>", "pumvisible() ? coc#_select_confirm() : '<C-G>u<CR><C-R>=coc#on_enter()<CR>'", {silent = true, expr = true, noremap = true})
 function M.confirm_suggestion()
-	if(M.has_suggestions()) then
-		return key.feed(vim.fn['coc#_select_confirm']())
+	if M.has_suggestions() then
+		return key.feed(vim.fn["coc#_select_confirm"]())
 	end
 
-	return key.feed(key.to_term_code '<C-G>u<CR>' .. vim.fn['coc#on_enter'](), 'n')
+	return key.feed(key.to_term_code("<C-G>u<CR>") .. vim.fn["coc#on_enter"](), "n")
 end
 
 return M

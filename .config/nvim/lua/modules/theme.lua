@@ -2,28 +2,28 @@ local M = {}
 
 M.plugins = {
 	-- Color themes
-	'shaunsingh/nord.nvim',
-	'navarasu/onedark.nvim',
-	'sainnhe/edge',
-	'Shatur/neovim-ayu',
-	'rose-pine/neovim',
+	"shaunsingh/nord.nvim",
+	"navarasu/onedark.nvim",
+	"sainnhe/edge",
+	"Shatur/neovim-ayu",
+	"rose-pine/neovim",
 	-- File tree
 	{
-    'kyazdani42/nvim-tree.lua',
-    requires = {
-      'kyazdani42/nvim-web-devicons', -- optional, for file icon
-    },
+		"kyazdani42/nvim-tree.lua",
+		requires = {
+			"kyazdani42/nvim-web-devicons", -- optional, for file icon
+		},
 	},
 	-- Status line
 	{
-  'nvim-lualine/lualine.nvim',
-   requires = {'kyazdani42/nvim-web-devicons', opt = true }
-  },
+		"nvim-lualine/lualine.nvim",
+		requires = { "kyazdani42/nvim-web-devicons", opt = true },
+	},
 }
 
 function M.setup()
 	-- NvimTree
-	require'nvim-tree'.setup {
+	require("nvim-tree").setup({
 		open_on_setup = true,
 		hijack_cursor = true,
 		update_cwd = true,
@@ -35,39 +35,43 @@ function M.setup()
 			update_cwd = true,
 		},
 		view = {
-			auto_resize = true
-		}
-	}
+			auto_resize = true,
+		},
+	})
 
 	-- Statusbar
-	require('lualine').setup {
+	require("lualine").setup({
 		options = {
 			icons_enabled = true,
-			theme = 'auto',
-			component_separators = { left = '/', right = '/'},
-			section_separators = { left = '', right = ''},
+			theme = "auto",
+			component_separators = { left = "/", right = "/" },
+			section_separators = { left = "", right = "" },
 			disabled_filetypes = {},
 			always_divide_middle = true,
 		},
 		sections = {
-			lualine_a = {'mode'},
-			lualine_b = {'branch', { 'diff', colored = false }, { 'diagnostics', sources = { 'coc' }, colored = false, update_in_insert = true } },
-			lualine_c = {'filename'},
-			lualine_x = {'encoding', 'fileformat', 'filetype'},
-			lualine_y = {'progress'},
-			lualine_z = {'location'}
+			lualine_a = { "mode" },
+			lualine_b = {
+				"branch",
+				{ "diff", colored = false },
+				{ "diagnostics", sources = { "coc" }, colored = false, update_in_insert = true },
+			},
+			lualine_c = { "filename" },
+			lualine_x = { "encoding", "fileformat", "filetype" },
+			lualine_y = { "progress" },
+			lualine_z = { "location" },
 		},
 		inactive_sections = {
 			lualine_a = {},
 			lualine_b = {},
-			lualine_c = {'filename'},
-			lualine_x = {'location'},
+			lualine_c = { "filename" },
+			lualine_x = { "location" },
 			lualine_y = {},
-			lualine_z = {}
+			lualine_z = {},
 		},
 		tabline = {},
-		extensions = {}
-	}
+		extensions = {},
+	})
 end
 
 M.color_scheme = setmetatable({
@@ -75,46 +79,48 @@ M.color_scheme = setmetatable({
 		vim.g.nord_contrast = true
 		vim.g.nord_borders = true
 		vim.g.nord_disable_background = true
-		vim.cmd [[colorscheme nord]]
-		require('lualine').setup {options = {theme = 'nord' }}
+		vim.cmd([[colorscheme nord]])
+		require("lualine").setup({ options = { theme = "nord" } })
 	end,
-	onedark = function ()
+	onedark = function()
 		vim.g.onedark_transparent_background = true
-		vim.cmd [[colorscheme onedark]]
-		require('lualine').setup {options = {theme = 'onedark' }}
+		vim.cmd([[colorscheme onedark]])
+		require("lualine").setup({ options = { theme = "onedark" } })
 	end,
-	edge = function ()
+	edge = function()
 		vim.g.edge_transparent_background = true
 		vim.g.edge_better_performance = true
 		vim.g.edge_diagnostic_text_highlight = true
-		vim.cmd [[colorscheme edge]]
+		vim.cmd([[colorscheme edge]])
 	end,
-	ayu = function ()
-		require('ayu').colorscheme()
-		require('ayu').setup({ mirage = false, overrides = {} })
-		require('lualine').setup {options = {theme = 'ayu_dark' }}
+	ayu = function()
+		require("ayu").colorscheme()
+		require("ayu").setup({ mirage = false, overrides = {} })
+		require("lualine").setup({ options = { theme = "ayu_dark" } })
 	end,
-	['rose-pine'] = function ()
-		vim.g.rose_pine_variant = 'main'
+	["rose-pine"] = function()
+		vim.g.rose_pine_variant = "main"
 		vim.g.rose_pine_disable_background = true
 		vim.g.rose_pine_disable_italics = true
 		vim.g.rose_pine_bold_vertical_split_line = true
-		vim.cmd [[colorscheme rose-pine]]
-		require('lualine').setup {options = {theme = 'rose-pine' }}
-	end
+		vim.cmd([[colorscheme rose-pine]])
+		require("lualine").setup({ options = { theme = "rose-pine" } })
+	end,
 }, {
-	__call = function (color_schemes, scheme_name)
-		if (color_schemes[scheme_name] == nil ) then return end
+	__call = function(color_schemes, scheme_name)
+		if color_schemes[scheme_name] == nil then
+			return
+		end
 		color_schemes[scheme_name]()
-	end
+	end,
 })
 
 function M.toggle_tree()
-	return vim.api.nvim_command('NvimTreeToggle')
+	return vim.api.nvim_command("NvimTreeToggle")
 end
 
 function M.focus_tree()
-	return vim.api.nvim_command('NvimTreeFocus')
+	return vim.api.nvim_command("NvimTreeFocus")
 end
 
 return M

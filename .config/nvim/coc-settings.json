@@ -2,7 +2,7 @@
   // showing a diagnostic error on the entire line
   "diagnostic.enable": true,
   "diagnostic.checkCurrentLine": true,
-	"diagnostic.refreshOnInsertMode": true,
+  "diagnostic.refreshOnInsertMode": true,
   //
   "eslint.alwaysShowStatus": true,
   // autocompletion for lua nvim config files
@@ -37,5 +37,8 @@
     "default": "\uf29c"
   },
   // saving changes to file when modifying in refactor view
-  "refactor.saveToFile": true
+  "refactor.saveToFile": true,
+  // coc-stylua throws an error while trying to extract stylua executable from zip
+  // using brew installed executable instead
+  "stylua.styluaPath": "/usr/local/bin/stylua"
 }
