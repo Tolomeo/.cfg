@@ -1,3 +1,5 @@
+echo "1. Checking out config"
+
 git clone --bare git@github.com:Tolomeo/.cfg.git $HOME/.cfg
 function config {
    /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME $@
@@ -12,3 +14,6 @@ if [ $? = 0 ]; then
 fi;
 config checkout
 config config status.showUntrackedFiles no
+
+echo "2. Installing Homebrew"
+curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
