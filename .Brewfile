@@ -4,7 +4,6 @@ tap "homebrew/core"
 tap "mongodb/brew"
 brew "gh"
 brew "htop"
-brew "lua-language-server"
 brew "neovim"
 brew "node", link: false
 brew "ripgrep"
