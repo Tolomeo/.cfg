@@ -1,4 +1,4 @@
-echo "1. Checking out config"
+echo "1. Checking out cfg repository"
 
 git clone --bare git@github.com:Tolomeo/.cfg.git $HOME/.cfg
 function config {
@@ -16,4 +16,9 @@ config checkout
 config config status.showUntrackedFiles no
 
 echo "2. Installing Homebrew"
+
 curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+
+echo "3. Installing Homebrew formulae"
+
+brew bundle --file="${HOME}/.Brewfile"
