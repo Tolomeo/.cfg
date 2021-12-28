@@ -50,6 +50,7 @@ au.group("YankHighlight", {
 })
 
 -- KEYMAPS
+
 -- write only if changed
 key.map({ "n", "<Leader>w", ":up<CR>", silent = false })
 -- quit (or close window)
@@ -57,14 +58,20 @@ key.map({ "n", "<Leader>q", ":q<CR>" })
 -- Discard all changed buffers & quit
 key.map({ "n", "<Leader>Q", ":qall!<CR>" })
 -- write all and quit
-key.map({ "n", "<Leader>W", ":wqall<CR>" })
+key.map({ "n", "<Leader>W", ":wqall<CR>", silent = false })
 
--- Remapping arrows to nothing
+-- Arrows are disabled in insert mode
 key.map({ "i", "<left>", "<nop>" })
 key.map({ "i", "<right>", "<nop>" })
 key.map({ "i", "<up>", "<nop>" })
 key.map({ "i", "<down>", "<nop>" })
 
+-- Using arrows to switch windows in normal mode
+key.map({ "n", "<left>", "<C-w>h" })
+key.map({ "n", "<right>", "<C-w>l" })
+key.map({ "n", "<up>", "<C-w>k" })
+key.map({ "n", "<down>", "<C-w>j" })
+--
 -- Movement multipliers
 -- TODO: making this work in visual mode too
 -- Left
@@ -101,14 +108,10 @@ key.map({ "v", "<C-l>", ">gv" })
 -- Keep search results centred
 key.map({ "n", "n", "nzzzv" })
 key.map({ "n", "N", "Nzzzv" })
---After searching, pressing escape stops the highlight
+--After searching, pressing \ cancels the highlight
 key.map({ "n", "\\", ":noh<CR><ESC>", noremap = false })
 
 -- Easier split mappings
-key.map({ "n", "<Leader><Down>", "<C-W><C-J>" })
-key.map({ "n", "<Leader><Up>", "<C-W><C-K>" })
-key.map({ "n", "<Leader><Right>", "<C-W><C-L>" })
-key.map({ "n", "<Leader><Left>", "<C-W><C-H>" })
 key.map({ "n", "<Leader>;", "<C-W>R" })
 key.map({ "n", "<Leader>[", "<C-W>_" })
 key.map({ "n", "<Leader>]", "<C-W>|" })
@@ -125,8 +128,8 @@ key.map({ "n", "<Leader>a", "ggVG<c-$>" })
 key.map({ "v", "y", "ygv<Esc>" })
 
 -- Todos
-key.map({ "n", "<C-n>", modules.theme.toggle_tree })
-key.map({ "n", "<leader>n", modules.theme.focus_tree })
+key.map({ "n", "<C-e>", modules.theme.toggle_tree })
+key.map({ "n", "<leader>e", modules.theme.focus_tree })
 
 -- Intellisense
 key.map({ "n", "<C-Space>", modules.intellisense.open_code_actions })
@@ -158,7 +161,7 @@ key.map({ "n", "[c", modules.git.prev_hunk_preview("[c") })
 -- Finder
 key.map({ "n", "<C-p>", modules.finder.find_files })
 key.map({ "n", "<C-A-p>", modules.finder.find_commands })
-key.map({ "n", "<C-A-n>", modules.finder.find_projects })
+key.map({ "n", "<C-A-e>", modules.finder.find_projects })
 key.map({ "n", "<C-f>", modules.finder.find_in_buffer })
 key.map({ "n", "<C-A-f>", modules.finder.find_in_files })
 key.map({ "n", "<C-y>", modules.finder.find_yanks })

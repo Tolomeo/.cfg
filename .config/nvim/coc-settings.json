@@ -39,6 +39,7 @@
   // saving changes to file when modifying in refactor view
   "refactor.saveToFile": true,
   // coc-stylua throws an error while trying to extract stylua executable from zip
+	// I suspect it is due to a ddos page placed by cloudflare when trying to connect to fastgit to download release's artefacts
   // using brew installed executable instead
   "stylua.styluaPath": "/usr/local/bin/stylua"
 }
