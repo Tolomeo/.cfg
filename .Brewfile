@@ -5,7 +5,6 @@ tap "mongodb/brew"
 brew "gh"
 brew "htop"
 brew "neovim"
-brew "node", link: false
 brew "ripgrep"
 brew "stylua"
 brew "wget"

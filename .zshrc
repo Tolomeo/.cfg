@@ -43,3 +43,4 @@ zstyle :prompt:pure:path color 014
 
 # zsh sytax highlighting, needs to stay at the end, see .zsh/zsh-syntax-highlighting directory
 source $HOME/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
