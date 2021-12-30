@@ -1,12 +1,3 @@
--- see https://github.com/wbthomason/packer.nvim#bootstrapping
-Packer_bootstrap = false
-local install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
-
-if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-	Packer_bootstrap = true
-	vim.fn.execute("!git clone https://github.com/wbthomason/packer.nvim " .. install_path)
-end
-
 --Incremental live completion (note: this is now a default on master)
 vim.o.inccommand = "nosplit"
 
@@ -77,14 +68,15 @@ vim.o.splitright = true
 vim.o.splitbelow = true
 
 local key = require("utils.key")
-local M = {}
+local M = {
+	install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim",
+	bootstrapping = false,
+}
 
 function M.setup(modules)
-	-- Initialising modules
-	if not Packer_bootstrap then
-		modules.for_each(function(module)
-			module.setup()
-		end)
+	if vim.fn.empty(vim.fn.glob(M.install_path)) > 0 then
+		M.bootstrapping = true
+		vim.fn.execute("!git clone https://github.com/wbthomason/packer.nvim " .. M.install_path)
 	end
 
 	-- Registering plugins
@@ -99,10 +91,17 @@ function M.setup(modules)
 
 		-- Automatically set up configuration after cloning packer.nvim
 		-- see https://github.com/wbthomason/packer.nvim#bootstrapping
-		if Packer_bootstrap then
+		if M.bootstrapping then
 			require("packer").sync()
 		end
 	end)
+
+	-- Initialising modules
+	if not M.bootstrapping then
+		modules.for_each(function(module)
+			module.setup()
+		end)
+	end
 end
 
 function M.compile()
