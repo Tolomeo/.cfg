@@ -1,7 +1,7 @@
+local config = require("config")
 local modules = require("modules")
 local au = require("utils.au")
 local key = require("utils.key")
-local config = require("config")
 
 -- INITIALISATION
 
