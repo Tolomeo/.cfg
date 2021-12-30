@@ -1,14 +1,10 @@
 -- see https://github.com/wbthomason/packer.nvim#bootstrapping
+Packer_bootstrap = false
 local install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
+
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-	Packer_bootstrap = vim.fn.system({
-		"git",
-		"clone",
-		"--depth",
-		"1",
-		"https://github.com/wbthomason/packer.nvim",
-		install_path,
-	})
+	Packer_bootstrap = true
+	vim.fn.execute("!git clone https://github.com/wbthomason/packer.nvim " .. install_path)
 end
 
 --Incremental live completion (note: this is now a default on master)
@@ -85,9 +81,11 @@ local M = {}
 
 function M.setup(modules)
 	-- Initialising modules
-	modules.for_each(function(module)
-		module.setup()
-	end)
+	if not Packer_bootstrap then
+		modules.for_each(function(module)
+			module.setup()
+		end)
+	end
 
 	-- Registering plugins
 	require("packer").startup(function(use)
