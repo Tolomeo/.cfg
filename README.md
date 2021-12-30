@@ -41,7 +41,7 @@ The working directory will be set to your home directory. Notice that, in order 
 - A terminal supporting true colors (see [Terminal Colors](https://gist.github.com/XVilka/8346728) for details) to properly display theme colors.
 - The chosen terminal has to be configured so that
   - it uses the patched font found in `Library/Fonts` for UI icons
-	- it makes the option/alt key act like Meta, for keybindings to work
+  - it makes the option/alt key act like Meta, for keybindings to work
 
 Pre-populated iTerm2 profile configurations are found in `~/.config/iterm2_profile`.
 To use them, activate `Load preferences from a custom folder or URL` via `iterm2 > preferences > General > preferences` and select the directory as source.

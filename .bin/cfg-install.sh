@@ -20,11 +20,20 @@ echo "2. Installing Homebrew"
 # https://brew.sh
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-echo "3. Installing Homebrew formulae"
 
-brew bundle --file="${HOME}/.Brewfile"
-
-echo "4. Installing NVM"
+echo "3. Installing NVM"
 
 # https://github.com/nvm-sh/nvm#installing-and-updating
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+
+echo "4. Sourcing cfg"
+
+source $HOME/.bin/cfg.sh
+
+echo "5. Installing formulae"
+
+brew bundle --file=$HOME/.Brewfile
+
+echo "6. Installing node"
+
+nvm install --lts
