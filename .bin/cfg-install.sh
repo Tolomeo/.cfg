@@ -2,12 +2,12 @@ echo "1. Checking out cfg repository"
 
 git clone --bare git@github.com:Tolomeo/.cfg.git $HOME/.cfg
 
-# sourcing cfg utilities
-# https://superuser.com/questions/255260/bash-source-from-url
-source <(curl -s https://raw.githubusercontent.com/Tolomeo/.cfg/macOS/.bin/cfg.sh)
+function config {
+   /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME $@
+}
 
 # Checking out repo files
-cfg checkout
+config checkout
 
 # If there are conflicts given by already existing files
 # move them into cfg-backup directory
@@ -16,13 +16,15 @@ if [ $? = 0 ]; then
   else
     echo "Backing up pre-existing dot files.";
 		mkdir -p .cfg-backup
-    cfg checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} mv {} .cfg-backup/{}
+    config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} mv {} .cfg-backup/{}
 fi;
 
 # Okay, checkout
-cfg checkout
+config checkout
 # Avoid showing the entire home as untracked
-cfg config status.showUntrackedFiles no
+config config status.showUntrackedFiles no
+# sourcing cfg utilities
+source $HOME/.bin/cfg.sh
 
 echo "2. Installing Homebrew"
 
