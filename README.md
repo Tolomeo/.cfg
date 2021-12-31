@@ -4,26 +4,34 @@ My dotfiles.
 This setup was inspired by [The best way to store your dotfiles: A bare Git repository](https://www.atlassian.com/git/tutorials/dotfiles).
 The setup makes use of [Homebrew](https://brew.sh) to manage packages, and [NVM](https://github.com/nvm-sh/nvm) to manage Node versions.
 
-## Install
+## Installing
 
 Install by running:
 
 ```bash
-curl -Lks https://raw.githubusercontent.com/Tolomeo/.cfg/macOS/.bin/cfg-install.sh | /bin/bash
+sudo curl -Lks https://raw.githubusercontent.com/Tolomeo/.cfg/macOS/.bin/cfg-install.sh | /bin/bash
 ```
 
 The script will clone this repository as bare, placing it in `~/.cfg`.
-It will then install [homebrew](https://brew.sh), Homebrew formulae, [NVM](https://github.com/nvm-sh/nvm) and Node lts.
+It will then install [homebrew](https://brew.sh) and Homebrew formulae.
 
 It will be possible to interact with the cfg repo by using the `cfg` command from anywhere in the filesystem, passing arguments like you would do with any git repository.
-The working directory will be set to your home directory. Notice that, in order to add new files to the repo, your will need to explicitly add them with `cfg add ~/path/to/file`.
+The working directory will be set to your home directory and it will track only its relevant files.
+In order to track new files, your will need to explicitly add them with `cfg add ~/path/to/file`.
+
+### Node installation
+
+After installing cfg:
+
+```bash
+nvm install --lts
+```
 
 ## Requirements
 
 - Git
 - Curl
 - [Homebrew installation requirements](https://docs.brew.sh/Installation)
-- The above should cover also [NVM installation requirements](https://github.com/nvm-sh/nvm#about)
 
 ### Nvim requirements
 
