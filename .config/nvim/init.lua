@@ -208,4 +208,3 @@ key.map({ "n", "<leader>sl", modules.editor.replace_current_word_in_line })
 -- Commenting lines
 key.map({ "n", "<leader>\\", modules.editor.comment_line })
 key.map({ "x", "<leader>\\", modules.editor.comment_selection })
-key.map({ "n", "<leader><space>", modules.editor.find_cursor })

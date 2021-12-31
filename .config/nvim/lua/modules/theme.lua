@@ -77,30 +77,29 @@ end
 M.color_scheme = setmetatable({
 	nord = function()
 		vim.g.nord_contrast = true
-		vim.g.nord_borders = true
-		vim.g.nord_disable_background = true
+		vim.g.nord_italic = false
 		vim.cmd([[colorscheme nord]])
 		require("lualine").setup({ options = { theme = "nord" } })
 	end,
 	onedark = function()
-		vim.g.onedark_transparent_background = true
+		vim.g.onedark_style = "cool"
 		vim.cmd([[colorscheme onedark]])
 		require("lualine").setup({ options = { theme = "onedark" } })
 	end,
 	edge = function()
-		vim.g.edge_transparent_background = true
 		vim.g.edge_better_performance = true
 		vim.g.edge_diagnostic_text_highlight = true
+		vim.g.edge_style = 'neon'
 		vim.cmd([[colorscheme edge]])
 	end,
 	ayu = function()
 		require("ayu").colorscheme()
-		require("ayu").setup({ mirage = false, overrides = {} })
-		require("lualine").setup({ options = { theme = "ayu_dark" } })
+		require("ayu").setup({ mirage = true, overrides = {} })
+		require("lualine").setup({ options = { theme = "ayu_mirage" } })
 	end,
 	["rose-pine"] = function()
-		vim.g.rose_pine_variant = "main"
-		vim.g.rose_pine_disable_background = true
+		vim.g.rose_pine_variant = "moon"
+		vim.g.rose_pine_inactive_background = true
 		vim.g.rose_pine_disable_italics = true
 		vim.g.rose_pine_bold_vertical_split_line = true
 		vim.cmd([[colorscheme rose-pine]])
