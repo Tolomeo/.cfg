@@ -3,7 +3,7 @@ echo "1. Checking out cfg repository"
 git clone --bare git@github.com:Tolomeo/.cfg.git $HOME/.cfg
 
 function config {
-   /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME $@
+	/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME $@
 }
 
 # Backup dir
@@ -14,14 +14,15 @@ config checkout
 # If there are conflicts given by already existing files
 # move them into cfg-backup directory
 if [ $? = 0 ]; then
-  echo "Checked out cfg.";
-  else
-		# These folders give problems
-		rm -Rf $HOME/.zsh/pure
-		rm -Rf $HOME/.zsh/zsh-syntax-highlighting
+	echo "Checked out cfg.";
+else
+	echo "Removing zsh deps"
+	# These folders give problems
+	rm -Rf $HOME/.zsh/pure/
+	rm -Rf $HOME/.zsh/zsh-syntax-highlighting/
 
-    echo "Backing up pre-existent dot files.";
-    config checkout 2>&1 | egrep "^\s+." | awk  '{ sub(/^[ \t]+/, ""); print }' | xargs -I{} mv {} $HOME/.cfg-backup/
+	echo "Backing up pre-existent files.";
+	config checkout 2>&1 | egrep "^\s+." | awk  '{ sub(/^[ \t]+/, ""); print }' | xargs -I{} mv {} $HOME/.cfg-backup/
 fi;
 
 # Okay, checkout
