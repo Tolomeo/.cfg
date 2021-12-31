@@ -17,8 +17,8 @@ if [ $? = 0 ]; then
   echo "Checked out cfg.";
   else
 		# These folders give problems
-		if [[ -d "$HOME/.zsh/pure" ]]; then rm -Rf "$HOME/.zsh/pure"; fi
-		if [[ -d "$HOME/.zsh/zsh-syntax-highlightingy" ]]; then rm -Rf "$HOME/.zsh/zsh-syntax-highlighting"; fi
+		rm -Rf $HOME/.zsh/pure
+		rm -Rf $HOME/.zsh/zsh-syntax-highlighting
 
     echo "Backing up pre-existent dot files.";
     config checkout 2>&1 | egrep "^\s+." | awk  '{ sub(/^[ \t]+/, ""); print }' | xargs -I{} mv {} $HOME/.cfg-backup/
