@@ -17,7 +17,7 @@ if [ $? = 0 ]; then
   echo "Checked out cfg.";
   else
     echo "Backing up pre-existent dot files.";
-    config checkout 2>&1 | egrep "^\s+." | awk {'print $1'} | xargs -I{} mv {} $HOME/.cfg-backup/
+    config checkout 2>&1 | egrep "^\s+." | awk  '{ sub(/^[ \t]+/, ""); print }' | xargs -I{} mv {} $HOME/.cfg-backup/
 fi;
 
 # Okay, checkout
