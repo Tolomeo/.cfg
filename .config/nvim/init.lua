@@ -9,7 +9,7 @@ config.setup(modules)
 
 -- COLOR SCHEME
 
-modules.theme.color_scheme("rose-pine")
+modules.theme.color_scheme("edge")
 
 -- AUTOCMDS
 
