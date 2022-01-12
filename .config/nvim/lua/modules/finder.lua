@@ -13,15 +13,17 @@ M.plugins = {
 				preview = true,
 				default_register = "unnamedplus",
 				keys = {
-					i = {
-						paste = "<CR>",
-						paste_behind = "<A-CR>",
-						custom = {},
-					},
-					n = {
-						paste = "<CR>",
-						paste_behind = "<A-CR>",
-						custom = {},
+					telescope = {
+						i = {
+							paste = "<CR>",
+							paste_behind = "<A-CR>",
+							custom = {},
+						},
+						n = {
+							paste = "<CR>",
+							paste_behind = "<A-CR>",
+							custom = {},
+						},
 					},
 				},
 			})
@@ -43,7 +45,7 @@ function M.setup()
 			dynamic_preview_title = true,
 			color_devicons = true,
 			layout_strategy = "vertical",
-			layout_config = { prompt_position = "bottom" },
+			layout_config = { prompt_position = "top" },
 			mappings = {
 				i = {
 					["<esc>"] = require("telescope.actions").close,

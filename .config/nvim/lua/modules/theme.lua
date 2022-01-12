@@ -93,6 +93,7 @@ M.color_scheme = setmetatable({
 	edge = function()
 		vim.g.edge_transparent_background = 1
 		vim.g.edge_better_performance = true
+		vim.g.edge_current_word = 'grey background'
 		vim.g.edge_diagnostic_text_highlight = true
 		vim.g.edge_style = "neon"
 		vim.cmd([[colorscheme edge]])
