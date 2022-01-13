@@ -33,9 +33,8 @@ config config status.showUntrackedFiles no
 
 echo "2. Initialising submodules"
 
-# Submodules init
-config submodule init
-config submodule update
+# Submodules
+config submodule update --init
 
 # sourcing cfg utilities
 source $HOME/.bin/cfg.sh

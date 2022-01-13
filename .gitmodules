@@ -1,3 +1,3 @@
 [submodule "/Users/diegofrattini/.zsh/pure"]
 	path = /Users/diegofrattini/.zsh/pure
-	url = https://github.com/sindresorhus/pure.git
+	url = git@github.com:sindresorhus/pure.git
