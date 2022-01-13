@@ -15,10 +15,10 @@ else
 fi
 
 # propmpt customisation, see ~/.zsh/pure directory
-# fpath+=$HOME/.zsh/pure
-# autoload -U promptinit; promptinit
-# prompt pure
-# zstyle :prompt:pure:path color 014 
+fpath+=$HOME/.zsh/pure
+autoload -U promptinit; promptinit
+prompt pure
+zstyle :prompt:pure:path color 014 
 
 # zsh sytax highlighting, needs to stay at the end, see .zsh/zsh-syntax-highlighting directory
 source $HOME/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
