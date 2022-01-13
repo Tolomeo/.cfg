@@ -1,6 +1,6 @@
 echo "1. Checking out cfg repository"
 
-git clone --bare git@github.com:Tolomeo/.cfg.git $HOME/.cfg
+git clone --recursive --bare git@github.com:Tolomeo/.cfg.git $HOME/.cfg
 
 function config {
 	/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME $@
