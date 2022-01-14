@@ -11,12 +11,14 @@ local modules = {
 
 local Plugins = {
 	install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim",
+	bootstrapping = nil,
 }
 
 function Plugins.setup(registerPlugins)
-	local bootstrap = vim.fn.empty(vim.fn.glob(Plugins.install_path)) > 0
+	Plugins.bootstrapping = vim.fn.empty(vim.fn.glob(Plugins.install_path)) > 0
 
-	if bootstrap then
+	if Plugins.bootstrapping then
+		print("Bootstrapping plugins manager...")
 		vim.fn.execute("!git clone https://github.com/wbthomason/packer.nvim " .. Plugins.install_path)
 		vim.cmd("packadd packer.nvim")
 	end
@@ -29,7 +31,7 @@ function Plugins.setup(registerPlugins)
 
 		-- Automatically set up configuration after cloning packer.nvim
 		-- see https://github.com/wbthomason/packer.nvim#bootstrapping
-		if bootstrap then
+		if Plugins.bootstrapping then
 			require("packer").sync()
 		end
 	end)
@@ -39,22 +41,24 @@ function Plugins.compile()
 	key.input(":PackerCompile<CR>")
 end
 
-local M = {}
+local M = {
+	plugins = Plugins,
+}
 
-function M.setup()
-	Plugins.setup(function(register)
+function M.setup(options)
+	M.plugins.setup(function(register)
 		for _, module in pairs(modules) do
 			register(module.plugins)
 		end
 	end)
 
-	for _, module in pairs(modules) do
-		module.setup()
-	end
-end
+	if not M.plugins.bootstrapping then
+		for _, module in pairs(modules) do
+			module.setup()
+		end
 
-function M.compile()
-	Plugins.compile()
+		modules.theme.color_scheme(options.color_scheme)
+	end
 end
 
 setmetatable(M, { __index = modules })

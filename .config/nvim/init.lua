@@ -1,16 +1,13 @@
 require("options")
--- local config = require("config")
 local modules = require("modules")
 local au = require("utils.au")
 local key = require("utils.key")
 
 -- INITIALISATION
 
-modules.setup()
-
--- COLOR SCHEME
-
-modules.theme.color_scheme("nord")
+modules.setup({
+	color_scheme = "edge",
+})
 
 -- AUTOCMDS
 
@@ -19,7 +16,7 @@ au.group("NvimConfigChange", {
 	{
 		"BufWritePost",
 		"~/.config/nvim/**",
-		modules.compile,
+		modules.plugins.compile,
 	},
 })
 
@@ -207,5 +204,5 @@ key.map({ "n", "<leader>sb", modules.editor.replace_current_word_in_buffer })
 -- Replace word under cursor in line
 key.map({ "n", "<leader>sl", modules.editor.replace_current_word_in_line })
 -- Commenting lines
-key.map({ "n", "<leader>\\", modules.editor.comment_line })
-key.map({ "x", "<leader>\\", modules.editor.comment_selection })
+key.map({ "n", "<leader><space>", modules.editor.comment_line })
+key.map({ "x", "<leader><space>", modules.editor.comment_selection })

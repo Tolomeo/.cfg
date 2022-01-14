@@ -5,36 +5,10 @@ M.plugins = {
 	-- UI to select things (files, grep results, open buffers...)
 	{ "nvim-telescope/telescope.nvim", requires = { "nvim-lua/plenary.nvim" } },
 	"nvim-telescope/telescope-project.nvim",
-	{
-		"AckslD/nvim-neoclip.lua",
-		config = function()
-			require("neoclip").setup({
-				content_spec_column = true,
-				preview = true,
-				default_register = "unnamedplus",
-				keys = {
-					telescope = {
-						i = {
-							paste = "<CR>",
-							paste_behind = "<A-CR>",
-							custom = {},
-						},
-						n = {
-							paste = "<CR>",
-							paste_behind = "<A-CR>",
-							custom = {},
-						},
-					},
-				},
-			})
-		end,
-	},
+	"AckslD/nvim-neoclip.lua",
 	{
 		"folke/todo-comments.nvim",
 		requires = "nvim-lua/plenary.nvim",
-		config = function()
-			require("todo-comments").setup({})
-		end,
 	},
 }
 
@@ -73,6 +47,28 @@ function M.setup()
 	-- Telescope extensions
 	require("telescope").load_extension("neoclip")
 	require("telescope").load_extension("project")
+	-- Todo comments
+	require("todo-comments").setup({})
+	-- Neoclip
+	require("neoclip").setup({
+		content_spec_column = true,
+		preview = true,
+		default_register = "unnamedplus",
+		keys = {
+			telescope = {
+				i = {
+					paste = "<CR>",
+					paste_behind = "<A-CR>",
+					custom = {},
+				},
+				n = {
+					paste = "<CR>",
+					paste_behind = "<A-CR>",
+					custom = {},
+				},
+			},
+		},
+	})
 end
 
 function M.find_files()

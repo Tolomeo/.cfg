@@ -3,7 +3,7 @@ local M = {}
 M.plugins = {
 	-- Color themes
 	"shaunsingh/nord.nvim",
-	"avarasu/onedark.nvim",
+	"navarasu/onedark.nvim",
 	"sainnhe/edge",
 	-- Ayu is for the time being inconsistent with other themes
 	-- as it doesn't support transparent background
