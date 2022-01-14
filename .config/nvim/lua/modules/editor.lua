@@ -137,11 +137,6 @@ function M.comment_selection()
 	key.input("<Plug>kommentary_visual_default", "m")
 end
 
--- key.map { 'n', '<leader><space>', ':lua require("specs").show_specs()<CR>' }
-function M.find_cursor()
-	require("specs").show_specs()
-end
-
 -- Replace word under cursor in line
 function M.replace_current_word_in_buffer()
 	key.input(":%s/<C-r><C-w>//gI<left><left><left>")

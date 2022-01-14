@@ -10,7 +10,7 @@ function load-nvm() {
 # updating ~/.Brewfile file on every brew formula install and uninstall
 function brew() {
 	local brew_command="${1}"
-	local dump_commands=('install' 'uninstall') # Include all commands that should do a brew dump
+	local dump_commands=('install' 'uninstall', 'reinstall') # Include all commands that should do a brew dump
 
 	command brew ${@}
 
