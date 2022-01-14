@@ -6,7 +6,7 @@ local key = require("utils.key")
 -- INITIALISATION
 
 modules.setup({
-	color_scheme = "edge",
+	color_scheme = "nord",
 })
 
 -- AUTOCMDS

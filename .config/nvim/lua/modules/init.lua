@@ -11,30 +11,32 @@ local modules = {
 
 local Plugins = {
 	install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim",
-	bootstrapping = nil,
+	installing = nil,
 }
 
 function Plugins.setup(registerPlugins)
-	Plugins.bootstrapping = vim.fn.empty(vim.fn.glob(Plugins.install_path)) > 0
+	-- Checking packer install location
+	Plugins.installing = vim.fn.empty(vim.fn.glob(Plugins.install_path)) > 0
 
-	if Plugins.bootstrapping then
-		print("Bootstrapping plugins manager...")
+	-- Cloning packer in place if it is not found
+	if Plugins.installing then
+		print("Installing plugins...")
 		vim.fn.execute("!git clone https://github.com/wbthomason/packer.nvim " .. Plugins.install_path)
 		vim.cmd("packadd packer.nvim")
 	end
 
+	-- Registering plugins to use
 	require("packer").startup(function(use)
 		-- Package manager maninging itself
 		use("wbthomason/packer.nvim")
-
+		-- Consumer defined plugins
 		registerPlugins(use)
-
-		-- Automatically set up configuration after cloning packer.nvim
-		-- see https://github.com/wbthomason/packer.nvim#bootstrapping
-		if Plugins.bootstrapping then
-			require("packer").sync()
-		end
 	end)
+
+	-- Automatically set up configuration after cloning packer.nvim
+	if Plugins.installing then
+		require("packer").sync()
+	end
 end
 
 function Plugins.compile()
@@ -44,23 +46,34 @@ end
 local M = {
 	plugins = Plugins,
 }
+setmetatable(M, { __index = modules })
 
-function M.setup(options)
-	M.plugins.setup(function(register)
-		for _, module in pairs(modules) do
-			register(module.plugins)
-		end
-	end)
-
-	if not M.plugins.bootstrapping then
-		for _, module in pairs(modules) do
-			module.setup()
-		end
-
-		modules.theme.color_scheme(options.color_scheme)
+function M.for_each(fn)
+	for _, module in pairs(modules) do
+		fn(module)
 	end
 end
 
-setmetatable(M, { __index = modules })
+function M.setup(options)
+	-- Registering plugins
+	M.plugins.setup(function(use)
+		M.for_each(function(module)
+			use(module.plugins)
+		end)
+	end)
+
+	-- Returning if plugins still need to install to avoid errors
+	if M.plugins.installing then
+		return
+	end
+
+	-- Setup up modules
+	M.for_each(function(module)
+		module.setup()
+	end)
+
+	-- Base modules configurations
+	modules.theme.color_scheme(options.color_scheme)
+end
 
 return M
