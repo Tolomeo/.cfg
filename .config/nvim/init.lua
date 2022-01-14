@@ -1,15 +1,16 @@
-local config = require("config")
+require("options")
+-- local config = require("config")
 local modules = require("modules")
 local au = require("utils.au")
 local key = require("utils.key")
 
 -- INITIALISATION
 
-config.setup(modules)
+modules.setup()
 
 -- COLOR SCHEME
 
-modules.theme.color_scheme("edge")
+modules.theme.color_scheme("nord")
 
 -- AUTOCMDS
 
@@ -18,7 +19,7 @@ au.group("NvimConfigChange", {
 	{
 		"BufWritePost",
 		"~/.config/nvim/**",
-		config.compile,
+		modules.compile,
 	},
 })
 
