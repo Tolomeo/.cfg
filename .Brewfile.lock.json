@@ -2,16 +2,19 @@
   "entries": {
     "tap": {
       "homebrew/bundle": {
-        "revision": "407dafc7dbdacd1d897cfc79e8c3ab86a859ca71"
+        "revision": "d40b20f64e29453a77290f7c329cf336a59e8b66"
       },
       "homebrew/cask": {
-        "revision": "dd2bc9a0305285439650793b12558b6647027ec1"
+        "revision": "c6cfd6f92b584129bf08b6afa5a3cbeb2996fc45"
       },
       "homebrew/core": {
-        "revision": "b85ca79349836e26740fc1e2cc5ac4ddee12affb"
+        "revision": "68defcb5dd3a1fe5ee5d3f18069e64e25e9ae2a2"
       },
       "mongodb/brew": {
         "revision": "ccbb464e5fd9ecdd32fbc00d50f8d40ab61339de"
+      },
+      "homebrew/cask-fonts": {
+        "revision": "5af8b108b1eaa635bc830268510b403593b8719a"
       }
     },
     "brew": {
@@ -294,18 +297,30 @@
         "options": {
           "full_name": "iterm2"
         }
+      },
+      "font-hack-nerd-font": {
+        "version": "2.1.0",
+        "options": {
+          "full_name": "font-hack-nerd-font"
+        }
+      },
+      "font-sauce-code-pro-nerd-font": {
+        "version": "2.1.0",
+        "options": {
+          "full_name": "font-sauce-code-pro-nerd-font"
+        }
       }
     }
   },
   "system": {
     "macos": {
       "monterey": {
-        "HOMEBREW_VERSION": "3.3.10",
+        "HOMEBREW_VERSION": "3.3.11",
         "HOMEBREW_PREFIX": "/usr/local",
-        "Homebrew/homebrew-core": "b85ca79349836e26740fc1e2cc5ac4ddee12affb",
+        "Homebrew/homebrew-core": "68defcb5dd3a1fe5ee5d3f18069e64e25e9ae2a2",
         "CLT": "13.2.0.0.1.1638488800",
-        "Xcode": "13.1",
-        "macOS": "12.0.1"
+        "Xcode": "13.2.1",
+        "macOS": "12.1"
       }
     }
   }

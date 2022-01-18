@@ -5,9 +5,9 @@ M.plugins = {
 	"shaunsingh/nord.nvim",
 	"navarasu/onedark.nvim",
 	"sainnhe/edge",
-	-- Ayu is for the time being inconsistent with other themes
-	-- as it doesn't support transparent background
-	-- "Shatur/neovim-ayu",
+	"folke/tokyonight.nvim",
+	"EdenEast/nightfox.nvim",
+	"Shatur/neovim-ayu",
 	"rose-pine/neovim",
 	-- File tree
 	{
@@ -78,22 +78,22 @@ end
 
 M.color_scheme = setmetatable({
 	nord = function()
-		vim.g.nord_disable_background = true
+		-- vim.g.nord_disable_background = true
 		vim.g.nord_contrast = true
 		vim.g.nord_italic = false
 		vim.cmd([[colorscheme nord]])
 		require("lualine").setup({ options = { theme = "nord" } })
 	end,
 	onedark = function()
-		vim.g.onedark_transparent_background = true
+		-- vim.g.onedark_transparent_background = true
 		vim.g.onedark_style = "cool"
 		vim.cmd([[colorscheme onedark]])
 		require("lualine").setup({ options = { theme = "onedark" } })
 	end,
 	edge = function()
-		vim.g.edge_transparent_background = 1
+		-- vim.g.edge_transparent_background = 1
 		vim.g.edge_better_performance = true
-		vim.g.edge_current_word = 'grey background'
+		vim.g.edge_current_word = "grey background"
 		vim.g.edge_diagnostic_text_highlight = true
 		vim.g.edge_style = "neon"
 		vim.cmd([[colorscheme edge]])
@@ -101,11 +101,27 @@ M.color_scheme = setmetatable({
 	["rose-pine"] = function()
 		vim.g.rose_pine_variant = "moon"
 		-- vim.g.rose_pine_inactive_background = true
-		vim.g.rose_pine_disable_background = true
+		-- vim.g.rose_pine_disable_background = true
 		vim.g.rose_pine_disable_italics = true
 		vim.g.rose_pine_bold_vertical_split_line = true
 		vim.cmd([[colorscheme rose-pine]])
 		require("lualine").setup({ options = { theme = "rose-pine" } })
+	end,
+	tokyonight = function()
+		-- vim.g.tokyonight_transparent = true
+		vim.g.tokyonight_italic_keywords = false
+		vim.g.tokyonight_italic_comments = false
+		vim.cmd([[colorscheme tokyonight]])
+		require("lualine").setup({ options = { theme = "tokyonight" } })
+	end,
+	nightfox = function()
+		require("nightfox").load("nordfox")
+		require("lualine").setup({ options = { theme = "nightfox" } })
+	end,
+	ayu = function()
+		require("ayu").setup({ mirage = true })
+		vim.cmd([[colorscheme ayu]])
+		require("lualine").setup({ options = { theme = "ayu" } })
 	end,
 }, {
 	__call = function(color_schemes, scheme_name)
