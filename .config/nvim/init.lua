@@ -6,10 +6,11 @@ local key = require("utils.key")
 -- INITIALISATION
 
 modules.setup({
-	color_scheme = "ayu",
+	color_scheme = "edge",
 })
 
 -- AUTOCMDS
+-- TODO: move autocmds into modules
 
 -- Recompiling config whenever something changes
 au.group("NvimConfigChange", {
@@ -30,13 +31,13 @@ au.group("SpellCheck", {
 })
 
 -- vim.cmd [[autocmd CursorHold * silent call CocActionAsync('highlight')]]
-au.group("CursorSymbolHighlight", {
+--[[ au.group("CursorSymbolHighlight", {
 	{
 		"CursorHold",
 		"*",
 		modules.intellisense.highlight_symbol,
 	},
-})
+}) ]]
 
 -- Yank visual feedback
 au.group("YankHighlight", {
@@ -48,6 +49,11 @@ au.group("YankHighlight", {
 })
 
 -- KEYMAPS
+
+-- Pressing ESC in normal mode clears search highlighting
+key.map({"n", "<ESC>", ":noh<CR><ESC>"})
+-- please iTerm hotkey windows
+key.map({ "t", "<Esc>", "<C-\\><C-n>" })
 
 -- write only if changed
 key.map({ "n", "<Leader>w", ":up<CR>", silent = false })
@@ -106,8 +112,6 @@ key.map({ "v", "<C-l>", ">gv" })
 -- Keep search results centred
 key.map({ "n", "n", "nzzzv" })
 key.map({ "n", "N", "Nzzzv" })
---After searching, pressing \ cancels the highlight
-key.map({ "n", "\\", ":noh<CR><ESC>", noremap = false })
 
 -- Easier split mappings
 key.map({ "n", "<Leader>;", "<C-W>R" })
@@ -171,8 +175,11 @@ key.map({ "n", "<C-t>", modules.finder.find_todos })
 -- Quickfix and location lists keybindings
 key.map({ "n", "<C-c>", modules.quickfix.toggle })
 key.map({ "n", "<leader>c", modules.quickfix.jump })
+-- TODO: C-n is synonim for ESC, so if used it clashes with ESC mappings
+-- it is needed to find different mappings for next and prev
+-- IDEA: use arrow keys?
 key.map({ "n", "<C-]>", modules.quickfix.next })
-key.map({ "n", "<C-[>", modules.quickfix.prev })
+-- key.map({ "n", "<C-[>", modules.quickfix.prev })
 
 -- Moving lines up and down
 -- see https://vim.fandom.com/wiki/Moving_lines_up_or_down#Reordering_up_to_nine_lines

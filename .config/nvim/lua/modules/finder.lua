@@ -29,7 +29,9 @@ function M.setup()
 		},
 		pickers = {
 			find_files = {},
-			live_grep = {},
+			live_grep = {
+				layout_strategy = "horizontal",
+			},
 			current_buffer_fuzzy_find = {
 				layout_strategy = "horizontal",
 			},

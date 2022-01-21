@@ -16,6 +16,8 @@ M.plugins = {
 	"windwp/nvim-autopairs",
 	-- Parentheses, brackets, quotes, XML tags
 	"tpope/vim-surround",
+	-- additional operator targets
+	"wellle/targets.vim",
 	-- Change case and handles variants of a word
 	"tpope/vim-abolish",
 	-- Automatically highlights the line the cursor is in
