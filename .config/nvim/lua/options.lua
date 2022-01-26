@@ -52,6 +52,10 @@ vim.o.spelllang = "en_gb"
 -- Using system clipbard as default register
 vim.o.clipboard = "unnamedplus"
 
+-- Invisible chars render
+vim.opt.list = true
+vim.opt.listchars:append("space:⋅")
+
 --Remap space as leader key
 vim.api.nvim_set_keymap("", "<Space>", "<Nop>", { noremap = true, silent = true })
 vim.g.mapleader = " "

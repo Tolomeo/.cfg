@@ -70,11 +70,16 @@ key.map({ "i", "<right>", "<nop>" })
 key.map({ "i", "<up>", "<nop>" })
 key.map({ "i", "<down>", "<nop>" })
 
--- Using arrows to switch windows in normal mode
-key.map({ "n", "<left>", "<C-w>h" })
-key.map({ "n", "<right>", "<C-w>l" })
-key.map({ "n", "<up>", "<C-w>k" })
-key.map({ "n", "<down>", "<C-w>j" })
+-- Windows navigation
+key.map({ "n", "<C-h>", "<C-w>h" })
+key.map({ "n", "<C-l>", "<C-w>l" })
+key.map({ "n", "<C-k>", "<C-w>k" })
+key.map({ "n", "<C-j>", "<C-w>j" })
+-- Easier split mappings
+key.map({ "n", "<Leader>;", "<C-W>R" })
+key.map({ "n", "<Leader>[", "<C-W>_" })
+key.map({ "n", "<Leader>]", "<C-W>|" })
+key.map({ "n", "<Leader>=", "<C-W>=" })
 --
 -- Movement multipliers
 -- TODO: making this work in visual mode too
@@ -113,11 +118,8 @@ key.map({ "v", "<C-l>", ">gv" })
 key.map({ "n", "n", "nzzzv" })
 key.map({ "n", "N", "Nzzzv" })
 
--- Easier split mappings
-key.map({ "n", "<Leader>;", "<C-W>R" })
-key.map({ "n", "<Leader>[", "<C-W>_" })
-key.map({ "n", "<Leader>]", "<C-W>|" })
-key.map({ "n", "<Leader>=", "<C-W>=" })
+-- Repeating last macro with Q
+key.map({"n", "Q", "@@"})
 
 -- Join lines and restore cursor location
 -- key.map { "n", "J", "mjJ`j" }
