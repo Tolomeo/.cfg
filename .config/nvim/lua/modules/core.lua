@@ -1,8 +1,6 @@
 local M = {}
 
 M.plugins = {
-	-- Automatic management of tags
-	"ludovicchabant/vim-gutentags",
 	-- Reload and restard commands
 	"famiu/nvim-reload",
 	-- Automatically changes cwd based on the root of the project
