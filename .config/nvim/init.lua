@@ -48,10 +48,17 @@ au.group("YankHighlight", {
 	},
 })
 
+-- COMMANDS
+
+-- TODO: verify if possible to do this in lua
+vim.cmd([[
+	:command EditConfig :tabedit ~/.config/nvim
+]])
+
 -- KEYMAPS
 
 -- Pressing ESC in normal mode clears search highlighting
-key.map({"n", "<ESC>", ":noh<CR><ESC>"})
+key.map({ "n", "<ESC>", ":noh<CR><ESC>" })
 -- please iTerm hotkey windows
 key.map({ "t", "<Esc>", "<C-\\><C-n>" })
 
@@ -119,7 +126,7 @@ key.map({ "n", "n", "nzzzv" })
 key.map({ "n", "N", "Nzzzv" })
 
 -- Repeating last macro with Q
-key.map({"n", "Q", "@@"})
+key.map({ "n", "Q", "@@" })
 
 -- Join lines and restore cursor location
 -- key.map { "n", "J", "mjJ`j" }

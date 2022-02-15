@@ -2,7 +2,7 @@
   // showing a diagnostic error on the entire line
   "diagnostic.enable": true,
   "diagnostic.checkCurrentLine": true,
-  "diagnostic.refreshOnInsertMode": true,
+  // "diagnostic.refreshOnInsertMode": true,
   //
   "eslint.alwaysShowStatus": true,
   // autocompletion for lua nvim config files
