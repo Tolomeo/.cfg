@@ -56,6 +56,9 @@ vim.o.clipboard = "unnamedplus"
 vim.opt.list = true
 vim.opt.listchars:append("space:⋅")
 
+-- Cursor shape and blinking behaviours
+vim.opt.guicursor = "a:block-blinkon0,v-ve-sm-o-r:block-blinkon1,i-c-ci-cr:ver1-blinkon1"
+
 --Remap space as leader key
 vim.api.nvim_set_keymap("", "<Space>", "<Nop>", { noremap = true, silent = true })
 vim.g.mapleader = " "

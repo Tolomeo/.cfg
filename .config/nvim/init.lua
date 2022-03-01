@@ -6,7 +6,7 @@ local key = require("utils.key")
 -- INITIALISATION
 
 modules.setup({
-	color_scheme = "edge",
+	color_scheme = "nord",
 })
 
 -- AUTOCMDS
@@ -52,7 +52,7 @@ au.group("YankHighlight", {
 
 -- TODO: verify if possible to do this in lua
 vim.cmd([[
-	:command EditConfig :tabedit ~/.config/nvim
+	:command! EditConfig :tabedit ~/.config/nvim
 ]])
 
 -- KEYMAPS
@@ -113,13 +113,13 @@ key.map({ "n", "<C-A-j>", "mayyp`a" })
 key.map({ "n", "<CR>", "O<ESC>j" })
 key.map({ "n", "<A-CR>", "o<ESC>k" })
 
--- Controlling indentation with C-h and C-l
-key.map({ "n", "<C-h>", "<<" })
-key.map({ "n", "<C-l>", ">>" })
-key.map({ "i", "<C-h>", "<C-d>" })
-key.map({ "i", "<C-l>", "<C-t>" })
-key.map({ "v", "<C-h>", "<gv" })
-key.map({ "v", "<C-l>", ">gv" })
+-- Controlling indentation
+key.map({ "n", "<Tab>", ">>" })
+key.map({ "n", "<S-Tab>", "<<" })
+key.map({ "i", "<A-Tab>", "<C-t>" })
+key.map({ "i", "<S-Tab>", "<C-d>" })
+key.map({ "v", "<Tab>", ">gv" })
+key.map({ "v", "<S-Tab>", "<gv" })
 
 -- Keep search results centred
 key.map({ "n", "n", "nzzzv" })
@@ -175,7 +175,7 @@ key.map({ "n", "<C-A-p>", modules.finder.find_commands })
 key.map({ "n", "<C-A-e>", modules.finder.find_projects })
 key.map({ "n", "<C-f>", modules.finder.find_in_buffer })
 key.map({ "n", "<C-A-f>", modules.finder.find_in_files })
-key.map({ "n", "<C-y>", modules.finder.find_yanks })
+-- key.map({ "n", "<C-y>", modules.finder.find_yanks })
 key.map({ "n", "<F1>", modules.finder.find_in_documentation })
 key.map({ "n", "<C-z>", modules.finder.find_spelling })
 key.map({ "n", "<C-b>", modules.finder.find_buffers })
