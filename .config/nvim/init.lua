@@ -15,11 +15,17 @@ modules.setup({
 -- In the terminal emulator, insert mode becomes the default mode
 -- see https://github.com/neovim/neovim/issues/8816
 -- NOTE: there are some caveats and related workarounds documented at the link
+-- also, no line numbers in the terminal
 au.group("OnTerminalBufferEnter", {
 	{
 		"TermOpen",
 		"term://*",
 		"startinsert",
+	},
+	{
+		"TermOpen",
+		"term://*",
+		"setlocal nonumber norelativenumber",
 	},
 	{
 		"BufEnter",
