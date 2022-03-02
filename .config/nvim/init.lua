@@ -12,6 +12,22 @@ modules.setup({
 -- AUTOCMDS
 -- TODO: move autocmds into modules
 
+-- In the terminal emulator, insert mode becomes the default mode
+-- see https://github.com/neovim/neovim/issues/8816
+-- NOTE: there are some caveats and related workarounds documented at the link
+au.group("OnTerminalBufferEnter", {
+	{
+		"TermOpen",
+		"term://*",
+		"startinsert",
+	},
+	{
+		"BufEnter",
+		"*",
+		"if &buftype == 'terminal' | :startinsert | endif"
+	}
+})
+
 -- Forcing every new window created to open vertically
 -- see https://vi.stackexchange.com/questions/22779/how-to-open-files-in-vertical-splits-by-default
 au.group("OnWindowOpen", {
@@ -57,6 +73,7 @@ au.group("OnTextYanked", {
 		vim.highlight.on_yank,
 	},
 })
+
 
 -- COMMANDS
 
