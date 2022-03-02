@@ -12,8 +12,18 @@ modules.setup({
 -- AUTOCMDS
 -- TODO: move autocmds into modules
 
+-- Forcing every new window created to open vertically
+-- see https://vi.stackexchange.com/questions/22779/how-to-open-files-in-vertical-splits-by-default
+au.group("OnWindowOpen", {
+	{
+		"WinNew",
+		"*",
+		"wincmd L",
+	},
+})
+
 -- Recompiling config whenever something changes
-au.group("NvimConfigChange", {
+au.group("OnConfigChange", {
 	{
 		"BufWritePost",
 		"~/.config/nvim/**",
@@ -22,7 +32,7 @@ au.group("NvimConfigChange", {
 })
 
 -- Spellchecking only some files
-au.group("SpellCheck", {
+au.group("OnBufferOpen", {
 	{
 		{ "BufRead", "BufNewFile" },
 		"*.md",
@@ -40,7 +50,7 @@ au.group("SpellCheck", {
 }) ]]
 
 -- Yank visual feedback
-au.group("YankHighlight", {
+au.group("OnTextYanked", {
 	{
 		"TextYankPost",
 		"*",
@@ -82,6 +92,22 @@ key.map({ "n", "<C-h>", "<C-w>h" })
 key.map({ "n", "<C-l>", "<C-w>l" })
 key.map({ "n", "<C-k>", "<C-w>k" })
 key.map({ "n", "<C-j>", "<C-w>j" })
+
+key.map({ "i", "<C-h>", "<Esc><C-w>h" })
+key.map({ "i", "<C-l>", "<Esc><C-w>l" })
+key.map({ "i", "<C-k>", "<Esc><C-w>k" })
+key.map({ "i", "<C-j>", "<Esc><C-w>j" })
+
+key.map({ "v", "<C-h>", "<Esc><C-w>h" })
+key.map({ "v", "<C-l>", "<Esc><C-w>l" })
+key.map({ "v", "<C-k>", "<Esc><C-w>k" })
+key.map({ "v", "<C-j>", "<Esc><C-w>j" })
+
+key.map({ "t", "<C-h>", "<C-\\><C-n><C-w>h" })
+key.map({ "t", "<C-l>", "<C-\\><C-n><C-w>l" })
+key.map({ "t", "<C-k>", "<C-\\><C-n><C-w>k" })
+key.map({ "t", "<C-j>", "<C-\\><C-n><C-w>j" })
+
 -- Easier split mappings
 key.map({ "n", "<Leader>;", "<C-W>R" })
 key.map({ "n", "<Leader>[", "<C-W>_" })
