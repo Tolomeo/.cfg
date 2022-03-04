@@ -286,3 +286,4 @@ key.map({ "n", "<leader><space>", modules.editor.comment_line })
 key.map({ "x", "<leader><space>", modules.editor.comment_selection })
 -- Toggling booleans
 key.map({ "n", "<leader>tb", modules.editor.toggle_boolean })
+key.map({ "n", "<leader>ya", modules.editor.yank_all })

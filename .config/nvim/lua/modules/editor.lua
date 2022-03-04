@@ -177,12 +177,16 @@ function M.toggle_boolean()
 	local word = M.cword()
 
 	if word == "true" then
-		vim.api.nvim_command('normal! ciwfalse')
+		vim.api.nvim_command("normal! ciwfalse")
 	elseif word == "false" then
-		vim.api.nvim_command('normal! ciwtrue')
+		vim.api.nvim_command("normal! ciwtrue")
 	else
-		print("Cannot toggle because the word under the cursor ('"..word.."') is not a boolean value")
+		print("Cannot toggle because the word under the cursor ('" .. word .. "') is not a boolean value")
 	end
+end
+
+function M.yank_all()
+	vim.api.nvim_command("%y")
 end
 
 return M
