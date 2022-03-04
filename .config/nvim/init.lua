@@ -6,7 +6,7 @@ local key = require("utils.key")
 -- INITIALISATION
 
 modules.setup({
-	color_scheme = "nord",
+	color_scheme = "rose-pine",
 })
 
 -- AUTOCMDS
@@ -15,6 +15,7 @@ modules.setup({
 -- In the terminal emulator, insert mode becomes the default mode
 -- see https://github.com/neovim/neovim/issues/8816
 -- NOTE: there are some caveats and related workarounds documented at the link
+-- TODO: enter insert mode even when the buffer reloaded from being hidden
 -- also, no line numbers in the terminal
 au.group("OnTerminalBufferEnter", {
 	{
@@ -29,9 +30,9 @@ au.group("OnTerminalBufferEnter", {
 	},
 	{
 		"BufEnter",
-		"*",
-		"if &buftype == 'terminal' | :startinsert | endif"
-	}
+		"term://*",
+		"if &buftype == 'terminal' | :startinsert | endif",
+	},
 })
 
 -- Forcing every new window created to open vertically
@@ -79,7 +80,6 @@ au.group("OnTextYanked", {
 		vim.highlight.on_yank,
 	},
 })
-
 
 -- COMMANDS
 

@@ -85,13 +85,13 @@ M.color_scheme = setmetatable({
 		require("lualine").setup({ options = { theme = "nord" } })
 	end,
 	onedark = function()
-		-- vim.g.onedark_transparent_background = true
+		vim.g.onedark_transparent_background = true
 		vim.g.onedark_style = "cool"
 		vim.cmd([[colorscheme onedark]])
 		require("lualine").setup({ options = { theme = "onedark" } })
 	end,
 	edge = function()
-		-- vim.g.edge_transparent_background = 1
+		vim.g.edge_transparent_background = 1
 		vim.g.edge_better_performance = true
 		vim.g.edge_current_word = "grey background"
 		vim.g.edge_diagnostic_text_highlight = true
@@ -99,27 +99,35 @@ M.color_scheme = setmetatable({
 		vim.cmd([[colorscheme edge]])
 	end,
 	["rose-pine"] = function()
-		vim.g.rose_pine_variant = "moon"
-		-- vim.g.rose_pine_inactive_background = true
-		-- vim.g.rose_pine_disable_background = true
-		vim.g.rose_pine_disable_italics = true
-		vim.g.rose_pine_bold_vertical_split_line = true
-		vim.cmd([[colorscheme rose-pine]])
+		require("rose-pine").setup({
+			dark_variant = "moon",
+			dim_nc_background = false,
+			disable_background = true,
+			disable_float_background = true,
+			disable_italics = true,
+		})
+		vim.cmd("colorscheme rose-pine")
 		require("lualine").setup({ options = { theme = "rose-pine" } })
 	end,
 	tokyonight = function()
-		-- vim.g.tokyonight_transparent = true
+		vim.g.tokyonight_transparent = true
 		vim.g.tokyonight_italic_keywords = false
 		vim.g.tokyonight_italic_comments = false
 		vim.cmd([[colorscheme tokyonight]])
 		require("lualine").setup({ options = { theme = "tokyonight" } })
 	end,
 	nightfox = function()
-		require("nightfox").load("nordfox")
+		require("nightfox").setup({
+			fox = "nightfox",
+			transparent = true,
+		})
+		require("nightfox").load()
 		require("lualine").setup({ options = { theme = "nightfox" } })
 	end,
 	ayu = function()
-		require("ayu").setup({ mirage = true })
+		require("ayu").setup({ mirage = true, overrides = {
+			Normal = { bg = "None" },
+		} })
 		vim.cmd([[colorscheme ayu]])
 		require("lualine").setup({ options = { theme = "ayu" } })
 	end,

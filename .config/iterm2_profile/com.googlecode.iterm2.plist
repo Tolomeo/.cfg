@@ -234,16 +234,16 @@
 				<key>Alpha Component</key>
 				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.20392156862745098</real>
+				<real>0.21176470588235294</real>
 				<key>Color Space</key>
 				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.17254901960784313</real>
+				<real>0.12941176470588237</real>
 				<key>Red Component</key>
-				<real>0.15686274509803921</real>
+				<real>0.13725490196078433</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
+			<key>Background Image Mode</key>
+			<integer>0</integer>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -257,6 +257,8 @@
 				<key>Red Component</key>
 				<real>1</real>
 			</dict>
+			<key>Blend</key>
+			<real>0.050000000000000003</real>
 			<key>Blink Allowed</key>
 			<false/>
 			<key>Blinking Cursor</key>
