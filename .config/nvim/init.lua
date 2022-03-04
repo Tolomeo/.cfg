@@ -35,6 +35,19 @@ au.group("OnTerminalBufferEnter", {
 	},
 })
 
+--[[ au.group("OnInsertModeToggle", {
+	{
+		"InsertEnter",
+		"*",
+		"set relativenumber"
+	},
+	{
+		"InsertLeave",
+		"*",
+		"set norelativenumber"
+	}
+}) ]]
+
 -- Forcing every new window created to open vertically
 -- see https://vi.stackexchange.com/questions/22779/how-to-open-files-in-vertical-splits-by-default
 au.group("OnWindowOpen", {
@@ -271,3 +284,5 @@ key.map({ "n", "<leader>sl", modules.editor.replace_current_word_in_line })
 -- Commenting lines
 key.map({ "n", "<leader><space>", modules.editor.comment_line })
 key.map({ "x", "<leader><space>", modules.editor.comment_selection })
+-- Toggling booleans
+key.map({ "n", "<leader>tb", modules.editor.toggle_boolean })

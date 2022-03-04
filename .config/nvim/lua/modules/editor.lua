@@ -167,4 +167,22 @@ function M.move_selection_down()
 	key.input(":m '>+1<CR>gv=gv")
 end
 
+-- Returns the current word under the cursor
+function M.cword()
+	return vim.call("expand", "<cword>")
+end
+
+-- Toggles the current word under the cursor from 'true' to 'false' and viceversa
+function M.toggle_boolean()
+	local word = M.cword()
+
+	if word == "true" then
+		vim.api.nvim_command('normal! ciwfalse')
+	elseif word == "false" then
+		vim.api.nvim_command('normal! ciwtrue')
+	else
+		print("Cannot toggle because the word under the cursor ('"..word.."') is not a boolean value")
+	end
+end
+
 return M
