@@ -21,6 +21,10 @@ function brew() {
 
 # Managing configuration repo
 function cfg() {
-	git --git-dir="${HOME}/.cfg/" --work-tree="${HOME}" ${@}
+	if [[ $# -eq 0 ]] then
+		lazygit --git-dir="${HOME}/.cfg/" --work-tree="${HOME}" --use-config-dir --print-config-dir
+	else
+		git --git-dir="${HOME}/.cfg/" --work-tree="${HOME}" ${@}
+	fi
 }
 
