@@ -179,7 +179,7 @@ key.map({ "n", "<A-CR>", "o<ESC>k" })
 key.map({ "n", "<Tab>", ">>" })
 key.map({ "n", "<S-Tab>", "<<" })
 key.map({ "i", "<A-Tab>", "<C-t>" })
-key.map({ "i", "<S-Tab>", "<C-d>" })
+key.map({ "i", "<A-S-Tab>", "<C-d>" })
 key.map({ "v", "<Tab>", ">gv" })
 key.map({ "v", "<S-Tab>", "<gv" })
 
@@ -278,12 +278,13 @@ key.map({ "v", "<C-j>", modules.editor.move_selection_down })
 key.map({ "v", "<C-k>", modules.editor.move_selection_up })
 
 -- Replace word under cursor in buffer
-key.map({ "n", "<leader>sb", modules.editor.replace_current_word_in_buffer })
+key.map({ "n", "<leader>s%", modules.editor.replace_current_word_in_buffer })
 -- Replace word under cursor in line
-key.map({ "n", "<leader>sl", modules.editor.replace_current_word_in_line })
+key.map({ "n", "<leader>ss", modules.editor.replace_current_word_in_line })
 -- Commenting lines
 key.map({ "n", "<leader><space>", modules.editor.comment_line })
 key.map({ "x", "<leader><space>", modules.editor.comment_selection })
 -- Toggling booleans
-key.map({ "n", "<leader>tb", modules.editor.toggle_boolean })
-key.map({ "n", "<leader>ya", modules.editor.yank_all })
+key.map({ "n", "<leader>~", modules.editor.toggle_boolean })
+-- Yank all buffer
+key.map({ "n", "<leader>y%", modules.editor.yank_all })
