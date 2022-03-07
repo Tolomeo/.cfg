@@ -68,7 +68,7 @@ au.group("OnConfigChange", {
 })
 
 -- Spellchecking only some files
-au.group("OnBufferOpen", {
+au.group("OnMarkdownBufferOpen", {
 	{
 		{ "BufRead", "BufNewFile" },
 		"*.md",
@@ -103,8 +103,8 @@ vim.cmd([[
 
 -- KEYMAPS
 
--- Pressing ESC in normal mode clears search highlighting
-key.map({ "n", "<ESC>", ":noh<CR><ESC>" })
+-- Clearing search highlighting
+key.map({ "n", "<BS>", ":noh<CR>" })
 -- please iTerm hotkey windows
 key.map({ "t", "<Esc>", "<C-\\><C-n>" })
 
@@ -154,26 +154,25 @@ key.map({ "n", "<Leader>=", "<C-W>=" })
 -- TODO: making this work in visual mode too
 -- Left
 key.map({ "n", "<A-h>", "b" })
-key.map({ "n", "H", "0" })
+key.map({ "n", "<A-S-h>", "B" })
+key.map({ "n", "H", "^" })
 -- Right
 key.map({ "n", "<A-l>", "w" })
+key.map({ "n", "<A-S-l>", "W" })
 key.map({ "n", "L", "$" })
 -- Up
-key.map({ "n", "<A-k>", "(" })
+key.map({ "n", "<A-k>", "10k" })
+key.map({ "n", "<A-S-k>", "20k" })
 key.map({ "n", "K", "gg" })
 -- Down
-key.map({ "n", "<A-j>", ")" })
+key.map({ "n", "<A-j>", "10j" })
+key.map({ "n", "<A-S-j>", "20j" })
 key.map({ "n", "J", "G" })
 
 -- Duplicating lines up and down
 -- TODO: making this work in visual mode too
 key.map({ "n", "<C-A-k>", "mayyP`a" })
 key.map({ "n", "<C-A-j>", "mayyp`a" })
-
--- Adding empty lines in normal mode with enter
--- TODO: making this work in visual mode too
-key.map({ "n", "<CR>", "O<ESC>j" })
-key.map({ "n", "<A-CR>", "o<ESC>k" })
 
 -- Controlling indentation
 key.map({ "n", "<Tab>", ">>" })
@@ -182,6 +181,9 @@ key.map({ "i", "<A-Tab>", "<C-t>" })
 key.map({ "i", "<A-S-Tab>", "<C-d>" })
 key.map({ "v", "<Tab>", ">gv" })
 key.map({ "v", "<S-Tab>", "<gv" })
+
+-- Because we are mapping S-Tab to indent, now C-i indents too so we need to recover it
+key.map({"n", "<C-S-o>", "<C-i>"})
 
 -- Keep search results centred
 key.map({ "n", "n", "nzzzv" })
@@ -233,10 +235,10 @@ key.map({ "n", "[c", modules.git.prev_hunk_preview("[c") })
 
 -- Finder
 key.map({ "n", "<C-p>", modules.finder.find_files })
-key.map({ "n", "<C-A-p>", modules.finder.find_commands })
-key.map({ "n", "<C-A-e>", modules.finder.find_projects })
+key.map({ "n", "<C-S-p>", modules.finder.find_commands })
+key.map({ "n", "<C-S-e>", modules.finder.find_projects })
 key.map({ "n", "<C-f>", modules.finder.find_in_buffer })
-key.map({ "n", "<C-A-f>", modules.finder.find_in_files })
+key.map({ "n", "<C-S-f>", modules.finder.find_in_files })
 -- key.map({ "n", "<C-y>", modules.finder.find_yanks })
 key.map({ "n", "<F1>", modules.finder.find_in_documentation })
 key.map({ "n", "<C-z>", modules.finder.find_spelling })
@@ -247,18 +249,16 @@ key.map({ "n", "<C-t>", modules.finder.find_todos })
 key.map({ "n", "<C-c>", modules.quickfix.toggle })
 key.map({ "n", "<leader>c", modules.quickfix.jump })
 -- TODO: C-n is synonim for ESC, so if used it clashes with ESC mappings
--- it is needed to find different mappings for next and prev
--- IDEA: use arrow keys?
 key.map({ "n", "<C-]>", modules.quickfix.next })
--- key.map({ "n", "<C-[>", modules.quickfix.prev })
+key.map({ "n", "<C-[>", modules.quickfix.prev })
 
 -- Moving lines up and down
 -- see https://vim.fandom.com/wiki/Moving_lines_up_or_down#Reordering_up_to_nine_lines
-key.map({ "n", "<C-j>", modules.editor.move_line_down })
-key.map({ "n", "<C-k>", modules.editor.move_line_up })
+-- key.map({ "n", "<C-j>", modules.editor.move_line_down })
+-- key.map({ "n", "<C-k>", modules.editor.move_line_up })
 key.map({
 	"i",
-	"<C-j>",
+	"<A-j>",
 	function()
 		key.input("<ESC>")
 		modules.editor.move_line_down()
@@ -267,15 +267,15 @@ key.map({
 })
 key.map({
 	"i",
-	"<C-k>",
+	"<A-k>",
 	function()
 		key.input("<ESC>")
 		modules.editor.move_line_up()
 		key.input("gi")
 	end,
 })
-key.map({ "v", "<C-j>", modules.editor.move_selection_down })
-key.map({ "v", "<C-k>", modules.editor.move_selection_up })
+key.map({ "v", "<A-j>", modules.editor.move_selection_down })
+key.map({ "v", "<A-k>", modules.editor.move_selection_up })
 
 -- Replace word under cursor in buffer
 key.map({ "n", "<leader>s%", modules.editor.replace_current_word_in_buffer })
