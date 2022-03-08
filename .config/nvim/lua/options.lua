@@ -4,6 +4,9 @@ vim.o.inccommand = "nosplit"
 --Set highlight on search
 vim.o.hlsearch = true
 
+-- Avoid rerendering during macros, registers etc
+vim.o.lazyredraw = true
+
 --Make line numbers default
 vim.wo.number = true
 
@@ -54,10 +57,18 @@ vim.o.clipboard = "unnamedplus"
 
 -- Invisible chars render
 vim.opt.list = true
-vim.opt.listchars:append("space:⋅")
+vim.opt.listchars = { eol = "↲", tab = "▸ ", trail = "·", space = "·", extends = "…", precedes = "…" }
+
+-- The minimal number of screen columns to keep to the left and to the right of the cursor
+-- set to 1 to allow seeing EOL listchar without truncating the text
+vim.opt.sidescrolloff = 1
 
 -- Cursor shape and blinking behaviours
 vim.opt.guicursor = "a:block-blinkon0,v-ve-sm-o-r:block-blinkon1,i-c-ci-cr:ver1-blinkon1"
+
+-- Folds
+vim.opt.foldenable = false
+vim.opt.foldmethod = "indent"
 
 --Remap space as leader key
 vim.api.nvim_set_keymap("", "<Space>", "<Nop>", { noremap = true, silent = true })
