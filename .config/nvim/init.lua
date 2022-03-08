@@ -104,160 +104,159 @@ vim.cmd([[
 -- KEYMAPS
 
 -- Clearing search highlighting
-key.map({ "n", "<BS>", ":noh<CR>" })
+key.nmap({ "<BS>", ":noh<CR>" })
 -- please iTerm hotkey windows
-key.map({ "t", "<Esc>", "<C-\\><C-n>" })
+key.tmap({ "<Esc>", "<C-\\><C-n>" })
 
 -- write only if changed
-key.map({ "n", "<Leader>w", ":up<CR>", silent = false })
+key.nmap({ "<Leader>w", ":up<CR>", silent = false })
 -- quit (or close window)
-key.map({ "n", "<Leader>q", ":q<CR>" })
+key.nmap({ "<Leader>q", ":q<CR>" })
 -- Discard all changed buffers & quit
-key.map({ "n", "<Leader>Q", ":qall!<CR>" })
+key.nmap({ "<Leader>Q", ":qall!<CR>" })
 -- write all and quit
-key.map({ "n", "<Leader>W", ":wqall<CR>", silent = false })
+key.nmap({ "<Leader>W", ":wqall<CR>", silent = false })
 
 -- Arrows are disabled in insert mode
-key.map({ "i", "<left>", "<nop>" })
-key.map({ "i", "<right>", "<nop>" })
-key.map({ "i", "<up>", "<nop>" })
-key.map({ "i", "<down>", "<nop>" })
+key.imap({ "<left>", "<nop>" })
+key.imap({ "<right>", "<nop>" })
+key.imap({ "<up>", "<nop>" })
+key.imap({ "<down>", "<nop>" })
 
 -- Windows navigation
-key.map({ "n", "<C-h>", "<C-w>h" })
-key.map({ "n", "<C-l>", "<C-w>l" })
-key.map({ "n", "<C-k>", "<C-w>k" })
-key.map({ "n", "<C-j>", "<C-w>j" })
+key.nmap({ "<C-h>", "<C-w>h" })
+key.nmap({ "<C-l>", "<C-w>l" })
+key.nmap({ "<C-k>", "<C-w>k" })
+key.nmap({ "<C-j>", "<C-w>j" })
 
-key.map({ "i", "<C-h>", "<Esc><C-w>h" })
-key.map({ "i", "<C-l>", "<Esc><C-w>l" })
-key.map({ "i", "<C-k>", "<Esc><C-w>k" })
-key.map({ "i", "<C-j>", "<Esc><C-w>j" })
+key.imap({ "<C-h>", "<Esc><C-w>h" })
+key.imap({ "<C-l>", "<Esc><C-w>l" })
+key.imap({ "<C-k>", "<Esc><C-w>k" })
+key.imap({ "<C-j>", "<Esc><C-w>j" })
 
-key.map({ "v", "<C-h>", "<Esc><C-w>h" })
-key.map({ "v", "<C-l>", "<Esc><C-w>l" })
-key.map({ "v", "<C-k>", "<Esc><C-w>k" })
-key.map({ "v", "<C-j>", "<Esc><C-w>j" })
+key.vmap({ "<C-h>", "<Esc><C-w>h" })
+key.vmap({ "<C-l>", "<Esc><C-w>l" })
+key.vmap({ "<C-k>", "<Esc><C-w>k" })
+key.vmap({ "<C-j>", "<Esc><C-w>j" })
 
-key.map({ "t", "<C-h>", "<C-\\><C-n><C-w>h" })
-key.map({ "t", "<C-l>", "<C-\\><C-n><C-w>l" })
-key.map({ "t", "<C-k>", "<C-\\><C-n><C-w>k" })
-key.map({ "t", "<C-j>", "<C-\\><C-n><C-w>j" })
+key.tmap({ "<C-h>", "<C-\\><C-n><C-w>h" })
+key.tmap({ "<C-l>", "<C-\\><C-n><C-w>l" })
+key.tmap({ "<C-k>", "<C-\\><C-n><C-w>k" })
+key.tmap({ "<C-j>", "<C-\\><C-n><C-w>j" })
 
 -- Easier split mappings
-key.map({ "n", "<Leader>;", "<C-W>R" })
-key.map({ "n", "<Leader>[", "<C-W>_" })
-key.map({ "n", "<Leader>]", "<C-W>|" })
-key.map({ "n", "<Leader>=", "<C-W>=" })
+key.nmap({ "<Leader>;", "<C-W>R" })
+key.nmap({ "<Leader>[", "<C-W>_" })
+key.nmap({ "<Leader>]", "<C-W>|" })
+key.nmap({ "<Leader>=", "<C-W>=" })
 --
 -- Movement multipliers
 -- TODO: making this work in visual mode too
 -- Left
-key.map({ "n", "<A-h>", "b" })
-key.map({ "n", "<A-S-h>", "B" })
-key.map({ "n", "H", "^" })
+key.nmap({ "<A-h>", "b" })
+key.nmap({ "<A-S-h>", "B" })
+key.nmap({ "H", "^" })
 -- Right
-key.map({ "n", "<A-l>", "w" })
-key.map({ "n", "<A-S-l>", "W" })
-key.map({ "n", "L", "$" })
+key.nmap({ "<A-l>", "w" })
+key.nmap({ "<A-S-l>", "W" })
+key.nmap({ "L", "$" })
 -- Up
-key.map({ "n", "<A-k>", "10k" })
-key.map({ "n", "<A-S-k>", "20k" })
-key.map({ "n", "K", "gg" })
+key.nmap({ "<A-k>", "10k" })
+key.nmap({ "<A-S-k>", "20k" })
+key.nmap({ "K", "gg" })
 -- Down
-key.map({ "n", "<A-j>", "10j" })
-key.map({ "n", "<A-S-j>", "20j" })
-key.map({ "n", "J", "G" })
+key.nmap({ "<A-j>", "10j" })
+key.nmap({ "<A-S-j>", "20j" })
+key.nmap({ "J", "G" })
 
 -- Duplicating lines up and down
 -- TODO: making this work in visual mode too
-key.map({ "n", "<C-A-k>", "mayyP`a" })
-key.map({ "n", "<C-A-j>", "mayyp`a" })
+key.nmap({ "<C-A-k>", "mayyP`a" })
+key.nmap({ "<C-A-j>", "mayyp`a" })
 
 -- Controlling indentation
-key.map({ "n", "<Tab>", ">>" })
-key.map({ "n", "<S-Tab>", "<<" })
-key.map({ "i", "<A-Tab>", "<C-t>" })
-key.map({ "i", "<A-S-Tab>", "<C-d>" })
-key.map({ "v", "<Tab>", ">gv" })
-key.map({ "v", "<S-Tab>", "<gv" })
+key.nmap({ "<Tab>", ">>" })
+key.nmap({ "<S-Tab>", "<<" })
+key.imap({ "<A-Tab>", "<C-t>" })
+key.imap({ "<A-S-Tab>", "<C-d>" })
+key.vmap({ "<Tab>", ">gv" })
+key.vmap({ "<S-Tab>", "<gv" })
 
 -- Because we are mapping S-Tab to indent, now C-i indents too so we need to recover it
-key.map({"n", "<C-S-o>", "<C-i>"})
+key.nmap({ "<C-S-o>", "<C-i>" })
 
 -- Keep search results centred
-key.map({ "n", "n", "nzzzv" })
-key.map({ "n", "N", "Nzzzv" })
+key.nmap({ "n", "nzzzv" })
+key.nmap({ "N", "Nzzzv" })
 
 -- Repeating last macro with Q
-key.map({ "n", "Q", "@@" })
+key.nmap({ "Q", "@@" })
 
 -- Join lines and restore cursor location
 -- key.map { "n", "J", "mjJ`j" }
 
 -- Yank until the end of line  (note: this is now a default on master)
-key.map({ "n", "Y", "y$" })
+key.nmap({ "Y", "y$" })
 -- Easy select all of file
-key.map({ "n", "<Leader>a", "ggVG<c-$>" })
+key.nmap({ "<Leader>a", "ggVG<c-$>" })
 -- Make visual yanks place the cursor back where started
-key.map({ "v", "y", "ygv<Esc>" })
+key.vmap({ "y", "ygv<Esc>" })
 
 -- Todos
-key.map({ "n", "<C-e>", modules.theme.toggle_tree })
-key.map({ "n", "<leader>e", modules.theme.focus_tree })
+key.nmap({ "<C-e>", modules.theme.toggle_tree })
+key.nmap({ "<leader>e", modules.theme.focus_tree })
 
 -- Intellisense
-key.map({ "n", "<C-Space>", modules.intellisense.open_code_actions })
-key.map({ "n", "<leader>l", modules.intellisense.eslint_fix })
-key.map({ "n", "<leader>gd", modules.intellisense.go_to_definition })
-key.map({ "n", "<leader>gt", modules.intellisense.go_to_type_definition })
-key.map({ "n", "<leader>gi", modules.intellisense.go_to_implementation })
-key.map({ "n", "<leader>K", modules.intellisense.show_references })
-key.map({ "n", "<leader>k", modules.intellisense.show_symbol_doc })
-key.map({ "n", "<leader>r", modules.intellisense.rename_symbol })
-key.map({ "i", "<C-Space>", modules.intellisense.open_suggestions })
-key.map({ "i", "<TAB>", modules.intellisense.next_suggestion("<TAB>") })
-key.map({ "i", "<S-TAB>", modules.intellisense.prev_suggestion })
-key.map({ "i", "<CR>", modules.intellisense.confirm_suggestion })
-key.map({ "n", "<leader>d", modules.intellisense.show_diagnostics })
-key.map({ "n", "<leader>[d", modules.intellisense.next_diagnostic })
-key.map({ "n", "<leader>]d", modules.intellisense.prev_diagnostic })
-key.map({ "n", "<leader>f", modules.intellisense.format })
+key.nmap({ "<C-Space>", modules.intellisense.open_code_actions })
+key.nmap({ "<leader>l", modules.intellisense.eslint_fix })
+key.nmap({ "<leader>gd", modules.intellisense.go_to_definition })
+key.nmap({ "<leader>gt", modules.intellisense.go_to_type_definition })
+key.nmap({ "<leader>gi", modules.intellisense.go_to_implementation })
+key.nmap({ "<leader>K", modules.intellisense.show_references })
+key.nmap({ "<leader>k", modules.intellisense.show_symbol_doc })
+key.nmap({ "<leader>r", modules.intellisense.rename_symbol })
+key.imap({ "<C-Space>", modules.intellisense.open_suggestions })
+key.imap({ "<TAB>", modules.intellisense.next_suggestion("<TAB>") })
+key.imap({ "<S-TAB>", modules.intellisense.prev_suggestion })
+key.imap({ "<CR>", modules.intellisense.confirm_suggestion })
+key.nmap({ "<leader>d", modules.intellisense.show_diagnostics })
+key.nmap({ "<leader>[d", modules.intellisense.next_diagnostic })
+key.nmap({ "<leader>]d", modules.intellisense.prev_diagnostic })
+key.nmap({ "<leader>f", modules.intellisense.format })
 
 -- Git
-key.map({ "n", "gb", modules.git.blame })
-key.map({ "n", "gl", modules.git.log })
-key.map({ "n", "gd", modules.git.diff })
-key.map({ "n", "gm", modules.git.mergetool })
-key.map({ "n", "gh", modules.git.show_hunk_preview })
-key.map({ "n", "]c", modules.git.next_hunk_preview("]c") })
-key.map({ "n", "[c", modules.git.prev_hunk_preview("[c") })
+key.nmap({ "gb", modules.git.blame })
+key.nmap({ "gl", modules.git.log })
+key.nmap({ "gd", modules.git.diff })
+key.nmap({ "gm", modules.git.mergetool })
+key.nmap({ "gh", modules.git.show_hunk_preview })
+key.nmap({ "]c", modules.git.next_hunk_preview("]c") })
+key.nmap({ "[c", modules.git.prev_hunk_preview("[c") })
 
 -- Finder
-key.map({ "n", "<C-p>", modules.finder.find_files })
-key.map({ "n", "<C-S-p>", modules.finder.find_commands })
-key.map({ "n", "<C-S-e>", modules.finder.find_projects })
-key.map({ "n", "<C-f>", modules.finder.find_in_buffer })
-key.map({ "n", "<C-S-f>", modules.finder.find_in_files })
--- key.map({ "n", "<C-y>", modules.finder.find_yanks })
-key.map({ "n", "<F1>", modules.finder.find_in_documentation })
-key.map({ "n", "<C-z>", modules.finder.find_spelling })
-key.map({ "n", "<C-b>", modules.finder.find_buffers })
-key.map({ "n", "<C-t>", modules.finder.find_todos })
+key.nmap({ "<C-p>", modules.finder.find_files })
+key.nmap({ "<C-S-p>", modules.finder.find_commands })
+key.nmap({ "<C-S-e>", modules.finder.find_projects })
+key.nmap({ "<C-f>", modules.finder.find_in_buffer })
+key.nmap({ "<C-S-f>", modules.finder.find_in_files })
+-- key.nmap({ "<C-y>", modules.finder.find_yanks })
+key.nmap({ "<F1>", modules.finder.find_in_documentation })
+key.nmap({ "<C-z>", modules.finder.find_spelling })
+key.nmap({ "<C-b>", modules.finder.find_buffers })
+key.nmap({ "<C-t>", modules.finder.find_todos })
 
 -- Quickfix and location lists keybindings
-key.map({ "n", "<C-c>", modules.quickfix.toggle })
-key.map({ "n", "<leader>c", modules.quickfix.jump })
+key.nmap({ "<C-c>", modules.quickfix.toggle })
+key.nmap({ "<leader>c", modules.quickfix.jump })
 -- TODO: C-n is synonim for ESC, so if used it clashes with ESC mappings
-key.map({ "n", "<C-]>", modules.quickfix.next })
-key.map({ "n", "<C-[>", modules.quickfix.prev })
+key.nmap({ "<C-]>", modules.quickfix.next })
+key.nmap({ "<C-[>", modules.quickfix.prev })
 
 -- Moving lines up and down
 -- see https://vim.fandom.com/wiki/Moving_lines_up_or_down#Reordering_up_to_nine_lines
--- key.map({ "n", "<C-j>", modules.editor.move_line_down })
--- key.map({ "n", "<C-k>", modules.editor.move_line_up })
-key.map({
-	"i",
+-- key.nmap({ "<C-j>", modules.editor.move_line_down })
+-- key.nmap({ "<C-k>", modules.editor.move_line_up })
+key.imap({
 	"<A-j>",
 	function()
 		key.input("<ESC>")
@@ -265,8 +264,7 @@ key.map({
 		key.input("gi")
 	end,
 })
-key.map({
-	"i",
+key.imap({
 	"<A-k>",
 	function()
 		key.input("<ESC>")
@@ -274,17 +272,17 @@ key.map({
 		key.input("gi")
 	end,
 })
-key.map({ "v", "<A-j>", modules.editor.move_selection_down })
-key.map({ "v", "<A-k>", modules.editor.move_selection_up })
+key.vmap({ "<A-j>", modules.editor.move_selection_down })
+key.vmap({ "<A-k>", modules.editor.move_selection_up })
 
 -- Replace word under cursor in buffer
-key.map({ "n", "<leader>s%", modules.editor.replace_current_word_in_buffer })
+key.nmap({ "<leader>s%", modules.editor.replace_current_word_in_buffer })
 -- Replace word under cursor in line
-key.map({ "n", "<leader>ss", modules.editor.replace_current_word_in_line })
+key.nmap({ "<leader>ss", modules.editor.replace_current_word_in_line })
 -- Commenting lines
-key.map({ "n", "<leader><space>", modules.editor.comment_line })
-key.map({ "x", "<leader><space>", modules.editor.comment_selection })
+key.nmap({ "<leader><space>", modules.editor.comment_line })
+key.xmap({ "<leader><space>", modules.editor.comment_selection })
 -- Toggling booleans
-key.map({ "n", "<leader>~", modules.editor.toggle_boolean })
+key.nmap({ "<leader>~", modules.editor.toggle_boolean })
 -- Yank all buffer
-key.map({ "n", "<leader>y%", modules.editor.yank_all })
+key.nmap({ "<leader>y%", modules.editor.yank_all })

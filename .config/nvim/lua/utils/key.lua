@@ -5,7 +5,7 @@ local Keymap = {
 function Keymap.set(fn)
 	local id = string.format("%p", fn)
 	Keymap._set[id] = fn
-	return string.format('<Cmd>lua require("utils.key").map.exec("%s")<CR>', id)
+	return string.format('<Cmd>lua require("utils.key")._maps.exec("%s")<CR>', id)
 end
 
 function Keymap.exec(id)
@@ -21,12 +21,12 @@ function Keymap.clear(id)
 	Keymap._set = {}
 end
 
-function Keymap.create(config)
-	local mode, lhs, rhs = config[1], config[2], config[3]
+function Keymap.create(mode, binding)
+	local lhs, rhs = binding[1], binding[2]
 	local opts = { noremap = true, silent = true }
 
 	-- Overriding default opts
-	for i, v in pairs(config) do
+	for i, v in pairs(binding) do
 		if type(i) == "string" then
 			opts[i] = v
 		end
@@ -51,12 +51,53 @@ end
 
 local M = {}
 
-M.map = setmetatable({}, {
+M._maps = setmetatable({}, {
 	__index = Keymap,
-	__call = function(_, config)
-		return Keymap.create(config)
-	end,
 })
+
+function M.map(...)
+	return Keymap.create("", ...)
+end
+
+function M.nmap(...)
+	return Keymap.create("n", ...)
+end
+
+function M.icmap(...)
+	return Keymap.create("!", ...)
+end
+
+function M.vmap(...)
+	return Keymap.create("v", ...)
+end
+
+function M.imap(...)
+	return Keymap.create("i", ...)
+end
+
+function M.tmap(...)
+	return Keymap.create("t", ...)
+end
+
+function M.omap(...)
+	return Keymap.create("o", ...)
+end
+
+function M.cmap(...)
+	return Keymap.create("c", ...)
+end
+
+function M.xmap(...)
+	return Keymap.create("x", ...)
+end
+
+function M.smap(...)
+	return Keymap.create("s", ...)
+end
+
+function M.lmap(...)
+	return Keymap.create("l", ...)
+end
 
 function M.feed(keys, mode)
 	return vim.fn.feedkeys(keys, mode)
