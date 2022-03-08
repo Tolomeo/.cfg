@@ -21,32 +21,36 @@ function Keymap.clear(id)
 	Keymap._set = {}
 end
 
-function Keymap.create(mode, binding)
-	local lhs, rhs = binding[1], binding[2]
-	local opts = { noremap = true, silent = true }
+function Keymap.bind(mode, ...)
+	local bindings = { ... }
 
-	-- Overriding default opts
-	for i, v in pairs(binding) do
-		if type(i) == "string" then
-			opts[i] = v
+	for _, binding in ipairs(bindings) do
+		local lhs, rhs = binding[1], binding[2]
+		local opts = { noremap = true, silent = true }
+
+		-- Overriding default opts
+		for i, v in pairs(binding) do
+			if type(i) == "string" then
+				opts[i] = v
+			end
 		end
+
+		-- Registering handler in case a function was passed
+		if type(rhs) == "function" then
+			rhs = Keymap.set(rhs)
+			opts.expr = false
+		end
+
+		-- Basic support for buffer-scoped keybindings
+		local buffer = opts.buffer
+		opts.buffer = nil
+
+		if buffer then
+			vim.api.nvim_buf_set_keymap(buffer, mode, lhs, rhs, opts)
+		end
+
+		vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
 	end
-
-	-- Registering handler in case a function was passed
-	if type(rhs) == "function" then
-		rhs = Keymap.set(rhs)
-		opts.expr = false
-	end
-
-	-- Basic support for buffer-scoped keybindings
-	local buffer = opts.buffer
-	opts.buffer = nil
-
-	if buffer then
-		return vim.api.nvim_buf_set_keymap(buffer, mode, lhs, rhs, opts)
-	end
-
-	return vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
 end
 
 local M = {}
@@ -56,47 +60,47 @@ M._maps = setmetatable({}, {
 })
 
 function M.map(...)
-	return Keymap.create("", ...)
+	return Keymap.bind("", ...)
 end
 
 function M.nmap(...)
-	return Keymap.create("n", ...)
+	return Keymap.bind("n", ...)
 end
 
 function M.icmap(...)
-	return Keymap.create("!", ...)
+	return Keymap.bind("!", ...)
 end
 
 function M.vmap(...)
-	return Keymap.create("v", ...)
+	return Keymap.bind("v", ...)
 end
 
 function M.imap(...)
-	return Keymap.create("i", ...)
+	return Keymap.bind("i", ...)
 end
 
 function M.tmap(...)
-	return Keymap.create("t", ...)
+	return Keymap.bind("t", ...)
 end
 
 function M.omap(...)
-	return Keymap.create("o", ...)
+	return Keymap.bind("o", ...)
 end
 
 function M.cmap(...)
-	return Keymap.create("c", ...)
+	return Keymap.bind("c", ...)
 end
 
 function M.xmap(...)
-	return Keymap.create("x", ...)
+	return Keymap.bind("x", ...)
 end
 
 function M.smap(...)
-	return Keymap.create("s", ...)
+	return Keymap.bind("s", ...)
 end
 
 function M.lmap(...)
-	return Keymap.create("l", ...)
+	return Keymap.bind("l", ...)
 end
 
 function M.feed(keys, mode)
