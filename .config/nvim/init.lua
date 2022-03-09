@@ -28,7 +28,7 @@ key.nmap(
 	{ "<A-S-j>", "20j" },
 	-- Controlling indentation
 	{ "<Tab>", ">>" },
-	{ "<A-Tab>", "<<" },
+	{ "<S-Tab>", "<<" },
 	-- Because we are mapping S-Tab to indent, now C-i indents too so we need to recover it
 	{ "<C-S-o>", "<C-i>" },
 	-- Repeating last macro with Q
@@ -52,12 +52,9 @@ key.nmap(
 	-- Toggling booleans
 	{ "<leader>~", modules.editor.toggle_boolean },
 	-- Adding blank lines with cr
-	{ "<C-CR>", "mm:put _<CR>`m" },
-	{ "<C-S-CR>", "mm:put! _<CR>`m" }
+	{ "<CR>", "mm:put! _<CR>`m" },
+	{ "<S-CR>", "mm:put _<CR>`m" }
 )
-
--- TODO: Visual mode movement multipliers
--- TODO: Visual mode duplicating up and down
 
 key.imap(
 	-- Arrows are disabled in insert mode
@@ -84,49 +81,98 @@ key.imap(
 		end,
 	},
 	-- Indentation
-	{ "<A-Tab>", "<C-t>" },
-	{ "<A-S-Tab>", "<C-d>" },
+	{ "<C-Tab>", "<C-t>" },
+	{ "<C-S-Tab>", "<C-d>" },
 	-- Adding blank lines with cr
 	{
 		"<C-CR>",
+		function()
+			key.input("<Esc>")
+			key.input(":put! _<CR>")
+			key.input("gi")
+		end,
+	},
+	{
+		"<C-S-CR>",
 		function()
 			key.input("<Esc>")
 			key.input(":put _<CR>")
 			key.input("gi")
 		end,
 	},
+	-- Duplicating lines up and down
 	{
-		"<C-S-CR>",
+		"<C-A-k>",
 		function()
 			key.input("<Esc>")
-			key.input(":put! _<CR>")
+			key.input("mayyP`a")
+			key.input("gi")
+		end,
+	},
+	{
+		"<C-A-j>",
+		function()
+			key.input("<Esc>")
+			key.input("mmyyp`m")
 			key.input("gi")
 		end,
 	}
 )
 
 key.vmap(
+	-- Multipliers
+	-- Left
+	{ "<A-h>", "b" },
+	{ "<A-S-h>", "B" },
+	-- Right
+	{ "<A-l>", "w" },
+	{ "<A-S-l>", "W" },
+	-- Up
+	{ "<A-k>", "10k" },
+	{ "<A-S-k>", "20k" },
+	-- Down
+	{ "<A-j>", "10j" },
+	{ "<A-S-j>", "20j" },
+	-- Indentation
 	{ "<Tab>", ">gv" },
 	{ "<S-Tab>", "<gv" },
 	-- Make visual yanks place the cursor back where started
 	{ "y", "ygv<Esc>" },
-	{ "<A-j>", modules.editor.move_selection_down },
-	{ "<A-k>", modules.editor.move_selection_up },
+	-- Bubbling
+	{ "<C-j>", modules.editor.move_selection_down },
+	{ "<C-k>", modules.editor.move_selection_up },
 	{ "<leader><space>", modules.editor.comment_selection },
 	-- Adding blank lines with cr
 	{
-		"<C-CR>",
+		"<CR>",
+		function()
+			key.input("mm<Esc>")
+			key.input(":'<put! _<CR>")
+			key.input("`mgv")
+		end,
+	},
+	{
+		"<S-CR>",
 		function()
 			key.input("mm<Esc>")
 			key.input(":'>put _<CR>")
 			key.input("`mgv")
 		end,
 	},
+	-- Duplicating selection up and down
 	{
-		"<C-S-CR>",
+		"<C-A-k>",
 		function()
-			key.input("mm<Esc>")
-			key.input(":'<put! _<CR>")
+			key.input("mm")
+			key.input("y'<P")
+			key.input("`mgv")
+		end,
+	},
+	{
+		"<C-A-j>",
+		function()
+			key.input("mm")
+			key.input("y'>p")
 			key.input("`mgv")
 		end,
 	}
