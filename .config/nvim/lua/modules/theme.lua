@@ -1,3 +1,5 @@
+local au = require('utils.au')
+
 local M = {}
 
 M.plugins = {
@@ -22,6 +24,18 @@ M.plugins = {
 		requires = { "kyazdani42/nvim-web-devicons", opt = true },
 	},
 }
+
+function M.autocommands()
+	-- Forcing every new window created to open vertically
+	-- see https://vi.stackexchange.com/questions/22779/how-to-open-files-in-vertical-splits-by-default
+	au.group("OnWindowOpen", {
+		{
+			"WinNew",
+			"*",
+			"wincmd L",
+		},
+	})
+end
 
 function M.setup()
 	-- NvimTree

@@ -1,3 +1,4 @@
+local au = require("utils.au")
 local key = require("utils.key")
 local modules = {
 	core = require("modules.core"),
@@ -7,6 +8,8 @@ local modules = {
 	git = require("modules.git"),
 	finder = require("modules.finder"),
 	intellisense = require("modules.intellisense"),
+	terminal = require("modules.terminal"),
+	config = require("modules.config"),
 }
 
 local Plugins = {
@@ -48,6 +51,17 @@ local M = {
 }
 setmetatable(M, { __index = modules })
 
+function M.autocommands()
+	-- Recompiling config whenever something changes
+	au.group("OnConfigChange", {
+		{
+			"BufWritePost",
+			"~/.config/nvim/**",
+			M.plugins.compile,
+		},
+	})
+end
+
 function M.for_each(fn)
 	for _, module in pairs(modules) do
 		fn(module)
@@ -69,11 +83,15 @@ function M.setup(options)
 
 	-- Setup up modules
 	M.for_each(function(module)
-		module.setup()
+		module.setup(options)
+		module.autocommands(options)
 	end)
 
 	-- Base modules configurations
 	modules.theme.color_scheme(options.color_scheme)
+
+	--
+	M.autocommands()
 end
 
 return M

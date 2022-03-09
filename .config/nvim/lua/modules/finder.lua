@@ -12,6 +12,9 @@ M.plugins = {
 	},
 }
 
+function M.autocommands()
+end
+
 function M.setup()
 	-- Telescope
 	require("telescope").setup({

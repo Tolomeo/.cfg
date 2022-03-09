@@ -1,3 +1,4 @@
+local au = require("utils.au")
 local key = require("utils.key")
 local M = {}
 
@@ -25,6 +26,30 @@ M.plugins = {
 	-- Highlighting color strings
 	"norcalli/nvim-colorizer.lua",
 }
+
+function M.autocommands()
+	-- Yank visual feedback
+	au.group("OnTextYanked", {
+		{
+			"TextYankPost",
+			"*",
+			vim.highlight.on_yank,
+		},
+	})
+
+	--[[ au.group("OnInsertModeToggle", {
+	{
+		"InsertEnter",
+		"*",
+		"set relativenumber"
+	},
+	{
+		"InsertLeave",
+		"*",
+		"set norelativenumber"
+	}
+}) ]]
+end
 
 function M.setup()
 	-- Treesitter configuration

@@ -9,6 +9,9 @@ M.plugins = {
 	"rmagatti/auto-session",
 }
 
+function M.autocommands()
+end
+
 function M.setup()
 	-- Setting files/dirs to look for to understand what the root dir is
 	vim.api.nvim_set_var("rooter_patterns", { "=nvim", ".git", "package.json" })

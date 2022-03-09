@@ -1,3 +1,4 @@
+local au = require("utils.au")
 local key = require("utils.key")
 local M = {}
 
@@ -25,6 +26,26 @@ function M.setup()
 		"coc-prettier",
 		"coc-calc",
 	}
+end
+
+function M.autocommands()
+	-- vim.cmd [[autocmd CursorHold * silent call CocActionAsync('highlight')]]
+	au.group("CursorSymbolHighlight", {
+		{
+			"CursorHold",
+			"*",
+			M.highlight_symbol,
+		},
+	})
+
+	-- Spellchecking only some files
+	au.group("OnMarkdownBufferOpen", {
+		{
+			{ "BufRead", "BufNewFile" },
+			"*.md",
+			"setlocal spell",
+		},
+	})
 end
 
 -- Module actions

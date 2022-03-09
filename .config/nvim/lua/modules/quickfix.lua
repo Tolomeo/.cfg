@@ -11,6 +11,9 @@ function M.setup()
 	vim.api.nvim_set_var("qf_mapping_ack_style", true)
 end
 
+function M.autocommands()
+end
+
 local function toggle_location_list()
 	key.input("<Plug>(qf_loc_toggle)", "m")
 end

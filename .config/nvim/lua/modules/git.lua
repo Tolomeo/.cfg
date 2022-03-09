@@ -23,6 +23,9 @@ function M.setup()
 	require("octo").setup()
 end
 
+function M.autocommands()
+end
+
 function M.blame()
 	key.input(":Git blame<CR>")
 end
