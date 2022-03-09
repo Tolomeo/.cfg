@@ -103,30 +103,10 @@ vim.cmd([[
 
 -- KEYMAPS
 
--- Normal mode
+-- Editor
+
 key.nmap(
-	-- Clearing search highlighting
-	{ "<BS>", ":noh<CR>" },
-	-- write only if changed
-	{ "<Leader>w", ":up<CR>", silent = false },
-	-- quit (or close window)
-	{ "<Leader>q", ":q<CR>" },
-	-- Discard all changed buffers & quit
-	{ "<Leader>Q", ":qall!<CR>" },
-	-- write all and quit
-	{ "<Leader>W", ":wqall<CR>", silent = false },
-	-- Windows navigation
-	{ "<C-h>", "<C-w>h" },
-	{ "<C-l>", "<C-w>l" },
-	{ "<C-k>", "<C-w>k" },
-	{ "<C-j>", "<C-w>j" },
-	-- Easier split mappings
-	{ "<Leader>;", "<C-W>R" },
-	{ "<Leader>[", "<C-W>_" },
-	{ "<Leader>]", "<C-W>|" },
-	{ "<Leader>=", "<C-W>=" },
-	-- Movement multipliers
-	-- TODO: making this work in visual mode too
+	-- Multipliers
 	-- Left
 	{ "<A-h>", "b" },
 	{ "<A-S-h>", "B" },
@@ -144,7 +124,6 @@ key.nmap(
 	{ "<A-S-j>", "20j" },
 	{ "J", "G" },
 	-- Duplicating lines up and down
-	-- TODO: making this work in visual mode too
 	{ "<C-A-k>", "mayyP`a" },
 	{ "<C-A-j>", "mayyp`a" },
 	-- Controlling indentation
@@ -152,61 +131,15 @@ key.nmap(
 	{ "<S-Tab>", "<<" },
 	-- Because we are mapping S-Tab to indent, now C-i indents too so we need to recover it
 	{ "<C-S-o>", "<C-i>" },
-	-- Keep search results centred
-	{ "n", "nzzzv" },
-	{ "N", "Nzzzv" },
 	-- Repeating last macro with Q
 	{ "Q", "@@" },
+	-- Easy select all of file
+	{ "<leader>%", "ggVG<c-$>" },
 	-- Join lines and restore cursor location
 	-- key.map { "n", "J", "mjJ`j" }
-	-- Yank until the end of line  (note: this is now a default on master)
-	{ "Y", "y$" },
-	-- Easy select all of file
-	{ "<leader>a", "ggVG<c-$>" },
-	{ "<C-e>", modules.theme.toggle_tree },
-	{ "<leader>e", modules.theme.focus_tree },
-	-- Intellisense
-	{ "<C-Space>", modules.intellisense.open_code_actions },
-	{ "<leader>l", modules.intellisense.eslint_fix },
-	{ "<leader>gd", modules.intellisense.go_to_definition },
-	{ "<leader>gt", modules.intellisense.go_to_type_definition },
-	{ "<leader>gi", modules.intellisense.go_to_implementation },
-	{ "<leader>K", modules.intellisense.show_references },
-	{ "<leader>k", modules.intellisense.show_symbol_doc },
-	{ "<leader>r", modules.intellisense.rename_symbol },
-	{ "<leader>d", modules.intellisense.show_diagnostics },
-	{ "<leader>[d", modules.intellisense.next_diagnostic },
-	{ "<leader>]d", modules.intellisense.prev_diagnostic },
-	{ "<leader>f", modules.intellisense.format },
-	-- Git
-	{ "gb", modules.git.blame },
-	{ "gl", modules.git.log },
-	{ "gd", modules.git.diff },
-	{ "gm", modules.git.mergetool },
-	{ "gh", modules.git.show_hunk_preview },
-	{ "]c", modules.git.next_hunk_preview("]c") },
-	{ "[c", modules.git.prev_hunk_preview("[c") },
-	-- Finder
-	{ "<C-p>", modules.finder.find_files },
-	{ "<C-S-p>", modules.finder.find_commands },
-	{ "<C-S-e>", modules.finder.find_projects },
-	{ "<C-f>", modules.finder.find_in_buffer },
-	{ "<C-S-f>", modules.finder.find_in_files },
-	-- { "<C-y>", modules.finder.find_yanks },
-	{ "<F1>", modules.finder.find_in_documentation },
-	{ "<C-z>", modules.finder.find_spelling },
-	{ "<C-b>", modules.finder.find_buffers },
-	{ "<C-t>", modules.finder.find_todos },
-
-	-- Quickfix and location lists keybindings
-	{ "<C-c>", modules.quickfix.toggle },
-	{ "<leader>c", modules.quickfix.jump },
-	-- TODO: C-n is synonim for ESC, so if used it clashes with ESC mappings
-	{ "<C-]>", modules.quickfix.next },
-	{ "<C-[>", modules.quickfix.prev },
 	-- Line bubbling
-	-- { "<C-j>", modules.editor.move_line_down },
-	-- { "<C-k>", modules.editor.move_line_up }
+	-- { "<C-S-j>", modules.editor.move_line_down },
+	-- { "<C-S-k>", modules.editor.move_line_up },
 	-- Replace word under cursor in buffer
 	{ "<leader>s%", modules.editor.replace_current_word_in_buffer },
 	-- Replace word under cursor in line
@@ -214,12 +147,11 @@ key.nmap(
 	-- Commenting lines
 	{ "<leader><space>", modules.editor.comment_line },
 	-- Toggling booleans
-	{ "<leader>~", modules.editor.toggle_boolean },
-	-- Yank all buffer
-	{ "<leader>y%", modules.editor.yank_all }
+	{ "<leader>~", modules.editor.toggle_boolean }
 )
 
--- Insert mode
+-- TODO: Visual mode movement multipliers
+-- TODO: Visual mode duplicating up and down
 
 key.imap(
 	-- Arrows are disabled in insert mode
@@ -227,11 +159,6 @@ key.imap(
 	{ "<right>", "<nop>" },
 	{ "<up>", "<nop>" },
 	{ "<down>", "<nop>" },
-	-- Window movements
-	{ "<C-h>", "<Esc><C-w>h" },
-	{ "<C-l>", "<Esc><C-w>l" },
-	{ "<C-k>", "<Esc><C-w>k" },
-	{ "<C-j>", "<Esc><C-w>j" },
 	-- Moving lines up and down
 	-- see https://vim.fandom.com/wiki/Moving_lines_up_or_down#Reordering_up_to_nine_lines
 	{
@@ -252,34 +179,46 @@ key.imap(
 	},
 	-- Indentation
 	{ "<A-Tab>", "<C-t>" },
-	{ "<A-S-Tab>", "<C-d>" },
-	-- Intellisense
-	{ "<C-Space>", modules.intellisense.open_suggestions },
-	{ "<TAB>", modules.intellisense.next_suggestion("<TAB>") },
-	{ "<S-TAB>", modules.intellisense.prev_suggestion },
-	{ "<CR>", modules.intellisense.confirm_suggestion }
+	{ "<A-S-Tab>", "<C-d>" }
 )
-
--- Visual mode
 
 key.vmap(
 	{ "<Tab>", ">gv" },
 	{ "<S-Tab>", "<gv" },
-
 	-- Make visual yanks place the cursor back where started
 	{ "y", "ygv<Esc>" },
-
-	{ "<C-h>", "<Esc><C-w>h" },
-	{ "<C-l>", "<Esc><C-w>l" },
-	{ "<C-k>", "<Esc><C-w>k" },
-	{ "<C-j>", "<Esc><C-w>j" },
-
 	{ "<A-j>", modules.editor.move_selection_down },
 	{ "<A-k>", modules.editor.move_selection_up },
 	{ "<leader><space>", modules.editor.comment_selection }
 )
 
--- Term mode
+-- Windows
+
+key.nmap(
+	-- Navigation
+	{ "<C-h>", "<C-w>h" },
+	{ "<C-l>", "<C-w>l" },
+	{ "<C-k>", "<C-w>k" },
+	{ "<C-j>", "<C-w>j" },
+	-- Split mappings
+	{ "<Leader>;", "<C-W>R" },
+	{ "<Leader>[", "<C-W>_" },
+	{ "<Leader>]", "<C-W>|" },
+	{ "<Leader>=", "<C-W>=" }
+)
+
+key.imap(
+	-- Navigation
+	{ "<C-h>", "<Esc><C-w>h" },
+	{ "<C-l>", "<Esc><C-w>l" },
+	{ "<C-k>", "<Esc><C-w>k" },
+	{ "<C-j>", "<Esc><C-w>j" }
+)
+
+key.vmap({ "<C-h>", "<Esc><C-w>h" }, { "<C-l>", "<Esc><C-w>l" }, { "<C-k>", "<Esc><C-w>k" }, {
+	"<C-j>",
+	"<Esc><C-w>j",
+})
 
 key.tmap(
 	{ "<Esc>", "<C-\\><C-n>" },
@@ -288,3 +227,88 @@ key.tmap(
 	{ "<C-k>", "<C-\\><C-n><C-w>k" },
 	{ "<C-j>", "<C-\\><C-n><C-w>j" }
 )
+
+-- Buffers
+
+key.nmap(
+	-- write only if changed
+	{ "<Leader>w", ":up<CR>", silent = false },
+	-- quit (or close window)
+	{ "<Leader>q", ":q<CR>" },
+	-- Discard all changed buffers & quit
+	{ "<Leader>Q", ":qall!<CR>" },
+	-- write all and quit
+	{ "<Leader>W", ":wqall<CR>", silent = false }
+)
+
+-- Search
+
+key.nmap(
+	-- Clearing search highlighting
+	{ "<BS>", ":noh<CR>" },
+	-- Keep search results centred
+	{ "n", "nzzzv" },
+	{ "N", "Nzzzv" },
+	-- finder
+	{ "<C-p>", modules.finder.find_files },
+	{ "<C-S-p>", modules.finder.find_commands },
+	{ "<C-S-e>", modules.finder.find_projects },
+	{ "<C-f>", modules.finder.find_in_buffer },
+	{ "<C-S-f>", modules.finder.find_in_files },
+	-- { "<C-y>", modules.finder.find_yanks },
+	{ "<F1>", modules.finder.find_in_documentation },
+	{ "<C-z>", modules.finder.find_spelling },
+	{ "<C-b>", modules.finder.find_buffers },
+	{ "<C-t>", modules.finder.find_todos }
+)
+
+-- File Explorer
+
+key.nmap({ "<C-e>", modules.theme.toggle_tree }, { "<leader>e", modules.theme.focus_tree })
+
+-- Intellisense
+
+key.nmap(
+	{ "<C-Space>", modules.intellisense.open_code_actions },
+	{ "<leader>l", modules.intellisense.eslint_fix },
+	{ "<leader>gd", modules.intellisense.go_to_definition },
+	{ "<leader>gt", modules.intellisense.go_to_type_definition },
+	{ "<leader>gi", modules.intellisense.go_to_implementation },
+	{ "<leader>K", modules.intellisense.show_references },
+	{ "<leader>k", modules.intellisense.show_symbol_doc },
+	{ "<leader>r", modules.intellisense.rename_symbol },
+	{ "<leader>d", modules.intellisense.show_diagnostics },
+	{ "<leader>[d", modules.intellisense.next_diagnostic },
+	{ "<leader>]d", modules.intellisense.prev_diagnostic },
+	{ "<leader>f", modules.intellisense.format }
+)
+
+key.imap(
+	{ "<C-Space>", modules.intellisense.open_suggestions },
+	{ "<TAB>", modules.intellisense.next_suggestion("<TAB>") },
+	{ "<S-TAB>", modules.intellisense.prev_suggestion },
+	{ "<CR>", modules.intellisense.confirm_suggestion }
+)
+
+-- Git
+
+key.nmap(
+	{ "gb", modules.git.blame },
+	{ "gl", modules.git.log },
+	{ "gd", modules.git.diff },
+	{ "gm", modules.git.mergetool },
+	{ "gh", modules.git.show_hunk_preview },
+	{ "]c", modules.git.next_hunk_preview("]c") },
+	{ "[c", modules.git.prev_hunk_preview("[c") }
+)
+
+-- Lists
+
+key.nmap(
+	{ "<C-c>", modules.quickfix.toggle },
+	{ "<leader>c", modules.quickfix.jump },
+	-- TODO: C-n is synonim for ESC, so if used it clashes with ESC mappings
+	{ "<C-]>", modules.quickfix.next },
+	{ "<C-[>", modules.quickfix.prev }
+)
+
