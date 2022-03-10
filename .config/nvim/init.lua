@@ -1,5 +1,5 @@
 require("options")
-local config = require("modules")
+local config = require("config")
 local key = require("utils.key")
 
 -- INITIALISATION
