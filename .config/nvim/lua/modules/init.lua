@@ -1,96 +1,80 @@
-local au = require("utils.au")
+local module = require("utils.module")
 local key = require("utils.key")
-local modules = {
-	core = require("modules.core"),
-	quickfix = require("modules.quickfix"),
-	interface = require("modules.interface"),
-	git = require("modules.git"),
-	editor = require("modules.editor"),
-	finder = require("modules.finder"),
-	intellisense = require("modules.intellisense"),
-	terminal = require("modules.terminal"),
-	config = require("modules.config"),
-}
+local au = require("utils.au")
 
-local Plugins = {
+local Config = {
+	-- plugins = Plugins,
+	plugins = { "wbthomason/packer.nvim" },
+	modules = {
+		core = require("modules.core"),
+		quickfix = require("modules.quickfix"),
+		interface = require("modules.interface"),
+		git = require("modules.git"),
+		editor = require("modules.editor"),
+		finder = require("modules.finder"),
+		intellisense = require("modules.intellisense"),
+		terminal = require("modules.terminal"),
+	},
+	installed = nil,
 	install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim",
-	installing = nil,
 }
 
-function Plugins.setup(registerPlugins)
+function Config:autocommands(_)
+	-- Recompiling config whenever something changes
+	au.group("OnConfigChange", {
+		{
+			"BufWritePost",
+			"~/.config/nvim/**",
+			self.compile,
+		},
+	})
+end
+
+function Config:setup(options)
 	-- Checking packer install location
-	Plugins.installing = vim.fn.empty(vim.fn.glob(Plugins.install_path)) > 0
+	self.installed = vim.fn.empty(vim.fn.glob(self.install_path)) == 0
 
 	-- Cloning packer in place if it is not found
-	if Plugins.installing then
+	if not self.installed then
 		print("Installing plugins...")
-		vim.fn.execute("!git clone https://github.com/wbthomason/packer.nvim " .. Plugins.install_path)
+		vim.fn.execute("!git clone https://github.com/wbthomason/packer.nvim " .. self.install_path)
 		vim.cmd("packadd packer.nvim")
 	end
 
 	-- Registering plugins to use
 	require("packer").startup(function(use)
 		-- Package manager maninging itself
-		use("wbthomason/packer.nvim")
+		use(self.plugins)
 		-- Consumer defined plugins
-		registerPlugins(use)
+		for _, m in pairs(self.modules) do
+			use(m.plugins)
+		end
 	end)
 
-	-- Automatically set up configuration after cloning packer.nvim
-	if Plugins.installing then
+	-- Downloading plugins
+	-- returning to avoid plugin require errors
+	if not self.installed then
 		require("packer").sync()
-	end
-end
-
-function Plugins.compile()
-	key.input(":PackerCompile<CR>")
-end
-
-local M = {
-	plugins = Plugins,
-}
-setmetatable(M, { __index = modules })
-
-function M.autocommands()
-	-- Recompiling config whenever something changes
-	au.group("OnConfigChange", {
-		{
-			"BufWritePost",
-			"~/.config/nvim/**",
-			M.plugins.compile,
-		},
-	})
-end
-
-function M.for_each(fn)
-	for _, module in pairs(modules) do
-		fn(module)
-	end
-end
-
-function M.setup(options)
-	-- Registering plugins
-	M.plugins.setup(function(use)
-		M.for_each(function(module)
-			use(module.plugins)
-		end)
-	end)
-
-	-- Returning if plugins still need to install to avoid errors
-	if M.plugins.installing then
 		return
 	end
 
 	-- Setup up modules
-	M.for_each(function(module)
-		module:setup(options)
-		module:autocommands(options)
-	end)
+	self:autocommands(options)
+	for _, m in pairs(self.modules) do
+		m:setup(options)
+		m:autocommands(options)
+	end
+
+	vim.cmd([[
+		:command! EditConfig :tabedit ~/.config/nvim
+	]])
 
 	-- Base modules configurations
-	modules.interface.color_scheme(options.color_scheme)
-	--
-	M.autocommands()
+	self.modules.interface.color_scheme(options.color_scheme)
 end
 
-return M
+function Config.compile()
+	key.input(":PackerCompile<CR>")
+end
+
+return module.create(Config)

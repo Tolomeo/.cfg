@@ -1,14 +1,15 @@
 require("options")
-local modules = require("modules")
+local config = require("modules")
 local key = require("utils.key")
 
 -- INITIALISATION
 
-modules.setup({
+config:setup({
 	color_scheme = "rose-pine",
 })
 
 -- KEYMAPS
+local modules = config.modules
 
 -- Editor
 
