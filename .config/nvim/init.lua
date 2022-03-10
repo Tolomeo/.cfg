@@ -21,11 +21,11 @@ key.nmap(
 	{ "<A-l>", "w" },
 	{ "<A-S-l>", "W" },
 	-- Up
-	{ "<A-k>", "10k" },
-	{ "<A-S-k>", "20k" },
+	{ "<A-k>", "9k" },
+	{ "<A-S-k>", "18k" },
 	-- Down
-	{ "<A-j>", "10j" },
-	{ "<A-S-j>", "20j" },
+	{ "<A-j>", "9j" },
+	{ "<A-S-j>", "18j" },
 	-- Controlling indentation
 	{ "<Tab>", ">>" },
 	{ "<S-Tab>", "<<" },
@@ -41,8 +41,8 @@ key.nmap(
 	{ "<C-j>", modules.editor.move_line_down },
 	{ "<C-k>", modules.editor.move_line_up },
 	-- Duplicating lines up and down
-	{ "<C-A-k>", "mayyP`a" },
-	{ "<C-A-j>", "mayyp`a" },
+	{ "<C-S-k>", "mayyP`a" },
+	{ "<C-S-j>", "mayyp`a" },
 	-- Replace word under cursor in buffer
 	{ "<leader>s%", modules.editor.replace_current_word_in_buffer },
 	-- Replace word under cursor in line
@@ -102,7 +102,7 @@ key.imap(
 	},
 	-- Duplicating lines up and down
 	{
-		"<C-A-k>",
+		"<C-S-k>",
 		function()
 			key.input("<Esc>")
 			key.input("mayyP`a")
@@ -110,7 +110,7 @@ key.imap(
 		end,
 	},
 	{
-		"<C-A-j>",
+		"<C-S-j>",
 		function()
 			key.input("<Esc>")
 			key.input("mmyyp`m")
@@ -128,11 +128,11 @@ key.vmap(
 	{ "<A-l>", "w" },
 	{ "<A-S-l>", "W" },
 	-- Up
-	{ "<A-k>", "10k" },
-	{ "<A-S-k>", "20k" },
+	{ "<A-k>", "9k" },
+	{ "<A-S-k>", "18k" },
 	-- Down
-	{ "<A-j>", "10j" },
-	{ "<A-S-j>", "20j" },
+	{ "<A-j>", "9j" },
+	{ "<A-S-j>", "18j" },
 	-- Indentation
 	{ "<Tab>", ">gv" },
 	{ "<S-Tab>", "<gv" },
@@ -161,7 +161,7 @@ key.vmap(
 	},
 	-- Duplicating selection up and down
 	{
-		"<C-A-k>",
+		"<C-S-k>",
 		function()
 			key.input("mm")
 			key.input("y'<P")
@@ -169,7 +169,7 @@ key.vmap(
 		end,
 	},
 	{
-		"<C-A-j>",
+		"<C-S-j>",
 		function()
 			key.input("mm")
 			key.input("y'>p")
@@ -185,10 +185,10 @@ key.tmap({ "<Esc>", "<C-\\><C-n>" })
 
 key.nmap(
 	-- Navigation
-	{ "<S-h>", "<C-w>h" },
-	{ "<S-l>", "<C-w>l" },
-	{ "<S-k>", "<C-w>k" },
-	{ "<S-j>", "<C-w>j" }
+	{ "<C-A-h>", "<C-w>h" },
+	{ "<C-A-l>", "<C-w>l" },
+	{ "<C-A-k>", "<C-w>k" },
+	{ "<C-A-j>", "<C-w>j" }
 	-- Split mappings
 	-- { "<Leader>;", "<C-W>R" },
 	-- { "<Leader>[", "<C-W>_" },
@@ -198,22 +198,22 @@ key.nmap(
 
 key.imap(
 	-- Navigation
-	{ "<S-h>", "<Esc><C-w>h" },
-	{ "<S-l>", "<Esc><C-w>l" },
-	{ "<S-k>", "<Esc><C-w>k" },
-	{ "<S-j>", "<Esc><C-w>j" }
+	{ "<C-A-h>", "<Esc><C-w>h" },
+	{ "<C-A-l>", "<Esc><C-w>l" },
+	{ "<C-A-k>", "<Esc><C-w>k" },
+	{ "<C-A-j>", "<Esc><C-w>j" }
 )
 
-key.vmap({ "<S-h>", "<Esc><C-w>h" }, { "<S-l>", "<Esc><C-w>l" }, { "<S-k>", "<Esc><C-w>k" }, {
-	"<S-j>",
+key.vmap({ "<C-A-h>", "<Esc><C-w>h" }, { "<C-A-l>", "<Esc><C-w>l" }, { "<C-A-k>", "<Esc><C-w>k" }, {
+	"<C-A-j>",
 	"<Esc><C-w>j",
 })
 
 key.tmap(
-	{ "<S-h>", "<C-\\><C-n><C-w>h" },
-	{ "<S-l>", "<C-\\><C-n><C-w>l" },
-	{ "<S-k>", "<C-\\><C-n><C-w>k" },
-	{ "<S-j>", "<C-\\><C-n><C-w>j" }
+	{ "<C-A-h>", "<C-\\><C-n><C-w>h" },
+	{ "<C-A-l>", "<C-\\><C-n><C-w>l" },
+	{ "<C-A-k>", "<C-\\><C-n><C-w>k" },
+	{ "<C-A-j>", "<C-\\><C-n><C-w>j" }
 )
 
 -- Buffers
@@ -259,7 +259,7 @@ key.nmap({ "<C-e>", modules.theme.toggle_tree }, { "<leader>e", modules.theme.fo
 key.nmap(
 	{ "<C-Space>", modules.intellisense.open_code_actions },
 	{ "<leader>l", modules.intellisense.eslint_fix },
-	{ "<leader>gd", modules.intellisense.go_to_definition },
+		{ "<leader>gd", modules.intellisense.go_to_definition },
 	{ "<leader>gt", modules.intellisense.go_to_type_definition },
 	{ "<leader>gi", modules.intellisense.go_to_implementation },
 	{ "<leader>K", modules.intellisense.show_references },
