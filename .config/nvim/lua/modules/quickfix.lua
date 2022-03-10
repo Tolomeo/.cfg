@@ -1,17 +1,15 @@
+local module = require("utils.module")
 local key = require("utils.key")
-local M = {}
+local List = {}
 
-M.plugins = {
+List.plugins = {
 	-- General qf and loc lists improvements
 	"romainl/vim-qf",
 }
 
-function M.setup()
+function List:setup()
 	vim.api.nvim_set_var("g:qf_save_win_view", false)
 	vim.api.nvim_set_var("qf_mapping_ack_style", true)
-end
-
-function M.autocommands()
 end
 
 local function toggle_location_list()
@@ -50,7 +48,7 @@ local function is_quickfix_window_open()
 	return vim.fn["qf#IsQfWindowOpen"]() ~= 0
 end
 
-function M.toggle()
+function List.toggle()
 	if is_quickfix_window_open() then
 		return toggle_quickfix_list()
 	end
@@ -58,7 +56,7 @@ function M.toggle()
 	return toggle_location_list()
 end
 
-function M.next()
+function List.next()
 	if is_quickfix_window_open() then
 		return next_quickfix()
 	end
@@ -66,7 +64,7 @@ function M.next()
 	return next_location()
 end
 
-function M.prev()
+function List.prev()
 	if is_quickfix_window_open() then
 		return prev_quickfix()
 	end
@@ -74,8 +72,8 @@ function M.prev()
 	return prev_location()
 end
 
-function M.jump()
+function List.jump()
 	key.input("<Plug>(qf_qf_switch)", "m")
 end
 
-return M
+return module.create(List)

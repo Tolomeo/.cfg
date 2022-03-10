@@ -1,9 +1,8 @@
+local module = require("utils.module")
 local au = require("utils.au")
-local M = {}
+local Terminal = {}
 
-M.plugins = {}
-
-function M.autocommands()
+function Terminal:autocommands()
 	-- In the terminal emulator, insert mode becomes the default mode
 	-- see https://github.com/neovim/neovim/issues/8816
 	-- NOTE: there are some caveats and related workarounds documented at the link
@@ -28,11 +27,11 @@ function M.autocommands()
 	})
 end
 
-function M.setup()
+function Terminal:setup()
 	-- TODO: verify if possible to do this in lua
 	vim.cmd([[
 		:command! EditConfig :tabedit ~/.config/nvim
 	]])
 end
 
-return M
+return module.create(Terminal)

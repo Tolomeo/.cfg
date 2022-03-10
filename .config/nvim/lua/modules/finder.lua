@@ -1,7 +1,8 @@
+local module = require("utils.module")
 local key = require("utils.key")
-local M = {}
+local Finder = {}
 
-M.plugins = {
+Finder.plugins = {
 	-- UI to select things (files, grep results, open buffers...)
 	{ "nvim-telescope/telescope.nvim", requires = { "nvim-lua/plenary.nvim" } },
 	"nvim-telescope/telescope-project.nvim",
@@ -12,10 +13,7 @@ M.plugins = {
 	},
 }
 
-function M.autocommands()
-end
-
-function M.setup()
+function Finder:setup()
 	-- Telescope
 	require("telescope").setup({
 		defaults = {
@@ -76,44 +74,44 @@ function M.setup()
 	})
 end
 
-function M.find_files()
+function Finder.find_files()
 	require("telescope.builtin").find_files()
 end
 
-function M.find_in_files()
+function Finder.find_in_files()
 	require("telescope.builtin").live_grep()
 end
 
-function M.find_in_buffer()
+function Finder.find_in_buffer()
 	require("telescope.builtin").current_buffer_fuzzy_find()
 end
 
-function M.find_buffers()
+function Finder.find_buffers()
 	require("telescope.builtin").buffers()
 end
 
-function M.find_in_documentation()
+function Finder.find_in_documentation()
 	require("telescope.builtin").help_tags()
 end
 
-function M.find_projects()
+function Finder.find_projects()
 	require("telescope").extensions.project.project({ display_type = "full" })
 end
 
-function M.find_yanks()
+function Finder.find_yanks()
 	require("telescope").extensions.neoclip.default()
 end
 
-function M.find_todos()
+function Finder.find_todos()
 	key.input(":TodoTelescope<CR>")
 end
 
-function M.find_commands()
+function Finder.find_commands()
 	require("telescope.builtin").commands()
 end
 
-function M.find_spelling()
+function Finder.find_spelling()
 	require("telescope.builtin").spell_suggest()
 end
 
-return M
+return module.create(Finder)

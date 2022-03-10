@@ -3,9 +3,9 @@ local key = require("utils.key")
 local modules = {
 	core = require("modules.core"),
 	quickfix = require("modules.quickfix"),
-	theme = require("modules.theme"),
-	editor = require("modules.editor"),
+	interface = require("modules.interface"),
 	git = require("modules.git"),
+	editor = require("modules.editor"),
 	finder = require("modules.finder"),
 	intellisense = require("modules.intellisense"),
 	terminal = require("modules.terminal"),
@@ -83,13 +83,12 @@ function M.setup(options)
 
 	-- Setup up modules
 	M.for_each(function(module)
-		module.setup(options)
-		module.autocommands(options)
+		module:setup(options)
+		module:autocommands(options)
 	end)
 
 	-- Base modules configurations
-	modules.theme.color_scheme(options.color_scheme)
-
+	modules.interface.color_scheme(options.color_scheme)
 	--
 	M.autocommands()
 end

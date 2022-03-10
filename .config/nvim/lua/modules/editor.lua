@@ -1,8 +1,9 @@
+local module = require("utils.module")
 local au = require("utils.au")
 local key = require("utils.key")
-local M = {}
+local Editor = {}
 
-M.plugins = {
+Editor.plugins = {
 	-- Highlight, edit, and code navigation parsing library
 	"nvim-treesitter/nvim-treesitter",
 	"nvim-treesitter/nvim-treesitter-textobjects",
@@ -27,7 +28,7 @@ M.plugins = {
 	"norcalli/nvim-colorizer.lua",
 }
 
-function M.autocommands()
+function Editor:autocommands()
 	-- Yank visual feedback
 	au.group("OnTextYanked", {
 		{
@@ -51,7 +52,7 @@ function M.autocommands()
 }) ]]
 end
 
-function M.setup()
+function Editor:setup()
 	-- Treesitter configuration
 	-- Parsers must be installed manually via :TSInstall
 	require("nvim-treesitter.configs").setup({
@@ -153,53 +154,53 @@ function M.setup()
 end
 
 -- vim.api.nvim_set_keymap("n", "<leader>/", "<Plug>kommentary_line_default", {})
-function M.comment_line()
+function Editor.comment_line()
 	key.input("<Plug>kommentary_line_default", "m")
 end
 
 -- vim.api.nvim_set_keymap("x", "<leader>/", "<Plug>kommentary_visual_default", {}
-function M.comment_selection()
+function Editor.comment_selection()
 	key.input("<Plug>kommentary_visual_default", "m")
 end
 
 -- Replace word under cursor in line
-function M.replace_current_word_in_buffer()
+function Editor.replace_current_word_in_buffer()
 	key.input(":%s/<C-r><C-w>//gI<left><left><left>")
 end
 
 -- Replace word under cursor in line
-function M.replace_current_word_in_line()
+function Editor.replace_current_word_in_line()
 	key.input(":s/<C-r><C-w>//gI<left><left><left>")
 end
 
 -- vim.api.nvim_set_keymap('n', '<A-j>', ':m .+1<CR>==', { noremap = true, silent = true })
-function M.move_line_down()
+function Editor.move_line_down()
 	key.input(":m .+1<CR>==")
 end
 
 -- vim.api.nvim_set_keymap('n', '<A-k>', ':m .-2<CR>==', { noremap = true, silent = true })
-function M.move_line_up()
+function Editor.move_line_up()
 	key.input(":m .-2<CR>==")
 end
 
 -- vim.api.nvim_set_keymap('v', '<A-j>', ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
-function M.move_selection_up()
+function Editor.move_selection_up()
 	key.input(":m '<-2<CR>gv=gv")
 end
 
 -- vim.api.nvim_set_keymap('v', '<A-k>', ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
-function M.move_selection_down()
+function Editor.move_selection_down()
 	key.input(":m '>+1<CR>gv=gv")
 end
 
 -- Returns the current word under the cursor
-function M.cword()
+function Editor.cword()
 	return vim.call("expand", "<cword>")
 end
 
 -- Toggles the current word under the cursor from 'true' to 'false' and viceversa
-function M.toggle_boolean()
-	local word = M.cword()
+function Editor.toggle_boolean()
+	local word = Editor.cword()
 
 	if word == "true" then
 		vim.api.nvim_command("normal! ciwfalse")
@@ -210,8 +211,8 @@ function M.toggle_boolean()
 	end
 end
 
-function M.yank_all()
+function Editor.yank_all()
 	vim.api.nvim_command("%y")
 end
 
-return M
+return module.create(Editor)

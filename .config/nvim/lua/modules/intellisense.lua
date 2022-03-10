@@ -1,14 +1,15 @@
+local module = require("utils.module")
 local au = require("utils.au")
 local key = require("utils.key")
-local M = {}
+local Intellisense = {}
 
-M.plugins = {
+Intellisense.plugins = {
 	-- Conquer of completion
 	"neoclide/coc.nvim",
 	branch = "release",
 }
 
-function M.setup()
+function Intellisense:setup()
 	-- Extensions, see https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions#install-extensions
 	vim.g.coc_global_extensions = {
 		"coc-sumneko-lua",
@@ -28,13 +29,13 @@ function M.setup()
 	}
 end
 
-function M.autocommands()
+function Intellisense:autocommands()
 	-- vim.cmd [[autocmd CursorHold * silent call CocActionAsync('highlight')]]
 	au.group("CursorSymbolHighlight", {
 		{
 			"CursorHold",
 			"*",
-			M.highlight_symbol,
+			Intellisense.highlight_symbol,
 		},
 	})
 
@@ -49,70 +50,70 @@ function M.autocommands()
 end
 
 -- Module actions
-function M.open_code_actions()
+function Intellisense.open_code_actions()
 	return key.input("<Plug>(coc-codeaction)", "m")
 end
 
-function M.format()
+function Intellisense.format()
 	return vim.api.nvim_command('call CocAction("format")')
 end
 
-function M.eslint_fix()
+function Intellisense.eslint_fix()
 	return vim.api.nvim_command("CocCommand eslint.executeAutofix")
 end
 
-function M.go_to_definition()
+function Intellisense.go_to_definition()
 	return key.input("<Plug>(coc-definition)", "m")
 end
 
-function M.go_to_type_definition()
+function Intellisense.go_to_type_definition()
 	return key.input("<Plug>(coc-type-definition)", "m")
 end
 
-function M.go_to_implementation()
+function Intellisense.go_to_implementation()
 	return key.input("<Plug>(coc-implementation)", "m")
 end
 
-function M.show_references()
+function Intellisense.show_references()
 	return key.input("<Plug>(coc-references)", "m")
 end
 
-function M.show_symbol_doc()
+function Intellisense.show_symbol_doc()
 	return vim.api.nvim_command('call CocActionAsync("doHover")')
 end
 
-function M.rename_symbol()
+function Intellisense.rename_symbol()
 	return key.input("<Plug>(coc-rename)", "m")
 end
 
-function M.highlight_symbol()
+function Intellisense.highlight_symbol()
 	return vim.api.nvim_command("call CocActionAsync('highlight')")
 end
 
-function M.show_diagnostics()
+function Intellisense.show_diagnostics()
 	return vim.api.nvim_command("CocDiagnostics")
 end
 
-function M.next_diagnostic()
+function Intellisense.next_diagnostic()
 	return key.input("<Plug>(coc-diagnostic-next)", "m")
 end
 
-function M.prev_diagnostic()
+function Intellisense.prev_diagnostic()
 	return key.input("<Plug>(coc-diagnostic-prev)", "m")
 end
 
 -- TODO: move this check into core module
-function M.has_suggestions()
+function Intellisense.has_suggestions()
 	return vim.fn.pumvisible() ~= 0
 end
 
-function M.open_suggestions()
+function Intellisense.open_suggestions()
 	return key.input(vim.fn["coc#refresh"]())
 end
 
-function M.next_suggestion(next)
+function Intellisense.next_suggestion(next)
 	return function()
-		if M.has_suggestions() then
+		if Intellisense.has_suggestions() then
 			return key.input("<C-n>")
 		end
 
@@ -120,20 +121,20 @@ function M.next_suggestion(next)
 	end
 end
 
-function M.prev_suggestion()
-	if M.has_suggestions() then
+function Intellisense.prev_suggestion()
+	if Intellisense.has_suggestions() then
 		return key.input("<C-p>")
 	end
 
 	return key.input("<C-h>")
 end
 -- vim.api.nvim_set_keymap("i", "<CR>", "pumvisible() ? coc#_select_confirm() : '<C-G>u<CR><C-R>=coc#on_enter()<CR>'", {silent = true, expr = true, noremap = true})
-function M.confirm_suggestion()
-	if M.has_suggestions() then
+function Intellisense.confirm_suggestion()
+	if Intellisense.has_suggestions() then
 		return key.feed(vim.fn["coc#_select_confirm"]())
 	end
 
 	return key.feed(key.to_term_code("<C-G>u<CR>") .. vim.fn["coc#on_enter"](), "n")
 end
 
-return M
+return module.create(Intellisense)

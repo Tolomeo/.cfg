@@ -252,7 +252,7 @@ key.nmap(
 
 -- File Explorer
 
-key.nmap({ "<C-e>", modules.theme.toggle_tree }, { "<leader>e", modules.theme.focus_tree })
+key.nmap({ "<C-e>", modules.interface.toggle_tree }, { "<leader>e", modules.interface.focus_tree })
 
 -- Intellisense
 

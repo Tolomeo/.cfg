@@ -1,8 +1,8 @@
-local au = require('utils.au')
+local module = require("utils.module")
+local au = require("utils.au")
+local Interface = {}
 
-local M = {}
-
-M.plugins = {
+Interface.plugins = {
 	-- Color themes
 	"shaunsingh/nord.nvim",
 	"navarasu/onedark.nvim",
@@ -25,7 +25,7 @@ M.plugins = {
 	},
 }
 
-function M.autocommands()
+function Interface:autocommands()
 	-- Forcing every new window created to open vertically
 	-- see https://vi.stackexchange.com/questions/22779/how-to-open-files-in-vertical-splits-by-default
 	au.group("OnWindowOpen", {
@@ -37,7 +37,7 @@ function M.autocommands()
 	})
 end
 
-function M.setup()
+function Interface:setup()
 	-- NvimTree
 	require("nvim-tree").setup({
 		open_on_setup = true,
@@ -90,7 +90,7 @@ function M.setup()
 	})
 end
 
-M.color_scheme = setmetatable({
+Interface.color_scheme = setmetatable({
 	nord = function()
 		vim.g.nord_disable_background = true
 		vim.g.nord_contrast = true
@@ -154,12 +154,12 @@ M.color_scheme = setmetatable({
 	end,
 })
 
-function M.toggle_tree()
+function Interface.toggle_tree()
 	return vim.api.nvim_command("NvimTreeToggle")
 end
 
-function M.focus_tree()
+function Interface.focus_tree()
 	return vim.api.nvim_command("NvimTreeFocus")
 end
 
-return M
+return module.create(Interface)

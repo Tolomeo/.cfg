@@ -1,7 +1,8 @@
+local module = require("utils.module")
 local key = require("utils.key")
-local M = {}
+local Git = {}
 
-M.plugins = {
+Git.plugins = {
 	-- Git integration
 	"tpope/vim-fugitive",
 	-- Add git related info in the signs columns and popups
@@ -10,7 +11,7 @@ M.plugins = {
 	"pwntester/octo.nvim",
 }
 
-function M.setup()
+function Git:setup()
 	-- GitSigns
 	-- see https://github.com/whatsthatsmell/dots/blob/master/public%20dots/vim-nvim/lua/joel/mappings.lua
 	require("gitsigns").setup({
@@ -23,38 +24,35 @@ function M.setup()
 	require("octo").setup()
 end
 
-function M.autocommands()
-end
-
-function M.blame()
+function Git.blame()
 	key.input(":Git blame<CR>")
 end
 
-function M.log()
+function Git.log()
 	key.input(":Git log<CR>")
 end
 
-function M.diff()
+function Git.diff()
 	key.input(":Git diff<CR>")
 end
 
-function M.mergetool()
+function Git.mergetool()
 	key.input(":Git mergetool<CR>")
 end
 
 -- TODO: move to core?
-function M.has_diff()
+function Git.has_diff()
 	return vim.api.nvim_win_get_option(0, "diff") ~= 0
 end
 
-function M.show_hunk_preview()
+function Git.show_hunk_preview()
 	require("gitsigns").preview_hunk()
 end
 
 -- vim.api.nvim_set_keymap("n", "<TAB>", "&diff ? '<TAB>' : '<cmd>lua require\"gitsigns.actions\".next_hunk()<CR>'", {noremap = true, silent = true, expr = true})
-function M.next_hunk_preview(next)
+function Git.next_hunk_preview(next)
 	return function()
-		if not M.has_diff() then
+		if not Git.has_diff() then
 			key.input(next)
 			return
 		end
@@ -64,9 +62,9 @@ function M.next_hunk_preview(next)
 end
 
 -- vim.api.nvim_set_keymap("n", "<S-TAB>", "&diff ? '<S-TAB>' : '<cmd>lua require\"gitsigns.actions\".prev_hunk()<CR>'", {noremap = true, silent = true, expr = true})
-function M.prev_hunk_preview(next)
+function Git.prev_hunk_preview(next)
 	return function()
-		if not M.has_diff() then
+		if not Git.has_diff() then
 			key.input(next)
 			return
 		end
@@ -75,4 +73,4 @@ function M.prev_hunk_preview(next)
 	end
 end
 
-return M
+return module.create(Git)

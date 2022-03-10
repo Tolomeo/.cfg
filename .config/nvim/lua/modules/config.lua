@@ -1,15 +1,11 @@
-local au = require("utils.au")
-local M = {}
+local module = require("utils.module")
+local Config = {}
 
-M.plugins = {}
-
-function M.autocommands() end
-
-function M.setup()
+function Config:setup()
 	-- TODO: verify if possible to do this in lua
 	vim.cmd([[
 		:command! EditConfig :tabedit ~/.config/nvim
 	]])
 end
 
-return M
+return module.create(Config)
