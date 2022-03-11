@@ -260,7 +260,7 @@ key.nmap({ "<C-e>", modules.interface.toggle_tree }, { "<leader>e", modules.inte
 key.nmap(
 	{ "<C-Space>", modules.intellisense.open_code_actions },
 	{ "<leader>l", modules.intellisense.eslint_fix },
-		{ "<leader>gd", modules.intellisense.go_to_definition },
+	{ "<leader>gd", modules.intellisense.go_to_definition },
 	{ "<leader>gt", modules.intellisense.go_to_type_definition },
 	{ "<leader>gi", modules.intellisense.go_to_implementation },
 	{ "<leader>K", modules.intellisense.show_references },
