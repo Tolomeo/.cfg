@@ -6,7 +6,8 @@ local Editor = {}
 Editor.plugins = {
 	-- Highlight, edit, and code navigation parsing library
 	"nvim-treesitter/nvim-treesitter",
-	"nvim-treesitter/nvim-treesitter-textobjects",
+	-- Syntax aware text-objects based on treesitter
+	{ "nvim-treesitter/nvim-treesitter-textobjects", requires = "nvim-treesitter/nvim-treesitter" },
 	-- Indentation guides
 	"lukas-reineke/indent-blankline.nvim",
 	-- Comments
@@ -27,7 +28,7 @@ Editor.plugins = {
 	-- Highlighting color strings
 	"norcalli/nvim-colorizer.lua",
 	-- Highlighting command ranges
-	{"winston0410/range-highlight.nvim", requires = 'winston0410/cmd-parser.nvim'}
+	{ "winston0410/range-highlight.nvim", requires = "winston0410/cmd-parser.nvim" },
 }
 
 function Editor:autocommands()
@@ -153,8 +154,8 @@ function Editor:setup()
 
 	-- Colorizer
 	require("colorizer").setup()
-	-- Reange highlight
-	require'range-highlight'.setup{}
+	-- Range highlight
+	require("range-highlight").setup()
 end
 
 -- vim.api.nvim_set_keymap("n", "<leader>/", "<Plug>kommentary_line_default", {})

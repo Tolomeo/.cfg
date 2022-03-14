@@ -54,11 +54,13 @@ key.nmap(
 	{ "<leader>~", modules.editor.toggle_boolean },
 	-- Adding blank lines with cr
 	{ "<CR>", "mm:put! _<CR>`m" },
-	{ "<S-CR>", "mm:put _<CR>`m" }
+	{ "<S-CR>", "mm:put _<CR>`m" },
+	-- Cleaning a line
+	{ "<leader>dd", ":.s/\v^.*$/<Cr>:noh<Cr>"}
 )
 
 key.imap(
-	-- Arrows are disabled in insert mode
+	-- Arrows are disabled
 	{ "<left>", "<nop>" },
 	{ "<right>", "<nop>" },
 	{ "<up>", "<nop>" },
@@ -176,7 +178,9 @@ key.vmap(
 			key.input("y'>p")
 			key.input("`mgv")
 		end,
-	}
+	},
+	-- Cleaning selected lines
+	{ "<leader>dd", "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" }
 )
 
 -- Exiting term mode using esc
@@ -266,7 +270,7 @@ key.nmap(
 	{ "<leader>K", modules.intellisense.show_references },
 	{ "<leader>k", modules.intellisense.show_symbol_doc },
 	{ "<leader>r", modules.intellisense.rename_symbol },
-	{ "<leader>d", modules.intellisense.show_diagnostics },
+	{ "<leader>dl", modules.intellisense.show_diagnostics },
 	{ "<leader>[d", modules.intellisense.next_diagnostic },
 	{ "<leader>]d", modules.intellisense.prev_diagnostic },
 	{ "<leader>f", modules.intellisense.format }
