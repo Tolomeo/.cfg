@@ -39,24 +39,22 @@ key.nmap(
 	-- Join lines and restore cursor location
 	-- key.map { "n", "J", "mjJ`j" }
 	-- Line bubbling
-	{ "<C-j>", modules.editor.move_line_down },
-	{ "<C-k>", modules.editor.move_line_up },
+	{ "<C-j>", ":m .+1<CR>==" },
+	{ "<C-k>", ":m .-2<CR>==" },
 	-- Duplicating lines up and down
 	{ "<C-S-k>", "mayyP`a" },
 	{ "<C-S-j>", "mayyp`a" },
 	-- Replace word under cursor in buffer
-	{ "<leader>s%", modules.editor.replace_current_word_in_buffer },
+	{ "<leader>s%", ":%s/<C-r><C-w>//gI<left><left><left>" },
 	-- Replace word under cursor in line
-	{ "<leader>ss", modules.editor.replace_current_word_in_line },
-	-- Commenting lines
-	{ "<leader><space>", modules.editor.comment_line },
-	-- Toggling booleans
-	{ "<leader>~", modules.editor.toggle_boolean },
+	{ "<leader>ss", ":s/<C-r><C-w>//gI<left><left><left>" },
 	-- Adding blank lines with cr
-	{ "<CR>", "mm:put! _<CR>`m" },
-	{ "<S-CR>", "mm:put _<CR>`m" },
+	{ "<leader>O", "mm:put! _<CR>`m" },
+	{ "<leader>o", "mm:put _<CR>`m" },
 	-- Cleaning a line
-	{ "<leader>dd", ":.s/\v^.*$/<Cr>:noh<Cr>"}
+	{ "<leader>dd", ":.s/\v^.*$/<Cr>:noh<Cr>" },
+	-- Commenting lines
+	{ "<leader><space>", modules.editor.comment_line }
 )
 
 key.imap(
@@ -65,61 +63,9 @@ key.imap(
 	{ "<right>", "<nop>" },
 	{ "<up>", "<nop>" },
 	{ "<down>", "<nop>" },
-	-- Moving lines up and down
-	-- see https://vim.fandom.com/wiki/Moving_lines_up_or_down#Reordering_up_to_nine_lines
-	{
-		"<A-j>",
-		function()
-			key.input("<Esc>")
-			modules.editor.move_line_down()
-			key.input("gi")
-		end,
-	},
-	{
-		"<A-k>",
-		function()
-			key.input("<Esc>")
-			modules.editor.move_line_up()
-			key.input("gi")
-		end,
-	},
 	-- Indentation
 	{ "<C-Tab>", "<C-t>" },
-	{ "<C-S-Tab>", "<C-d>" },
-	-- Adding blank lines with cr
-	{
-		"<C-CR>",
-		function()
-			key.input("<Esc>")
-			key.input(":put! _<CR>")
-			key.input("gi")
-		end,
-	},
-	{
-		"<C-S-CR>",
-		function()
-			key.input("<Esc>")
-			key.input(":put _<CR>")
-			key.input("gi")
-		end,
-	},
-	-- Duplicating lines up and down
-	{
-		"<C-S-k>",
-		function()
-			key.input("<Esc>")
-			key.input("mayyP`a")
-			key.input("gi")
-		end,
-	},
-	{
-		"<C-S-j>",
-		function()
-			key.input("<Esc>")
-			key.input("mmyyp`m")
-			key.input("gi")
-		end,
-	}
+	{ "<C-S-Tab>", "<C-d>" }
 )
 
 key.vmap(
@@ -141,46 +87,31 @@ key.vmap(
 	{ "<S-Tab>", "<gv" },
 	-- Make visual yanks place the cursor back where started
 	{ "y", "ygv<Esc>" },
+	-- Adding blank lines
+	{
+		"<leader>o",
+		"mm<Esc>:'>put _<CR>`mgv",
+	},
+	{
+		"<leader>O",
+		"mm<Esc>:'<put! _<CR>`mgv",
+	},
 	-- Bubbling
-	{ "<C-j>", modules.editor.move_selection_down },
-	{ "<C-k>", modules.editor.move_selection_up },
-	{ "<leader><space>", modules.editor.comment_selection },
-	-- Adding blank lines with cr
-	{
-		"<CR>",
-		function()
-			key.input("mm<Esc>")
-			key.input(":'<put! _<CR>")
-			key.input("`mgv")
-		end,
-	},
-	{
-		"<S-CR>",
-		function()
-			key.input("mm<Esc>")
-			key.input(":'>put _<CR>")
-			key.input("`mgv")
-		end,
-	},
+	{ "<C-j>", ":m '>+1<CR>gv=gv" },
+	{ "<C-k>", ":m '<-2<CR>gv=gv" },
 	-- Duplicating selection up and down
 	{
 		"<C-S-k>",
-		function()
-			key.input("mm")
-			key.input("y'<P")
-			key.input("`mgv")
-		end,
+		"mmy'<P`mgv",
 	},
 	{
 		"<C-S-j>",
-		function()
-			key.input("mm")
-			key.input("y'>p")
-			key.input("`mgv")
-		end,
+		"mmy'>p`mgv",
 	},
 	-- Cleaning selected lines
-	{ "<leader>dd", "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" }
+	{ "<leader>dd", "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" },
+	-- Commenting lines
+	{ "<leader><space>", modules.editor.comment_selection }
 )
 
 -- Exiting term mode using esc

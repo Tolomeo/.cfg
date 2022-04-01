@@ -154,6 +154,7 @@ function Editor:setup()
 
 	-- Colorizer
 	require("colorizer").setup()
+
 	-- Range highlight
 	require("range-highlight").setup()
 end
@@ -168,42 +169,14 @@ function Editor.comment_selection()
 	key.input("<Plug>kommentary_visual_default", "m")
 end
 
--- Replace word under cursor in line
-function Editor.replace_current_word_in_buffer()
-	key.input(":%s/<C-r><C-w>//gI<left><left><left>")
-end
-
--- Replace word under cursor in line
-function Editor.replace_current_word_in_line()
-	key.input(":s/<C-r><C-w>//gI<left><left><left>")
-end
-
--- vim.api.nvim_set_keymap('n', '<A-j>', ':m .+1<CR>==', { noremap = true, silent = true })
-function Editor.move_line_down()
-	key.input(":m .+1<CR>==")
-end
-
--- vim.api.nvim_set_keymap('n', '<A-k>', ':m .-2<CR>==', { noremap = true, silent = true })
-function Editor.move_line_up()
-	key.input(":m .-2<CR>==")
-end
-
--- vim.api.nvim_set_keymap('v', '<A-j>', ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
-function Editor.move_selection_up()
-	key.input(":m '<-2<CR>gv=gv")
-end
-
--- vim.api.nvim_set_keymap('v', '<A-k>', ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
-function Editor.move_selection_down()
-	key.input(":m '>+1<CR>gv=gv")
-end
-
 -- Returns the current word under the cursor
 function Editor.cword()
 	return vim.call("expand", "<cword>")
 end
 
 -- Toggles the current word under the cursor from 'true' to 'false' and viceversa
+-- NOTE: this is currently not used
+-- TODO: gather a list of commonly 'swappable' words and operate the toggle based on that available dictionary
 function Editor.toggle_boolean()
 	local word = Editor.cword()
 
@@ -214,10 +187,6 @@ function Editor.toggle_boolean()
 	else
 		print("Cannot toggle because the word under the cursor ('" .. word .. "') is not a boolean value")
 	end
-end
-
-function Editor.yank_all()
-	vim.api.nvim_command("%y")
 end
 
 return module.create(Editor)
