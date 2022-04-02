@@ -1,7 +1,7 @@
 --Incremental live completion (note: this is now a default on master)
 vim.o.inccommand = "nosplit"
 
---Set highlight on search
+-- Set highlight on search
 vim.o.hlsearch = true
 
 -- Avoid rerendering during macros, registers etc

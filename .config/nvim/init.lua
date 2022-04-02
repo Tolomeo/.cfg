@@ -188,7 +188,7 @@ key.nmap(
 
 -- File Explorer
 
-key.nmap({ "<C-e>", modules.interface.toggle_tree }, { "<leader>e", modules.interface.focus_tree })
+key.nmap({ "<leader>E", modules.interface.toggle_tree }, { "<leader>e", modules.interface.focus_tree })
 
 -- Intellisense
 
