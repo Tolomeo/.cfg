@@ -16,16 +16,16 @@ local modules = config.modules
 key.nmap(
 	-- Multipliers
 	-- Left
-	{ "<A-h>", "b" },
+	{ "<S-h>", "b" },
 	{ "<A-S-h>", "B" },
 	-- Right
-	{ "<A-l>", "w" },
+	{ "<S-l>", "w" },
 	{ "<A-S-l>", "W" },
 	-- Up
-	{ "<A-k>", "9k" },
+	{ "<S-k>", "9k" },
 	{ "<A-S-k>", "18k" },
 	-- Down
-	{ "<A-j>", "9j" },
+	{ "<S-j>", "9j" },
 	{ "<A-S-j>", "18j" },
 	-- Controlling indentation
 	{ "<Tab>", ">>" },
@@ -39,20 +39,20 @@ key.nmap(
 	-- Join lines and restore cursor location
 	-- key.map { "n", "J", "mjJ`j" }
 	-- Line bubbling
-	{ "<C-j>", ":m .+1<CR>==" },
-	{ "<C-k>", ":m .-2<CR>==" },
+	{ "<A-j>", ":m .+1<CR>==" },
+	{ "<A-k>", ":m .-2<CR>==" },
 	-- Duplicating lines up and down
-	{ "<C-S-k>", "mayyP`a" },
-	{ "<C-S-j>", "mayyp`a" },
+	{ "<leader>P", "mayyP`a" },
+	{ "<leader>p", "mayyp`a" },
 	-- Replace word under cursor in buffer
-	{ "<leader>s%", ":%s/<C-r><C-w>//gI<left><left><left>" },
+	{ "<leader>S", ":%s/<C-r><C-w>//gI<left><left><left>" },
 	-- Replace word under cursor in line
-	{ "<leader>ss", ":s/<C-r><C-w>//gI<left><left><left>" },
+	{ "<leader>s", ":s/<C-r><C-w>//gI<left><left><left>" },
 	-- Adding blank lines with cr
 	{ "<leader>O", "mm:put! _<CR>`m" },
 	{ "<leader>o", "mm:put _<CR>`m" },
 	-- Cleaning a line
-	{ "<leader>dd", ":.s/\v^.*$/<Cr>:noh<Cr>" },
+	{ "<leader>d", ":.s/\v^.*$/<Cr>:noh<Cr>" },
 	-- Commenting lines
 	{ "<leader><space>", modules.editor.comment_line }
 )
@@ -71,16 +71,16 @@ key.imap(
 key.vmap(
 	-- Multipliers
 	-- Left
-	{ "<A-h>", "b" },
+	{ "<S-h>", "b" },
 	{ "<A-S-h>", "B" },
 	-- Right
-	{ "<A-l>", "w" },
+	{ "<S-l>", "w" },
 	{ "<A-S-l>", "W" },
 	-- Up
-	{ "<A-k>", "9k" },
+	{ "<S-k>", "9k" },
 	{ "<A-S-k>", "18k" },
 	-- Down
-	{ "<A-j>", "9j" },
+	{ "<S-j>", "9j" },
 	{ "<A-S-j>", "18j" },
 	-- Indentation
 	{ "<Tab>", ">gv" },
@@ -97,19 +97,19 @@ key.vmap(
 		"mm<Esc>:'<put! _<CR>`mgv",
 	},
 	-- Bubbling
-	{ "<C-j>", ":m '>+1<CR>gv=gv" },
-	{ "<C-k>", ":m '<-2<CR>gv=gv" },
+	{ "<A-j>", ":m '>+1<CR>gv=gv" },
+	{ "<A-k>", ":m '<-2<CR>gv=gv" },
 	-- Duplicating selection up and down
 	{
-		"<C-S-k>",
+		"<leader>P",
 		"mmy'<P`mgv",
 	},
 	{
-		"<C-S-j>",
+		"<leader>p",
 		"mmy'>p`mgv",
 	},
 	-- Cleaning selected lines
-	{ "<leader>dd", "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" },
+	{ "<leader>d", "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" },
 	-- Commenting lines
 	{ "<leader><space>", modules.editor.comment_selection }
 )
@@ -121,10 +121,10 @@ key.tmap({ "<Esc>", "<C-\\><C-n>" })
 
 key.nmap(
 	-- Navigation
-	{ "<C-A-h>", "<C-w>h" },
-	{ "<C-A-l>", "<C-w>l" },
-	{ "<C-A-k>", "<C-w>k" },
-	{ "<C-A-j>", "<C-w>j" }
+	{ "<C-h>", "<C-w>h" },
+	{ "<C-l>", "<C-w>l" },
+	{ "<C-k>", "<C-w>k" },
+	{ "<C-j>", "<C-w>j" }
 	-- Split mappings
 	-- { "<Leader>;", "<C-W>R" },
 	-- { "<Leader>[", "<C-W>_" },
@@ -134,22 +134,22 @@ key.nmap(
 
 key.imap(
 	-- Navigation
-	{ "<C-A-h>", "<Esc><C-w>h" },
-	{ "<C-A-l>", "<Esc><C-w>l" },
-	{ "<C-A-k>", "<Esc><C-w>k" },
-	{ "<C-A-j>", "<Esc><C-w>j" }
+	{ "<C-h>", "<Esc><C-w>h" },
+	{ "<C-l>", "<Esc><C-w>l" },
+	{ "<C-k>", "<Esc><C-w>k" },
+	{ "<C-j>", "<Esc><C-w>j" }
 )
 
-key.vmap({ "<C-A-h>", "<Esc><C-w>h" }, { "<C-A-l>", "<Esc><C-w>l" }, { "<C-A-k>", "<Esc><C-w>k" }, {
-	"<C-A-j>",
+key.vmap({ "<C-h>", "<Esc><C-w>h" }, { "<C-l>", "<Esc><C-w>l" }, { "<C-k>", "<Esc><C-w>k" }, {
+	"<C-j>",
 	"<Esc><C-w>j",
 })
 
 key.tmap(
-	{ "<C-A-h>", "<C-\\><C-n><C-w>h" },
-	{ "<C-A-l>", "<C-\\><C-n><C-w>l" },
-	{ "<C-A-k>", "<C-\\><C-n><C-w>k" },
-	{ "<C-A-j>", "<C-\\><C-n><C-w>j" }
+	{ "<C-h>", "<C-\\><C-n><C-w>h" },
+	{ "<C-l>", "<C-\\><C-n><C-w>l" },
+	{ "<C-k>", "<C-\\><C-n><C-w>k" },
+	{ "<C-j>", "<C-\\><C-n><C-w>j" }
 )
 
 -- Buffers
