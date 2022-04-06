@@ -31,22 +31,22 @@ end
 
 function Intellisense:autocommands()
 	-- vim.cmd [[autocmd CursorHold * silent call CocActionAsync('highlight')]]
-	au.group("CursorSymbolHighlight", {
+	au.group({ "CursorSymbolHighlight", {
 		{
 			"CursorHold",
 			"*",
 			Intellisense.highlight_symbol,
 		},
-	})
+	} })
 
 	-- Spellchecking only some files
-	au.group("OnMarkdownBufferOpen", {
+	au.group({ "OnMarkdownBufferOpen", {
 		{
 			{ "BufRead", "BufNewFile" },
 			"*.md",
 			"setlocal spell",
 		},
-	})
+	} })
 end
 
 -- Module actions

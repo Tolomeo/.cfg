@@ -8,21 +8,24 @@ function Terminal:autocommands()
 	-- NOTE: there are some caveats and related workarounds documented at the link
 	-- TODO: enter insert mode even when the buffer reloaded from being hidden
 	-- also, no line numbers in the terminal
-	au.group("OnTerminalBufferEnter", {
+	au.group({
+		"OnTerminalBufferEnter",
 		{
-			"TermOpen",
-			"term://*",
-			"startinsert",
-		},
-		{
-			"TermOpen",
-			"term://*",
-			"setlocal nonumber norelativenumber",
-		},
-		{
-			"BufEnter",
-			"term://*",
-			"if &buftype == 'terminal' | :startinsert | endif",
+			{
+				"TermOpen",
+				"term://*",
+				"startinsert",
+			},
+			{
+				"TermOpen",
+				"term://*",
+				"setlocal nonumber norelativenumber",
+			},
+			{
+				"BufEnter",
+				"term://*",
+				"if &buftype == 'terminal' | :startinsert | endif",
+			},
 		},
 	})
 end

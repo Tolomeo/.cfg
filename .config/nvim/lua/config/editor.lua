@@ -33,15 +33,15 @@ Editor.plugins = {
 
 function Editor:autocommands()
 	-- Yank visual feedback
-	au.group("OnTextYanked", {
+	au.group({ "OnTextYanked", {
 		{
 			"TextYankPost",
 			"*",
 			vim.highlight.on_yank,
 		},
-	})
+	} })
 
-	--[[ au.group("OnInsertModeToggle", {
+	--[[ au.group({ "OnInsertModeToggle", {
 	{
 		"InsertEnter",
 		"*",
@@ -52,7 +52,7 @@ function Editor:autocommands()
 		"*",
 		"set norelativenumber"
 	}
-}) ]]
+} }) ]]
 end
 
 function Editor:setup()

@@ -1,6 +1,6 @@
 local module = require("utils.module")
 local key = require("utils.key")
-local au = require("utils.au")
+-- local au = require("utils.au")
 
 local Config = {
 	-- plugins = Plugins,
@@ -20,14 +20,25 @@ local Config = {
 }
 
 function Config:autocommands(_)
+	-- NOTE: there's some issues with recent autocmd implementation
+	-- TODO: swap when fixes are merged - https://github.com/neovim/neovim/pull/17979
+	vim.cmd([[
+		augroup OnConfigChange
+				autocmd!
+				autocmd BufWritePost ~/.config/nvim/** :PackerCompile
+		augroup end
+	]])
 	-- Recompiling config whenever something changes
-	au.group("OnConfigChange", {
+	--[[ au.group({
+		"OnConfigChange",
 		{
-			"BufWritePost",
-			"~/.config/nvim/**",
-			self.compile,
-		},
-	})
+			{
+				"BufWritePost",
+				"~/.config/nvim/**",
+				Config.compile
+			},
+		}
+	}) ]]
 end
 
 function Config:setup(options)
@@ -74,6 +85,7 @@ function Config:setup(options)
 end
 
 function Config.compile()
+	print("here!")
 	key.input(":PackerCompile<CR>")
 end
 
