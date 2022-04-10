@@ -117,15 +117,15 @@ key.vmap(
 -- Exiting term mode using esc
 key.tmap({ "<Esc>", "<C-\\><C-n>" })
 
--- Windows
+-- Windows and buffers
 
 key.nmap(
-	-- Navigation
+	-- Windows navigation
 	{ "<C-l>", "<C-w>w" },
 	{ "<C-h>", "<C-w>W" },
-	-- Exchange with next window
+	-- Exchange current window with the next one
 	{ "<C-;>", "<C-w>x" },
-	-- Resizing
+	-- Resizing the current window
 	{ "<C-j>", ":resize -3<Cr>" },
 	{ "<C-A-j>", ":vertical :resize -3<Cr>" },
 	{ "<C-k>", ":resize +3<Cr>" },
@@ -133,7 +133,10 @@ key.nmap(
 	-- Resetting windows size
 	{ "<C-=>", "<C-w>=" },
 	-- Maximising current window size
-	{ "<C-+>", "<C-w>_<C-w>|" }
+	{ "<C-+>", "<C-w>_<C-w>|" },
+	-- Buffers navigation
+	{ "<A-Tab>", ":bnext<Cr>" },
+	{ "<A-S-Tab>", ":bprev<Cr>" }
 )
 
 key.imap(
@@ -150,7 +153,10 @@ key.imap(
 	-- Resetting windows size
 	{ "<C-=>", "<Esc><C-w>=gi" },
 	-- Maximising current window size
-	{ "<C-+>", "<Esc><C-w>_<C-w>|gi" }
+	{ "<C-+>", "<Esc><C-w>_<C-w>|gi" },
+	-- Buffers navigation
+	{ "<A-Tab>", "<Esc>:bnext<Cr>" },
+	{ "<A-S-Tab>", "<Esc>:bprev<Cr>" }
 )
 
 key.vmap(
@@ -167,7 +173,10 @@ key.vmap(
 	-- Resetting windows size
 	{ "<C-=>", "<Esc><C-w>=gv" },
 	-- Maximising current window size
-	{ "<C-+>", "<Esc><C-w>_<C-w>|gv" }
+	{ "<C-+>", "<Esc><C-w>_<C-w>|gv" },
+	-- Buffers navigation
+	{ "<A-Tab>", "<Esc>:bnext<Cr>" },
+	{ "<A-S-Tab>", "<Esc>:bprev<Cr>" }
 )
 
 key.tmap(
@@ -184,7 +193,10 @@ key.tmap(
 	-- Resetting windows size
 	{ "<C-=>", "<C-\\><C-n><C-w>=i" },
 	-- Maximising current window size
-	{ "<C-+>", "<C-\\><C-n><C-w>_<C-w>|i" }
+	{ "<C-+>", "<C-\\><C-n><C-w>_<C-w>|i" },
+	-- Buffers navigation
+	{ "<A-Tab>", "<C-\\><C-n>:bnext<Cr>" },
+	{ "<A-S-Tab>", "<C-\\><C-n>:bprev<Cr>" }
 )
 
 -- Buffers
@@ -270,4 +282,3 @@ key.nmap(
 	{ "<C-]>", modules.quickfix.next },
 	{ "<C-[>", modules.quickfix.prev }
 )
-

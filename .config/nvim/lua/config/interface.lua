@@ -1,5 +1,11 @@
 local module = require("utils.module")
-local au = require("utils.au")
+-- local au = require("utils.au")
+
+local defaults = {
+	component_separator = "",
+	section_separator = "",
+}
+
 local Interface = {}
 
 Interface.plugins = {
@@ -23,18 +29,22 @@ Interface.plugins = {
 		"nvim-lualine/lualine.nvim",
 		requires = { "kyazdani42/nvim-web-devicons", opt = true },
 	},
+	{
+		"kdheepak/tabline.nvim",
+		requires = { { "hoob3rt/lualine.nvim", opt = true }, { "kyazdani42/nvim-web-devicons", opt = true } },
+	},
 }
 
 function Interface:autocommands()
 	-- Forcing every new window created to open vertically
 	-- see https://vi.stackexchange.com/questions/22779/how-to-open-files-in-vertical-splits-by-default
-	au.group({ "OnWindowOpen", {
+	--[[ au.group({ "OnWindowOpen", {
 		{
 			"WinNew",
 			"*",
 			"wincmd L",
 		},
-	} })
+	} }) ]]
 end
 
 function Interface:setup()
@@ -58,35 +68,19 @@ function Interface:setup()
 	-- Statusbar
 	require("lualine").setup({
 		options = {
-			icons_enabled = true,
-			theme = "auto",
-			component_separators = { left = "/", right = "/" },
-			section_separators = { left = "", right = "" },
-			disabled_filetypes = {},
-			always_divide_middle = true,
+			component_separators = { left = defaults.component_separator, right = defaults.component_separator },
+			section_separators = { left = defaults.section_separator, right = defaults.section_separator },
 		},
-		sections = {
-			lualine_a = { "mode" },
-			lualine_b = {
-				"branch",
-				{ "diff", colored = false },
-				{ "diagnostics", sources = { "coc" }, colored = false, update_in_insert = true },
-			},
-			lualine_c = { "filename" },
-			lualine_x = { "encoding", "fileformat", "filetype" },
-			lualine_y = { "progress" },
-			lualine_z = { "location" },
+	})
+
+	require("tabline").setup({
+		enable = true,
+		options = {
+			component_separators = { defaults.component_separator, defaults.component_separator },
+			section_separators = { defaults.section_separator, defaults.section_separator },
+			show_tabs_always = true, -- this shows tabs only when there are more than one tab or if the first tab is named
+			modified_icon = "~ ", -- change the default modified icon
 		},
-		inactive_sections = {
-			lualine_a = {},
-			lualine_b = {},
-			lualine_c = { "filename" },
-			lualine_x = { "location" },
-			lualine_y = {},
-			lualine_z = {},
-		},
-		tabline = {},
-		extensions = {},
 	})
 end
 
