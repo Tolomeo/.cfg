@@ -121,35 +121,70 @@ key.tmap({ "<Esc>", "<C-\\><C-n>" })
 
 key.nmap(
 	-- Navigation
-	{ "<C-h>", "<C-w>h" },
-	{ "<C-l>", "<C-w>l" },
-	{ "<C-k>", "<C-w>k" },
-	{ "<C-j>", "<C-w>j" }
-	-- Split mappings
-	-- { "<Leader>;", "<C-W>R" },
-	-- { "<Leader>[", "<C-W>_" },
-	-- { "<Leader>]", "<C-W>|" },
-	-- { "<Leader>=", "<C-W>=" }
+	{ "<C-l>", "<C-w>w" },
+	{ "<C-h>", "<C-w>W" },
+	-- Exchange with next window
+	{ "<C-;>", "<C-w>x" },
+	-- Resizing
+	{ "<C-j>", ":resize -3<Cr>" },
+	{ "<C-A-j>", ":vertical :resize -3<Cr>" },
+	{ "<C-k>", ":resize +3<Cr>" },
+	{ "<C-A-k>", ":vertical :resize +3<Cr>" },
+	-- Resetting windows size
+	{ "<C-=>", "<C-w>=" },
+	-- Maximising current window size
+	{ "<C-+>", "<C-w>_<C-w>|" }
 )
 
 key.imap(
 	-- Navigation
-	{ "<C-h>", "<Esc><C-w>h" },
-	{ "<C-l>", "<Esc><C-w>l" },
-	{ "<C-k>", "<Esc><C-w>k" },
-	{ "<C-j>", "<Esc><C-w>j" }
+	{ "<C-l>", "<Esc><C-w>w" },
+	{ "<C-h>", "<Esc><C-w>W" },
+	-- Exchange with next window
+	{ "<C-;>", "<Esc><C-w>x" },
+	-- Resizing
+	{ "<C-j>", "<Esc>:resize -3<Cr>gi" },
+	{ "<C-A-j>", "<Esc>:vertical :resize -3<Cr>gi" },
+	{ "<C-k>", "<Esc>:resize +3<Cr>gi" },
+	{ "<C-A-k>", "<Esc>:vertical :resize +3<Cr>gi" },
+	-- Resetting windows size
+	{ "<C-=>", "<Esc><C-w>=gi" },
+	-- Maximising current window size
+	{ "<C-+>", "<Esc><C-w>_<C-w>|gi" }
 )
 
-key.vmap({ "<C-h>", "<Esc><C-w>h" }, { "<C-l>", "<Esc><C-w>l" }, { "<C-k>", "<Esc><C-w>k" }, {
-	"<C-j>",
-	"<Esc><C-w>j",
-})
+key.vmap(
+	-- Navigation
+	{ "<C-l>", "<Esc><C-w>w" },
+	{ "<C-h>", "<Esc><C-w>W" },
+	-- Exchange with next window
+	{ "<C-;>", "<Esc><C-w>x" },
+	-- Resizing
+	{ "<C-j>", "<Esc>:resize -3<Cr>gv" },
+	{ "<C-A-j>", "<Esc>:vertical :resize -3<Cr>gv" },
+	{ "<C-k>", "<Esc>:resize +3<Cr>gv" },
+	{ "<C-A-k>", "<Esc>:vertical :resize +3<Cr>gv" },
+	-- Resetting windows size
+	{ "<C-=>", "<Esc><C-w>=gv" },
+	-- Maximising current window size
+	{ "<C-+>", "<Esc><C-w>_<C-w>|gv" }
+)
 
 key.tmap(
-	{ "<C-h>", "<C-\\><C-n><C-w>h" },
-	{ "<C-l>", "<C-\\><C-n><C-w>l" },
-	{ "<C-k>", "<C-\\><C-n><C-w>k" },
-	{ "<C-j>", "<C-\\><C-n><C-w>j" }
+	-- Navigation
+	{ "<C-l>", "<C-\\><C-n><C-w>w" },
+	{ "<C-h>", "<C-\\><C-n><C-w>W" },
+	-- Exchange with next window
+	{ "<C-;>", "<C-\\><C-n><C-w>x" },
+	-- Resizing
+	{ "<C-j>", "<C-\\><C-n>:resize -3<Cr>i" },
+	{ "<C-A-j>", "<C-\\><C-n>:vertical :resize -3<Cr>i" },
+	{ "<C-k>", "<C-\\><C-n>:resize +3<Cr>i" },
+	{ "<C-A-k>", "<C-\\><C-n>:vertical :resize +3<Cr>i" },
+	-- Resetting windows size
+	{ "<C-=>", "<C-\\><C-n><C-w>=i" },
+	-- Maximising current window size
+	{ "<C-+>", "<C-\\><C-n><C-w>_<C-w>|i" }
 )
 
 -- Buffers
@@ -235,3 +270,4 @@ key.nmap(
 	{ "<C-]>", modules.quickfix.next },
 	{ "<C-[>", modules.quickfix.prev }
 )
+
