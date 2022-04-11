@@ -3,9 +3,8 @@ local config = require("config")
 local key = require("utils.key")
 
 -- INITIALISATION
-
 config:setup({
-	color_scheme = "rose-pine",
+	color_scheme = "edge",
 })
 
 -- KEYMAPS
@@ -121,19 +120,24 @@ key.tmap({ "<Esc>", "<C-\\><C-n>" })
 
 key.nmap(
 	-- Windows navigation
-	{ "<C-l>", "<C-w>w" },
-	{ "<C-h>", "<C-w>W" },
+	{ "<C-n>", "<C-w>w" },
+	{ "<C-p>", "<C-w>W" },
 	-- Exchange current window with the next one
 	{ "<C-;>", "<C-w>x" },
 	-- Resizing the current window
 	{ "<C-j>", ":resize -3<Cr>" },
-	{ "<C-A-j>", ":vertical :resize -3<Cr>" },
+	{ "<C-h>", ":vertical :resize -3<Cr>" },
+	{ "<C-l>", ":vertical :resize +3<Cr>" },
 	{ "<C-k>", ":resize +3<Cr>" },
-	{ "<C-A-k>", ":vertical :resize +3<Cr>" },
+	-- Moving windows
+	{ "<C-A-j>", "<C-w>J" },
+	{ "<C-A-h>", "<C-w>H" },
+	{ "<C-A-l>", "<C-w>L" },
+	{ "<C-A-k>", "<C-w>K" },
 	-- Resetting windows size
 	{ "<C-=>", "<C-w>=" },
 	-- Maximising current window size
-	{ "<C-+>", "<C-w>_<C-w>|" },
+	{ "<C-f>", "<C-w>_<C-w>|" },
 	-- Buffers navigation
 	{ "<A-Tab>", ":bnext<Cr>" },
 	{ "<A-S-Tab>", ":bprev<Cr>" }
@@ -141,19 +145,24 @@ key.nmap(
 
 key.imap(
 	-- Navigation
-	{ "<C-l>", "<Esc><C-w>w" },
-	{ "<C-h>", "<Esc><C-w>W" },
+	{ "<C-n>", "<Esc><C-w>w" },
+	{ "<C-p>", "<Esc><C-w>W" },
 	-- Exchange with next window
 	{ "<C-;>", "<Esc><C-w>x" },
 	-- Resizing
 	{ "<C-j>", "<Esc>:resize -3<Cr>gi" },
-	{ "<C-A-j>", "<Esc>:vertical :resize -3<Cr>gi" },
+	{ "<C-h>", "<Esc>:vertical :resize -3<Cr>gi" },
+	{ "<C-l>", "<Esc>:vertical :resize +3<Cr>gi" },
 	{ "<C-k>", "<Esc>:resize +3<Cr>gi" },
-	{ "<C-A-k>", "<Esc>:vertical :resize +3<Cr>gi" },
+	-- Moving windows
+	{ "<C-A-j>", "<Esc><C-w>Jgi" },
+	{ "<C-A-h>", "<Esc><C-w>Hgi" },
+	{ "<C-A-l>", "<Esc><C-w>Lgi" },
+	{ "<C-A-k>", "<Esc><C-w>Kgi" },
 	-- Resetting windows size
 	{ "<C-=>", "<Esc><C-w>=gi" },
 	-- Maximising current window size
-	{ "<C-+>", "<Esc><C-w>_<C-w>|gi" },
+	{ "<C-f>", "<Esc><C-w>_<C-w>|gi" },
 	-- Buffers navigation
 	{ "<A-Tab>", "<Esc>:bnext<Cr>" },
 	{ "<A-S-Tab>", "<Esc>:bprev<Cr>" }
@@ -161,17 +170,22 @@ key.imap(
 
 key.vmap(
 	-- Navigation
-	{ "<C-l>", "<Esc><C-w>w" },
-	{ "<C-h>", "<Esc><C-w>W" },
+	{ "<C-n>", "<Esc><C-w>w" },
+	{ "<C-p>", "<Esc><C-w>W" },
 	-- Exchange with next window
 	{ "<C-;>", "<Esc><C-w>x" },
 	-- Resizing
 	{ "<C-j>", "<Esc>:resize -3<Cr>gv" },
-	{ "<C-A-j>", "<Esc>:vertical :resize -3<Cr>gv" },
+	{ "<C-h>", "<Esc>:vertical :resize -3<Cr>gv" },
+	{ "<C-l>", "<Esc>:vertical :resize +3<Cr>gv" },
 	{ "<C-k>", "<Esc>:resize +3<Cr>gv" },
-	{ "<C-A-k>", "<Esc>:vertical :resize +3<Cr>gv" },
+	-- Moving windows
+	{ "<C-A-j>", "<Esc><C-w>Jgv" },
+	{ "<C-A-h>", "<Esc><C-w>Hgv" },
+	{ "<C-A-l>", "<Esc><C-w>Lgv" },
+	{ "<C-A-k>", "<Esc><C-w>Kgv" },
 	-- Resetting windows size
-	{ "<C-=>", "<Esc><C-w>=gv" },
+	{ "<C-f>", "<Esc><C-w>=gv" },
 	-- Maximising current window size
 	{ "<C-+>", "<Esc><C-w>_<C-w>|gv" },
 	-- Buffers navigation
@@ -181,17 +195,22 @@ key.vmap(
 
 key.tmap(
 	-- Navigation
-	{ "<C-l>", "<C-\\><C-n><C-w>w" },
-	{ "<C-h>", "<C-\\><C-n><C-w>W" },
+	{ "<C-n>", "<C-\\><C-n><C-w>w" },
+	{ "<C-p>", "<C-\\><C-n><C-w>W" },
 	-- Exchange with next window
 	{ "<C-;>", "<C-\\><C-n><C-w>x" },
 	-- Resizing
 	{ "<C-j>", "<C-\\><C-n>:resize -3<Cr>i" },
-	{ "<C-A-j>", "<C-\\><C-n>:vertical :resize -3<Cr>i" },
+	{ "<C-h>", "<C-\\><C-n>:vertical :resize -3<Cr>i" },
+	{ "<C-l>", "<C-\\><C-n>:vertical :resize +3<Cr>i" },
 	{ "<C-k>", "<C-\\><C-n>:resize +3<Cr>i" },
-	{ "<C-A-k>", "<C-\\><C-n>:vertical :resize +3<Cr>i" },
+	-- Moving windows
+	{ "<C-A-j>", "<C-\\><C-n><C-w>Ji" },
+	{ "<C-A-h>", "<C-\\><C-n><C-w>Hi" },
+	{ "<C-A-l>", "<C-\\><C-n><C-w>Li" },
+	{ "<C-A-k>", "<C-\\><C-n><C-w>Ki" },
 	-- Resetting windows size
-	{ "<C-=>", "<C-\\><C-n><C-w>=i" },
+	{ "<C-f>", "<C-\\><C-n><C-w>=i" },
 	-- Maximising current window size
 	{ "<C-+>", "<C-\\><C-n><C-w>_<C-w>|i" },
 	-- Buffers navigation
@@ -224,8 +243,8 @@ key.nmap(
 	{ "<C-p>", modules.finder.find_files },
 	{ "<C-S-p>", modules.finder.find_commands },
 	{ "<C-S-e>", modules.finder.find_projects },
-	{ "<C-f>", modules.finder.find_in_buffer },
-	{ "<C-S-f>", modules.finder.find_in_files },
+	{ "<leader>f", modules.finder.find_in_buffer },
+	{ "<leader>F", modules.finder.find_in_files },
 	-- { "<C-y>", modules.finder.find_yanks },
 	{ "<F1>", modules.finder.find_in_documentation },
 	{ "<C-z>", modules.finder.find_spelling },
@@ -241,7 +260,7 @@ key.nmap({ "<leader>E", modules.interface.toggle_tree }, { "<leader>e", modules.
 
 key.nmap(
 	{ "<C-Space>", modules.intellisense.open_code_actions },
-	{ "<leader>l", modules.intellisense.eslint_fix },
+	{ "<leader>B", modules.intellisense.eslint_fix },
 	{ "<leader>gd", modules.intellisense.go_to_definition },
 	{ "<leader>gt", modules.intellisense.go_to_type_definition },
 	{ "<leader>gi", modules.intellisense.go_to_implementation },
@@ -251,7 +270,7 @@ key.nmap(
 	{ "<leader>dl", modules.intellisense.show_diagnostics },
 	{ "<leader>[d", modules.intellisense.next_diagnostic },
 	{ "<leader>]d", modules.intellisense.prev_diagnostic },
-	{ "<leader>f", modules.intellisense.format }
+	{ "<leader>b", modules.intellisense.format }
 )
 
 key.imap(

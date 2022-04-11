@@ -33,13 +33,18 @@ Editor.plugins = {
 
 function Editor:autocommands()
 	-- Yank visual feedback
-	au.group({ "OnTextYanked", {
+	au.group({
+		"OnTextYanked",
 		{
-			"TextYankPost",
-			"*",
-			vim.highlight.on_yank,
+			{
+				"TextYankPost",
+				"*",
+				function()
+					vim.highlight.on_yank()
+				end,
+			},
 		},
-	} })
+	})
 
 	--[[ au.group({ "OnInsertModeToggle", {
 	{

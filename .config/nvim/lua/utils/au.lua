@@ -1,8 +1,8 @@
 local M = {}
 
 function M.group(config)
-	local name, commands = config[1], config[2]
-	local opts = {}
+	local name, autocmds = config[1], config[2]
+	local opts = { clear = true }
 
 	-- Overriding default opts
 	for i, v in pairs(config) do
@@ -13,9 +13,9 @@ function M.group(config)
 
 	local group = vim.api.nvim_create_augroup(name, opts)
 
-	for _, command in ipairs(commands) do
-		command.group = group
-		M.command(command)
+	for _, autocmd in ipairs(autocmds) do
+		autocmd.group = group
+		M.command(autocmd)
 	end
 end
 
@@ -31,12 +31,8 @@ function M.command(config)
 	end
 
 	opts.pattern = pattern
-
-	if type(handler) == "string" then
-		opts.command = handler
-	elseif type(handler) == "function" then
-		opts.callback = handler
-	end
+	opts.command = type(handler) ~= "function" and handler or nil
+	opts.callback = type(handler) == "function" and handler or nil
 
 	vim.api.nvim_create_autocmd(eventName, opts)
 end
