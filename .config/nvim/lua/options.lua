@@ -70,6 +70,8 @@ vim.opt.guicursor = "a:block-blinkon0,v-ve-sm-o-r:block-blinkon1,i-c-ci-cr:ver1-
 vim.opt.foldenable = false
 vim.opt.foldmethod = "indent"
 
+vim.o.laststatus = 3
+
 --Remap space as leader key
 vim.api.nvim_set_keymap("", "<Space>", "<Nop>", { noremap = true, silent = true })
 vim.g.mapleader = " "

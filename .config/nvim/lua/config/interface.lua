@@ -68,6 +68,7 @@ function Interface:setup()
 	-- Statusbar
 	require("lualine").setup({
 		options = {
+			globalstatus = true, -- TODO: derive this from 'laststatus' option
 			component_separators = { left = defaults.component_separator, right = defaults.component_separator },
 			section_separators = { left = defaults.section_separator, right = defaults.section_separator },
 		},
