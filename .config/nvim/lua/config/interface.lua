@@ -2,7 +2,7 @@ local module = require("utils.module")
 -- local au = require("utils.au")
 
 local defaults = {
-	component_separator = "",
+	component_separator = "│",
 	section_separator = "",
 }
 
@@ -48,20 +48,33 @@ function Interface:autocommands()
 end
 
 function Interface:setup()
+	vim.g.nvim_tree_highlight_opened_files = 3
+	vim.g.nvim_tree_group_empty = 1
 	-- NvimTree
 	require("nvim-tree").setup({
-		open_on_setup = true,
-		hijack_cursor = true,
-		update_cwd = true,
+		hijack_netrw = true,
+		-- hijack_directories = true,
+		auto_reload_on_write = true,
+		open_on_tab = true,
 		diagnostics = {
 			enable = true,
+			show_on_dirs = true,
+		},
+		git = {
+			enable = true,
+			ignore = false,
 		},
 		update_focused_file = {
 			enable = true,
 			update_cwd = true,
 		},
 		view = {
-			auto_resize = true,
+			preserve_window_proportions = true,
+			mappings = {
+				list = {
+					{ key = "<CR>", action = "edit_in_place" },
+				},
+			},
 		},
 	})
 
@@ -150,11 +163,13 @@ Interface.color_scheme = setmetatable({
 })
 
 function Interface.toggle_tree()
-	return vim.api.nvim_command("NvimTreeToggle")
-end
+	local view = require("nvim-tree.view")
 
-function Interface.focus_tree()
-	return vim.api.nvim_command("NvimTreeFocus")
+	if view.is_visible() then
+		return view.close()
+	end
+
+	require("nvim-tree").open_replacing_current_buffer()
 end
 
 return module.create(Interface)

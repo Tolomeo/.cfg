@@ -222,13 +222,13 @@ key.tmap(
 
 key.nmap(
 	-- write only if changed
-	{ "<Leader>w", ":up<CR>", silent = false },
-	-- quit (or close window)
-	{ "<Leader>q", ":q<CR>" },
-	-- Discard all changed buffers & quit
-	{ "<Leader>Q", ":qall!<CR>" },
+	{ "<leader>w", ":up<CR>", silent = false },
 	-- write all and quit
-	{ "<Leader>W", ":wqall<CR>", silent = false }
+	{ "<leader>W", ":wall<CR>", silent = false },
+	-- quit (or close window)
+	{ "<leader>q", ":q<CR>" },
+	-- Discard all changed buffers & quit
+	{ "<leader>Q", ":qall<CR>" }
 )
 
 -- Search
@@ -254,7 +254,7 @@ key.nmap(
 
 -- File Explorer
 
-key.nmap({ "<leader>E", modules.interface.toggle_tree }, { "<leader>e", modules.interface.focus_tree })
+key.nmap({ "<leader>e", modules.interface.toggle_tree })
 
 -- Intellisense
 
