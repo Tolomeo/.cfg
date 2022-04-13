@@ -1,38 +1,39 @@
 local Module = require("utils.module")
 local au = require("utils.au")
-local Terminal = {}
 
-function Terminal:setup()
-	-- In the terminal emulator, insert mode becomes the default mode
-	-- see https://github.com/neovim/neovim/issues/8816
-	-- NOTE: there are some caveats and related workarounds documented at the link
-	-- TODO: enter insert mode even when the buffer reloaded from being hidden
-	-- also, no line numbers in the terminal
-	au.group({
-		"OnTerminalBufferEnter",
-		{
+local Terminal = Module:new({
+	setup = function()
+		-- In the terminal emulator, insert mode becomes the default mode
+		-- see https://github.com/neovim/neovim/issues/8816
+		-- NOTE: there are some caveats and related workarounds documented at the link
+		-- TODO: enter insert mode even when the buffer reloaded from being hidden
+		-- also, no line numbers in the terminal
+		au.group({
+			"OnTerminalBufferEnter",
 			{
-				"TermOpen",
-				"term://*",
-				"startinsert",
+				{
+					"TermOpen",
+					"term://*",
+					"startinsert",
+				},
+				{
+					"TermOpen",
+					"term://*",
+					"setlocal nonumber norelativenumber",
+				},
+				{
+					"BufEnter",
+					"term://*",
+					"if &buftype == 'terminal' | :startinsert | endif",
+				},
 			},
-			{
-				"TermOpen",
-				"term://*",
-				"setlocal nonumber norelativenumber",
-			},
-			{
-				"BufEnter",
-				"term://*",
-				"if &buftype == 'terminal' | :startinsert | endif",
-			},
-		},
-	})
+		})
 
-	-- TODO: verify if possible to do this in lua
-	vim.cmd([[
+		-- TODO: verify if possible to do this in lua
+		vim.cmd([[
 		:command! EditConfig :tabedit ~/.config/nvim
 	]])
-end
+	end,
+})
 
-return Module:new(Terminal)
+return Terminal

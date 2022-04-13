@@ -14,18 +14,17 @@ local decorate = function(module_definition)
 	return module_definition
 end
 
-function Module:new(m)
-	m = m or {} -- create object if user does not provide one
-	setmetatable(m, self)
+function Module:new(module_options)
+	local module = {
+		plugins = module_options.plugins or {},
+		modules = module_options.modules or {},
+		setup = module_options.setup or function() end,
+	}
+
+	setmetatable(module, self)
 	self.__index = self
 
-	return decorate(m)
+	return module
 end
-
-Module.setup = function() end
-
-Module.plugins = {}
-
-Module.modules = {}
 
 return Module

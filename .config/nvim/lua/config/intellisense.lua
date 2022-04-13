@@ -1,51 +1,54 @@
 local Module = require("utils.module")
 local au = require("utils.au")
 local key = require("utils.key")
-local Intellisense = {}
 
-Intellisense.plugins = {
-	-- Conquer of completion
-	"neoclide/coc.nvim",
-	branch = "release",
-}
+local Intellisense = Module:new({
+	plugins = {
+		-- Conquer of completion
+		"neoclide/coc.nvim",
+		branch = "release",
+	},
+	setup = function(self)
+		-- Extensions, see https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions#install-extensions
+		vim.g.coc_global_extensions = {
+			"coc-sumneko-lua",
+			"coc-stylua",
+			"coc-json",
+			"coc-yaml",
+			"coc-html",
+			"coc-emmet",
+			"coc-svg",
+			"coc-css",
+			"coc-cssmodules",
+			"coc-tsserver",
+			"coc-diagnostic",
+			"coc-eslint",
+			"coc-prettier",
+			"coc-calc",
+		}
 
-function Intellisense:setup()
-	-- Extensions, see https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions#install-extensions
-	vim.g.coc_global_extensions = {
-		"coc-sumneko-lua",
-		"coc-stylua",
-		"coc-json",
-		"coc-yaml",
-		"coc-html",
-		"coc-emmet",
-		"coc-svg",
-		"coc-css",
-		"coc-cssmodules",
-		"coc-tsserver",
-		"coc-diagnostic",
-		"coc-eslint",
-		"coc-prettier",
-		"coc-calc",
-	}
+		-- vim.cmd [[autocmd CursorHold * silent call CocActionAsync('highlight')]]
+		au.group({ "CursorSymbolHighlight", {
+			{
+				"CursorHold",
+				"*",
+				self.highlight_symbol,
+			},
+		} })
 
-	-- vim.cmd [[autocmd CursorHold * silent call CocActionAsync('highlight')]]
-	au.group({ "CursorSymbolHighlight", {
-		{
-			"CursorHold",
-			"*",
-			Intellisense.highlight_symbol,
-		},
-	} })
-
-	-- Spellchecking only some files
-	au.group({ "OnMarkdownBufferOpen", {
-		{
-			{ "BufRead", "BufNewFile" },
-			"*.md",
-			"setlocal spell",
-		},
-	} })
-end
+		-- Spellchecking only some files
+		au.group({
+			"OnMarkdownBufferOpen",
+			{
+				{
+					{ "BufRead", "BufNewFile" },
+					"*.md",
+					"setlocal spell",
+				},
+			},
+		})
+	end,
+})
 
 -- Module actions
 function Intellisense.open_code_actions()
@@ -135,4 +138,4 @@ function Intellisense.confirm_suggestion()
 	return key.feed(key.to_term_code("<C-G>u<CR>") .. vim.fn["coc#on_enter"](), "n")
 end
 
-return Module:new(Intellisense)
+return Intellisense

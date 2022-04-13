@@ -1,28 +1,28 @@
 local Module = require("utils.module")
 local key = require("utils.key")
-local Git = {}
 
-Git.plugins = {
-	-- Git integration
-	"tpope/vim-fugitive",
-	-- Add git related info in the signs columns and popups
-	{ "lewis6991/gitsigns.nvim", requires = { "nvim-lua/plenary.nvim" } },
-	-- Github issues and reviews
-	"pwntester/octo.nvim",
-}
+local Git = Module:new({
+	plugins = {
+		-- Git integration
+		"tpope/vim-fugitive",
+		-- Add git related info in the signs columns and popups
+		{ "lewis6991/gitsigns.nvim", requires = { "nvim-lua/plenary.nvim" } },
+		-- Github issues and reviews
+		"pwntester/octo.nvim",
+	},
+	setup = function()
+		-- GitSigns
+		-- see https://github.com/whatsthatsmell/dots/blob/master/public%20dots/vim-nvim/lua/joel/mappings.lua
+		require("gitsigns").setup({
+			current_line_blame = true,
+			current_line_blame_opts = {
+				delay = 100,
+			},
+		})
 
-function Git:setup()
-	-- GitSigns
-	-- see https://github.com/whatsthatsmell/dots/blob/master/public%20dots/vim-nvim/lua/joel/mappings.lua
-	require("gitsigns").setup({
-		current_line_blame = true,
-		current_line_blame_opts = {
-			delay = 100,
-		},
-	})
-
-	require("octo").setup()
-end
+		require("octo").setup()
+	end,
+})
 
 function Git.blame()
 	key.input(":Git blame<CR>")
@@ -73,4 +73,4 @@ function Git.prev_hunk_preview(next)
 	end
 end
 
-return Module:new(Git)
+return Git
