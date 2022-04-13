@@ -46,30 +46,9 @@ local Finder = Module:new({
 		})
 
 		-- Telescope extensions
-		require("telescope").load_extension("neoclip")
 		require("telescope").load_extension("project")
 		-- Todo comments
 		require("todo-comments").setup({})
-		-- Neoclip
-		require("neoclip").setup({
-			content_spec_column = true,
-			preview = true,
-			default_register = "unnamedplus",
-			keys = {
-				telescope = {
-					i = {
-						paste = "<CR>",
-						paste_behind = "<A-CR>",
-						custom = {},
-					},
-					n = {
-						paste = "<CR>",
-						paste_behind = "<A-CR>",
-						custom = {},
-					},
-				},
-			},
-		})
 	end,
 })
 

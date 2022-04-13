@@ -31,12 +31,7 @@ local Config = Module:new({
 
 		-- Registering plugins to use
 		require("packer").startup(function(use)
-			-- Package manager maninging itself
-			use(self.plugins)
-			-- Consumer defined plugins
-			for _, module in pairs(self.modules) do
-				use(module.plugins)
-			end
+			use(self:plugins())
 		end)
 
 		-- Downloading plugins
@@ -45,13 +40,6 @@ local Config = Module:new({
 			require("packer").sync()
 			return
 		end
-
-		-- Setup up modules
-		for _, module in pairs(self.modules) do
-			module:setup()
-		end
-
-		-- TODO: move to a Config instance variable
 
 		au.group({
 			"OnConfigChange",
@@ -65,11 +53,11 @@ local Config = Module:new({
 		})
 
 		vim.cmd([[
-		:command! EditConfig :tabedit ~/.config/nvim
-	]])
+			:command! EditConfig :tabedit ~/.config/nvim
+		]])
 
 		-- Base modules configurations
-		self.modules.interface.color_scheme("edge")
+		self:modules().interface.color_scheme("edge")
 	end,
 })
 

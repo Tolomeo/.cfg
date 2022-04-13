@@ -8,7 +8,7 @@ config:setup({
 })
 
 -- KEYMAPS
-local modules = config.modules
+local modules = config:modules()
 
 -- Editor
 
