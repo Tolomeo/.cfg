@@ -1,4 +1,4 @@
-local module = require("utils.module")
+local Module = require("utils.module")
 local key = require("utils.key")
 local Git = {}
 
@@ -73,4 +73,4 @@ function Git.prev_hunk_preview(next)
 	end
 end
 
-return module.create(Git)
+return Module:new(Git)

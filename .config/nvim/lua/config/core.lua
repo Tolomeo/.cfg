@@ -1,4 +1,4 @@
-local module = require("utils.module")
+local Module = require("utils.module")
 local Core = {}
 
 Core.plugins = {
@@ -17,4 +17,4 @@ function Core.setup()
 	require("auto-session").setup()
 end
 
-return module.create(Core)
+return Module:new(Core)

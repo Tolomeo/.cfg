@@ -1,4 +1,4 @@
-local module = require("utils.module")
+local Module = require("utils.module")
 local au = require("utils.au")
 local key = require("utils.key")
 local Intellisense = {}
@@ -27,9 +27,7 @@ function Intellisense:setup()
 		"coc-prettier",
 		"coc-calc",
 	}
-end
 
-function Intellisense:autocommands()
 	-- vim.cmd [[autocmd CursorHold * silent call CocActionAsync('highlight')]]
 	au.group({ "CursorSymbolHighlight", {
 		{
@@ -137,4 +135,4 @@ function Intellisense.confirm_suggestion()
 	return key.feed(key.to_term_code("<C-G>u<CR>") .. vim.fn["coc#on_enter"](), "n")
 end
 
-return module.create(Intellisense)
+return Module:new(Intellisense)

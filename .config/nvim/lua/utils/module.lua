@@ -1,22 +1,15 @@
 local Module = {
 	plugins = {},
+	modules = {}
 }
 
-function Module:new(o)
-	o = o or {} -- create object if user does not provide one
-	setmetatable(o, self)
+function Module:new(m)
+	m = m or {} -- create object if user does not provide one
+	setmetatable(m, self)
 	self.__index = self
-	return o
+	return m
 end
-
-function Module:autocommands() end
 
 function Module:setup() end
 
-local M = {}
-
-function M.create(...)
-	return Module:new(...)
-end
-
-return M
+return Module

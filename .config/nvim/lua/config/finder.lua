@@ -1,4 +1,4 @@
-local module = require("utils.module")
+local Module = require("utils.module")
 local key = require("utils.key")
 local Finder = {}
 
@@ -114,4 +114,4 @@ function Finder.find_spelling()
 	require("telescope.builtin").spell_suggest()
 end
 
-return module.create(Finder)
+return Module:new(Finder)

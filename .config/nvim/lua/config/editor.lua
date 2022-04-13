@@ -1,4 +1,4 @@
-local module = require("utils.module")
+local Module = require("utils.module")
 local au = require("utils.au")
 local key = require("utils.key")
 local Editor = {}
@@ -30,35 +30,6 @@ Editor.plugins = {
 	-- Highlighting command ranges
 	{ "winston0410/range-highlight.nvim", requires = "winston0410/cmd-parser.nvim" },
 }
-
-function Editor:autocommands()
-	-- Yank visual feedback
-	au.group({
-		"OnTextYanked",
-		{
-			{
-				"TextYankPost",
-				"*",
-				function()
-					vim.highlight.on_yank()
-				end,
-			},
-		},
-	})
-
-	--[[ au.group({ "OnInsertModeToggle", {
-	{
-		"InsertEnter",
-		"*",
-		"set relativenumber"
-	},
-	{
-		"InsertLeave",
-		"*",
-		"set norelativenumber"
-	}
-} }) ]]
-end
 
 function Editor:setup()
 	-- Treesitter configuration
@@ -162,6 +133,33 @@ function Editor:setup()
 
 	-- Range highlight
 	require("range-highlight").setup()
+
+	-- Yank visual feedback
+	au.group({
+		"OnTextYanked",
+		{
+			{
+				"TextYankPost",
+				"*",
+				function()
+					vim.highlight.on_yank()
+				end,
+			},
+		},
+	})
+
+	--[[ au.group({ "OnInsertModeToggle", {
+	{
+		"InsertEnter",
+		"*",
+		"set relativenumber"
+	},
+	{
+		"InsertLeave",
+		"*",
+		"set norelativenumber"
+	}
+} }) ]]
 end
 
 -- vim.api.nvim_set_keymap("n", "<leader>/", "<Plug>kommentary_line_default", {})
@@ -194,4 +192,4 @@ function Editor.toggle_boolean()
 	end
 end
 
-return module.create(Editor)
+return Module:new(Editor)

@@ -1,4 +1,4 @@
-local module = require("utils.module")
+local Module = require("utils.module")
 local key = require("utils.key")
 local List = {}
 
@@ -76,4 +76,4 @@ function List.jump()
 	key.input("<Plug>(qf_qf_switch)", "m")
 end
 
-return module.create(List)
+return Module:new(List)

@@ -1,5 +1,5 @@
-local module = require("utils.module")
-local key = require("utils.key")
+local Module = require("utils.module")
+-- local key = require("utils.key")
 local au = require("utils.au")
 
 local Config = {
@@ -19,24 +19,6 @@ local Config = {
 	install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim",
 }
 
-function Config:autocommands(_)
-	-- TODO: move to a Config instance variable
-	local config_files_pattern = vim.fn.expand("~") .. "/.config/nvim/**"
-
-	au.group({
-		"OnConfigChange",
-		{
-			{
-				"BufWritePost",
-				config_files_pattern,
-				function()
-					Config.compile()
-				end,
-			},
-		},
-	})
-end
-
 function Config:setup(options)
 	-- Checking packer install location
 	self.installed = vim.fn.empty(vim.fn.glob(self.install_path)) == 0
@@ -54,7 +36,8 @@ function Config:setup(options)
 		use(self.plugins)
 		-- Consumer defined plugins
 		for _, m in pairs(self.modules) do
-			use(m.plugins)
+			local module_plugins = type(m.plugins) == "function" and m.plugins(options) or m.plugins
+			use(module_plugins)
 		end
 	end)
 
@@ -66,11 +49,25 @@ function Config:setup(options)
 	end
 
 	-- Setup up modules
-	self:autocommands(options)
 	for _, m in pairs(self.modules) do
 		m:setup(options)
-		m:autocommands(options)
 	end
+
+	-- TODO: move to a Config instance variable
+	local config_files_pattern = vim.fn.expand("~") .. "/.config/nvim/**"
+
+	au.group({
+		"OnConfigChange",
+		{
+			{
+				"BufWritePost",
+				config_files_pattern,
+				function()
+					Config.compile()
+				end,
+			},
+		},
+	})
 
 	vim.cmd([[
 		:command! EditConfig :tabedit ~/.config/nvim
@@ -84,4 +81,4 @@ function Config.compile()
 	vim.api.nvim_command("PackerCompile")
 end
 
-return module.create(Config)
+return Module:new(Config)
