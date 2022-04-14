@@ -9,14 +9,14 @@ local config_files = vim.fn.expand("~") .. "/.config/nvim/**"
 local Config = Module:new({
 	plugins = { "wbthomason/packer.nvim" },
 	modules = {
-		core = require("config.core"),
-		quickfix = require("config.quickfix"),
-		interface = require("config.interface"),
-		git = require("config.git"),
-		editor = require("config.editor"),
-		finder = require("config.finder"),
-		intellisense = require("config.intellisense"),
-		terminal = require("config.terminal"),
+		core = require("core"),
+		quickfix = require("list"),
+		interface = require("interface"),
+		git = require("git"),
+		editor = require("editor"),
+		finder = require("finder"),
+		intellisense = require("lsp"),
+		terminal = require("terminal"),
 	},
 	setup = function(self)
 		-- Checking packer install location

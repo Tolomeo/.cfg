@@ -20,8 +20,8 @@ end
 
 local M = {}
 
-function M.map(...)
-	return Keymap.set("", ...)
+function M.map(mode, ...)
+	return Keymap.set(mode, ...)
 end
 
 function M.nmap(...)

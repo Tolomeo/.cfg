@@ -16,13 +16,6 @@ local Interface = Module:new({
 		"EdenEast/nightfox.nvim",
 		"Shatur/neovim-ayu",
 		"rose-pine/neovim",
-		-- File tree
-		{
-			"kyazdani42/nvim-tree.lua",
-			requires = {
-				"kyazdani42/nvim-web-devicons", -- optional, for file icon
-			},
-		},
 		-- Status line
 		{
 			"nvim-lualine/lualine.nvim",
@@ -33,67 +26,10 @@ local Interface = Module:new({
 			requires = { { "hoob3rt/lualine.nvim", opt = true }, { "kyazdani42/nvim-web-devicons", opt = true } },
 		},
 	},
+	modules = {
+		project_explorer = require('interface.project_explorer')
+	},
 	setup = function()
-		vim.g.nvim_tree_highlight_opened_files = 3
-		vim.g.nvim_tree_group_empty = 1
-		-- NvimTree
-		require("nvim-tree").setup({
-			hijack_netrw = true,
-			hijack_cursor = true,
-			-- hijack_directories = true,
-			auto_reload_on_write = true,
-			open_on_tab = true,
-			diagnostics = {
-				enable = true,
-				show_on_dirs = true,
-			},
-			git = {
-				enable = true,
-				ignore = false,
-			},
-			update_focused_file = {
-				enable = true,
-				update_cwd = true,
-			},
-			view = {
-				preserve_window_proportions = true,
-				mappings = {
-					custom_only = true,
-					list = {
-						{ key = "o", action = "edit_in_place" },
-						{ key = "O", action = "system_open" },
-						{ key = "<C-v>", action = "vsplit" },
-						{ key = "<C-x>", action = "split" },
-						{ key = "<C-t>", action = "tabnew" },
-						{ key = "h", action = "close_node" },
-						{ key = "H", action = "collapse_all" },
-						{ key = "K", action = "parent_node" },
-						{ key = "l", action = "toggle_file_info" },
-						{ key = "..", action = "dir_up" },
-						{ key = "g?", action = "toggle_help" },
-
-						-- { key = "<up>", action = "prev_sibling" },
-						-- { key = "<down>", action = "next_sibling" },
-						-- { key = "R", action = "refresh" },
-						{ key = "a", action = "create" },
-						-- { key = "d", action = "remove" },
-						-- { key = "D", action = "trash" },
-						{ key = "r", action = "rename" },
-						-- { key = "<C-r>", action = "full_rename" },
-						-- { key = "x", action = "cut" },
-						-- { key = "c", action = "copy" },
-						-- { key = "p", action = "paste" },
-						-- { key = "y", action = "copy_name" },
-						-- { key = "Y", action = "copy_path" },
-						-- { key = "gy", action = "copy_absolute_path" },
-						-- { key = "S", action = "search_node" },
-						-- { key = ".", action = "run_file_command" },
-						-- { key = "U", action = "toggle_custom" },
-					},
-				},
-			},
-		})
-
 		-- Statusbar
 		require("lualine").setup({
 			options = {
@@ -180,13 +116,7 @@ Interface.color_scheme = setmetatable({
 })
 
 function Interface.toggle_tree()
-	local view = require("nvim-tree.view")
-
-	if view.is_visible() then
-		return view.close()
-	end
-
-	require("nvim-tree").open_replacing_current_buffer()
+	Interface:modules().project_explorer.toggle()
 end
 
 return Interface
