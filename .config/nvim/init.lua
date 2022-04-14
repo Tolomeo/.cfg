@@ -44,9 +44,9 @@ key.nmap(
 	{ "<leader>P", "mayyP`a" },
 	{ "<leader>p", "mayyp`a" },
 	-- Replace word under cursor in buffer
-	{ "<leader>S", ":%s/<C-r><C-w>//gI<left><left><left>" },
+	{ "<leader>S", ":%s/<C-r><C-w>//gI<left><left><left>", silent = false },
 	-- Replace word under cursor in line
-	{ "<leader>s", ":s/<C-r><C-w>//gI<left><left><left>" },
+	{ "<leader>s", ":s/<C-r><C-w>//gI<left><left><left>", silent = false },
 	-- Adding blank lines with cr
 	{ "<leader>O", "mm:put! _<CR>`m" },
 	{ "<leader>o", "mm:put _<CR>`m" },
@@ -120,20 +120,24 @@ key.tmap({ "<Esc>", "<C-\\><C-n>" })
 
 key.nmap(
 	-- Windows navigation
+	{ "<C-h>", "<C-w>h" },
+	{ "<C-j>", "<C-w>j" },
+	{ "<C-k>", "<C-w>k" },
+	{ "<C-l>", "<C-w>l" },
 	{ "<C-n>", "<C-w>w" },
 	{ "<C-p>", "<C-w>W" },
 	-- Exchange current window with the next one
 	{ "<C-;>", "<C-w>x" },
 	-- Resizing the current window
-	{ "<C-j>", ":resize -3<Cr>" },
-	{ "<C-h>", ":vertical :resize -3<Cr>" },
-	{ "<C-l>", ":vertical :resize +3<Cr>" },
-	{ "<C-k>", ":resize +3<Cr>" },
+	{ "<C-A-j>", ":resize -3<Cr>" },
+	{ "<C-A-h>", ":vertical :resize -3<Cr>" },
+	{ "<C-A-l>", ":vertical :resize +3<Cr>" },
+	{ "<C-A-k>", ":resize +3<Cr>" },
 	-- Moving windows
-	{ "<C-A-j>", "<C-w>J" },
-	{ "<C-A-h>", "<C-w>H" },
-	{ "<C-A-l>", "<C-w>L" },
-	{ "<C-A-k>", "<C-w>K" },
+	{ "<C-S-j>", "<C-w>J" },
+	{ "<C-S-h>", "<C-w>H" },
+	{ "<C-S-l>", "<C-w>L" },
+	{ "<C-S-k>", "<C-w>K" },
 	-- Resetting windows size
 	{ "<C-=>", "<C-w>=" },
 	-- Maximising current window size
@@ -145,20 +149,24 @@ key.nmap(
 
 key.imap(
 	-- Navigation
+	{ "<C-h>", "<Esc><C-w>h" },
+	{ "<C-j>", "<Esc><C-w>j" },
+	{ "<C-k>", "<Esc><C-w>k" },
+	{ "<C-l>", "<Esc><C-w>l" },
 	{ "<C-n>", "<Esc><C-w>w" },
 	{ "<C-p>", "<Esc><C-w>W" },
 	-- Exchange with next window
 	{ "<C-;>", "<Esc><C-w>x" },
 	-- Resizing
-	{ "<C-j>", "<Esc>:resize -3<Cr>gi" },
-	{ "<C-h>", "<Esc>:vertical :resize -3<Cr>gi" },
-	{ "<C-l>", "<Esc>:vertical :resize +3<Cr>gi" },
-	{ "<C-k>", "<Esc>:resize +3<Cr>gi" },
+	{ "<C-A-j>", "<Esc>:resize -3<Cr>gi" },
+	{ "<C-A-h>", "<Esc>:vertical :resize -3<Cr>gi" },
+	{ "<C-A-l>", "<Esc>:vertical :resize +3<Cr>gi" },
+	{ "<C-A-k>", "<Esc>:resize +3<Cr>gi" },
 	-- Moving windows
-	{ "<C-A-j>", "<Esc><C-w>Jgi" },
-	{ "<C-A-h>", "<Esc><C-w>Hgi" },
-	{ "<C-A-l>", "<Esc><C-w>Lgi" },
-	{ "<C-A-k>", "<Esc><C-w>Kgi" },
+	{ "<C-S-j>", "<Esc><C-w>Jgi" },
+	{ "<C-S-h>", "<Esc><C-w>Hgi" },
+	{ "<C-S-l>", "<Esc><C-w>Lgi" },
+	{ "<C-S-k>", "<Esc><C-w>Kgi" },
 	-- Resetting windows size
 	{ "<C-=>", "<Esc><C-w>=gi" },
 	-- Maximising current window size
@@ -170,20 +178,24 @@ key.imap(
 
 key.vmap(
 	-- Navigation
+	{ "<C-h>", "<Esc><C-w>h" },
+	{ "<C-j>", "<Esc><C-w>j" },
+	{ "<C-k>", "<Esc><C-w>k" },
+	{ "<C-l>", "<Esc><C-w>l" },
 	{ "<C-n>", "<Esc><C-w>w" },
 	{ "<C-p>", "<Esc><C-w>W" },
 	-- Exchange with next window
 	{ "<C-;>", "<Esc><C-w>x" },
 	-- Resizing
-	{ "<C-j>", "<Esc>:resize -3<Cr>gv" },
-	{ "<C-h>", "<Esc>:vertical :resize -3<Cr>gv" },
-	{ "<C-l>", "<Esc>:vertical :resize +3<Cr>gv" },
-	{ "<C-k>", "<Esc>:resize +3<Cr>gv" },
+	{ "<C-A-j>", "<Esc>:resize -3<Cr>gv" },
+	{ "<C-A-h>", "<Esc>:vertical :resize -3<Cr>gv" },
+	{ "<C-A-l>", "<Esc>:vertical :resize +3<Cr>gv" },
+	{ "<C-A-k>", "<Esc>:resize +3<Cr>gv" },
 	-- Moving windows
-	{ "<C-A-j>", "<Esc><C-w>Jgv" },
-	{ "<C-A-h>", "<Esc><C-w>Hgv" },
-	{ "<C-A-l>", "<Esc><C-w>Lgv" },
-	{ "<C-A-k>", "<Esc><C-w>Kgv" },
+	{ "<C-S-j>", "<Esc><C-w>Jgv" },
+	{ "<C-S-h>", "<Esc><C-w>Hgv" },
+	{ "<C-S-l>", "<Esc><C-w>Lgv" },
+	{ "<C-S-k>", "<Esc><C-w>Kgv" },
 	-- Resetting windows size
 	{ "<C-f>", "<Esc><C-w>=gv" },
 	-- Maximising current window size
@@ -195,20 +207,24 @@ key.vmap(
 
 key.tmap(
 	-- Navigation
+	{ "<C-h>", "<C-\\><C-n><C-w>h" },
+	{ "<C-j>", "<C-\\><C-n><C-w>j" },
+	{ "<C-k>", "<C-\\><C-n><C-w>k" },
+	{ "<C-l>", "<C-\\><C-n><C-w>l" },
 	{ "<C-n>", "<C-\\><C-n><C-w>w" },
 	{ "<C-p>", "<C-\\><C-n><C-w>W" },
 	-- Exchange with next window
 	{ "<C-;>", "<C-\\><C-n><C-w>x" },
 	-- Resizing
-	{ "<C-j>", "<C-\\><C-n>:resize -3<Cr>i" },
-	{ "<C-h>", "<C-\\><C-n>:vertical :resize -3<Cr>i" },
-	{ "<C-l>", "<C-\\><C-n>:vertical :resize +3<Cr>i" },
-	{ "<C-k>", "<C-\\><C-n>:resize +3<Cr>i" },
+	{ "<C-A-j>", "<C-\\><C-n>:resize -3<Cr>i" },
+	{ "<C-A-h>", "<C-\\><C-n>:vertical :resize -3<Cr>i" },
+	{ "<C-A-l>", "<C-\\><C-n>:vertical :resize +3<Cr>i" },
+	{ "<C-A-k>", "<C-\\><C-n>:resize +3<Cr>i" },
 	-- Moving windows
-	{ "<C-A-j>", "<C-\\><C-n><C-w>Ji" },
-	{ "<C-A-h>", "<C-\\><C-n><C-w>Hi" },
-	{ "<C-A-l>", "<C-\\><C-n><C-w>Li" },
-	{ "<C-A-k>", "<C-\\><C-n><C-w>Ki" },
+	{ "<C-S-j>", "<C-\\><C-n><C-w>Ji" },
+	{ "<C-S-h>", "<C-\\><C-n><C-w>Hi" },
+	{ "<C-S-l>", "<C-\\><C-n><C-w>Li" },
+	{ "<C-S-k>", "<C-\\><C-n><C-w>Ki" },
 	-- Resetting windows size
 	{ "<C-f>", "<C-\\><C-n><C-w>=i" },
 	-- Maximising current window size
