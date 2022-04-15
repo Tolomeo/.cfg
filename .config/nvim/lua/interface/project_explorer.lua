@@ -47,7 +47,6 @@ local ProjectExplorer = Module:new({
 				"kyazdani42/nvim-web-devicons", -- optional, for file icon
 			},
 		},
-		{ "nvim-telescope/telescope.nvim", requires = { "nvim-lua/plenary.nvim" } },
 	},
 	setup = function(self)
 		vim.g.nvim_tree_highlight_opened_files = 3
@@ -90,7 +89,7 @@ local ProjectExplorer = Module:new({
 						{ key = "a", action = "create" },
 						{ key = "d", action = "remove" },
 						{ key = "r", action = "rename" },
-						{ key = "<C-Space>", action = "show_node_actions", action_cb = self.show_node_actions },
+						{ key = "<C-Space>", action = "show_node_actions", action_cb = self.tree_actions_menu },
 					},
 				},
 			},
@@ -98,8 +97,8 @@ local ProjectExplorer = Module:new({
 	end,
 })
 
-function ProjectExplorer.show_node_actions(node)
-	local finder = require("telescope.finders").new_table({
+function ProjectExplorer.tree_actions_menu(node)
+	local items = {
 		results = tree_actions,
 		entry_maker = function(tree_action)
 			return {
@@ -108,31 +107,18 @@ function ProjectExplorer.show_node_actions(node)
 				display = tree_action[1],
 			}
 		end,
-	})
-	local sorter = require("telescope.sorters").get_generic_fuzzy_sorter({})
-	local theme = require("telescope.themes").get_cursor()
-	local actions = require("telescope.actions")
-	local state = require("telescope.actions.state")
-	local opts = {
-		prompt_title = node.name,
-		finder = finder,
-		sorter = sorter,
-		attach_mappings = function(prompt_buffer_number)
-			actions.select_default:replace(function()
-				local selection = state.get_selected_entry()
-				print(vim.inspect(selection))
-				local tree_action = selection.value[2]
-				actions.close(prompt_buffer_number)
-				vim.defer_fn(function()
-					tree_action(node)
-				end, 50)
-			end)
-
-			return true
-		end,
 	}
+	local on_select = function(contex_menu)
+		local selection = contex_menu.state.get_selected_entry()
+		local tree_action = selection.value[2]
+		contex_menu.actions.close(contex_menu.buffer)
+		vim.defer_fn(function()
+			tree_action(node)
+		end, 50)
+	end
+	local options = { prompt_title = node.name }
 
-	require("telescope.pickers").new(theme, opts):find()
+	require("finder").contex_menu(items, on_select, options)
 end
 
 function ProjectExplorer.toggle()

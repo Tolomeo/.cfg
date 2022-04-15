@@ -92,4 +92,35 @@ function Finder.find_spelling()
 	require("telescope.builtin").spell_suggest()
 end
 
+function Finder.contex_menu(items, on_select, options)
+	options = options or {}
+	local finder = require("telescope.finders").new_table(items)
+	local sorter = require("telescope.sorters").get_generic_fuzzy_sorter()
+	local theme = require("telescope.themes").get_cursor()
+	local actions = require("telescope.actions")
+	local state = require("telescope.actions.state")
+	local opts = {
+		prompt_title = options.prompt_title,
+		finder = finder,
+		sorter = sorter,
+		attach_mappings = function(prompt_buffer_number)
+			-- On select item
+			actions.select_default:replace(function()
+				on_select({ buffer = prompt_buffer_number, state = state, actions = actions })
+			end)
+			-- Disabling any kind of multiple selection
+			actions.add_selection:replace(function() end)
+			actions.remove_selection:replace(function() end)
+			actions.toggle_selection:replace(function() end)
+			actions.select_all:replace(function() end)
+			actions.drop_all:replace(function() end)
+			actions.toggle_all:replace(function() end)
+
+			return true
+		end,
+	}
+
+	require("telescope.pickers").new(theme, opts):find()
+end
+
 return Finder
