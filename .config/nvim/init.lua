@@ -260,7 +260,7 @@ key.nmap(
 	{ "<C-S-p>", modules.finder.find_commands },
 	{ "<C-S-e>", modules.finder.find_projects },
 	{ "<leader>f", modules.finder.find_in_buffer },
-	{ "<leader>F", modules.finder.find_in_files },
+	{ "<leader>F", modules.finder.find_in_directory },
 	-- { "<C-y>", modules.finder.find_yanks },
 	{ "<F1>", modules.finder.find_in_documentation },
 	{ "<C-z>", modules.finder.find_spelling },

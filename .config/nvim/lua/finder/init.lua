@@ -17,8 +17,6 @@ local Finder = Module:new({
 			defaults = {
 				dynamic_preview_title = true,
 				color_devicons = true,
-				layout_strategy = "vertical",
-				layout_config = { prompt_position = "top" },
 				mappings = {
 					i = {
 						["<esc>"] = require("telescope.actions").close,
@@ -28,9 +26,6 @@ local Finder = Module:new({
 			},
 			pickers = {
 				find_files = {},
-				live_grep = {
-					layout_strategy = "horizontal",
-				},
 				current_buffer_fuzzy_find = {
 					layout_strategy = "horizontal",
 				},
@@ -56,8 +51,16 @@ function Finder.find_files()
 	require("telescope.builtin").find_files()
 end
 
-function Finder.find_in_files()
-	require("telescope.builtin").live_grep()
+function Finder.find_in_directory(directory)
+	local root = vim.loop.cwd()
+	local searchDirectory = directory or root
+	local rootRelativeCwd = root == searchDirectory and "/" or string.gsub(searchDirectory, root, "")
+
+	local options = require("telescope.themes").get_dropdown()
+	options.cwd = searchDirectory
+	options.prompt_title = "Search in " .. rootRelativeCwd
+
+	require("telescope.builtin").live_grep(options)
 end
 
 function Finder.find_in_buffer()
