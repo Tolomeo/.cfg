@@ -38,7 +38,7 @@ local ProjectExplorer = Module:new({
 					custom_only = true,
 					list = {
 						{ key = "<leader>k", action = "toggle_file_info" },
-						{ key = "<C-v>", action = "vsplit" },
+						{ key = "<C-y>", action = "vsplit" },
 						{ key = "<C-x>", action = "split" },
 						{ key = "<C-t>", action = "tabnew" },
 						{ key = "<C-r>", action = "refresh" },

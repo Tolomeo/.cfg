@@ -144,7 +144,20 @@ key.nmap(
 	{ "<C-f>", "<C-w>_<C-w>|" },
 	-- Buffers navigation
 	{ "<A-Tab>", ":bnext<Cr>" },
-	{ "<A-S-Tab>", ":bprev<Cr>" }
+	{ "<A-S-Tab>", ":bprev<Cr>" },
+	-- write only if changed
+	{ "<leader>w", "<Cmd>up<Cr>", silent = false },
+	-- write all and quit
+	{ "<leader>W", "<Cmd>w!<Cr>", silent = false },
+	-- quit (or close window)
+	{ "<leader>q", "<Cmd>:q<Cr>" },
+	-- Discard all changed buffers & quit
+	{ "<leader>Q", "<Cmd>:q!<Cr>" },
+	-- Splits
+	{ "<C-q>", "<Cmd>bdelete<Cr>" },
+	{ "<C-x>", "<Cmd>split<Cr>" },
+	{ "<C-y>", "<Cmd>vsplit<Cr>" },
+	{ "<C-t>", "<Cmd>tabnew<Cr>" }
 )
 
 key.imap(
@@ -173,7 +186,12 @@ key.imap(
 	{ "<C-f>", "<Esc><C-w>_<C-w>|gi" },
 	-- Buffers navigation
 	{ "<A-Tab>", "<Esc>:bnext<Cr>" },
-	{ "<A-S-Tab>", "<Esc>:bprev<Cr>" }
+	{ "<A-S-Tab>", "<Esc>:bprev<Cr>" },
+	-- Splits
+	{ "<C-q>", "<Esc>:bdelete<Cr>" },
+	{ "<C-x>", "<Esc>:split<Cr>" },
+	{ "<C-y>", "<Esc>:vsplit<Cr>" },
+	{ "<C-t>", "<Esc>:tabnew<Cr>" }
 )
 
 key.vmap(
@@ -202,7 +220,12 @@ key.vmap(
 	{ "<C-+>", "<Esc><C-w>_<C-w>|gv" },
 	-- Buffers navigation
 	{ "<A-Tab>", "<Esc>:bnext<Cr>" },
-	{ "<A-S-Tab>", "<Esc>:bprev<Cr>" }
+	{ "<A-S-Tab>", "<Esc>:bprev<Cr>" },
+	-- Splits
+	{ "<C-q>", "<Esc>:bdelete<Cr>" },
+	{ "<C-x>", "<Esc>:split<Cr>" },
+	{ "<C-y>", "<Esc>:vsplit<Cr>" },
+	{ "<C-t>", "<Esc>:tabnew<Cr>" }
 )
 
 key.tmap(
@@ -231,20 +254,13 @@ key.tmap(
 	{ "<C-+>", "<C-\\><C-n><C-w>_<C-w>|i" },
 	-- Buffers navigation
 	{ "<A-Tab>", "<C-\\><C-n>:bnext<Cr>" },
-	{ "<A-S-Tab>", "<C-\\><C-n>:bprev<Cr>" }
-)
-
--- Buffers
-
-key.nmap(
-	-- write only if changed
-	{ "<leader>w", ":up<CR>", silent = false },
-	-- write all and quit
-	{ "<leader>W", ":wall<CR>", silent = false },
-	-- quit (or close window)
-	{ "<leader>q", ":q<CR>" },
-	-- Discard all changed buffers & quit
-	{ "<leader>Q", ":qall<CR>" }
+	{ "<A-S-Tab>", "<C-\\><C-n>:bprev<Cr>" },
+	-- Splits
+	-- TODO: close any open process before deleting the buffer
+	{ "<C-q>", "<C-\\><C-n>:bdelete<Cr>" },
+	{ "<C-x>", "<C-\\><C-n>:split<Cr>" },
+	{ "<C-y>", "<C-\\><C-n>:vsplit<Cr>" },
+	{ "<C-t>", "<C-\\><C-n>:tabnew<Cr>" }
 )
 
 -- Search
@@ -264,8 +280,8 @@ key.nmap(
 	-- { "<C-y>", modules.finder.find_yanks },
 	{ "<F1>", modules.finder.find_in_documentation },
 	{ "<C-z>", modules.finder.find_spelling },
-	{ "<C-b>", modules.finder.find_buffers },
-	{ "<C-t>", modules.finder.find_todos }
+	{ "<C-b>", modules.finder.find_buffers }
+	-- { "<C-t>", modules.finder.find_todos }
 )
 
 -- File Explorer
