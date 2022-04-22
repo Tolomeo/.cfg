@@ -333,3 +333,9 @@ key.nmap(
 	{ "<C-]>", modules.quickfix.next },
 	{ "<C-[>", modules.quickfix.prev }
 )
+
+-- Terminal
+key.nmap({
+	"<C-g>",
+	modules.terminal.job({ "lazygit" }),
+})
