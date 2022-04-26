@@ -40,8 +40,6 @@ local Terminal = Module:new({
 function Terminal.dialog(options)
 	options = options or {}
 	local buffer = options[1]
-	local is_valid_buffer = buffer and vim.api.nvim_buf_is_valid(options[1])
-	buffer = is_valid_buffer and buffer or vim.api.nvim_create_buf(false, false)
 	local width = math.ceil(math.min(vim.o.columns, math.max(80, vim.o.columns - 20)))
 	local height = math.ceil(math.min(vim.o.lines, math.max(20, vim.o.lines - 10)))
 	local col = (math.ceil(vim.o.columns - width) / 2) - 1
@@ -51,7 +49,7 @@ function Terminal.dialog(options)
 		row = row,
 		width = width,
 		height = height,
-		border = "rounded",
+		border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
 		style = "minimal",
 		relative = "editor",
 	})
@@ -61,8 +59,12 @@ function Terminal.dialog(options)
 		{
 			{
 				"VimResized",
-				string.format("<buffer=%d>", buffer),
+				nil,
 				function()
+					if not vim.api.nvim_win_is_valid(window) then
+						return
+					end
+
 					local updatedWidth = math.ceil(math.min(vim.o.columns, math.max(80, vim.o.columns - 20)))
 					local updatedHeight = math.ceil(math.min(vim.o.lines, math.max(20, vim.o.lines - 10)))
 					local updatedCol = (math.ceil(vim.o.columns - width) / 2) - 1
@@ -75,46 +77,57 @@ function Terminal.dialog(options)
 						height = updatedHeight,
 					})
 				end,
-				-- string.format('lua require"toggleterm.terminal".__on_vim_resized(%d)', term.id),
+				buffer = buffer,
 			},
 		},
 	})
 
-	return {
-		buffer = buffer,
-		window = window,
-	}
+	return window
 end
 
 function Terminal.job(options)
 	local cmd = options[1]
+	local on_stdout = options.on_stdout
+	local on_stderr = options.on_stderr
+	local on_exit = options.on_exit
+	local on_exited = options.on_exited
 
 	return function()
-		print(vim.inspect(cmd))
-		local dialog = Terminal.dialog()
-
-		--[[ au.group({
-			"Terminal",
-			{
-				{
-					"TermClose",
-					string.format("<buffer=%d>", dialog.buffer),
-					fmt('lua require"toggleterm.terminal".delete(%d)', term.id),
-				},
-			},
-		}) ]]
-
+		local buffer = vim.api.nvim_create_buf(false, false)
+		local window = Terminal.dialog({ buffer })
 		local job = vim.fn.termopen(cmd, {
-			on_stdout = options.on_stdout,
-			on_stderr = options.on_stderr,
+			on_stdout = on_stdout,
+			on_stderr = on_stderr,
 			on_exit = function()
-				if vim.api.nvim_win_is_valid(dialog.window) then
-					vim.api.nvim_win_close(dialog.window, true)
+				if on_exit then
+					on_exit()
 				end
-				if vim.api.nvim_buf_is_loaded(dialog.buffer) then
-					vim.api.nvim_buf_delete(dialog.buffer, { force = true })
+
+				if vim.api.nvim_win_is_valid(window) then
+					vim.api.nvim_win_close(window, true)
+				end
+				if vim.api.nvim_buf_is_loaded(buffer) then
+					vim.api.nvim_buf_delete(buffer, { force = true })
+				end
+
+				if on_exited then
+					on_exited()
 				end
 			end,
+		})
+
+		au.group({
+			"Terminal.Job",
+			{
+				{
+					"WinClosed",
+					nil,
+					function()
+						vim.fn.jobstop(job)
+					end,
+					buffer = buffer,
+				},
+			},
 		})
 
 		return job
