@@ -27,7 +27,7 @@ local Interface = Module:new({
 		},
 	},
 	modules = {
-		project_explorer = require('interface.project_explorer')
+		project_explorer = require("interface.project_explorer"),
 	},
 	setup = function()
 		-- Statusbar
@@ -134,7 +134,7 @@ function Interface.modal(options)
 		row = row,
 		width = width,
 		height = height,
-		border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+		border = "solid",
 		style = "minimal",
 		relative = "editor",
 	})
@@ -145,6 +145,7 @@ function Interface.modal(options)
 			{
 				"VimResized",
 				nil,
+				-- TODO: debounce this
 				function()
 					if not vim.api.nvim_win_is_valid(window) then
 						return
@@ -159,6 +160,9 @@ function Interface.modal(options)
 						row = updatedRow,
 						width = updatedWidth,
 						height = updatedHeight,
+						border = "solid",
+						style = "minimal",
+						relative = "editor",
 					}
 
 					if on_resize then
