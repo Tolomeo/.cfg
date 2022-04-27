@@ -37,54 +37,6 @@ local Terminal = Module:new({
 	end,
 })
 
-function Terminal.dialog(options)
-	options = options or {}
-	local buffer = options[1]
-	local width = math.ceil(math.min(vim.o.columns, math.max(80, vim.o.columns - 20)))
-	local height = math.ceil(math.min(vim.o.lines, math.max(20, vim.o.lines - 10)))
-	local col = (math.ceil(vim.o.columns - width) / 2) - 1
-	local row = (math.ceil(vim.o.lines - height) / 2) - 1
-	local window = vim.api.nvim_open_win(buffer, true, {
-		col = col,
-		row = row,
-		width = width,
-		height = height,
-		border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
-		style = "minimal",
-		relative = "editor",
-	})
-
-	au.group({
-		"Interface.Dialog",
-		{
-			{
-				"VimResized",
-				nil,
-				function()
-					if not vim.api.nvim_win_is_valid(window) then
-						return
-					end
-
-					local updatedWidth = math.ceil(math.min(vim.o.columns, math.max(80, vim.o.columns - 20)))
-					local updatedHeight = math.ceil(math.min(vim.o.lines, math.max(20, vim.o.lines - 10)))
-					local updatedCol = (math.ceil(vim.o.columns - width) / 2) - 1
-					local updatedRow = (math.ceil(vim.o.lines - height) / 2) - 1
-
-					vim.api.nvim_win_set_config(window, {
-						col = updatedCol,
-						row = updatedRow,
-						width = updatedWidth,
-						height = updatedHeight,
-					})
-				end,
-				buffer = buffer,
-			},
-		},
-	})
-
-	return window
-end
-
 function Terminal.job(options)
 	local cmd = options[1]
 	local on_stdout = options.on_stdout
@@ -93,9 +45,15 @@ function Terminal.job(options)
 	local on_exited = options.on_exited
 
 	return function()
+		local job
 		local buffer = vim.api.nvim_create_buf(false, false)
-		local window = Terminal.dialog({ buffer })
-		local job = vim.fn.termopen(cmd, {
+		local window = require("interface").modal({
+			buffer,
+			on_resize = function(update)
+				vim.api.jobresize(job, update.row, update.col)
+			end,
+		})
+		job = vim.fn.termopen(cmd, {
 			on_stdout = on_stdout,
 			on_stderr = on_stderr,
 			on_exit = function()
@@ -254,4 +212,5 @@ end ]]
     height = height,
     border = opening and border or nil,
   } ]]
+
 return Terminal
