@@ -47,7 +47,7 @@ function Terminal.job(options)
 	return function()
 		local job
 		local buffer = vim.api.nvim_create_buf(false, false)
-		local window = require("interface").modal({
+		local window = require("interface.window").modal({
 			buffer,
 			on_resized = function(update)
 				vim.fn.jobresize(job, update.width, update.height)
