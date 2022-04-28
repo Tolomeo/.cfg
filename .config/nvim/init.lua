@@ -267,7 +267,8 @@ key.tmap(
 
 key.nmap(
 	-- Clearing search highlighting
-	{ "<BS>", ":noh<CR>" },
+	{ "<Esc>", ":noh<CR><Esc>" },
+	-- { "<BS>", ":noh<CR>" },
 	-- Keep search results centred
 	{ "n", "nzzzv" },
 	{ "N", "Nzzzv" },

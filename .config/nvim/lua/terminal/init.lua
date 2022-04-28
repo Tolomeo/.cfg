@@ -1,5 +1,6 @@
 local Module = require("utils.module")
 local au = require("utils.au")
+local key = require("utils.key")
 
 local Terminal = Module:new({
 	setup = function()
@@ -56,6 +57,7 @@ function Terminal.job(options)
 		job = vim.fn.termopen(cmd, {
 			on_stdout = on_stdout,
 			on_stderr = on_stderr,
+			-- Closing everything as soon as the job exits
 			on_exit = function()
 				if on_exit then
 					on_exit()
@@ -75,6 +77,8 @@ function Terminal.job(options)
 			end,
 		})
 
+		-- When the window gets closed, close the job as well
+		-- on_exit will be triggered and clean all the rest
 		au.group({
 			"Terminal.Job",
 			{
@@ -88,6 +92,10 @@ function Terminal.job(options)
 				},
 			},
 		})
+
+		-- some programs use esc to cancel operations
+		-- TODO: make these passed as an option for the command or annull all terminal custom mappings
+		key.tmap({ "<Esc>", "<Esc>", buffer = buffer })
 
 		return job
 	end

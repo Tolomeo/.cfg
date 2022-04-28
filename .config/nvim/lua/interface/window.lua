@@ -53,7 +53,6 @@ function Window.modal(options)
 			{
 				"VimResized",
 				nil,
-				-- TODO: debounce this
 				on_vim_resized,
 				buffer = buffer,
 			},
