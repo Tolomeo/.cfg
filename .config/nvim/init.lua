@@ -336,7 +336,10 @@ key.nmap(
 )
 
 -- Terminal
+
 key.nmap({
 	"<C-g>",
-	modules.terminal.job({ "lazygit" }),
+	function()
+		modules.terminal.job({ "lazygit" })
+	end,
 })
