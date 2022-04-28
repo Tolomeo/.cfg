@@ -339,7 +339,5 @@ key.nmap(
 
 key.nmap({
 	"<C-g>",
-	function()
-		modules.terminal.job({ "lazygit" })
-	end,
+	modules.terminal.job({ "lazygit" }),
 })
