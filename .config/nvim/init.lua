@@ -256,8 +256,7 @@ key.tmap(
 	{ "<A-Tab>", "<C-\\><C-n>:bnext<Cr>" },
 	{ "<A-S-Tab>", "<C-\\><C-n>:bprev<Cr>" },
 	-- Splits
-	-- TODO: close any open process before deleting the buffer
-	{ "<C-q>", "<C-\\><C-n>:bdelete<Cr>" },
+	{ "<C-q>", "<C-c><C-\\><C-n>:bdelete!<Cr>" },
 	{ "<C-x>", "<C-\\><C-n>:split<Cr>" },
 	{ "<C-y>", "<C-\\><C-n>:vsplit<Cr>" },
 	{ "<C-t>", "<C-\\><C-n>:tabnew<Cr>" }

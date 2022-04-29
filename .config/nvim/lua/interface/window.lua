@@ -52,9 +52,8 @@ function Window.modal(options)
 		{
 			{
 				"VimResized",
-				nil,
+				buffer,
 				on_vim_resized,
-				buffer = buffer,
 			},
 		},
 	})

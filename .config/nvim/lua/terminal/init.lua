@@ -20,6 +20,10 @@ function Job:new(job)
 end
 
 function Job:_start()
+	if self.id then
+		self:_stop()
+	end
+
 	local cmd = self[1]
 
 	self.id = vim.fn.termopen(cmd, {
@@ -38,13 +42,19 @@ function Job:_start()
 end
 
 function Job:_stop()
-	if self.id then
-		vim.fn.jobstop(self.id)
-		self.id = nil
+	if not self.id then
+		return
 	end
+
+	vim.fn.jobstop(self.id)
+	self.id = nil
 end
 
 function Job:_show()
+	if self.buffer or self.window then
+		self:_hide()
+	end
+
 	self.buffer = vim.api.nvim_create_buf(false, false)
 	self.window = require("interface.window").modal({
 		self.buffer,
@@ -55,18 +65,13 @@ function Job:_show()
 
 	-- When the window gets closed, close the job as well
 	-- on_exit will be triggered and clean all the rest
-	au.group({
-		"Terminal.Job",
-		{
-			{
-				{ "WinClosed", "BufLeave" },
-				nil,
-				function()
-					self:_stop()
-				end,
-				buffer = self.buffer,
-			},
-		},
+	au.command({
+		{ "WinClosed", "BufLeave" },
+		nil,
+		function()
+			self:_stop()
+		end,
+		buffer = self.buffer,
 	})
 
 	-- some programs use esc to cancel operations
@@ -77,13 +82,14 @@ end
 function Job:_hide()
 	if self.window and vim.api.nvim_win_is_valid(self.window) then
 		vim.api.nvim_win_close(self.window, true)
-		self.window = nil
 	end
 
 	if self.buffer and vim.api.nvim_buf_is_loaded(self.buffer) then
 		vim.api.nvim_buf_delete(self.buffer, { force = true })
-		self.buffer = nil
 	end
+
+	self.window = nil
+	self.buffer = nil
 end
 
 function Job:spawn()
@@ -99,23 +105,23 @@ local Terminal = Module:new({
 		-- TODO: enter insert mode even when the buffer reloaded from being hidden
 		-- also, no line numbers in the terminal
 		au.group({
-			"OnTerminalBufferEnter",
+			"Terminal",
 			{
 				{
 					"TermOpen",
 					"term://*",
-					"startinsert",
+					function()
+						vim.cmd("setlocal nonumber norelativenumber")
+						vim.cmd("startinsert")
+						-- Allow closing a process directly from normal mode
+						key.nmap({ "<C-c>", "i<C-c>" })
+					end,
 				},
 				{
 					"BufEnter",
 					"term://*",
 					"if &buftype == 'terminal' | :startinsert | endif",
 					nested = true,
-				},
-				{
-					"TermOpen",
-					"term://*",
-					"setlocal nonumber norelativenumber",
 				},
 			},
 		})

@@ -20,7 +20,7 @@ function M.group(config)
 end
 
 function M.command(config)
-	local eventName, pattern, handler = config[1], config[2], config[3]
+	local event, selector, handler = config[1], config[2], config[3]
 	local opts = {}
 
 	-- Overriding default opts
@@ -30,11 +30,14 @@ function M.command(config)
 		end
 	end
 
-	opts.pattern = pattern
-	opts.command = type(handler) ~= "function" and handler or nil
-	opts.callback = type(handler) == "function" and handler or nil
+	local selectorType = type(selector)
+	local handlerType = type(handler)
+	opts.pattern = (selectorType == "string" or selectorType == "table") and selector or nil
+	opts.buffer = selectorType == "number" and selector or nil
+	opts.command = handlerType ~= "function" and handler or nil
+	opts.callback = handlerType == "function" and handler or nil
 
-	vim.api.nvim_create_autocmd(eventName, opts)
+	vim.api.nvim_create_autocmd(event, opts)
 end
 
 return M
