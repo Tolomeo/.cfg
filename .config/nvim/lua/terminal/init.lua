@@ -1,6 +1,6 @@
-local Module = require("utils.module")
-local au = require("utils.au")
-local key = require("utils.key")
+local Module = require("_shared.module")
+local au = require("_shared.au")
+local key = require("_shared.key")
 
 local Job = {}
 

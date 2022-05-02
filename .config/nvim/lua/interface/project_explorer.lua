@@ -1,4 +1,4 @@
-local Module = require("utils.module")
+local Module = require("_shared.module")
 
 local ProjectExplorer = Module:new({
 	plugins = {

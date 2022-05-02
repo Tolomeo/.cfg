@@ -1,5 +1,5 @@
-local Module = require("utils.module")
-local au = require("utils.au")
+local Module = require("_shared.module")
+local au = require("_shared.au")
 
 local defaults = {
 	modal = {

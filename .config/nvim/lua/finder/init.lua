@@ -1,5 +1,5 @@
-local Module = require("utils.module")
-local key = require("utils.key")
+local Module = require("_shared.module")
+local key = require("_shared.key")
 
 local Finder = Module:new({
 	plugins = {

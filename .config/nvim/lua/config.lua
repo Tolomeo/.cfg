@@ -1,10 +1,11 @@
-local Module = require("utils.module")
--- local key = require("utils.key")
-local au = require("utils.au")
+require("options")
+local Module = require("_shared.module")
+-- local key = require("_shared.key")
+local au = require("_shared.au")
 
 local installed = nil
 local install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
-local config_files = vim.fn.expand("~") .. "/.config/nvim/**"
+local config_files = vim.fn.expand("~", false) .. "/.config/nvim/**/*"
 
 local Config = Module:new({
 	plugins = { "wbthomason/packer.nvim" },

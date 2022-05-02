@@ -1,6 +1,5 @@
-require("options")
 local config = require("config")
-local key = require("utils.key")
+local key = require("_shared.key")
 
 -- INITIALISATION
 config:setup({
