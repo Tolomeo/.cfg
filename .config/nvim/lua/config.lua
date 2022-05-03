@@ -1,6 +1,6 @@
 local Module = require("_shared.module")
 local options = require("_shared.options")
--- local key = require("_shared.key")
+local key = require("_shared.key")
 local au = require("_shared.au")
 
 local installed = nil
@@ -20,6 +20,8 @@ local Config = Module:new({
 		terminal = require("terminal"),
 	},
 	setup = function(self)
+		-- setting leader key
+		key.map_leader(" ")
 		-- Global options
 		options.set()
 

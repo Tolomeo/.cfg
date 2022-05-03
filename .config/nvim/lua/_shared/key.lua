@@ -20,6 +20,12 @@ end
 
 local M = {}
 
+function M.map_leader(leader)
+	vim.api.nvim_set_keymap("", leader, "<Nop>", { noremap = true, silent = true })
+	vim.g.mapleader = leader
+	vim.g.maplocalleader = leader
+end
+
 function M.map(mode, ...)
 	return Keymap.set(mode, ...)
 end

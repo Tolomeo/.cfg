@@ -1,17 +1,19 @@
---Remap space as leader key
-vim.api.nvim_set_keymap("", "<Space>", "<Nop>", { noremap = true, silent = true })
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-
-local M = {}
+-- see https://github.com/NvChad/NvChad/blob/main/lua/core/options.lua
+local Options = {}
 
 local globals = {
+	-- asking for confirmation instead of just failing certain commands
+	confirm = true,
 	--Incremental live completion (note: this is now a default on master)
 	inccommand = "nosplit",
 	-- Set highlight on search
 	hlsearch = true,
+	-- Highlighting the cursor line
+	cul = true,
 	-- Avoid rerendering during macros, registers etc
 	lazyredraw = true,
+	-- Command line height
+	cmdheight = 1,
 	--Make line numbers default
 	number = true,
 	--Do not save when switching buffers (note: this is now a default on master)
@@ -57,15 +59,22 @@ local globals = {
 	-- Folds
 	foldenable = false,
 	foldmethod = "indent",
+	-- Single global statusline
 	laststatus = 3,
-	-- Killing netrw
-	-- netrw_banner = 0,
-	-- netrw_menu = 0,
-	-- loaded_netrw = 1,
-	-- loaded_netrwPlugin = 1,
-	--
+	-- Preferred split direction
 	splitright = true,
 	splitbelow = true,
+	-- Mapping movements able to wrap on the next/previous line
+	whichwrap = {
+		b = true, -- backspace
+		s = true, -- space
+		[">"] = true, -- right in normal and visual
+		["<"] = true, --  left in normal and visual
+		["]"] = true, -- right in insert and replace
+		["["] = true, -- left in insert and replace
+		["h"] = true, -- h
+		["l"] = true, -- l
+	},
 }
 
 -- see https://github.com/NvChad/NvChad/blob/main/lua/core/options.lua
@@ -90,19 +99,20 @@ local plugins = {
 	zipPlugin = false,
 }
 
-function M.set()
+function Options.set()
 	for option_name, option_value in pairs(globals) do
 		vim.opt[option_name] = option_value
 	end
 
-	-- see https://github.com/NvChad/NvChad/blob/main/lua/core/options.lua
-	for plugin_name, _ in pairs(plugins) do
-		vim.g["loaded_" .. plugin_name] = 1
+	for plugin_name, plugin_enabled in pairs(plugins) do
+		if not plugin_enabled then
+			vim.g["loaded_" .. plugin_name] = 1
+		end
 	end
 end
 
-function M.get()
+function Options.get()
 	return globals
 end
 
-return M
+return Options
