@@ -1,5 +1,5 @@
-require("options")
 local Module = require("_shared.module")
+local options = require("_shared.options")
 -- local key = require("_shared.key")
 local au = require("_shared.au")
 
@@ -20,6 +20,9 @@ local Config = Module:new({
 		terminal = require("terminal"),
 	},
 	setup = function(self)
+		-- Global options
+		options.set()
+
 		-- Checking packer install location
 		installed = vim.fn.empty(vim.fn.glob(install_path)) == 0
 
