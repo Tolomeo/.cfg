@@ -20,12 +20,6 @@ end
 
 local M = {}
 
-function M.map_leader(leader)
-	vim.api.nvim_set_keymap("", leader, "<Nop>", { noremap = true, silent = true })
-	vim.g.mapleader = leader
-	vim.g.maplocalleader = leader
-end
-
 function M.map(mode, ...)
 	return Keymap.set(mode, ...)
 end
@@ -81,6 +75,12 @@ end
 function M.input(keys, input_mode)
 	local mode = input_mode or "n" -- Noremap mode by default
 	return M.feed(M.to_term_code(keys), mode)
+end
+
+function M.map_leader(leader)
+	vim.api.nvim_set_keymap("", leader, "<Nop>", { noremap = true, silent = true })
+	vim.g.mapleader = leader
+	vim.g.maplocalleader = leader
 end
 
 return M

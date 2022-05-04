@@ -57,10 +57,15 @@ key.nmap(
 
 key.imap(
 	-- Arrows are disabled
-	{ "<left>", "<nop>" },
-	{ "<right>", "<nop>" },
-	{ "<up>", "<nop>" },
-	{ "<down>", "<nop>" },
+	{ "<Left>", "<nop>" },
+	{ "<Right>", "<nop>" },
+	{ "<Up>", "<nop>" },
+	{ "<Down>", "<nop>" },
+	-- Move cursor within insert mode
+	-- { "<C-h>", "<Left>" },
+	-- { "<C-l>", "<Right>" },
+	-- { "<C-k>", "<Up>" },
+	-- { "<C-j>", "<Down>" },
 	-- Indentation
 	{ "<C-Tab>", "<C-t>" },
 	{ "<C-S-Tab>", "<C-d>" }

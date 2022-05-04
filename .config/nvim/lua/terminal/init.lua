@@ -1,6 +1,7 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
 local key = require("_shared.key")
+local valid = require("_shared.validate")
 
 local Job = {}
 
@@ -133,12 +134,13 @@ local Terminal = Module:new({
 	end,
 })
 
-function Terminal.job(job)
-	job = Job:new(job)
+Terminal.job = valid.arguments(valid.types.shape({ "string" }))
+	.. function(job)
+		job = Job:new(job)
 
-	return function()
-		job:spawn()
+		return function()
+			job:spawn()
+		end
 	end
-end
 
 return Terminal
