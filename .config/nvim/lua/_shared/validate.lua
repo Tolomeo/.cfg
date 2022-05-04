@@ -80,6 +80,8 @@ Validate.types = {
 			if not valid then
 				return false, validation_error
 			end
+
+			return true
 		end
 	end,
 	shape = function(shape_validations)
@@ -102,14 +104,12 @@ Validate.types = {
 
 -- http://lua-users.org/wiki/DecoratorsAndDocstrings
 function Validate.arguments(...)
-	local args_validations = { ... }
+	local validate_arguments = Validate.types.list(...)
 
-	return setmetatable(args_validations, {
+	return setmetatable({}, {
 		__concat = function(_, func)
 			return function(...)
-				local args = { ... }
-				local validation_map = get_list_validation(args, args_validations)
-				local valid, validation_error = pcall(vim.validate, validation_map)
+				local valid, validation_error = validate_arguments({ ... })
 
 				if not valid then
 					error("Arguments validation error: " .. validation_error)
