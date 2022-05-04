@@ -133,7 +133,7 @@ local Terminal = Module:new({
 	end,
 })
 
-Terminal.job = valid.arguments(valid.types.shape({ "string" }))
+Terminal.job = valid.arguments(valid.t.shape({ "string" }))
 	.. function(job)
 		job = Job:new(job)
 

@@ -1,22 +1,25 @@
+local valid = require("_shared.validate")
+
 local Keymap = {}
 
-function Keymap.set(mode, ...)
-	local bindings = { ... }
+Keymap.set = valid.arguments("string", valid.t.shape({ "string", { "string", "function" } }))
+	.. function(mode, ...)
+		local bindings = { ... }
 
-	for _, binding in ipairs(bindings) do
-		local lhs, rhs = binding[1], binding[2]
-		local opts = { remap = false, silent = true }
+		for _, binding in ipairs(bindings) do
+			local lhs, rhs = binding[1], binding[2]
+			local opts = { remap = false, silent = true }
 
-		-- Overriding default opts
-		for i, v in pairs(binding) do
-			if type(i) == "string" then
-				opts[i] = v
+			-- Overriding default opts
+			for i, v in pairs(binding) do
+				if type(i) == "string" then
+					opts[i] = v
+				end
 			end
-		end
 
-		vim.keymap.set(mode, lhs, rhs, opts)
+			vim.keymap.set(mode, lhs, rhs, opts)
+		end
 	end
-end
 
 local M = {}
 

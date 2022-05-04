@@ -48,7 +48,7 @@ end
 
 local Validate = {}
 
-Validate.types = {
+Validate.t = {
 	optional = function(validator)
 		if type(validator) == "table" then
 			table.insert(validator, "nil")
@@ -104,7 +104,7 @@ Validate.types = {
 
 -- http://lua-users.org/wiki/DecoratorsAndDocstrings
 function Validate.arguments(...)
-	local validate_arguments = Validate.types.list(...)
+	local validate_arguments = Validate.t.list(...)
 
 	return setmetatable({}, {
 		__concat = function(_, func)

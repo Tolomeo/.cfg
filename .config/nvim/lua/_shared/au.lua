@@ -1,7 +1,7 @@
 local valid = require("_shared.validate")
 local M = {}
 
-M.group = valid.arguments(valid.types.shape({ "string", "table", clear = valid.types.optional("boolean") }))
+M.group = valid.arguments(valid.t.shape({ "string", "table", clear = valid.t.optional("boolean") }))
 	.. function(config)
 		local name, autocmds = config[1], config[2]
 		local opts = { clear = true }
@@ -22,7 +22,7 @@ M.group = valid.arguments(valid.types.shape({ "string", "table", clear = valid.t
 	end
 
 M.command = valid.arguments(
-	valid.types.shape({ { "string", "table" }, { "string", "table", "number" }, { "string", "function" } })
+	valid.t.shape({ { "string", "table" }, { "string", "table", "number" }, { "string", "function" } })
 )
 	.. function(config)
 		local event, selector, handler = config[1], config[2], config[3]
