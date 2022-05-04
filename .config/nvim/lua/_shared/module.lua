@@ -1,6 +1,16 @@
+local valid = require("_shared.validate")
 local Module = {}
 
-function Module:new(module_options)
+Module.new = 
+-- Module.new = valid.arguments(
+-- 	valid.t.equal(Module),
+-- 	valid.t.shape({
+-- 		plugins = valid.t.optional("table"),
+-- 		modules = valid.t.optional("table"),
+-- 		setup = valid.t.optional("function"),
+-- 	})
+-- ) .. function(self, module_options)
+function(self, module_options)
 	local module = {
 		_plugins = module_options.plugins or {},
 		_modules = module_options.modules or {},
@@ -13,6 +23,7 @@ function Module:new(module_options)
 	return module
 end
 
+-- TODO: options validation
 function Module:setup(...)
 	self:_setup(...)
 

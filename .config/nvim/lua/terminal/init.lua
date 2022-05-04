@@ -68,11 +68,10 @@ function Job:_show()
 	-- on_exit will be triggered and clean all the rest
 	au.command({
 		{ "WinClosed", "BufLeave" },
-		nil,
+		self.buffer,
 		function()
 			self:_stop()
 		end,
-		buffer = self.buffer,
 	})
 
 	-- some programs use esc to cancel operations
