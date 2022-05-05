@@ -153,7 +153,7 @@ function Validate.arguments(...)
 				local valid, validation_error = validate_arguments({ ... })
 
 				if not valid then
-					error("Arguments validation error: " .. validation_error)
+					error("Arguments validation failed: " .. validation_error)
 				end
 
 				return func(...)

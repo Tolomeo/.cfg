@@ -64,14 +64,14 @@ Key.lmap = function(...)
 	return Key.map("l", ...)
 end
 
-Key.feed = valid.arguments("string", valid.t.pattern("^[mntix!]+$"))
-	.. function(keys, mode)
-		return vim.fn.feedkeys(keys, mode)
-	end
-
 Key.to_term_code = valid.arguments("string")
 	.. function(keys)
 		return vim.api.nvim_replace_termcodes(keys, true, true, true)
+	end
+
+Key.feed = valid.arguments("string", valid.t.optional(valid.t.pattern("^[mntix!]+$")))
+	.. function(keys, mode)
+		return vim.fn.feedkeys(keys, mode)
 	end
 
 Key.input = valid.arguments("string", valid.t.optional(valid.t.pattern("^[mntix!]+$")))
@@ -83,7 +83,6 @@ Key.input = valid.arguments("string", valid.t.optional(valid.t.pattern("^[mntix!
 Key.map_leader = valid.arguments("string")
 	.. function(leader)
 		Key.map("", { leader, "<Nop>" })
-		-- vim.api.nvim_set_keymap("", leader, "<Nop>", { noremap = true, silent = true })
 		vim.g.mapleader = leader
 		vim.g.maplocalleader = leader
 	end
