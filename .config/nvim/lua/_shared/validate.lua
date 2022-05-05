@@ -22,14 +22,18 @@ local function reduce(tbl, func, acc)
 end
 
 local get_list_validation = function(list, validators_list)
-	return ireduce(list, function(list_validation, item, index)
-		local key = tostring(index)
-		local validator = validators_list[index] or validators_list[#validators_list]
-		local err = type(validator) == "function" and "correct value at position " .. key or nil
+	local length = math.max(#list, #validators_list)
+	local validation = {}
 
-		list_validation[key] = { item, validator, err }
-		return list_validation
-	end, {})
+	for i = 1, length, 1 do
+		local key = tostring(i)
+		local list_item = list[i]
+		local list_item_validator = validators_list[i] or validators_list[#validators_list]
+		local err = type(list_item_validator) == "function" and "correct value at position " .. key or nil
+		validation[key] = { list_item, list_item_validator, err }
+	end
+
+	return validation
 end
 
 local get_dict_validation = function(dict, validators_dict)
