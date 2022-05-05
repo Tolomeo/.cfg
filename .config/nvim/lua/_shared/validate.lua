@@ -60,10 +60,23 @@ Validate.t = {
 	equal = function(expected)
 		return function(value)
 			if expected ~= value then
-				return false
+				return false, "Expected value " .. vim.inspect(value) .. "to be equal to " .. vim.inspect(expected)
 			end
 
 			return true
+		end
+	end,
+	one_of = function(...)
+		local expected = { ... }
+
+		return function(value)
+			for _, expected_value in ipairs(expected) do
+				if expected_value == value then
+					return true
+				end
+			end
+
+			return false, "Expected value " .. vim.inspect(value) .. " to be one of " .. vim.inspect(expected)
 		end
 	end,
 	list = function(...)

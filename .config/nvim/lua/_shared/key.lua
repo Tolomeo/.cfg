@@ -1,8 +1,11 @@
 local valid = require("_shared.validate")
 
-local Keymap = {}
+local Key = {}
 
-Keymap.set = valid.arguments("string", valid.t.shape({ "string", { "string", "function" } }))
+Key.map = valid.arguments(
+	valid.t.one_of("", "n", "!", "v", "i", "t", "o", "c", "l"),
+	valid.t.shape({ "string", { "string", "function" } })
+)
 	.. function(mode, ...)
 		local bindings = { ... }
 
@@ -21,69 +24,69 @@ Keymap.set = valid.arguments("string", valid.t.shape({ "string", { "string", "fu
 		end
 	end
 
-local M = {}
-
-function M.map(mode, ...)
-	return Keymap.set(mode, ...)
+Key.nmap = function(...)
+	return Key.map("n", ...)
 end
 
-function M.nmap(...)
-	return Keymap.set("n", ...)
+Key.icmap = function(...)
+	return Key.map("!", ...)
 end
 
-function M.icmap(...)
-	return Keymap.set("!", ...)
+Key.vmap = function(...)
+	return Key.map("v", ...)
 end
 
-function M.vmap(...)
-	return Keymap.set("v", ...)
+Key.imap = function(...)
+	return Key.map("i", ...)
 end
 
-function M.imap(...)
-	return Keymap.set("i", ...)
+Key.tmap = function(...)
+	return Key.map("t", ...)
 end
 
-function M.tmap(...)
-	return Keymap.set("t", ...)
+Key.omap = function(...)
+	return Key.map("o", ...)
 end
 
-function M.omap(...)
-	return Keymap.set("o", ...)
+Key.cmap = function(...)
+	return Key.map("c", ...)
 end
 
-function M.cmap(...)
-	return Keymap.set("c", ...)
+Key.xmap = function(...)
+	return Key.map("x", ...)
 end
 
-function M.xmap(...)
-	return Keymap.set("x", ...)
+Key.smap = function(...)
+	return Key.map("s", ...)
 end
 
-function M.smap(...)
-	return Keymap.set("s", ...)
+Key.lmap = function(...)
+	return Key.map("l", ...)
 end
 
-function M.lmap(...)
-	return Keymap.set("l", ...)
-end
-
-function M.feed(keys, mode)
+-- TODO: validate mode as a string containing multiple flags, see :h feedkeys()
+Key.feed = valid.arguments("string", "string") .. function(keys, mode)
 	return vim.fn.feedkeys(keys, mode)
 end
 
-function M.to_term_code(keys)
-	return vim.api.nvim_replace_termcodes(keys, true, true, true)
-end
+Key.to_term_code = valid.arguments("string")
+	.. function(keys)
+		return vim.api.nvim_replace_termcodes(keys, true, true, true)
+	end
 
-function M.input(keys, input_mode)
-	local mode = input_mode or "n" -- Noremap mode by default
-	return M.feed(M.to_term_code(keys), mode)
-end
+-- TODO: validate mode as a string containing multiple flags, see :h feedkeys()
+Key.input = valid.arguments("string")
+	.. function(keys, input_mode)
+		local mode = input_mode or "n" -- Noremap mode by default
+		return Key.feed(Key.to_term_code(keys), mode)
+	end
 
-function M.map_leader(leader)
-	vim.api.nvim_set_keymap("", leader, "<Nop>", { noremap = true, silent = true })
-	vim.g.mapleader = leader
-	vim.g.maplocalleader = leader
-end
+Key.map_leader = valid.arguments("string")
+	.. function(leader)
+		Key.map("", { leader, "<Nop>" })
+		-- vim.api.nvim_set_keymap("", leader, "<Nop>", { noremap = true, silent = true })
+		vim.g.mapleader = leader
+		vim.g.maplocalleader = leader
+	end
 
-return M
+return Key
