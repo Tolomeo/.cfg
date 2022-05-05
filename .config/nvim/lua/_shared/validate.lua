@@ -52,6 +52,10 @@ end
 
 local Validate = {}
 
+Validate.call = function(value, validator)
+	return pcall(vim.validate, { [value] = { value, validator } })
+end
+
 Validate.t = {
 	optional = function(validator)
 		if type(validator) == "function" then
@@ -102,6 +106,28 @@ Validate.t = {
 
 			if not match then
 				return false, "Expected string " .. value .. " to match " .. pattern .. " pattern"
+			end
+
+			return true
+		end
+	end,
+	greater_than = function(min)
+		return function(value)
+			local is_valid = type(value) == "number" and value > min
+
+			if not is_valid then
+				return false, "Expected value " .. vim.inspect(value) .. " to be a number above " .. tostring(min)
+			end
+
+			return true
+		end
+	end,
+	less_than = function(max)
+		return function(value)
+			local is_valid = type(value) == "number" and value < max
+
+			if not is_valid then
+				return false, "Expected value " .. vim.inspect(value) .. " to be a number below " .. tostring(max)
 			end
 
 			return true
