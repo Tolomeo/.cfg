@@ -79,12 +79,29 @@ Validate.t = {
 			return false, "Expected value " .. vim.inspect(value) .. " to be one of " .. vim.inspect(expected)
 		end
 	end,
+	pattern = function(pattern)
+		return function(value)
+			print(value)
+
+			if type(value) ~= "string" then
+				return false, "Expected string, got " .. vim.inspect(value)
+			end
+
+			local match = string.match(value, pattern)
+
+			if not match then
+				return false, "Expected string " .. value .. " to match " .. pattern .. " pattern"
+			end
+
+			return true
+		end
+	end,
 	list = function(...)
 		local list_validators = { ... }
 
 		return function(list)
 			if type(list) ~= "table" then
-				return false
+				return false, "Expected table, got " .. vim.inspect(list)
 			end
 
 			local validation_map = get_list_validation(list, list_validators)

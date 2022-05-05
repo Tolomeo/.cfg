@@ -64,18 +64,17 @@ Key.lmap = function(...)
 	return Key.map("l", ...)
 end
 
--- TODO: validate mode as a string containing multiple flags, see :h feedkeys()
-Key.feed = valid.arguments("string", "string") .. function(keys, mode)
-	return vim.fn.feedkeys(keys, mode)
-end
+Key.feed = valid.arguments("string", valid.t.pattern("^[mntix!]+$"))
+	.. function(keys, mode)
+		return vim.fn.feedkeys(keys, mode)
+	end
 
 Key.to_term_code = valid.arguments("string")
 	.. function(keys)
 		return vim.api.nvim_replace_termcodes(keys, true, true, true)
 	end
 
--- TODO: validate mode as a string containing multiple flags, see :h feedkeys()
-Key.input = valid.arguments("string")
+Key.input = valid.arguments("string", valid.t.pattern("^[mntix!]+$"))
 	.. function(keys, input_mode)
 		local mode = input_mode or "n" -- Noremap mode by default
 		return Key.feed(Key.to_term_code(keys), mode)

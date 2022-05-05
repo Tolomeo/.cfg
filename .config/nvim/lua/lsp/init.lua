@@ -130,6 +130,7 @@ function Intellisense.prev_suggestion()
 
 	return key.input("<C-h>")
 end
+
 -- vim.api.nvim_set_keymap("i", "<CR>", "pumvisible() ? coc#_select_confirm() : '<C-G>u<CR><C-R>=coc#on_enter()<CR>'", {silent = true, expr = true, noremap = true})
 function Intellisense.confirm_suggestion()
 	if Intellisense.has_suggestions() then
