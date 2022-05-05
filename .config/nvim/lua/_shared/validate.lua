@@ -54,6 +54,15 @@ local Validate = {}
 
 Validate.t = {
 	optional = function(validator)
+		if type(validator) == "function" then
+			return function(value)
+				if type(value) == "nil" then
+					return true
+				end
+				return validator(value)
+			end
+		end
+
 		if type(validator) == "table" then
 			table.insert(validator, "nil")
 			return validator
@@ -85,8 +94,6 @@ Validate.t = {
 	end,
 	pattern = function(pattern)
 		return function(value)
-			print(value)
-
 			if type(value) ~= "string" then
 				return false, "Expected string, got " .. vim.inspect(value)
 			end

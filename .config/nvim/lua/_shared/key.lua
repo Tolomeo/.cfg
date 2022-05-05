@@ -74,7 +74,7 @@ Key.to_term_code = valid.arguments("string")
 		return vim.api.nvim_replace_termcodes(keys, true, true, true)
 	end
 
-Key.input = valid.arguments("string", valid.t.pattern("^[mntix!]+$"))
+Key.input = valid.arguments("string", valid.t.optional(valid.t.pattern("^[mntix!]+$")))
 	.. function(keys, input_mode)
 		local mode = input_mode or "n" -- Noremap mode by default
 		return Key.feed(Key.to_term_code(keys), mode)
