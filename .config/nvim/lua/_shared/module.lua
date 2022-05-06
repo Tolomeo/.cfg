@@ -1,12 +1,12 @@
 local validator = require("_shared.validator")
 local Module = {}
 
-Module.new = validator.create(
-	validator.t.equal(Module),
-	validator.t.shape({
-		plugins = validator.t.optional("table"),
-		modules = validator.t.optional("table"),
-		setup = validator.t.optional("function"),
+Module.new = validator.f.arguments(
+	validator.f.equal(Module),
+	validator.f.shape({
+		plugins = validator.f.optional("table"),
+		modules = validator.f.optional("table"),
+		setup = validator.f.optional("function"),
 	})
 ) .. function(self, module_options)
 	local module = {

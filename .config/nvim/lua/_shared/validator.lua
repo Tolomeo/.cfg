@@ -21,7 +21,7 @@ local function reduce(tbl, func, acc)
 	return acc
 end
 
-local get_list_validation = function(list, validators_list)
+local get_list_validation_map = function(list, validators_list)
 	local length = math.max(#list, #validators_list)
 	local validation = {}
 
@@ -36,7 +36,7 @@ local get_list_validation = function(list, validators_list)
 	return validation
 end
 
-local get_dict_validation = function(dict, validators_dict)
+local get_dict_validation_map = function(dict, validators_dict)
 	return kreduce(validators_dict, function(dict_validation, validator, key)
 		local value = dict[key]
 		local err = type(validator) == "function" and "correct value for key '" .. key .. "'" or nil
@@ -46,17 +46,21 @@ local get_dict_validation = function(dict, validators_dict)
 	end, {})
 end
 
-local get_table_validation = function(tbl, validators_tbl)
-	return vim.tbl_extend("error", get_list_validation(tbl, validators_tbl), get_dict_validation(tbl, validators_tbl))
+local get_table_validation_map = function(tbl, validators_tbl)
+	return vim.tbl_extend(
+		"error",
+		get_list_validation_map(tbl, validators_tbl),
+		get_dict_validation_map(tbl, validators_tbl)
+	)
 end
 
 local Validator = {}
 
-Validator.call = function(value, validator)
-	return pcall(vim.validate, { [value] = { value, validator } })
+Validator.validate = function(validationMap)
+	return pcall(vim.validate, validationMap)
 end
 
-Validator.t = {
+Validator.f = {
 	optional = function(validator)
 		if type(validator) == "function" then
 			return function(value)
@@ -83,9 +87,7 @@ Validator.t = {
 			return true
 		end
 	end,
-	one_of = function(...)
-		local expected = { ... }
-
+	one_of = function(expected)
 		return function(value)
 			for _, expected_value in ipairs(expected) do
 				if expected_value == value then
@@ -133,59 +135,50 @@ Validator.t = {
 			return true
 		end
 	end,
-	list = function(...)
-		local list_validators = { ... }
-
+	list = function(list_validators)
 		return function(list)
 			if type(list) ~= "table" then
 				return false, "Expected table, got " .. vim.inspect(list)
 			end
 
-			local validation_map = get_list_validation(list, list_validators)
-			local valid, validation_error = pcall(vim.validate, validation_map)
-
-			if not valid then
-				return false, validation_error
-			end
-
-			return true
+			local validation_map = get_list_validation_map(list, list_validators)
+			return Validator.validate(validation_map)
 		end
 	end,
-	shape = function(shape_validations)
-		return function(value)
-			if type(value) ~= "table" then
+	shape = function(shape_validators)
+		return function(shape)
+			if type(shape) ~= "table" then
 				return false
 			end
 
-			local validation_map = get_table_validation(value, shape_validations)
-			local valid, validation_error = pcall(vim.validate, validation_map)
-
-			if not valid then
-				return false, validation_error
-			end
-
-			return true
+			local validation_map = get_table_validation_map(shape, shape_validators)
+			return Validator.validate(validation_map)
 		end
 	end,
-}
+	arguments = function(...)
+		local validate_arguments = Validator.f.list({ ... })
 
--- http://lua-users.org/wiki/DecoratorsAndDocstrings
-function Validator.create(...)
-	local validate_arguments = Validator.t.list(...)
+		return setmetatable({
+			decorate = function(func)
+				return function(...)
+					local valid, validation_error = validate_arguments({ ... })
 
-	return setmetatable({}, {
-		__concat = function(_, func)
-			return function(...)
-				local valid, validation_error = validate_arguments({ ... })
+					if not valid then
+						error("Arguments validation failed: " .. validation_error)
+					end
 
-				if not valid then
-					error("Arguments validation failed: " .. validation_error)
+					return func(...)
 				end
-
-				return func(...)
-			end
-		end,
-	})
-end
+			end,
+		}, {
+			__call = function(self, ...)
+				return self.decorate(...)
+			end,
+			__concat = function(self, ...)
+				return self.decorate(...)
+			end,
+		})
+	end,
+}
 
 return Validator
