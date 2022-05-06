@@ -1,25 +1,4 @@
-local function ireduce(tbl, func, acc)
-	for i, v in ipairs(tbl) do
-		acc = func(acc, v, i)
-	end
-	return acc
-end
-
-local function kreduce(tbl, func, acc)
-	for i, v in pairs(tbl) do
-		if type(i) == "string" then
-			acc = func(acc, v, i)
-		end
-	end
-	return acc
-end
-
-local function reduce(tbl, func, acc)
-	for i, v in pairs(tbl) do
-		acc = func(acc, v, i)
-	end
-	return acc
-end
+local fn = require("_shared.fn")
 
 local get_list_validation_map = function(list, validators_list)
 	local length = math.max(#list, #validators_list)
@@ -37,7 +16,7 @@ local get_list_validation_map = function(list, validators_list)
 end
 
 local get_dict_validation_map = function(dict, validators_dict)
-	return kreduce(validators_dict, function(dict_validation, validator, key)
+	return fn.kreduce(validators_dict, function(dict_validation, validator, key)
 		local value = dict[key]
 		local err = type(validator) == "function" and "correct value for key '" .. key .. "'" or nil
 
@@ -148,7 +127,7 @@ Validator.f = {
 	shape = function(shape_validators)
 		return function(shape)
 			if type(shape) ~= "table" then
-				return false
+				return false, "Expected table, got " .. vim.inspect(shape)
 			end
 
 			local validation_map = get_table_validation_map(shape, shape_validators)
