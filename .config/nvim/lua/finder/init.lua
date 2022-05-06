@@ -52,7 +52,7 @@ Finder.find_files = function()
 	require("telescope.builtin").find_files()
 end
 
-Finder.find_in_directory = validator.f.arguments("string")
+Finder.find_in_directory = validator.f.arguments({ validator.f.optional("string") })
 	.. function(directory)
 		local root = vim.loop.cwd()
 		local searchDirectory = directory or root
@@ -97,7 +97,7 @@ Finder.find_spelling = function()
 	require("telescope.builtin").spell_suggest()
 end
 
-Finder.contex_menu = validator.f.arguments(
+Finder.contex_menu = validator.f.arguments({
 	validator.f.shape({
 		results = validator.f.list({ validator.f.list({ "string", "function" }) }),
 		entry_maker = "function",
@@ -105,8 +105,8 @@ Finder.contex_menu = validator.f.arguments(
 	"function",
 	validator.f.optional(validator.f.shape({
 		prompt_title = "string",
-	}))
-)
+	})),
+})
 	.. function(items, on_select, options)
 		options = options or {}
 		local finder = require("telescope.finders").new_table(items)

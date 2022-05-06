@@ -84,7 +84,7 @@ local validate_node = validator.f.shape({
 	}),
 })
 
-ProjectExplorer.search_in_directory = validator.f.arguments(validate_node)
+ProjectExplorer.search_in_directory = validator.f.arguments({ validate_node })
 	.. function(node)
 		local directory = node.fs_stat.type == "directory" and node.absolute_path
 			or vim.fn.fnamemodify(node.absolute_path, ":h")
@@ -128,7 +128,7 @@ ProjectExplorer.tree_actions = {
 	-- prev_sibling = require("nvim-tree.actions.movements").sibling(-1),
 }
 
-ProjectExplorer.tree_actions_menu = validator.f.arguments(validate_node)
+ProjectExplorer.tree_actions_menu = validator.f.arguments({ validate_node })
 	.. function(node)
 		local items = {
 			results = ProjectExplorer.tree_actions,

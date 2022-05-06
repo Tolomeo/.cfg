@@ -2,10 +2,10 @@ local validator = require("_shared.validator")
 
 local Key = {}
 
-Key.map = validator.f.arguments(
+Key.map = validator.f.arguments({
 	validator.f.one_of({ "", "n", "!", "v", "i", "t", "o", "c", "l" }),
-	validator.f.shape({ "string", { "string", "function" } })
-)
+	validator.f.shape({ "string", { "string", "function" } }),
+})
 	.. function(mode, ...)
 		local bindings = { ... }
 
@@ -64,23 +64,23 @@ Key.lmap = function(...)
 	return Key.map("l", ...)
 end
 
-Key.to_term_code = validator.f.arguments("string")
+Key.to_term_code = validator.f.arguments({ "string" })
 	.. function(keys)
 		return vim.api.nvim_replace_termcodes(keys, true, true, true)
 	end
 
-Key.feed = validator.f.arguments("string", validator.f.optional(validator.f.pattern("^[mntix!]+$")))
+Key.feed = validator.f.arguments({ "string", validator.f.optional(validator.f.pattern("^[mntix!]+$")) })
 	.. function(keys, mode)
 		return vim.fn.feedkeys(keys, mode)
 	end
 
-Key.input = validator.f.arguments("string", validator.f.optional(validator.f.pattern("^[mntix!]+$")))
+Key.input = validator.f.arguments({ "string", validator.f.optional(validator.f.pattern("^[mntix!]+$")) })
 	.. function(keys, input_mode)
 		local mode = input_mode or "n" -- Noremap mode by default
 		return Key.feed(Key.to_term_code(keys), mode)
 	end
 
-Key.map_leader = validator.f.arguments("string")
+Key.map_leader = validator.f.arguments({ "string" })
 	.. function(leader)
 		Key.map("", { leader, "<Nop>" })
 		vim.g.mapleader = leader

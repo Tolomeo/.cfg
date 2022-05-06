@@ -3,7 +3,6 @@ local key = require("_shared.key")
 
 local List = Module:new({
 	plugins = {
-		-- General qf and loc lists improvements
 		"romainl/vim-qf",
 	},
 	setup = function()

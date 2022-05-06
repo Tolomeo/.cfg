@@ -113,7 +113,7 @@ Intellisense.open_suggestions = function()
 	return key.input(vim.fn["coc#refresh"]())
 end
 
-Intellisense.next_suggestion = validator.f.arguments("string")
+Intellisense.next_suggestion = validator.f.arguments({ "string" })
 	.. function(next)
 		return function()
 			if Intellisense.has_suggestions() then

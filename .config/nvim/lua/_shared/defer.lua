@@ -9,7 +9,7 @@ local Defer = {}
 --@param timeout (number) Timeout in ms
 --@returns (function, timer) throttled function and timer. Remember to call
 ---`timer:close()` at the end or you will leak memory!
-Defer.throttle_leading = validator.f.arguments("function", validator.f.greater_than(0))
+Defer.throttle_leading = validator.f.arguments({ "function", validator.f.greater_than(0) })
 	.. function(fn, ms)
 		local timer = vim.loop.new_timer()
 		local running = false
@@ -23,6 +23,7 @@ Defer.throttle_leading = validator.f.arguments("function", validator.f.greater_t
 				pcall(vim.schedule_wrap(fn), select(1, ...))
 			end
 		end
+
 		return wrapped_fn, timer
 	end
 
@@ -35,7 +36,7 @@ Defer.throttle_leading = validator.f.arguments("function", validator.f.greater_t
 ---call to `fn` within the timeframe. Default: Use arguments of the first call.
 --@returns (function, timer) Throttled function and timer. Remember to call
 ---`timer:close()` at the end or you will leak memory!
-Defer.throttle_trailing = validator.f.arguments("function", validator.f.greater_than(0))
+Defer.throttle_trailing = validator.f.arguments({ "function", validator.f.greater_than(0) })
 	.. function(fn, ms, last)
 		local timer = vim.loop.new_timer()
 		local running = false
@@ -78,7 +79,7 @@ Defer.throttle_trailing = validator.f.arguments("function", validator.f.greater_
 --@param timeout (number) Timeout in ms
 --@returns (function, timer) Debounced function and timer. Remember to call
 ---`timer:close()` at the end or you will leak memory!
-Defer.debounce_leading = validator.f.arguments("function", validator.f.greater_than(0))
+Defer.debounce_leading = validator.f.arguments({ "function", validator.f.greater_than(0) })
 	.. function(fn, ms)
 		local timer = vim.loop.new_timer()
 		local running = false
@@ -105,7 +106,7 @@ Defer.debounce_leading = validator.f.arguments("function", validator.f.greater_t
 ---call to `fn` within the timeframe. Default: Use arguments of the last call.
 --@returns (function, timer) Debounced function and timer. Remember to call
 ---`timer:close()` at the end or you will leak memory!
-Defer.debounce_trailing = validator.f.arguments("function", validator.f.greater_than(0))
+Defer.debounce_trailing = validator.f.arguments({ "function", validator.f.greater_than(0) })
 	.. function(fn, ms, first)
 		local timer = vim.loop.new_timer()
 		local wrapped_fn

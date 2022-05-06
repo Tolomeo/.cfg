@@ -134,8 +134,8 @@ Validator.f = {
 			return Validator.validate(validation_map)
 		end
 	end,
-	arguments = function(...)
-		local validate_arguments = Validator.f.list({ ... })
+	arguments = function(arguments_validators)
+		local validate_arguments = Validator.f.list(arguments_validators)
 
 		return setmetatable({
 			decorate = function(func)

@@ -133,7 +133,7 @@ local Terminal = Module:new({
 	end,
 })
 
-Terminal.job = validator.f.arguments(validator.f.shape({ "string" }))
+Terminal.job = validator.f.arguments({ validator.f.shape({ "string" }) })
 	.. function(job)
 		job = Job:new(job)
 

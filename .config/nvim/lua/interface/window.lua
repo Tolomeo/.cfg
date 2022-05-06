@@ -27,11 +27,13 @@ Window._get_modal_config = function()
 	}, defaults.modal)
 end
 
-Window.modal = validator.f.arguments(validator.f.shape({
-	"number",
-	on_resize = validator.f.optional("function"),
-	on_resized = validator.f.optional("function"),
-})) .. function(options)
+Window.modal = validator.f.arguments({
+	validator.f.shape({
+		"number",
+		on_resize = validator.f.optional("function"),
+		on_resized = validator.f.optional("function"),
+	}),
+}) .. function(options)
 	local buffer = options[1]
 	local window = vim.api.nvim_open_win(buffer, true, Window._get_modal_config())
 	local on_vim_resized = function()
