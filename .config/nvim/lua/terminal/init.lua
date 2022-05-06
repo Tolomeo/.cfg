@@ -1,7 +1,7 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
 local key = require("_shared.key")
-local valid = require("_shared.validate")
+local validator = require("_shared.validator")
 
 local Job = {}
 
@@ -133,7 +133,7 @@ local Terminal = Module:new({
 	end,
 })
 
-Terminal.job = valid.arguments(valid.t.shape({ "string" }))
+Terminal.job = validator.create(validator.t.shape({ "string" }))
 	.. function(job)
 		job = Job:new(job)
 

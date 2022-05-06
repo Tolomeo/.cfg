@@ -1,5 +1,5 @@
 -- https://github.com/runiq/neovim-throttle-debounce
-local valid = require("_shared.validate")
+local validator = require("_shared.validator")
 
 local Defer = {}
 
@@ -9,7 +9,7 @@ local Defer = {}
 --@param timeout (number) Timeout in ms
 --@returns (function, timer) throttled function and timer. Remember to call
 ---`timer:close()` at the end or you will leak memory!
-Defer.throttle_leading = valid.arguments("function", valid.t.greater_than(0))
+Defer.throttle_leading = validator.create("function", validator.t.greater_than(0))
 	.. function(fn, ms)
 		local timer = vim.loop.new_timer()
 		local running = false
@@ -35,7 +35,7 @@ Defer.throttle_leading = valid.arguments("function", valid.t.greater_than(0))
 ---call to `fn` within the timeframe. Default: Use arguments of the first call.
 --@returns (function, timer) Throttled function and timer. Remember to call
 ---`timer:close()` at the end or you will leak memory!
-Defer.throttle_trailing = valid.arguments("function", valid.t.greater_than(0))
+Defer.throttle_trailing = validator.create("function", validator.t.greater_than(0))
 	.. function(fn, ms, last)
 		local timer = vim.loop.new_timer()
 		local running = false
@@ -78,7 +78,7 @@ Defer.throttle_trailing = valid.arguments("function", valid.t.greater_than(0))
 --@param timeout (number) Timeout in ms
 --@returns (function, timer) Debounced function and timer. Remember to call
 ---`timer:close()` at the end or you will leak memory!
-Defer.debounce_leading = valid.arguments("function", valid.t.greater_than(0))
+Defer.debounce_leading = validator.create("function", validator.t.greater_than(0))
 	.. function(fn, ms)
 		local timer = vim.loop.new_timer()
 		local running = false
@@ -105,7 +105,7 @@ Defer.debounce_leading = valid.arguments("function", valid.t.greater_than(0))
 ---call to `fn` within the timeframe. Default: Use arguments of the last call.
 --@returns (function, timer) Debounced function and timer. Remember to call
 ---`timer:close()` at the end or you will leak memory!
-Defer.debounce_trailing = valid.arguments("function", valid.t.greater_than(0))
+Defer.debounce_trailing = validator.create("function", validator.t.greater_than(0))
 	.. function(fn, ms, first)
 		local timer = vim.loop.new_timer()
 		local wrapped_fn

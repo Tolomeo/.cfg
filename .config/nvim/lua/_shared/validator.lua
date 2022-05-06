@@ -50,13 +50,13 @@ local get_table_validation = function(tbl, validators_tbl)
 	return vim.tbl_extend("error", get_list_validation(tbl, validators_tbl), get_dict_validation(tbl, validators_tbl))
 end
 
-local Validate = {}
+local Validator = {}
 
-Validate.call = function(value, validator)
+Validator.call = function(value, validator)
 	return pcall(vim.validate, { [value] = { value, validator } })
 end
 
-Validate.t = {
+Validator.t = {
 	optional = function(validator)
 		if type(validator) == "function" then
 			return function(value)
@@ -170,8 +170,8 @@ Validate.t = {
 }
 
 -- http://lua-users.org/wiki/DecoratorsAndDocstrings
-function Validate.arguments(...)
-	local validate_arguments = Validate.t.list(...)
+function Validator.create(...)
+	local validate_arguments = Validator.t.list(...)
 
 	return setmetatable({}, {
 		__concat = function(_, func)
@@ -188,4 +188,4 @@ function Validate.arguments(...)
 	})
 end
 
-return Validate
+return Validator
