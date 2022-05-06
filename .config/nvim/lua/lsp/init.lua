@@ -1,13 +1,14 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
 local key = require("_shared.key")
+local validator = require("_shared.validator")
 
 local Intellisense = Module:new({
 	plugins = {
 		-- Conquer of completion
 		"neoclide/coc.nvim",
 		branch = "master",
-		run = "yarn install --frozen-lockfile"
+		run = "yarn install --frozen-lockfile",
 	},
 	setup = function(self)
 		-- Extensions, see https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions#install-extensions
@@ -51,79 +52,79 @@ local Intellisense = Module:new({
 	end,
 })
 
--- Module actions
-function Intellisense.open_code_actions()
+Intellisense.open_code_actions = function()
 	return key.input("<Plug>(coc-codeaction)", "m")
 end
 
-function Intellisense.format()
+Intellisense.format = function()
 	return vim.api.nvim_command('call CocAction("format")')
 end
 
-function Intellisense.eslint_fix()
+Intellisense.eslint_fix = function()
 	return vim.api.nvim_command("CocCommand eslint.executeAutofix")
 end
 
-function Intellisense.go_to_definition()
+Intellisense.go_to_definition = function()
 	return key.input("<Plug>(coc-definition)", "m")
 end
 
-function Intellisense.go_to_type_definition()
+Intellisense.go_to_type_definition = function()
 	return key.input("<Plug>(coc-type-definition)", "m")
 end
 
-function Intellisense.go_to_implementation()
+Intellisense.go_to_implementation = function()
 	return key.input("<Plug>(coc-implementation)", "m")
 end
 
-function Intellisense.show_references()
+Intellisense.show_references = function()
 	return key.input("<Plug>(coc-references)", "m")
 end
 
-function Intellisense.show_symbol_doc()
+Intellisense.show_symbol_doc = function()
 	return vim.api.nvim_command('call CocActionAsync("doHover")')
 end
 
-function Intellisense.rename_symbol()
+Intellisense.rename_symbol = function()
 	return key.input("<Plug>(coc-rename)", "m")
 end
 
-function Intellisense.highlight_symbol()
+Intellisense.highlight_symbol = function()
 	return vim.api.nvim_command("call CocActionAsync('highlight')")
 end
 
-function Intellisense.show_diagnostics()
+Intellisense.show_diagnostics = function()
 	return vim.api.nvim_command("CocDiagnostics")
 end
 
-function Intellisense.next_diagnostic()
+Intellisense.next_diagnostic = function()
 	return key.input("<Plug>(coc-diagnostic-next)", "m")
 end
 
-function Intellisense.prev_diagnostic()
+Intellisense.prev_diagnostic = function()
 	return key.input("<Plug>(coc-diagnostic-prev)", "m")
 end
 
 -- TODO: move this check into core module
-function Intellisense.has_suggestions()
+Intellisense.has_suggestions = function()
 	return vim.fn.pumvisible() ~= 0
 end
 
-function Intellisense.open_suggestions()
+Intellisense.open_suggestions = function()
 	return key.input(vim.fn["coc#refresh"]())
 end
 
-function Intellisense.next_suggestion(next)
-	return function()
-		if Intellisense.has_suggestions() then
-			return key.input("<C-n>")
+Intellisense.next_suggestion = validator.f.arguments("string")
+	.. function(next)
+		return function()
+			if Intellisense.has_suggestions() then
+				return key.input("<C-n>")
+			end
+
+			return key.input(next)
 		end
-
-		return key.input(next)
 	end
-end
 
-function Intellisense.prev_suggestion()
+Intellisense.prev_suggestion = function()
 	if Intellisense.has_suggestions() then
 		return key.input("<C-p>")
 	end
@@ -132,7 +133,7 @@ function Intellisense.prev_suggestion()
 end
 
 -- vim.api.nvim_set_keymap("i", "<CR>", "pumvisible() ? coc#_select_confirm() : '<C-G>u<CR><C-R>=coc#on_enter()<CR>'", {silent = true, expr = true, noremap = true})
-function Intellisense.confirm_suggestion()
+Intellisense.confirm_suggestion = function()
 	if Intellisense.has_suggestions() then
 		return key.feed(vim.fn["coc#_select_confirm"]())
 	end
