@@ -1,5 +1,6 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
+local validator = require("_shared.validator")
 
 local defaults = {
 	modal = {
@@ -13,7 +14,7 @@ local Window = Module:new({
 	plugins = {},
 })
 
-function Window._get_modal_config()
+Window._get_modal_config = function()
 	local width = math.ceil(math.min(vim.o.columns, math.max(80, vim.o.columns - 20)))
 	local height = math.ceil(math.min(vim.o.lines, math.max(20, vim.o.lines - 10)))
 	local col = (math.ceil(vim.o.columns - width) / 2) - 1
@@ -26,7 +27,11 @@ function Window._get_modal_config()
 	}, defaults.modal)
 end
 
-function Window.modal(options)
+Window.modal = validator.f.arguments(validator.f.shape({
+	"number",
+	on_resize = validator.f.optional("function"),
+	on_resized = validator.f.optional("function"),
+})) .. function(options)
 	local buffer = options[1]
 	local window = vim.api.nvim_open_win(buffer, true, Window._get_modal_config())
 	local on_vim_resized = function()

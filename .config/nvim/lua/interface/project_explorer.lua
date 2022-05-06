@@ -1,4 +1,5 @@
 local Module = require("_shared.module")
+local validator = require("_shared.validator")
 
 local ProjectExplorer = Module:new({
 	plugins = {
@@ -76,12 +77,20 @@ local ProjectExplorer = Module:new({
 	end,
 })
 
-function ProjectExplorer.search_in_directory(node)
-	local directory = node.fs_stat.type == "directory" and node.absolute_path
-		or vim.fn.fnamemodify(node.absolute_path, ":h")
+local validate_node = validator.f.shape({
+	absolute_path = "string",
+	fs_stat = validator.f.shape({
+		type = "string",
+	}),
+})
 
-	require("finder").find_in_directory(directory)
-end
+ProjectExplorer.search_in_directory = validator.f.arguments(validate_node)
+	.. function(node)
+		local directory = node.fs_stat.type == "directory" and node.absolute_path
+			or vim.fn.fnamemodify(node.absolute_path, ":h")
+
+		require("finder").find_in_directory(directory)
+	end
 
 -- https://github.com/kyazdani42/nvim-tree.lua/blob/master/lua/nvim-tree/actions/init.lua
 ProjectExplorer.tree_actions = {
@@ -119,31 +128,32 @@ ProjectExplorer.tree_actions = {
 	-- prev_sibling = require("nvim-tree.actions.movements").sibling(-1),
 }
 
-function ProjectExplorer.tree_actions_menu(node)
-	local items = {
-		results = ProjectExplorer.tree_actions,
-		entry_maker = function(tree_action)
-			return {
-				value = tree_action,
-				ordinal = tree_action[1],
-				display = tree_action[1],
-			}
-		end,
-	}
-	local on_select = function(contex_menu)
-		local selection = contex_menu.state.get_selected_entry()
-		local tree_action = selection.value[2]
-		contex_menu.actions.close(contex_menu.buffer)
-		vim.defer_fn(function()
-			tree_action(node)
-		end, 50)
+ProjectExplorer.tree_actions_menu = validator.f.arguments(validate_node)
+	.. function(node)
+		local items = {
+			results = ProjectExplorer.tree_actions,
+			entry_maker = function(tree_action)
+				return {
+					value = tree_action,
+					ordinal = tree_action[1],
+					display = tree_action[1],
+				}
+			end,
+		}
+		local on_select = function(contex_menu)
+			local selection = contex_menu.state.get_selected_entry()
+			local tree_action = selection.value[2]
+			contex_menu.actions.close(contex_menu.buffer)
+			vim.defer_fn(function()
+				tree_action(node)
+			end, 50)
+		end
+		local options = { prompt_title = node.name }
+
+		require("finder").contex_menu(items, on_select, options)
 	end
-	local options = { prompt_title = node.name }
 
-	require("finder").contex_menu(items, on_select, options)
-end
-
-function ProjectExplorer.toggle()
+ProjectExplorer.toggle = function()
 	local view = require("nvim-tree.view")
 
 	if view.is_visible() then
