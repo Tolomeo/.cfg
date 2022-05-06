@@ -76,6 +76,13 @@ local ProjectExplorer = Module:new({
 	end,
 })
 
+function ProjectExplorer.search_in_directory(node)
+	local directory = node.fs_stat.type == "directory" and node.absolute_path
+		or vim.fn.fnamemodify(node.absolute_path, ":h")
+
+	require("finder").find_in_directory(directory)
+end
+
 -- https://github.com/kyazdani42/nvim-tree.lua/blob/master/lua/nvim-tree/actions/init.lua
 ProjectExplorer.tree_actions = {
 	{ "Create", require("nvim-tree.actions.create-file").fn },
@@ -88,12 +95,7 @@ ProjectExplorer.tree_actions = {
 	{ "Copy name", require("nvim-tree.actions.copy-paste").copy_filename },
 	{ "Copy relative path", require("nvim-tree.actions.copy-paste").copy_path },
 	{ "Copy absolute path", require("nvim-tree.actions.copy-paste").copy_absolute_path },
-	{
-		"Search in directory",
-		function(...)
-			ProjectExplorer.search_in_directory(...)
-		end,
-	},
+	{ "Search in directory", ProjectExplorer.search_in_directory },
 	{ "Open in file manager", require("nvim-tree.actions.system-open").fn },
 	{ "Toggle git.ignored files visibility", require("nvim-tree.actions.toggles").git_ignored },
 	{ "Toggle dotfiles visibility", require("nvim-tree.actions.toggles").dotfiles },
@@ -139,13 +141,6 @@ function ProjectExplorer.tree_actions_menu(node)
 	local options = { prompt_title = node.name }
 
 	require("finder").contex_menu(items, on_select, options)
-end
-
-function ProjectExplorer.search_in_directory(node)
-	local directory = node.fs_stat.type == "directory" and node.absolute_path
-		or vim.fn.fnamemodify(node.absolute_path, ":h")
-
-	require("finder").find_in_directory(directory)
 end
 
 function ProjectExplorer.toggle()

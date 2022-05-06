@@ -1,5 +1,6 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
+local validator = require("_shared.validator")
 
 local Finder = Module:new({
 	plugins = {
@@ -47,83 +48,94 @@ local Finder = Module:new({
 	end,
 })
 
-function Finder.find_files()
+Finder.find_files = function()
 	require("telescope.builtin").find_files()
 end
 
-function Finder.find_in_directory(directory)
-	local root = vim.loop.cwd()
-	local searchDirectory = directory or root
-	local rootRelativeCwd = root == searchDirectory and "/" or string.gsub(searchDirectory, root, "")
-	local options = {
-		cwd = searchDirectory,
-		prompt_title = "Search in " .. rootRelativeCwd,
-	}
+Finder.find_in_directory = validator.f.arguments("string")
+	.. function(directory)
+		local root = vim.loop.cwd()
+		local searchDirectory = directory or root
+		local rootRelativeCwd = root == searchDirectory and "/" or string.gsub(searchDirectory, root, "")
+		local options = {
+			cwd = searchDirectory,
+			prompt_title = "Search in " .. rootRelativeCwd,
+		}
 
-	require("telescope.builtin").live_grep(options)
-end
+		require("telescope.builtin").live_grep(options)
+	end
 
-function Finder.find_in_buffer()
+Finder.find_in_buffer = function()
 	require("telescope.builtin").current_buffer_fuzzy_find()
 end
 
-function Finder.find_buffers()
+Finder.find_buffers = function()
 	require("telescope.builtin").buffers()
 end
 
-function Finder.find_in_documentation()
+Finder.find_in_documentation = function()
 	require("telescope.builtin").help_tags()
 end
 
-function Finder.find_projects()
+Finder.find_projects = function()
 	require("telescope").extensions.project.project({ display_type = "full" })
 end
 
-function Finder.find_yanks()
+Finder.find_yanks = function()
 	require("telescope").extensions.neoclip.default()
 end
 
-function Finder.find_todos()
+Finder.find_todos = function()
 	key.input(":TodoTelescope<CR>")
 end
 
-function Finder.find_commands()
+Finder.find_commands = function()
 	require("telescope.builtin").commands()
 end
 
-function Finder.find_spelling()
+Finder.find_spelling = function()
 	require("telescope.builtin").spell_suggest()
 end
 
-function Finder.contex_menu(items, on_select, options)
-	options = options or {}
-	local finder = require("telescope.finders").new_table(items)
-	local sorter = require("telescope.sorters").get_generic_fuzzy_sorter()
-	local theme = require("telescope.themes").get_cursor()
-	local actions = require("telescope.actions")
-	local state = require("telescope.actions.state")
-	local opts = {
-		prompt_title = options.prompt_title,
-		finder = finder,
-		sorter = sorter,
-		attach_mappings = function(prompt_buffer_number)
-			-- On select item
-			actions.select_default:replace(function()
-				on_select({ buffer = prompt_buffer_number, state = state, actions = actions })
-			end)
-			-- Disabling any kind of multiple selection
-			actions.add_selection:replace(function() end)
-			actions.remove_selection:replace(function() end)
-			actions.toggle_selection:replace(function() end)
-			actions.select_all:replace(function() end)
-			actions.drop_all:replace(function() end)
-			actions.toggle_all:replace(function() end)
+Finder.contex_menu = validator.f.arguments(
+	validator.f.shape({
+		results = validator.f.list({ validator.f.list({ "string", "function" }) }),
+		entry_maker = "function",
+	}),
+	"function",
+	validator.f.optional(validator.f.shape({
+		prompt_title = "string",
+	}))
+)
+	.. function(items, on_select, options)
+		options = options or {}
+		local finder = require("telescope.finders").new_table(items)
+		local sorter = require("telescope.sorters").get_generic_fuzzy_sorter()
+		local theme = require("telescope.themes").get_cursor()
+		local actions = require("telescope.actions")
+		local state = require("telescope.actions.state")
+		local opts = {
+			prompt_title = options.prompt_title,
+			finder = finder,
+			sorter = sorter,
+			attach_mappings = function(prompt_buffer_number)
+				-- On select item
+				actions.select_default:replace(function()
+					on_select({ buffer = prompt_buffer_number, state = state, actions = actions })
+				end)
+				-- Disabling any kind of multiple selection
+				actions.add_selection:replace(function() end)
+				actions.remove_selection:replace(function() end)
+				actions.toggle_selection:replace(function() end)
+				actions.select_all:replace(function() end)
+				actions.drop_all:replace(function() end)
+				actions.toggle_all:replace(function() end)
 
-			return true
-		end,
-	}
+				return true
+			end,
+		}
 
-	require("telescope.pickers").new(theme, opts):find()
-end
+		require("telescope.pickers").new(theme, opts):find()
+	end
 
 return Finder
