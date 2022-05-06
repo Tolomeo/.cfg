@@ -1,5 +1,9 @@
 local fn = require("_shared.fn")
 
+--- Generates a validation map for a list
+---@param list table the list value
+---@param validators_list table list of validators to use for the validation
+---@return table
 local get_list_validation_map = function(list, validators_list)
 	local length = math.max(#list, #validators_list)
 	local validation = {}
@@ -15,6 +19,10 @@ local get_list_validation_map = function(list, validators_list)
 	return validation
 end
 
+--- Generates a validation map for a dictionary
+---@param dict table the dictionary value
+---@param validators_dict table dictionary of validators to use for the validation
+---@return table
 local get_dict_validation_map = function(dict, validators_dict)
 	return fn.kreduce(validators_dict, function(dict_validation, validator, key)
 		local value = dict[key]
@@ -35,11 +43,17 @@ end
 
 local Validator = {}
 
+--- Returns the outcome of a validation performed by calling vim.validate
+---@param validationMap table the vim.validate opt parameter
+---@return boolean, string|nil
 Validator.validate = function(validationMap)
 	return pcall(vim.validate, validationMap)
 end
 
 Validator.f = {
+	--- Has a validator returning true when a nil value is passed to it
+	---@param validator function|table|string the validator to be enhanced
+	---@return function|table
 	optional = function(validator)
 		if type(validator) == "function" then
 			return function(value)
@@ -57,6 +71,9 @@ Validator.f = {
 
 		return { validator, "nil" }
 	end,
+	--- Generates a validator function which validates a value is equal to the specified one
+	---@param expected any the value to compare against
+	---@return function
 	equal = function(expected)
 		return function(value)
 			if expected ~= value then
@@ -66,6 +83,9 @@ Validator.f = {
 			return true
 		end
 	end,
+	--- Generates a validator function which validates a value is among to the specified ones
+	---@param expected table the values to compare against
+	---@return function
 	one_of = function(expected)
 		return function(value)
 			for _, expected_value in ipairs(expected) do
@@ -77,6 +97,9 @@ Validator.f = {
 			return false, "Expected value " .. vim.inspect(value) .. " to be one of " .. vim.inspect(expected)
 		end
 	end,
+	--- Generates a validator function which validates a value is a string matching a given pattern
+	---@param pattern string the pattern to match against
+	---@return function
 	pattern = function(pattern)
 		return function(value)
 			if type(value) ~= "string" then
@@ -92,6 +115,9 @@ Validator.f = {
 			return true
 		end
 	end,
+	--- Generates a validator function which validates a number is greater than a given one
+	---@param min number the number to compare against
+	---@return function
 	greater_than = function(min)
 		return function(value)
 			local is_valid = type(value) == "number" and value > min
@@ -103,6 +129,9 @@ Validator.f = {
 			return true
 		end
 	end,
+	--- Generates a validator function which validates a number is less than a given one
+	---@param max number the number to compare against
+	---@return function
 	less_than = function(max)
 		return function(value)
 			local is_valid = type(value) == "number" and value < max
@@ -114,6 +143,9 @@ Validator.f = {
 			return true
 		end
 	end,
+	--- Generates a validator function which validates a list using the validators given
+	---@param list_validators table validators to use for the list
+	---@return function
 	list = function(list_validators)
 		return function(list)
 			if type(list) ~= "table" then
@@ -124,6 +156,9 @@ Validator.f = {
 			return Validator.validate(validation_map)
 		end
 	end,
+	--- Generates a validator function which validates a dictionary using the validators given
+	---@param shape_validators table validators to use for the dictionary
+	---@return function
 	shape = function(shape_validators)
 		return function(shape)
 			if type(shape) ~= "table" then
@@ -134,6 +169,9 @@ Validator.f = {
 			return Validator.validate(validation_map)
 		end
 	end,
+	--- Generates a function decorator which validates arguments passed to the decorated function
+	---@param arguments_validators table validators to use for function arguments
+	---@return function
 	arguments = function(arguments_validators)
 		local validate_arguments = Validator.f.list(arguments_validators)
 

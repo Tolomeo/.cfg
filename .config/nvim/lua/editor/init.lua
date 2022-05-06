@@ -13,6 +13,8 @@ local Editor = Module:new({
 		-- Comments
 		"b3nj5m1n/kommentary",
 		"JoosepAlviste/nvim-ts-context-commentstring",
+		-- Code docs
+		{ "danymat/neogen", requires = "nvim-treesitter/nvim-treesitter" },
 		-- Auto closing tags
 		"windwp/nvim-ts-autotag",
 		-- Autoclosing pair of chars
@@ -121,6 +123,9 @@ local Editor = Module:new({
 
 		-- Kommentary
 		vim.g.kommentary_create_default_mappings = false
+
+		-- Code docs
+		require("neogen").setup({})
 
 		-- CursorLine
 		vim.g.cursorline_timeout = 0

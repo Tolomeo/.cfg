@@ -5,10 +5,12 @@ local validator = require("_shared.validator")
 
 local Intellisense = Module:new({
 	plugins = {
-		-- Conquer of completion
-		"neoclide/coc.nvim",
-		branch = "master",
-		run = "yarn install --frozen-lockfile",
+		{
+			-- Conquer of completion
+			"neoclide/coc.nvim",
+			branch = "master",
+			run = "yarn install --frozen-lockfile",
+		},
 	},
 	setup = function(self)
 		-- Extensions, see https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions#install-extensions
