@@ -1,6 +1,17 @@
 local validator = require("_shared.validator")
 local Module = {}
 
+local module_setup = function(setup)
+	return function(self, ...)
+		setup(self, ...)
+
+		local child_modules = self.modules
+		for _, child_module in pairs(child_modules) do
+			child_module:setup(...)
+		end
+	end
+end
+
 Module.new = validator.f.arguments({
 	validator.f.equal(Module),
 	validator.f.shape({
@@ -12,23 +23,13 @@ Module.new = validator.f.arguments({
 	local module = {
 		plugins = module_options.plugins or {},
 		modules = module_options.modules or {},
-		_setup = module_options.setup or function() end,
+		setup = module_setup(module_options.setup or function() end),
 	}
 
 	setmetatable(module, self)
 	self.__index = self
 
 	return module
-end
-
--- TODO: options validation
-function Module:setup(...)
-	self:_setup(...)
-
-	local child_modules = self.modules
-	for _, child_module in pairs(child_modules) do
-		child_module:setup(...)
-	end
 end
 
 function Module:list_plugins()
