@@ -116,7 +116,7 @@ Interface.color_scheme = setmetatable({
 })
 
 function Interface.toggle_tree()
-	Interface:modules().project_explorer.toggle()
+	Interface.modules.project_explorer.toggle()
 end
 
 return Interface

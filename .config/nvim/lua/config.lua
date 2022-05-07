@@ -37,7 +37,7 @@ local Config = Module:new({
 
 		-- Registering plugins to use
 		require("packer").startup(function(use)
-			use(self:plugins())
+			use(self:list_plugins())
 		end)
 
 		-- Downloading plugins
@@ -63,7 +63,7 @@ local Config = Module:new({
 		]])
 
 		-- Base modules configurations
-		self:modules().interface.color_scheme("edge")
+		self.modules.interface.color_scheme("edge")
 	end,
 })
 
