@@ -1,30 +1,38 @@
 local validator = require("_shared.validator")
-local Module = {}
 
-local module_setup = function(setup)
-	return function(self, ...)
-		setup(self, ...)
+--- Represents a configuration module
+---@class Module
+local Module = {
+	plugins = {},
+	modules = {},
+	---@diagnostic disable-next-line: unused-local
+	setup = function(self, ...) end,
+}
 
-		local child_modules = self.modules
-		for _, child_module in pairs(child_modules) do
-			child_module:setup(...)
-		end
-	end
-end
-
+--- Instantiate a new module
+---@param self Module
+---@param module table the module
+---@return Module
 Module.new = validator.f.arguments({
 	validator.f.equal(Module),
-	validator.f.shape({
+	validator.f.optional(validator.f.shape({
 		plugins = validator.f.optional("table"),
 		modules = validator.f.optional("table"),
 		setup = validator.f.optional("function"),
-	}),
-}) .. function(self, module_options)
-	local module = {
-		plugins = module_options.plugins or {},
-		modules = module_options.modules or {},
-		setup = module_setup(module_options.setup or function() end),
-	}
+	})),
+}) .. function(self, module)
+	module = module or {}
+
+	if module.setup then
+		local setup = module.setup
+		function module:setup(...)
+			setup(self, ...)
+
+			for _, child_module in pairs(self.modules) do
+				child_module:setup(...)
+			end
+		end
+	end
 
 	setmetatable(module, self)
 	self.__index = self
@@ -32,6 +40,8 @@ Module.new = validator.f.arguments({
 	return module
 end
 
+--- Returns a list of all the plugins used by the module and by its children
+---@return table
 function Module:list_plugins()
 	local plugins = vim.deepcopy(self.plugins)
 	local child_modules = self.modules
