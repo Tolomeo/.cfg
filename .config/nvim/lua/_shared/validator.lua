@@ -171,7 +171,7 @@ Validator.f = {
 	end,
 	--- Generates a function decorator which validates arguments passed to the decorated function
 	---@param arguments_validators table validators to use for function arguments
-	---@return function
+	---@return table
 	arguments = function(arguments_validators)
 		local validate_arguments = Validator.f.list(arguments_validators)
 
