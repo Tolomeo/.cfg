@@ -1,17 +1,18 @@
+local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 local M = {}
 
+--- Creates an augroup
+--- If autocmds are specified, they are created associating them with the created augroup
+---@param config table
+---@return number
 M.group = validator.f.arguments({ validator.f.shape({ "string", "table", clear = validator.f.optional("boolean") }) })
 	.. function(config)
 		local name, autocmds = config[1], config[2]
-		local opts = { clear = true }
-
-		-- Overriding default opts
-		for i, v in pairs(config) do
-			if type(i) == "string" then
-				opts[i] = v
-			end
-		end
+		local opts = fn.kreduce(config, function(o, v, k)
+			o[k] = v
+			return o
+		end, { clear = true })
 
 		local group = vim.api.nvim_create_augroup(name, opts)
 
@@ -19,8 +20,13 @@ M.group = validator.f.arguments({ validator.f.shape({ "string", "table", clear =
 			autocmd.group = group
 			M.command(autocmd)
 		end
+
+		return group
 	end
 
+--- Creates an aucmd
+---@param config table
+---@return number
 M.command = validator.f.arguments({
 	validator.f.shape({ { "string", "table" }, { "string", "table", "number" }, { "string", "function" } }),
 })
@@ -42,7 +48,7 @@ M.command = validator.f.arguments({
 		opts.command = handlerType ~= "function" and handler or nil
 		opts.callback = handlerType == "function" and handler or nil
 
-		vim.api.nvim_create_autocmd(event, opts)
+		return vim.api.nvim_create_autocmd(event, opts)
 	end
 
 return M
