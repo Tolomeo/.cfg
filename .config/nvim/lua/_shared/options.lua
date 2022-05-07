@@ -99,6 +99,7 @@ local plugins = {
 	zipPlugin = false,
 }
 
+--- Sets global options and disables some builtin vim plugins
 function Options.set()
 	for option_name, option_value in pairs(globals) do
 		vim.opt[option_name] = option_value
@@ -111,6 +112,8 @@ function Options.set()
 	end
 end
 
+--- Returns global vim variables set by the configuration
+---@return table
 function Options.get()
 	return globals
 end
