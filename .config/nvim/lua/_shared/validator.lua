@@ -83,6 +83,27 @@ Validator.f = {
 			return true
 		end
 	end,
+	--- Generates a validator function which validates a value has and expected metatable
+	---@param expected table the table to look for as a metatable
+	---@return function
+	instance_of = function(expected)
+		return function(value)
+			expected = tostring(expected)
+			local mt = getmetatable(value)
+
+			while true do
+				if mt == nil then
+					return false
+				end
+
+				if tostring(mt) == expected then
+					return true
+				end
+
+				mt = getmetatable(mt)
+			end
+		end
+	end,
 	--- Generates a validator function which validates a value is among to the specified ones
 	---@param expected table the values to compare against
 	---@return function

@@ -12,10 +12,13 @@ Module.plugins = {}
 
 Module.modules = {}
 
--- TODO: validation
+--- Initializes the module
 ---@param self Module
 ---@param options table configuration options
-Module.setup = function(self, options)
+Module.setup = validator.f.arguments({
+	validator.f.instance_of(Module),
+	"table",
+}) .. function(self, options)
 	for _, child_module in pairs(self.modules) do
 		child_module:setup(options)
 	end
