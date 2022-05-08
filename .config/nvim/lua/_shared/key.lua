@@ -3,8 +3,7 @@ local validator = require("_shared.validator")
 local Key = {}
 
 --- Sets a keymap
----@param mode string
----@vararg table the keymap description
+---@type fun(mode: string, ...: table)
 Key.map = validator.f.arguments({
 	validator.f.one_of({ "", "n", "!", "v", "i", "t", "o", "c", "l" }),
 	validator.f.shape({ "string", { "string", "function" } }),
@@ -87,19 +86,15 @@ Key.lmap = function(...)
 	return Key.map("l", ...)
 end
 
---- Replaces terminal codes and keycodes (<CR>, <Esc>, ...) in a
---- string with the internal representation.
----@param keys string
+--- Replaces terminal codes and keycodes (<CR>, <Esc>, ...) in a string with the internal representation.
+---@type fun(keys: string)
 Key.to_term_code = validator.f.arguments({ "string" })
 	.. function(keys)
 		return vim.api.nvim_replace_termcodes(keys, true, true, true)
 	end
 
---- Characters in keys are queued for processing as if they
---- come from a mapping or were typed by the user.
----@param keys string
----@param mode string
----@return number
+--- Characters in keys are queued for processing as if they come from a mapping or were typed by the user.
+---@type fun(keys: string, mode: string)
 Key.feed = validator.f.arguments({ "string", validator.f.optional(validator.f.pattern("^[mntix!]+$")) })
 	.. function(keys, mode)
 		return vim.fn.feedkeys(keys, mode)
@@ -109,9 +104,7 @@ Key.feed = validator.f.arguments({ "string", validator.f.optional(validator.f.pa
 --- come from a mapping or were typed by the user.
 --- Replaces terminal codes and keycodes (<CR>, <Esc>, ...) in a
 --- string with the internal representation.
----@param keys string
----@param mode string
----@return number
+---@type fun(keys: string, mode: string): number
 Key.input = validator.f.arguments({ "string", validator.f.optional(validator.f.pattern("^[mntix!]+$")) })
 	.. function(keys, input_mode)
 		local mode = input_mode or "n" -- Noremap mode by default
@@ -119,7 +112,7 @@ Key.input = validator.f.arguments({ "string", validator.f.optional(validator.f.p
 	end
 
 --- Sets the leader key
----@param leader string
+---@type fun(leader: string)
 Key.map_leader = validator.f.arguments({ "string" })
 	.. function(leader)
 		Key.map("", { leader, "<Nop>" })

@@ -3,12 +3,10 @@ local validator = require("_shared.validator")
 
 local Defer = {}
 
---- Throttles a function on the leading edge. Automatically `schedule_wrap()`s.
----
---@param fn (function) Function to throttle
---@param timeout (number) Timeout in ms
---@returns (function, timer) throttled function and timer. Remember to call
----`timer:close()` at the end or you will leak memory!
+---Throttles a function on the leading edge. Automatically `schedule_wrap()`s.
+--Returns (function, timer) throttled function and timer.
+--Remember to call `timer:close()` at the end or you will leak memory!
+---@type fun(fn: function, ms: number): function, table
 Defer.throttle_leading = validator.f.arguments({ "function", validator.f.greater_than(0) })
 	.. function(fn, ms)
 		local timer = vim.loop.new_timer()
@@ -27,15 +25,10 @@ Defer.throttle_leading = validator.f.arguments({ "function", validator.f.greater
 		return wrapped_fn, timer
 	end
 
---- Throttles a function on the trailing edge. Automatically
---- `schedule_wrap()`s.
----
---@param fn (function) Function to throttle
---@param timeout (number) Timeout in ms
---@param last (boolean, optional) Whether to use the arguments of the last
----call to `fn` within the timeframe. Default: Use arguments of the first call.
---@returns (function, timer) Throttled function and timer. Remember to call
----`timer:close()` at the end or you will leak memory!
+---Throttles a function on the trailing edge. Automatically `schedule_wrap()`s.
+--Returns (function, timer) Throttled function and timer.
+--Remember to call `timer:close()` at the end or you will leak memory!
+---@type fun(fn: function, ms: number): function, table
 Defer.throttle_trailing = validator.f.arguments({ "function", validator.f.greater_than(0) })
 	.. function(fn, ms, last)
 		local timer = vim.loop.new_timer()
@@ -73,12 +66,10 @@ Defer.throttle_trailing = validator.f.arguments({ "function", validator.f.greate
 		return wrapped_fn, timer
 	end
 
---- Debounces a function on the leading edge. Automatically `schedule_wrap()`s.
----
---@param fn (function) Function to debounce
---@param timeout (number) Timeout in ms
---@returns (function, timer) Debounced function and timer. Remember to call
----`timer:close()` at the end or you will leak memory!
+---Debounces a function on the leading edge. Automatically `schedule_wrap()`s.
+--Returns (function, timer) Throttled function and timer.
+--Remember to call `timer:close()` at the end or you will leak memory!
+---@type fun(fn: function, ms: number): function, table
 Defer.debounce_leading = validator.f.arguments({ "function", validator.f.greater_than(0) })
 	.. function(fn, ms)
 		local timer = vim.loop.new_timer()
@@ -97,15 +88,10 @@ Defer.debounce_leading = validator.f.arguments({ "function", validator.f.greater
 		return wrapped_fn, timer
 	end
 
---- Debounces a function on the trailing edge. Automatically
---- `schedule_wrap()`s.
----
---@param fn (function) Function to debounce
---@param timeout (number) Timeout in ms
---@param first (boolean, optional) Whether to use the arguments of the first
----call to `fn` within the timeframe. Default: Use arguments of the last call.
---@returns (function, timer) Debounced function and timer. Remember to call
----`timer:close()` at the end or you will leak memory!
+---Debounces a function on the trailing edge. Automatically `schedule_wrap()`s.
+--Returns (function, timer) Throttled function and timer.
+--Remember to call `timer:close()` at the end or you will leak memory!
+---@type fun(fn: function, ms: number): function, table
 Defer.debounce_trailing = validator.f.arguments({ "function", validator.f.greater_than(0) })
 	.. function(fn, ms, first)
 		local timer = vim.loop.new_timer()

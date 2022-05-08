@@ -5,7 +5,6 @@ local validator = require("_shared.validator")
 local Module = {
 	plugins = {},
 	modules = {},
-	---@diagnostic disable-next-line: unused-local
 }
 
 Module.plugins = {}
@@ -13,8 +12,7 @@ Module.plugins = {}
 Module.modules = {}
 
 --- Initializes the module
----@param self Module
----@param options table configuration options
+---@type fun(self: Module, options: table)
 Module.setup = validator.f.arguments({
 	validator.f.instance_of(Module),
 	"table",
@@ -25,9 +23,7 @@ Module.setup = validator.f.arguments({
 end
 
 --- Instantiate a new module
----@param self Module
----@param module table the module
----@return Module
+---@type fun(self: Module, module: table): Module
 Module.new = validator.f.arguments({
 	validator.f.equal(Module),
 	validator.f.optional(validator.f.shape({
