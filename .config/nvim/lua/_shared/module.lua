@@ -6,8 +6,20 @@ local Module = {
 	plugins = {},
 	modules = {},
 	---@diagnostic disable-next-line: unused-local
-	setup = function(self, ...) end,
 }
+
+Module.plugins = {}
+
+Module.modules = {}
+
+-- TODO: validation
+---@param self Module
+---@param options table configuration options
+Module.setup = function(self, options)
+	for _, child_module in pairs(self.modules) do
+		child_module:setup(options)
+	end
+end
 
 --- Instantiate a new module
 ---@param self Module
@@ -27,10 +39,7 @@ Module.new = validator.f.arguments({
 		local setup = module.setup
 		function module:setup(...)
 			setup(self, ...)
-
-			for _, child_module in pairs(self.modules) do
-				child_module:setup(...)
-			end
+			Module.setup(self, ...)
 		end
 	end
 
