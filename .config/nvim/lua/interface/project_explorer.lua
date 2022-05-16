@@ -1,7 +1,8 @@
 local Module = require("_shared.module")
 local validator = require("_shared.validator")
 
-local ProjectExplorer = Module:new({
+local ProjectExplorer
+ProjectExplorer = Module:new({
 	plugins = {
 		-- File tree
 		{
@@ -11,7 +12,7 @@ local ProjectExplorer = Module:new({
 			},
 		},
 	},
-	setup = function(self)
+	setup = function()
 		vim.g.nvim_tree_highlight_opened_files = 3
 		vim.g.nvim_tree_group_empty = 1
 		-- NvimTree
@@ -68,8 +69,16 @@ local ProjectExplorer = Module:new({
 						{ key = "u", action = "toggle_custom" },
 						{ key = "i", action = "toggle_git_ignored" },
 						{ key = "h", action = "toggle_dotfiles" },
-						{ key = "<C-Space>", action = "show_node_actions", action_cb = self.tree_actions_menu },
-						{ key = "<leader>F", action = "search_in_directory", action_cb = self.search_in_directory },
+						{
+							key = "<C-Space>",
+							action = "show_node_actions",
+							action_cb = ProjectExplorer.tree_actions_menu,
+						},
+						{
+							key = "<leader>F",
+							action = "search_in_directory",
+							action_cb = ProjectExplorer.search_in_directory,
+						},
 					},
 				},
 			},

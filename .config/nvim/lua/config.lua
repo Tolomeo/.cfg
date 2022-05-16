@@ -7,7 +7,8 @@ local installed = nil
 local install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
 local config_files = vim.fn.expand("~", false) .. "/.config/nvim/**/*"
 
-local Config = Module:new({
+local Config
+Config = Module:new({
 	plugins = { "wbthomason/packer.nvim" },
 	modules = {
 		core = require("core"),
@@ -19,7 +20,7 @@ local Config = Module:new({
 		intellisense = require("lsp"),
 		terminal = require("terminal"),
 	},
-	setup = function(self)
+	setup = function()
 		-- setting leader key
 		key.map_leader(" ")
 		-- Global options
@@ -37,7 +38,7 @@ local Config = Module:new({
 
 		-- Registering plugins to use
 		require("packer").startup(function(use)
-			use(self:list_plugins())
+			use(Config:list_plugins())
 		end)
 
 		-- Downloading plugins
@@ -53,7 +54,7 @@ local Config = Module:new({
 				{
 					"BufWritePost",
 					config_files,
-					self.compile,
+					Config.compile,
 				},
 			},
 		})
@@ -63,7 +64,7 @@ local Config = Module:new({
 		]])
 
 		-- Base modules configurations
-		self.modules.interface.color_scheme("edge")
+		Config.modules.interface.color_scheme("edge")
 	end,
 })
 

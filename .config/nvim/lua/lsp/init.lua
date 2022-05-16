@@ -3,7 +3,8 @@ local au = require("_shared.au")
 local key = require("_shared.key")
 local validator = require("_shared.validator")
 
-local Intellisense = Module:new({
+local Intellisense
+Intellisense = Module:new({
 	plugins = {
 		{
 			-- Conquer of completion
@@ -12,7 +13,7 @@ local Intellisense = Module:new({
 			run = "yarn install --frozen-lockfile",
 		},
 	},
-	setup = function(self)
+	setup = function()
 		-- Extensions, see https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions#install-extensions
 		vim.g.coc_global_extensions = {
 			"coc-sumneko-lua",
@@ -32,13 +33,16 @@ local Intellisense = Module:new({
 		}
 
 		-- vim.cmd [[autocmd CursorHold * silent call CocActionAsync('highlight')]]
-		au.group({ "CursorSymbolHighlight", {
+		au.group({
+			"CursorSymbolHighlight",
 			{
-				"CursorHold",
-				"*",
-				self.highlight_symbol,
+				{
+					"CursorHold",
+					"*",
+					Intellisense.highlight_symbol,
+				},
 			},
-		} })
+		})
 
 		-- Spellchecking only some files
 		au.group({
