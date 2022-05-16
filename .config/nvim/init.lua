@@ -1,10 +1,11 @@
 local config = require("config")
 local key = require("_shared.key")
 
+local settings_file = vim.fn.stdpath("config") .. "/settings.lua"
+local settings = vim.fn.filereadable(settings_file) == 1 and dofile(settings_file) or nil
+
 -- INITIALISATION
-config:init({
-	color_scheme = "edge",
-})
+config:init(settings)
 
 -- KEYMAPS
 local modules = config.modules

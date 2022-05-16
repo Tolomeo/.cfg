@@ -19,16 +19,18 @@ Module.setup = function(self, options) end
 ---@type fun(self: Module, options: table)
 Module.init = validator.f.arguments({
 	validator.f.instance_of(Module),
-	"table",
+	validator.f.optional("table"),
 }) .. function(self, options)
-	self.setup(self, options)
+	options = options or {}
 
-	for _, child_module in pairs(self.modules) do
-		child_module:init(options)
+	self.setup(options)
+
+	for child_module_name, child_module in pairs(self.modules) do
+		child_module:init(options[child_module_name])
 	end
 end
 
---- Instantiate a new module
+--- Instantiates a new module
 ---@type fun(self: Module, module: table): Module
 Module.new = validator.f.arguments({
 	validator.f.equal(Module),

@@ -2,10 +2,15 @@ local Module = require("_shared.module")
 local options = require("_shared.options")
 local key = require("_shared.key")
 local au = require("_shared.au")
+local validator = require("_shared.validator")
 
 local installed = nil
 local install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
 local config_files = vim.fn.expand("~", false) .. "/.config/nvim/**/*"
+
+local default_settings = {
+	leader = " ",
+}
 
 local Config
 Config = Module:new({
@@ -20,10 +25,17 @@ Config = Module:new({
 		intellisense = require("lsp"),
 		terminal = require("terminal"),
 	},
-	setup = function()
+	setup = validator.f.arguments({ validator.f.shape({
+		leader = validator.f.optional("string"),
+	}) }) .. function(settings)
+		-- extending defaults
+		settings = vim.tbl_extend("force", default_settings, settings)
+
 		-- setting leader key
-		key.map_leader(" ")
+		key.map_leader(settings.leader)
+
 		-- Global options
+		-- TODO: receive, validate and pass to options customisable global options
 		options.set()
 
 		-- Checking packer install location
