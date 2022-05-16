@@ -11,14 +11,20 @@ Module.plugins = {}
 
 Module.modules = {}
 
+--- Setups module specific configurations, like plugins scaffolding
+---@type fun(self: Module, options: table)
+Module.setup = function(self, options) end
+
 --- Initializes the module
 ---@type fun(self: Module, options: table)
-Module.setup = validator.f.arguments({
+Module.init = validator.f.arguments({
 	validator.f.instance_of(Module),
 	"table",
 }) .. function(self, options)
+	self.setup(self, options)
+
 	for _, child_module in pairs(self.modules) do
-		child_module:setup(options)
+		child_module:init(options)
 	end
 end
 
@@ -33,14 +39,6 @@ Module.new = validator.f.arguments({
 	})),
 }) .. function(self, module)
 	module = module or {}
-
-	if module.setup then
-		local setup = module.setup
-		function module:setup(...)
-			setup(self, ...)
-			Module.setup(self, ...)
-		end
-	end
 
 	setmetatable(module, self)
 	self.__index = self

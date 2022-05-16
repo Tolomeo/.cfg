@@ -2,7 +2,7 @@ local config = require("config")
 local key = require("_shared.key")
 
 -- INITIALISATION
-config:setup({
+config:init({
 	color_scheme = "edge",
 })
 
