@@ -55,12 +55,6 @@ local color_schemes = {
 	end,
 }
 
-local default_settings = {
-	color_scheme = "nightfox",
-	component_separator = "│",
-	section_separator = "",
-}
-
 local Theme = {}
 
 Theme.plugins = {
@@ -81,6 +75,12 @@ Theme.plugins = {
 		"kdheepak/tabline.nvim",
 		requires = { { "hoob3rt/lualine.nvim", opt = true }, { "kyazdani42/nvim-web-devicons", opt = true } },
 	},
+}
+
+local default_settings = {
+	color_scheme = "nightfox",
+	component_separator = "│",
+	section_separator = "",
 }
 
 Theme.setup = validator.f.arguments({

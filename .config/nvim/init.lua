@@ -9,7 +9,7 @@ local settings = vim.fn.filereadable(settings_file) == 1 and dofile(settings_fil
 config:init(settings)
 
 -- KEYMAPS
-local modules = config.modules
+local modules = config:list_modules()
 
 -- Editor
 
@@ -54,7 +54,7 @@ key.nmap(
 	-- Cleaning a line
 	{ "<leader>d", ":.s/\v^.*$/<Cr>:noh<Cr>" },
 	-- Commenting lines
-	{ "<leader><space>", modules.editor.comment_line }
+	{ "<leader><space>", modules.editor.text.comment_line }
 )
 
 key.imap(
@@ -116,7 +116,7 @@ key.vmap(
 	-- Cleaning selected lines
 	{ "<leader>d", "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" },
 	-- Commenting lines
-	{ "<leader><space>", modules.editor.comment_selection }
+	{ "<leader><space>", modules.editor.text.comment_selection }
 )
 
 -- Exiting term mode using esc
@@ -292,30 +292,30 @@ key.nmap(
 
 -- File Explorer
 
-key.nmap({ "<leader>e", modules.interface.toggle_tree })
+key.nmap({ "<leader>e", modules.interface.project_explorer.toggle })
 
 -- Intellisense
 
 key.nmap(
-	{ "<C-Space>", modules.editor.open_code_actions },
-	{ "<leader>B", modules.editor.eslint_fix },
-	{ "<leader>gd", modules.editor.go_to_definition },
-	{ "<leader>gt", modules.editor.go_to_type_definition },
-	{ "<leader>gi", modules.editor.go_to_implementation },
-	{ "<leader>K", modules.editor.show_references },
-	{ "<leader>k", modules.editor.show_symbol_doc },
-	{ "<leader>r", modules.editor.rename_symbol },
-	{ "<leader>dl", modules.editor.show_diagnostics },
-	{ "<leader>[d", modules.editor.next_diagnostic },
-	{ "<leader>]d", modules.editor.prev_diagnostic },
-	{ "<leader>b", modules.editor.format }
+	{ "<C-Space>", modules.editor.language.open_code_actions },
+	{ "<leader>B", modules.editor.language.eslint_fix },
+	{ "<leader>gd", modules.editor.language.go_to_definition },
+	{ "<leader>gt", modules.editor.language.go_to_type_definition },
+	{ "<leader>gi", modules.editor.language.go_to_implementation },
+	{ "<leader>K", modules.editor.language.show_references },
+	{ "<leader>k", modules.editor.language.show_symbol_doc },
+	{ "<leader>r", modules.editor.language.rename_symbol },
+	{ "<leader>dl", modules.editor.language.show_diagnostics },
+	{ "<leader>[d", modules.editor.language.next_diagnostic },
+	{ "<leader>]d", modules.editor.language.prev_diagnostic },
+	{ "<leader>b", modules.editor.language.format }
 )
 
 key.imap(
-	{ "<C-Space>", modules.editor.open_suggestions },
-	{ "<TAB>", modules.editor.next_suggestion("<TAB>") },
-	{ "<S-TAB>", modules.editor.prev_suggestion },
-	{ "<CR>", modules.editor.confirm_suggestion }
+	{ "<C-Space>", modules.editor.language.open_suggestions },
+	{ "<TAB>", modules.editor.language.next_suggestion("<TAB>") },
+	{ "<S-TAB>", modules.editor.language.prev_suggestion },
+	{ "<CR>", modules.editor.language.confirm_suggestion }
 )
 
 -- Git
