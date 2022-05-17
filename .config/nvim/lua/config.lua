@@ -12,22 +12,25 @@ local default_settings = {
 	leader = " ",
 }
 
-local Config
-Config = Module:new({
-	plugins = { "wbthomason/packer.nvim" },
-	modules = {
-		core = require("core"),
-		quickfix = require("list"),
-		interface = require("interface"),
-		git = require("git"),
-		editor = require("editor"),
-		finder = require("finder"),
-		intellisense = require("lsp"),
-		terminal = require("terminal"),
-	},
-	setup = validator.f.arguments({ validator.f.shape({
-		leader = validator.f.optional("string"),
-	}) }) .. function(settings)
+local Config = {}
+
+Config.plugins = { "wbthomason/packer.nvim" }
+
+Config.modules = {
+	core = require("core"),
+	quickfix = require("list"),
+	interface = require("interface"),
+	git = require("git"),
+	editor = require("editor"),
+	finder = require("finder"),
+	intellisense = require("lsp"),
+	terminal = require("terminal"),
+}
+
+Config.setup = validator.f.arguments({ validator.f.shape({
+	leader = validator.f.optional("string"),
+}) })
+	.. function(settings)
 		-- extending defaults
 		settings = vim.tbl_extend("force", default_settings, settings)
 
@@ -74,14 +77,10 @@ Config = Module:new({
 		vim.cmd([[
 			:command! EditConfig :tabedit ~/.config/nvim
 		]])
-
-		-- Base modules configurations
-		Config.modules.interface.color_scheme("edge")
-	end,
-})
+	end
 
 function Config.compile()
 	vim.api.nvim_command("PackerCompile")
 end
 
-return Config
+return Module:new(Config)
