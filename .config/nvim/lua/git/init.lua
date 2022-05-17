@@ -3,8 +3,6 @@ local key = require("_shared.key")
 
 local Git = Module:new({
 	plugins = {
-		-- Git integration
-		"tpope/vim-fugitive",
 		-- Add git related info in the signs columns and popups
 		{ "lewis6991/gitsigns.nvim", requires = { "nvim-lua/plenary.nvim" } },
 		-- Github issues and reviews
