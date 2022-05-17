@@ -1,4 +1,5 @@
 local validator = require("_shared.validator")
+local fn = require("_shared.fn")
 
 --- Represents a configuration module
 ---@class Module
@@ -62,6 +63,21 @@ function Module:list_plugins()
 	end
 
 	return plugins
+end
+
+--- Returns a tree structure of all modules
+---@return table
+function Module:list_modules()
+	return fn.kreduce(
+		self.modules,
+		function(_modules, module, module_name)
+			_modules[module_name] = module:list_modules()
+			return _modules
+		end,
+		setmetatable({}, {
+			__index = self,
+		})
+	)
 end
 
 return Module
