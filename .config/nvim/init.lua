@@ -297,25 +297,25 @@ key.nmap({ "<leader>e", modules.interface.toggle_tree })
 -- Intellisense
 
 key.nmap(
-	{ "<C-Space>", modules.intellisense.open_code_actions },
-	{ "<leader>B", modules.intellisense.eslint_fix },
-	{ "<leader>gd", modules.intellisense.go_to_definition },
-	{ "<leader>gt", modules.intellisense.go_to_type_definition },
-	{ "<leader>gi", modules.intellisense.go_to_implementation },
-	{ "<leader>K", modules.intellisense.show_references },
-	{ "<leader>k", modules.intellisense.show_symbol_doc },
-	{ "<leader>r", modules.intellisense.rename_symbol },
-	{ "<leader>dl", modules.intellisense.show_diagnostics },
-	{ "<leader>[d", modules.intellisense.next_diagnostic },
-	{ "<leader>]d", modules.intellisense.prev_diagnostic },
-	{ "<leader>b", modules.intellisense.format }
+	{ "<C-Space>", modules.editor.open_code_actions },
+	{ "<leader>B", modules.editor.eslint_fix },
+	{ "<leader>gd", modules.editor.go_to_definition },
+	{ "<leader>gt", modules.editor.go_to_type_definition },
+	{ "<leader>gi", modules.editor.go_to_implementation },
+	{ "<leader>K", modules.editor.show_references },
+	{ "<leader>k", modules.editor.show_symbol_doc },
+	{ "<leader>r", modules.editor.rename_symbol },
+	{ "<leader>dl", modules.editor.show_diagnostics },
+	{ "<leader>[d", modules.editor.next_diagnostic },
+	{ "<leader>]d", modules.editor.prev_diagnostic },
+	{ "<leader>b", modules.editor.format }
 )
 
 key.imap(
-	{ "<C-Space>", modules.intellisense.open_suggestions },
-	{ "<TAB>", modules.intellisense.next_suggestion("<TAB>") },
-	{ "<S-TAB>", modules.intellisense.prev_suggestion },
-	{ "<CR>", modules.intellisense.confirm_suggestion }
+	{ "<C-Space>", modules.editor.open_suggestions },
+	{ "<TAB>", modules.editor.next_suggestion("<TAB>") },
+	{ "<S-TAB>", modules.editor.prev_suggestion },
+	{ "<CR>", modules.editor.confirm_suggestion }
 )
 
 -- Git

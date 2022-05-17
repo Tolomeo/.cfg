@@ -23,7 +23,6 @@ Config.modules = {
 	git = require("git"),
 	editor = require("editor"),
 	finder = require("finder"),
-	intellisense = require("lsp"),
 	terminal = require("terminal"),
 }
 
