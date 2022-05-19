@@ -1,6 +1,21 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
 local key = require("_shared.key")
+local register = require("_shared.register")
+
+-- Register 0 always contains the last yank.
+-- Unfortunately selecting register 0 all the time can be quite annoying, so it would be nice if p used "0
+-- https://stackoverflow.com/a/32488853
+key.nmap({ "p", '"0p' })
+key.nmap({ "P", '"0P' })
+for _, register_name in ipairs(register.names) do
+	local paste = string.format('"%sp', register_name)
+	local Paste = string.format('"%sP', register_name)
+	key.nmap({ paste, paste, remap = true }, { Paste, Paste, remap = true })
+end
+
+-- Make visual yanks remain in visual mode
+key.vmap({ "y", "ygv" })
 
 local Text = {}
 
@@ -62,7 +77,7 @@ Text.setup = function()
 	-- Range highlight
 	require("range-highlight").setup()
 
-	-- Yank visual feedback
+	-- Yanks visual feedback
 	au.group({
 		"OnTextYanked",
 		{

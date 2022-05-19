@@ -90,9 +90,7 @@ key.vmap(
 	-- Indentation
 	{ "<Tab>", ">gv" },
 	{ "<S-Tab>", "<gv" },
-	-- Make visual yanks place the cursor back where started
-	{ "y", "ygv<Esc>" },
-	-- Adding blank lines
+	-- adding blank lines
 	{
 		"<leader>o",
 		"mm<Esc>:'>put _<CR>`mgv",

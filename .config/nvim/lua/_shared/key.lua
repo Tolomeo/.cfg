@@ -5,7 +5,7 @@ local Key = {}
 --- Sets a keymap
 ---@type fun(mode: string, ...: table)
 Key.map = validator.f.arguments({
-	validator.f.one_of({ "", "n", "!", "v", "i", "t", "o", "c", "l" }),
+	validator.f.one_of({ "", "n", "!", "v", "x", "i", "t", "o", "c", "l" }),
 	validator.f.shape({ "string", { "string", "function" } }),
 })
 	.. function(mode, ...)
@@ -44,7 +44,7 @@ Key.vmap = function(...)
 	return Key.map("v", ...)
 end
 
---- Sets a keymap for visual mode
+--- Sets a keymap for insert mode
 ---@vararg table the keymap description
 Key.imap = function(...)
 	return Key.map("i", ...)
