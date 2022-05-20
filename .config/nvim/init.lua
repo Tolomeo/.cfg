@@ -291,30 +291,6 @@ key.nmap(
 
 key.nmap({ "<leader>e", modules.interface.project_explorer.toggle })
 
--- Intellisense
-
-key.nmap(
-	{ "<C-Space>", modules.editor.language.open_code_actions },
-	{ "<leader>B", modules.editor.language.eslint_fix },
-	-- { "<leader>gd", modules.editor.language.go_to_definition },
-	{ "<leader>gt", modules.editor.language.go_to_type_definition },
-	{ "<leader>gi", modules.editor.language.go_to_implementation },
-	{ "<leader>K", modules.editor.language.show_references },
-	{ "<leader>k", modules.editor.language.show_symbol_doc },
-	{ "<leader>r", modules.editor.language.rename_symbol },
-	{ "<leader>dl", modules.editor.language.show_diagnostics },
-	{ "<leader>[d", modules.editor.language.next_diagnostic },
-	{ "<leader>]d", modules.editor.language.prev_diagnostic },
-	{ "<leader>b", modules.editor.language.format }
-)
-
-key.imap(
-	{ "<C-Space>", modules.editor.language.open_suggestions }
--- { "<TAB>", modules.editor.language.next_suggestion("<TAB>") },
--- { "<S-TAB>", modules.editor.language.prev_suggestion }
--- { "<CR>", modules.editor.language.confirm_suggestion }
-)
-
 -- Git
 
 key.nmap(
