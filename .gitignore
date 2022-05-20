@@ -13,7 +13,6 @@ Sync/
 .cfg/
 .vscode/
 .cache/
-.nvm/
 .zsh_sessions/
 .bash_sessions/
 .npm/

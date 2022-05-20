@@ -47,3 +47,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/in
 echo "4. Installing Homebrew formulae"
 
 brew bundle --file=$HOME/.Brewfile
+
+echo "5. Installing Node"
+
+nvm install node
