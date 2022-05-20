@@ -26,6 +26,47 @@ Language.setup = function()
 	table.insert(runtime_path, "lua/?.lua")
 	table.insert(runtime_path, "lua/?/init.lua")
 	local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+	local on_attach = function()
+		key.nmap(
+			{ "<leader>k", vim.lsp.buf.hover, buffer = 0 },
+			-- { "<leader>K", vim.lsp.buf.document_symbol, buffer = 0 },
+			{ "<leader>gr", vim.lsp.buf.references, buffer = 0 },
+			{ "<leader>gd", vim.lsp.buf.definition, buffer = 0 },
+			{ "<leader>gD", vim.lsp.buf.declaration, buffer = 0 },
+			{ "<leader>gt", vim.lsp.buf.type_definition, buffer = 0 },
+			{ "<leader>gi", vim.lsp.buf.implementation, buffer = 0 },
+			{ "<leader>b", vim.lsp.buf.formatting, buffer = 0 },
+			{ "<leader>r", vim.lsp.buf.rename, buffer = 0 },
+			{ "<leader>dj", vim.diagnostic.goto_next, buffer = 0 },
+			{ "<leader>dk", vim.diagnostic.goto_prev, buffer = 0 },
+			-- TODO: this probaly shouldn't be here
+			{ "<leader>dl", "<cmd>Telescope diagnostics<Cr>", buffer = 0 },
+			{ "<C-Space>", vim.lsp.buf.code_action, buffer = 0 }
+		-- { "<leader>B", modules.editor.language.eslint_fix },
+		-- { "<leader>dl", modules.editor.language.show_diagnostics },
+		)
+
+		au.group({
+			"OnCursorHold",
+			{
+				{
+					"CursorHold",
+					0,
+					vim.lsp.buf.document_highlight
+				},
+				{
+					"CursorHoldI",
+					0,
+					vim.lsp.buf.document_highlight
+				},
+				{
+					"CursorMoved",
+					0,
+					vim.lsp.buf.clear_references
+				},
+			},
+		})
+	end
 
 	require('lspconfig').sumneko_lua.setup({
 		capabilities = capabilities,
@@ -51,47 +92,12 @@ Language.setup = function()
 				},
 			},
 		},
-		on_attach = function()
-			key.nmap(
-				{ "<leader>k", vim.lsp.buf.hover, buffer = 0 },
-				-- { "<leader>K", vim.lsp.buf.document_symbol, buffer = 0 },
-				{ "<leader>gr", vim.lsp.buf.references, buffer = 0 },
-				{ "<leader>gd", vim.lsp.buf.definition, buffer = 0 },
-				{ "<leader>gD", vim.lsp.buf.declaration, buffer = 0 },
-				{ "<leader>gt", vim.lsp.buf.type_definition, buffer = 0 },
-				{ "<leader>gi", vim.lsp.buf.implementation, buffer = 0 },
-				{ "<leader>b", vim.lsp.buf.formatting, buffer = 0 },
-				{ "<leader>r", vim.lsp.buf.rename, buffer = 0 },
-				{ "<leader>dj", vim.diagnostic.goto_next, buffer = 0 },
-				{ "<leader>dk", vim.diagnostic.goto_prev, buffer = 0 },
-				-- TODO: this probaly shouldn't be here
-				{ "<leader>dl", "<cmd>Telescope diagnostics<Cr>", buffer = 0 },
-				{ "<C-Space>", vim.lsp.buf.code_action, buffer = 0 }
-			-- { "<leader>B", modules.editor.language.eslint_fix },
-			-- { "<leader>dl", modules.editor.language.show_diagnostics },
-			)
+		on_attach = on_attach
+	})
 
-			au.group({
-				"OnCursorHold",
-				{
-					{
-						"CursorHold",
-						0,
-						vim.lsp.buf.document_highlight
-					},
-					{
-						"CursorHoldI",
-						0,
-						vim.lsp.buf.document_highlight
-					},
-					{
-						"CursorMoved",
-						0,
-						vim.lsp.buf.clear_references
-					},
-				},
-			})
-		end
+	require('lspconfig').tsserver.setup({
+		capabilities = capabilities,
+		on_attach = on_attach
 	})
 
 	require("nvim-treesitter.configs").setup({
