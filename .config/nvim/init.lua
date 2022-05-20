@@ -12,10 +12,9 @@ config:init(settings)
 local modules = config:list_modules()
 
 -- Editor
-
 key.nmap(
-	-- Multipliers
-	-- Left
+-- Multipliers
+-- Left
 	{ "<S-h>", "b" },
 	{ "<A-S-h>", "B" },
 	-- Right
@@ -58,7 +57,7 @@ key.nmap(
 )
 
 key.imap(
-	-- Arrows are disabled
+-- Arrows are disabled
 	{ "<Left>", "<nop>" },
 	{ "<Right>", "<nop>" },
 	{ "<Up>", "<nop>" },
@@ -74,8 +73,8 @@ key.imap(
 )
 
 key.vmap(
-	-- Multipliers
-	-- Left
+-- Multipliers
+-- Left
 	{ "<S-h>", "b" },
 	{ "<A-S-h>", "B" },
 	-- Right
@@ -123,7 +122,7 @@ key.tmap({ "<Esc>", "<C-\\><C-n>" })
 -- Windows and buffers
 
 key.nmap(
-	-- Windows navigation
+-- Windows navigation
 	{ "<C-h>", "<C-w>h" },
 	{ "<C-j>", "<C-w>j" },
 	{ "<C-k>", "<C-w>k" },
@@ -165,7 +164,7 @@ key.nmap(
 )
 
 key.imap(
-	-- Navigation
+-- Navigation
 	{ "<C-h>", "<Esc><C-w>h" },
 	{ "<C-j>", "<Esc><C-w>j" },
 	{ "<C-k>", "<Esc><C-w>k" },
@@ -199,7 +198,7 @@ key.imap(
 )
 
 key.vmap(
-	-- Navigation
+-- Navigation
 	{ "<C-h>", "<Esc><C-w>h" },
 	{ "<C-j>", "<Esc><C-w>j" },
 	{ "<C-k>", "<Esc><C-w>k" },
@@ -233,7 +232,7 @@ key.vmap(
 )
 
 key.tmap(
-	-- Navigation
+-- Navigation
 	{ "<C-h>", "<C-\\><C-n><C-w>h" },
 	{ "<C-j>", "<C-\\><C-n><C-w>j" },
 	{ "<C-k>", "<C-\\><C-n><C-w>k" },
@@ -269,7 +268,7 @@ key.tmap(
 -- Search
 
 key.nmap(
-	-- Clearing search highlighting
+-- Clearing search highlighting
 	{ "<Esc>", ":noh<CR><Esc>" },
 	-- { "<BS>", ":noh<CR>" },
 	-- Keep search results centred
@@ -285,7 +284,7 @@ key.nmap(
 	{ "<F1>", modules.finder.find_in_documentation },
 	{ "<C-z>", modules.finder.find_spelling },
 	{ "<C-b>", modules.finder.find_buffers }
-	-- { "<C-t>", modules.finder.find_todos }
+-- { "<C-t>", modules.finder.find_todos }
 )
 
 -- File Explorer
@@ -297,7 +296,7 @@ key.nmap({ "<leader>e", modules.interface.project_explorer.toggle })
 key.nmap(
 	{ "<C-Space>", modules.editor.language.open_code_actions },
 	{ "<leader>B", modules.editor.language.eslint_fix },
-	{ "<leader>gd", modules.editor.language.go_to_definition },
+	-- { "<leader>gd", modules.editor.language.go_to_definition },
 	{ "<leader>gt", modules.editor.language.go_to_type_definition },
 	{ "<leader>gi", modules.editor.language.go_to_implementation },
 	{ "<leader>K", modules.editor.language.show_references },
@@ -310,10 +309,10 @@ key.nmap(
 )
 
 key.imap(
-	{ "<C-Space>", modules.editor.language.open_suggestions },
-	{ "<TAB>", modules.editor.language.next_suggestion("<TAB>") },
-	{ "<S-TAB>", modules.editor.language.prev_suggestion },
-	{ "<CR>", modules.editor.language.confirm_suggestion }
+	{ "<C-Space>", modules.editor.language.open_suggestions }
+-- { "<TAB>", modules.editor.language.next_suggestion("<TAB>") },
+-- { "<S-TAB>", modules.editor.language.prev_suggestion }
+-- { "<CR>", modules.editor.language.confirm_suggestion }
 )
 
 -- Git

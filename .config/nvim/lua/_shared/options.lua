@@ -75,6 +75,8 @@ local globals = {
 		["h"] = true, -- h
 		["l"] = true, -- l
 	},
+	--
+	completeopt = { "menu", "menuone", "noselect" }
 }
 
 -- see https://github.com/NvChad/NvChad/blob/main/lua/core/options.lua
