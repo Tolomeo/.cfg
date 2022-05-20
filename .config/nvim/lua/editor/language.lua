@@ -125,7 +125,9 @@ Language.plugins = {
 	-- Syntax aware text-objects based on treesitter
 	{ "nvim-treesitter/nvim-treesitter-textobjects", requires = "nvim-treesitter/nvim-treesitter" },
 	-- lsp
-	"neovim/nvim-lspconfig"
+	"neovim/nvim-lspconfig",
+	"williamboman/nvim-lsp-installer"
+
 }
 
 Language._on_server_attach = function(client, buffer)
@@ -174,6 +176,10 @@ Language.setup = function(settings)
 	settings = vim.tbl_deep_extend("force", defaults, settings)
 
 	local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+	require("nvim-lsp-installer").setup({
+		automatic_installation = true
+	})
 
 	for _, language_server in pairs(settings.servers) do
 		require('lspconfig')[language_server.name].setup(language_server.settings({
