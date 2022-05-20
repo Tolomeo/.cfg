@@ -15,6 +15,7 @@ Sync/
 .cache/
 .zsh_sessions/
 .bash_sessions/
+.nvm/
 .npm/
 .ssh/
 .local/

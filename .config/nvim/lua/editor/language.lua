@@ -18,6 +18,7 @@ local defaults = {
 		"javascript",
 		"typescript",
 		"tsx",
+		"graphql"
 	},
 	servers = {
 		bash = {
@@ -112,6 +113,10 @@ local defaults = {
 		},
 		eslint = {
 			name = "eslint",
+			settings = function(base_settings) return base_settings end
+		},
+		{
+			name = "graphql",
 			settings = function(base_settings) return base_settings end
 		}
 	}
