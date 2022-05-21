@@ -3,8 +3,10 @@ local au = require("_shared.au")
 local key = require("_shared.key")
 -- local validator = require("_shared.validator")
 
-local defaults = {
-	syntax = {
+local Language = {}
+
+Language.settings = {
+	parsers = {
 		"bash",
 		"lua",
 		"html",
@@ -21,11 +23,10 @@ local defaults = {
 		"graphql"
 	},
 	servers = {
-		bash = {
+		{
 			name = "bashls",
-			settings = function(base_settings) return base_settings end
 		},
-		lua = {
+		{
 			name = "sumneko_lua",
 			settings = function(base_settings)
 				local runtime_path = vim.split(package.path, ';')
@@ -58,7 +59,7 @@ local defaults = {
 				})
 			end
 		},
-		html = {
+		{
 			name = "html",
 			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#html
 			settings = function(base_settings)
@@ -66,7 +67,7 @@ local defaults = {
 				return base_settings
 			end
 		},
-		css = {
+		{
 			name = "cssls",
 			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#cssls
 			settings = function(base_settings)
@@ -74,15 +75,14 @@ local defaults = {
 				return base_settings
 			end
 		},
-		emmet = {
+		{
 			name = "emmet_ls",
-			settings = function(base_settings) return base_settings end
 		},
-		dockerfile = {
+		{
 			name = "dockerls",
 			settings = function(base_settings) return base_settings end
 		},
-		json = {
+		{
 			name = "jsonls",
 			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#jsonls
 			settings = function(base_settings)
@@ -90,7 +90,7 @@ local defaults = {
 				return base_settings
 			end
 		},
-		yaml = {
+		{
 			name = "yamlls",
 			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#yamlls
 			settings = function(base_settings)
@@ -103,26 +103,20 @@ local defaults = {
 				})
 			end
 		},
-		typescript = {
+		{
 			name = "tsserver",
-			settings = function(base_settings) return base_settings end
 		},
-		cssmodules = {
+		{
 			name = "cssmodules_ls",
-			settings = function(base_settings) return base_settings end
 		},
-		eslint = {
+		{
 			name = "eslint",
-			settings = function(base_settings) return base_settings end
 		},
 		{
 			name = "graphql",
-			settings = function(base_settings) return base_settings end
 		}
 	}
 }
-
-local Language = {}
 
 Language.plugins = {
 	-- Highlight, edit, and code navigation parsing library
@@ -177,24 +171,31 @@ Language._on_server_attach = function(client, buffer)
 	})
 end
 
-Language.setup = function(settings)
-	settings = vim.tbl_deep_extend("force", defaults, settings)
-
-	local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+Language.setup_servers = function()
+	local servers = Language.settings.servers
+	local capabilities = require('editor.completion').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+	local server_base_settings = {
+		capabilities = capabilities,
+		on_attach = Language._on_server_attach
+	}
 
 	require("nvim-lsp-installer").setup({
 		automatic_installation = true
 	})
 
-	for _, language_server in pairs(settings.servers) do
-		require('lspconfig')[language_server.name].setup(language_server.settings({
-			capabilities = capabilities,
-			on_attach = Language._on_server_attach
-		}))
+	for _, server in ipairs(servers) do
+		local setup_server = require('lspconfig')[server.name].setup
+		local server_settings = type(server.settings) == "function" and server.settings(server_base_settings) or server_base_settings
+
+		setup_server(server_settings)
 	end
+end
+
+Language.setup_parsers = function()
+	local parsers = Language.settings.parsers
 
 	require("nvim-treesitter.configs").setup({
-		ensure_installed = settings.syntax,
+		ensure_installed = parsers,
 		sync_install = true,
 		highlight = {
 			enable = true, -- false will disable the whole extension
@@ -244,10 +245,25 @@ Language.setup = function(settings)
 				},
 			},
 		},
+		lsp_interop = {
+			enable = true,
+			border = 'none',
+			peek_definition_code = {
+				["<leader>df"] = "@function.outer",
+				["<leader>dF"] = "@class.outer",
+			},
+		},
 		context_commentstring = {
 			enable = true,
 		},
 	})
+end
+
+Language.setup = function(settings)
+	Language.settings = vim.tbl_deep_extend("force", Language.settings, settings)
+
+	Language.setup_servers()
+	Language.setup_parsers()
 end
 
 return Module:new(Language)

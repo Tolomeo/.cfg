@@ -2,6 +2,10 @@ local Module = require("_shared.module")
 
 local Completion = {}
 
+Completion.update_capabilities = function(capabilities)
+	return require('cmp_nvim_lsp').update_capabilities(capabilities)
+end
+
 Completion.plugins = {
 	"hrsh7th/nvim-cmp",
 	'hrsh7th/cmp-nvim-lsp',
