@@ -38,10 +38,9 @@ Language.plugins = {
 }
 
 local on_server_attach = function(client, buffer)
-	print(vim.inspect(client.resolved_capabilities))
-	-- avoid usign formatting coming from lsp
-	client.resolved_capabilities.document_formatting = false
-	client.resolved_capabilities.document_range_formatting = false
+	-- avoid using formatting coming from lsp
+	client.server_capabilities.documentFormattingProvider = false
+	client.server_capabilities.documentRangeFormattingProvider = false
 
 	key.nmap(
 		{ Language.settings.keymaps["lsp.hover"], vim.lsp.buf.hover, buffer = buffer },
@@ -58,7 +57,7 @@ local on_server_attach = function(client, buffer)
 		{ Language.settings.keymaps["diagnostic.list"], require("finder").find_diagnostics, buffer = buffer }
 	)
 
-	if not client.resolved_capabilities.document_highlight then
+	if not client.server_capabilities.documentHighlightProvider then
 		return
 	end
 
