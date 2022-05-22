@@ -17,11 +17,16 @@ Language.plugins = {
 	{ "nvim-treesitter/nvim-treesitter-textobjects", requires = "nvim-treesitter/nvim-treesitter" },
 	-- lsp
 	"neovim/nvim-lspconfig",
-	"williamboman/nvim-lsp-installer"
-
+	"williamboman/nvim-lsp-installer",
+	-- formatting
+	"sbdchd/neoformat"
 }
 
-Language._on_server_attach = function(client, buffer)
+local on_server_attach = function(client, buffer)
+	-- avoid usign formatting coming from lsp
+	client.resolved_capabilities.document_formatting = false
+	client.resolved_capabilities.document_range_formatting = false
+
 	key.nmap(
 		{ "<leader>k", vim.lsp.buf.hover, buffer = buffer },
 		{ "<leader>K", vim.lsp.buf.document_symbol, buffer = buffer },
@@ -30,7 +35,7 @@ Language._on_server_attach = function(client, buffer)
 		{ "<leader>gD", vim.lsp.buf.declaration, buffer = buffer },
 		{ "<leader>gt", vim.lsp.buf.type_definition, buffer = buffer },
 		{ "<leader>gi", vim.lsp.buf.implementation, buffer = buffer },
-		{ "<leader>b", vim.lsp.buf.formatting, buffer = buffer },
+		-- { "<leader>b", vim.lsp.buf.formatting, buffer = buffer },
 		{ "<leader>r", vim.lsp.buf.rename, buffer = buffer },
 		{ "<leader>dj", vim.diagnostic.goto_next, buffer = buffer },
 		{ "<leader>dk", vim.diagnostic.goto_prev, buffer = buffer },
@@ -68,7 +73,7 @@ Language.setup_servers = function()
 	local capabilities = require('editor.completion').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 	local server_base_settings = {
 		capabilities = capabilities,
-		on_attach = Language._on_server_attach
+		on_attach = on_server_attach
 	}
 
 	require("nvim-lsp-installer").setup({
@@ -151,6 +156,17 @@ Language.setup_parsers = function()
 	})
 end
 
+Language.setup_formatter = function()
+	-- Enable basic formatting when a filetype is not found
+	vim.g.neoformat_basic_format_retab = 1
+	vim.g.neoformat_basic_format_align = 1
+	vim.g.neoformat_basic_format_trim = 1
+	-- Have Neoformat look for a formatter executable in the node_modules/.bin directory in the current working directory or one of its parents
+	vim.g.neoformat_try_node_exe = 1
+
+	key.nmap({ "<leader>b", "<cmd>Neoformat<Cr>" })
+end
+
 Language.setup = validator.f.arguments({
 	validator.f.shape({
 		parsers = validator.f.optional(validator.f.list({ "string" })),
@@ -166,6 +182,7 @@ Language.setup = validator.f.arguments({
 
 	Language.setup_servers()
 	Language.setup_parsers()
+	Language.setup_formatter()
 end
 
 return Module:new(Language)
