@@ -13,8 +13,9 @@ Module.plugins = {}
 Module.modules = {}
 
 --- Setups module specific configurations, like plugins scaffolding
----@type fun(self: Module, options: table)
-Module.setup = function(self, options) end
+---@type fun(options: table)
+---@diagnostic disable-next-line: unused-local
+Module.setup = function(options) end
 
 --- Initializes the module
 ---@type fun(self: Module, options: table)

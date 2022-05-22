@@ -93,6 +93,10 @@ Finder.find_commands = function()
 	require("telescope.builtin").commands()
 end
 
+Finder.find_diagnostics = function()
+	require("telescope.builtin").diagnostics()
+end
+
 Finder.find_spelling = function()
 	require("telescope.builtin").spell_suggest()
 end
