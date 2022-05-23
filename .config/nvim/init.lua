@@ -306,11 +306,10 @@ key.nmap(
 -- Lists
 
 key.nmap(
-	{ "<C-c>", modules.quickfix.toggle },
-	{ "<leader>c", modules.quickfix.jump },
-	-- TODO: C-n is synonim for ESC, so if used it clashes with ESC mappings
-	{ "<C-]>", modules.quickfix.next },
-	{ "<C-[>", modules.quickfix.prev }
+	{ "<C-c>", modules.finder.list.toggle },
+	{ "<leader>c", modules.finder.list.jump },
+	{ "<C-]>", modules.finder.list.next },
+	{ "<C-[>", modules.finder.list.prev }
 )
 
 -- Terminal

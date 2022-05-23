@@ -13,6 +13,9 @@ local Finder = Module:new({
 			requires = "nvim-lua/plenary.nvim",
 		},
 	},
+	modules = {
+		list = require("finder.list"),
+	},
 	setup = function()
 		require("telescope").setup({
 			defaults = {

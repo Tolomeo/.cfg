@@ -17,7 +17,6 @@ local Config = {}
 Config.plugins = { "wbthomason/packer.nvim" }
 
 Config.modules = {
-	quickfix = require("list"),
 	interface = require("interface"),
 	git = require("git"),
 	editor = require("editor"),
