@@ -1,4 +1,5 @@
 local Module = require("_shared.module")
+local au = require("_shared.au")
 local validator = require("_shared.validator")
 
 local ProjectExplorer
@@ -32,7 +33,6 @@ ProjectExplorer = Module:new({
 			},
 			update_focused_file = {
 				enable = true,
-				update_cwd = true,
 			},
 			view = {
 				preserve_window_proportions = true,
@@ -75,9 +75,9 @@ ProjectExplorer = Module:new({
 							action_cb = ProjectExplorer.tree_actions_menu,
 						},
 						{
-							key = "<leader>F",
-							action = "search_in_directory",
-							action_cb = ProjectExplorer.search_in_directory,
+							key = "<leader>f",
+							action = "search_in_node",
+							action_cb = ProjectExplorer.search_in_node,
 						},
 					},
 				},
@@ -93,12 +93,17 @@ local validate_node = validator.f.shape({
 	}),
 })
 
-ProjectExplorer.search_in_directory = validator.f.arguments({ validate_node })
+ProjectExplorer.search_in_node = validator.f.arguments({ validate_node })
 	.. function(node)
-		local directory = node.fs_stat.type == "directory" and node.absolute_path
-			or vim.fn.fnamemodify(node.absolute_path, ":h")
+		if node.fs_stat.type == "directory" then
+			require("finder").find_in_directory(node.absolute_path)
+		end
 
-		require("finder").find_in_directory(directory)
+		if node.fs_stat.type == "file" then
+			require("nvim-tree.actions.open-file").fn("edit_in_place", node.absolute_path)
+			require("finder").find_in_buffer()
+			-- print(vim.inspect(node))
+		end
 	end
 
 -- https://github.com/kyazdani42/nvim-tree.lua/blob/master/lua/nvim-tree/actions/init.lua

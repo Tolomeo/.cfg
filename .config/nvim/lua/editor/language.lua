@@ -38,7 +38,6 @@ Language.plugins = {
 }
 
 local on_server_attach = function(client, buffer)
-	print(vim.inspect(client.resolved_capabilities))
 	-- avoid usign formatting coming from lsp
 	client.resolved_capabilities.document_formatting = false
 	client.resolved_capabilities.document_range_formatting = false
