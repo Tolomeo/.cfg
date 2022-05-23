@@ -102,7 +102,6 @@ ProjectExplorer.search_in_node = validator.f.arguments({ validate_node })
 		if node.fs_stat.type == "file" then
 			require("nvim-tree.actions.open-file").fn("edit_in_place", node.absolute_path)
 			require("finder").find_in_buffer()
-			-- print(vim.inspect(node))
 		end
 	end
 
@@ -118,7 +117,7 @@ ProjectExplorer.tree_actions = {
 	{ "Copy name", require("nvim-tree.actions.copy-paste").copy_filename },
 	{ "Copy relative path", require("nvim-tree.actions.copy-paste").copy_path },
 	{ "Copy absolute path", require("nvim-tree.actions.copy-paste").copy_absolute_path },
-	{ "Search in directory", ProjectExplorer.search_in_directory },
+	{ "Search here", ProjectExplorer.search_in_node },
 	{ "Open in file manager", require("nvim-tree.actions.system-open").fn },
 	{ "Toggle git.ignored files visibility", require("nvim-tree.actions.toggles").git_ignored },
 	{ "Toggle dotfiles visibility", require("nvim-tree.actions.toggles").dotfiles },
