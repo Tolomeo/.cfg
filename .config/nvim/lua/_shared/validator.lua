@@ -45,9 +45,13 @@ local Validator = {}
 
 --- Returns the outcome of a validation performed by calling vim.validate
 ---@param validationMap table the vim.validate opt parameter
+---@param error_message? string error_message returned
 ---@return boolean, string|nil
-Validator.validate = function(validationMap)
-	return pcall(vim.validate, validationMap)
+Validator.validate = function(validationMap, error_message)
+	error_message = error_message or "%s"
+	local result, validation_error = pcall(vim.validate, validationMap)
+
+	return result, error and string.format(error_message, validation_error) or nil
 end
 
 Validator.f = {
@@ -73,11 +77,18 @@ Validator.f = {
 	end,
 	--- Generates a validator function which validates a value is equal to the specified one
 	---@param expected any the value to compare against
+	---@param error_message? string error_message returned
 	---@return function
-	equal = function(expected)
+	equal = function(expected, error_message)
+		error_message = error_message or "Equality validation error: %s"
+
 		return function(value)
 			if expected ~= value then
-				return false, "Expected value " .. vim.inspect(value) .. "to be equal to " .. vim.inspect(expected)
+				return false,
+					string.format(
+						error_message,
+						"Expected value " .. vim.inspect(value) .. "to be equal to " .. vim.inspect(expected)
+					)
 			end
 
 			return true
@@ -85,15 +96,22 @@ Validator.f = {
 	end,
 	--- Generates a validator function which validates a value has and expected metatable
 	---@param expected table the table to look for as a metatable
+	---@param error_message? string error_message returned
 	---@return function
-	instance_of = function(expected)
+	instance_of = function(expected, error_message)
+		error_message = error_message or "Instance validation error: %s"
+
 		return function(value)
 			expected = tostring(expected)
 			local mt = getmetatable(value)
 
 			while true do
 				if mt == nil then
-					return false
+					return false,
+						string.format(
+							error_message,
+							"Expected value " .. vim.inspect(value) .. " to be instance of " .. vim.inspect(expected)
+						)
 				end
 
 				if tostring(mt) == expected then
@@ -106,8 +124,11 @@ Validator.f = {
 	end,
 	--- Generates a validator function which validates a value is among to the specified ones
 	---@param expected table the values to compare against
+	---@param error_message? string error_message returned
 	---@return function
-	one_of = function(expected)
+	one_of = function(expected, error_message)
+		error_message = error_message or "Union validation error: %s"
+
 		return function(value)
 			for _, expected_value in ipairs(expected) do
 				if expected_value == value then
@@ -115,16 +136,23 @@ Validator.f = {
 				end
 			end
 
-			return false, "Expected value " .. vim.inspect(value) .. " to be one of " .. vim.inspect(expected)
+			return false,
+				string.format(
+					error_message,
+					"Expected value " .. vim.inspect(value) .. " to be one of " .. vim.inspect(expected)
+				)
 		end
 	end,
 	--- Generates a validator function which validates a value is a string matching a given pattern
 	---@param pattern string the pattern to match against
+	---@param error_message? string error_message returned
 	---@return function
-	pattern = function(pattern)
+	pattern = function(pattern, error_message)
+		error_message = error_message or "Pattern validation error: %s"
+
 		return function(value)
 			if type(value) ~= "string" then
-				return false, "Expected string, got " .. vim.inspect(value)
+				return false, string.format(error_message, "Expected string, got " .. vim.inspect(value))
 			end
 
 			local match = string.match(value, pattern)
@@ -138,13 +166,20 @@ Validator.f = {
 	end,
 	--- Generates a validator function which validates a number is greater than a given one
 	---@param min number the number to compare against
+	---@param error_message? string error_message returned
 	---@return function
-	greater_than = function(min)
+	greater_than = function(min, error_message)
+		error_message = error_message or "Number validation error: %s"
+
 		return function(value)
 			local is_valid = type(value) == "number" and value > min
 
 			if not is_valid then
-				return false, "Expected value " .. vim.inspect(value) .. " to be a number above " .. tostring(min)
+				return false,
+					string.format(
+						error_message,
+						"Expected value " .. vim.inspect(value) .. " to be a number above " .. tostring(min)
+					)
 			end
 
 			return true
@@ -152,13 +187,17 @@ Validator.f = {
 	end,
 	--- Generates a validator function which validates a number is less than a given one
 	---@param max number the number to compare against
+	---@param error_message? string error_message returned
 	---@return function
-	less_than = function(max)
+	less_than = function(max, error_message)
+		error_message = error_message or "Number validation error: %s"
+
 		return function(value)
 			local is_valid = type(value) == "number" and value < max
 
 			if not is_valid then
-				return false, "Expected value " .. vim.inspect(value) .. " to be a number below " .. tostring(max)
+				return false,
+					string.format("Expected value " .. vim.inspect(value) .. " to be a number below " .. tostring(max))
 			end
 
 			return true
@@ -166,38 +205,43 @@ Validator.f = {
 	end,
 	--- Generates a validator function which validates a list using the validators given
 	---@param list_validators table validators to use for the list
+	---@param error_message? string error message thrown
 	---@return function
-	list = function(list_validators)
+	list = function(list_validators, error_message)
+		error_message = error_message or "List validation error: %s"
+
 		return function(list)
 			if type(list) ~= "table" then
-				return false, "Expected table, got " .. vim.inspect(list)
+				return false, string.format("Expected table, got " .. type(list))
 			end
 
 			local validation_map = get_list_validation_map(list, list_validators)
-			return Validator.validate(validation_map)
+			return Validator.validate(validation_map, error_message)
 		end
 	end,
 	--- Generates a validator function which validates a dictionary using the validators given
 	---@param shape_validators table validators to use for the dictionary
+	---@param error_message? string error_message returned
 	---@return function
-	shape = function(shape_validators)
+	shape = function(shape_validators, error_message)
+		error_message = error_message or "Shape validation error: %s"
+
 		return function(shape)
 			if type(shape) ~= "table" then
-				return false, "Expected table, got " .. vim.inspect(shape)
+				return false, string.format(error_message, "Expected table, got " .. type(shape))
 			end
 
 			local validation_map = get_table_validation_map(shape, shape_validators)
-			return Validator.validate(validation_map)
+			return Validator.validate(validation_map, error_message)
 		end
 	end,
 	--- Generates a function decorator which validates arguments passed to the decorated function
 	---@param arguments_validators table validators to use for function arguments
+	---@param error_message? string error message thrown
 	---@return table
 	arguments = function(arguments_validators, error_message)
 		local validate_arguments = Validator.f.list(arguments_validators)
-		error_message = error_message or function(err)
-			return "Arguments validation error: " .. err
-		end
+		error_message = error_message or "Arguments validation error: %s"
 
 		return setmetatable({
 			decorate = function(func)
@@ -205,7 +249,7 @@ Validator.f = {
 					local valid, validation_error = validate_arguments({ ... })
 
 					if not valid then
-						error(error_message(validation_error))
+						error(string.format(error_message, validation_error))
 					end
 
 					return func(...)
