@@ -193,8 +193,11 @@ Validator.f = {
 	--- Generates a function decorator which validates arguments passed to the decorated function
 	---@param arguments_validators table validators to use for function arguments
 	---@return table
-	arguments = function(arguments_validators)
+	arguments = function(arguments_validators, error_message)
 		local validate_arguments = Validator.f.list(arguments_validators)
+		error_message = error_message or function(err)
+			return "Arguments validation error: " .. err
+		end
 
 		return setmetatable({
 			decorate = function(func)
@@ -202,7 +205,7 @@ Validator.f = {
 					local valid, validation_error = validate_arguments({ ... })
 
 					if not valid then
-						error("Arguments validation failed: " .. validation_error)
+						error(error_message(validation_error))
 					end
 
 					return func(...)
