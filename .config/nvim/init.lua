@@ -36,7 +36,7 @@ key.nmap(
 	-- Easy select all of file
 	{ "<leader>%", "ggVG<c-$>" },
 	-- Join lines and restore cursor location
-	-- key.map { "n", "J", "mjJ`j" }
+	{ "<leader>j", "mjJ`j" },
 	-- Line bubbling
 	{ "<A-j>", ":m .+1<CR>==" },
 	{ "<A-k>", ":m .-2<CR>==" },
@@ -62,11 +62,18 @@ key.imap(
 	{ "<Right>", "<nop>" },
 	{ "<Up>", "<nop>" },
 	{ "<Down>", "<nop>" },
+	-- Windows Navigation
+	{ "<C-h>", "<Esc><C-w>h" },
+	{ "<C-j>", "<Esc><C-w>j" },
+	{ "<C-k>", "<Esc><C-w>k" },
+	{ "<C-l>", "<Esc><C-w>l" },
+	{ "<C-n>", "<Esc><C-w>w" },
+	{ "<C-p>", "<Esc><C-w>W" },
 	-- Move cursor within insert mode
-	{ "<C-h>", "<Left>" },
-	{ "<C-l>", "<Right>" },
-	{ "<C-k>", "<Up>" },
-	{ "<C-j>", "<Down>" },
+	{ "<A-h>", "<Left>" },
+	{ "<A-l>", "<Right>" },
+	{ "<A-k>", "<Up>" },
+	{ "<A-j>", "<Down>" },
 	-- Indentation
 	{ "<C-Tab>", "<C-t>" },
 	{ "<C-S-Tab>", "<C-d>" }
@@ -164,91 +171,88 @@ key.nmap(
 )
 
 -- key.imap(
-	-- Navigation
-	-- { "<C-h>", "<Esc><C-w>h" },
-	-- { "<C-j>", "<Esc><C-w>j" },
-	-- { "<C-k>", "<Esc><C-w>k" },
-	-- { "<C-l>", "<Esc><C-w>l" },
-	-- { "<C-n>", "<Esc><C-w>w" },
-	-- { "<C-p>", "<Esc><C-w>W" },
-	-- Exchange with next window
-	-- { "<C-;>", "<Esc><C-w>x" },
-	-- Resizing
-	-- { "<C-A-j>", "<Esc>:resize -3<Cr>gi" },
-	-- { "<C-A-h>", "<Esc>:vertical :resize -3<Cr>gi" },
-	-- { "<C-A-l>", "<Esc>:vertical :resize +3<Cr>gi" },
-	-- { "<C-A-k>", "<Esc>:resize +3<Cr>gi" },
-	-- Moving windows
-	-- { "<C-S-j>", "<Esc><C-w>Jgi" },
-	-- { "<C-S-h>", "<Esc><C-w>Hgi" },
-	-- { "<C-S-l>", "<Esc><C-w>Lgi" },
-	-- { "<C-S-k>", "<Esc><C-w>Kgi" },
-	-- Resetting windows size
-	-- { "<C-=>", "<Esc><C-w>=gi" },
-	-- Maximising current window size
-	-- { "<C-f>", "<Esc><C-w>_<C-w>|gi" },
-	-- Buffers navigation
-	-- { "<A-Tab>", "<Esc>:bnext<Cr>" },
-	-- { "<A-S-Tab>", "<Esc>:bprev<Cr>" },
-	-- Splits
-	-- { "<C-q>", "<Esc>:bdelete<Cr>" },
-	-- { "<C-x>", "<Esc>:split<Cr>" },
-	-- { "<C-y>", "<Esc>:vsplit<Cr>" },
-	-- { "<C-t>", "<Esc>:tabnew<Cr>" }
+-- Windows Navigation
+-- { "<C-h>", "<Esc><C-w>h" },
+-- { "<C-j>", "<Esc><C-w>j" },
+-- { "<C-k>", "<Esc><C-w>k" },
+-- { "<C-l>", "<Esc><C-w>l" },
+-- { "<C-n>", "<Esc><C-w>w" },
+-- { "<C-p>", "<Esc><C-w>W" }
+-- Exchange with next window
+-- { "<C-;>", "<Esc><C-w>x" },
+-- Resizing
+-- { "<C-A-j>", "<Esc>:resize -3<Cr>gi" },
+-- { "<C-A-h>", "<Esc>:vertical :resize -3<Cr>gi" },
+-- { "<C-A-l>", "<Esc>:vertical :resize +3<Cr>gi" },
+-- { "<C-A-k>", "<Esc>:resize +3<Cr>gi" },
+-- Moving windows
+-- { "<C-S-j>", "<Esc><C-w>Jgi" },
+-- { "<C-S-h>", "<Esc><C-w>Hgi" },
+-- { "<C-S-l>", "<Esc><C-w>Lgi" },
+-- { "<C-S-k>", "<Esc><C-w>Kgi" },
+-- Resetting windows size
+-- { "<C-=>", "<Esc><C-w>=gi" },
+-- Maximising current window size
+-- { "<C-f>", "<Esc><C-w>_<C-w>|gi" },
+-- Buffers navigation
+-- { "<A-Tab>", "<Esc>:bnext<Cr>" },
+-- { "<A-S-Tab>", "<Esc>:bprev<Cr>" },
+-- Splits
+-- { "<C-q>", "<Esc>:bdelete<Cr>" },
+-- { "<C-x>", "<Esc>:split<Cr>" },
+-- { "<C-y>", "<Esc>:vsplit<Cr>" },
+-- { "<C-t>", "<Esc>:tabnew<Cr>" }
 -- )
 
 -- key.vmap(
-	-- Navigation
-	-- { "<C-h>", "<Esc><C-w>h" },
-	-- { "<C-j>", "<Esc><C-w>j" },
-	-- { "<C-k>", "<Esc><C-w>k" },
-	-- { "<C-l>", "<Esc><C-w>l" },
-	-- { "<C-n>", "<Esc><C-w>w" },
-	-- { "<C-p>", "<Esc><C-w>W" },
-	-- Exchange with next window
-	-- { "<C-;>", "<Esc><C-w>x" },
-	-- Resizing
-	-- { "<C-A-j>", "<Esc>:resize -3<Cr>gv" },
-	-- { "<C-A-h>", "<Esc>:vertical :resize -3<Cr>gv" },
-	-- { "<C-A-l>", "<Esc>:vertical :resize +3<Cr>gv" },
-	-- { "<C-A-k>", "<Esc>:resize +3<Cr>gv" },
-	-- Moving windows
-	-- { "<C-S-j>", "<Esc><C-w>Jgv" },
-	-- { "<C-S-h>", "<Esc><C-w>Hgv" },
-	-- { "<C-S-l>", "<Esc><C-w>Lgv" },
-	-- { "<C-S-k>", "<Esc><C-w>Kgv" },
-	-- Resetting windows size
-	-- { "<C-f>", "<Esc><C-w>=gv" },
-	-- Maximising current window size
-	-- { "<C-+>", "<Esc><C-w>_<C-w>|gv" },
-	-- Buffers navigation
-	-- { "<A-Tab>", "<Esc>:bnext<Cr>" },
-	-- { "<A-S-Tab>", "<Esc>:bprev<Cr>" },
-	-- Splits
-	-- { "<C-q>", "<Esc>:bdelete<Cr>" },
-	-- { "<C-x>", "<Esc>:split<Cr>" },
-	-- { "<C-y>", "<Esc>:vsplit<Cr>" },
-	-- { "<C-t>", "<Esc>:tabnew<Cr>" }
+-- Navigation
+-- { "<C-h>", "<Esc><C-w>h" },
+-- { "<C-j>", "<Esc><C-w>j" },
+-- { "<C-k>", "<Esc><C-w>k" },
+-- { "<C-l>", "<Esc><C-w>l" },
+-- { "<C-n>", "<Esc><C-w>w" },
+-- { "<C-p>", "<Esc><C-w>W" },
+-- Exchange with next window
+-- { "<C-;>", "<Esc><C-w>x" },
+-- Resizing
+-- { "<C-A-j>", "<Esc>:resize -3<Cr>gv" },
+-- { "<C-A-h>", "<Esc>:vertical :resize -3<Cr>gv" },
+-- { "<C-A-l>", "<Esc>:vertical :resize +3<Cr>gv" },
+-- { "<C-A-k>", "<Esc>:resize +3<Cr>gv" },
+-- Moving windows
+-- { "<C-S-j>", "<Esc><C-w>Jgv" },
+-- { "<C-S-h>", "<Esc><C-w>Hgv" },
+-- { "<C-S-l>", "<Esc><C-w>Lgv" },
+-- { "<C-S-k>", "<Esc><C-w>Kgv" },
+-- Resetting windows size
+-- { "<C-f>", "<Esc><C-w>=gv" },
+-- Maximising current window size
+-- { "<C-+>", "<Esc><C-w>_<C-w>|gv" },
+-- Buffers navigation
+-- { "<A-Tab>", "<Esc>:bnext<Cr>" },
+-- { "<A-S-Tab>", "<Esc>:bprev<Cr>" },
+-- Splits
+-- { "<C-q>", "<Esc>:bdelete<Cr>" },
+-- { "<C-x>", "<Esc>:split<Cr>" },
+-- { "<C-y>", "<Esc>:vsplit<Cr>" },
+-- { "<C-t>", "<Esc>:tabnew<Cr>" }
 -- )
 
-key.cmap(
-	{ "<C-h>", "<Left>" },
-	{ "<C-l>", "<Right>" },
-	{ "<C-k>", "<Up>" },
-	{ "<C-j>", "<Down>" }
-)
+key.cmap({ "<A-h>", "<Left>" }, { "<A-l>", "<Right>" }, { "<A-k>", "<Up>" }, { "<A-j>", "<Down>" })
 
 key.tmap(
-	{ "<C-h>", "<Left>" },
-	{ "<C-l>", "<Right>" },
-	{ "<C-k>", "<Up>" },
-	{ "<C-j>", "<Down>" }
-	-- { "<C-h>", "<C-\\><C-n><C-w>h" },
-	-- { "<C-j>", "<C-\\><C-n><C-w>j" },
-	-- { "<C-k>", "<C-\\><C-n><C-w>k" },
-	-- { "<C-l>", "<C-\\><C-n><C-w>l" },
-	-- { "<C-n>", "<C-\\><C-n><C-w>w" },
-	-- { "<C-p>", "<C-\\><C-n><C-w>W" },
+	-- Windows navigation
+	{ "<C-h>", "<C-\\><C-n><C-w>h" },
+	{ "<C-j>", "<C-\\><C-n><C-w>j" },
+	{ "<C-k>", "<C-\\><C-n><C-w>k" },
+	{ "<C-l>", "<C-\\><C-n><C-w>l" },
+	{ "<C-n>", "<C-\\><C-n><C-w>w" },
+	{ "<C-p>", "<C-\\><C-n><C-w>W" },
+	-- Moving the cursor when in insert
+	{ "<A-h>", "<Left>" },
+	{ "<A-l>", "<Right>" },
+	{ "<A-k>", "<Up>" },
+	{ "<A-j>", "<Down>" }
 	-- Exchange with next window
 	-- { "<C-;>", "<C-\\><C-n><C-w>x" },
 	-- Resizing
