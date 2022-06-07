@@ -1,90 +1,100 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
+local key = require("_shared.key")
 local validator = require("_shared.validator")
 
-local ProjectExplorer
-ProjectExplorer = Module:new({
-	plugins = {
-		-- File tree
-		{
-			"kyazdani42/nvim-tree.lua",
-			requires = {
-				"kyazdani42/nvim-web-devicons", -- optional, for file icon
-			},
+local ProjectExplorer = {}
+
+ProjectExplorer.plugins = {
+	-- File tree
+	{
+		"kyazdani42/nvim-tree.lua",
+		requires = {
+			"kyazdani42/nvim-web-devicons", -- optional, for file icon
 		},
 	},
-	setup = function()
-		vim.g.nvim_tree_highlight_opened_files = 3
-		vim.g.nvim_tree_group_empty = 1
-		-- NvimTree
-		require("nvim-tree").setup({
-			hijack_netrw = true,
-			hijack_cursor = true,
-			-- hijack_directories = true,
-			auto_reload_on_write = true,
-			open_on_tab = true,
-			diagnostics = {
-				enable = true,
-				show_on_dirs = true,
-			},
-			git = {
-				enable = true,
-				ignore = false,
-			},
-			update_focused_file = {
-				enable = true,
-			},
-			view = {
-				preserve_window_proportions = true,
-				mappings = {
-					custom_only = true,
-					list = {
-						{ key = "<leader>k", action = "toggle_file_info" },
-						{ key = "<C-y>", action = "vsplit" },
-						{ key = "<C-x>", action = "split" },
-						{ key = "<C-t>", action = "tabnew" },
-						{ key = "<C-r>", action = "refresh" },
-						{ key = "h", action = "close_node" },
-						{ key = "H", action = "collapse_all" },
-						{ key = "K", action = "parent_node" },
-						{ key = "l", action = "edit_in_place" },
-						{ key = "gk", action = "dir_up" },
-						{ key = "o", action = "cd" },
-						{ key = "O", action = "system_open" },
-						{ key = "[", action = "first_sibling" },
-						{ key = "]", action = "last_sibling" },
-						{ key = "g?", action = "toggle_help" },
-						{ key = "a", action = "create" },
-						{ key = "d", action = "remove" },
-						{ key = "D", action = "trash" },
-						{ key = "r", action = "rename" },
-						{ key = "R", action = "full_rename" },
-						{ key = "c", action = "copy" },
-						{ key = "C", action = "cut" },
-						{ key = "p", action = "paste" },
-						{ key = "y", action = "copy_name" },
-						{ key = "Y", action = "copy_path" },
-						{ key = "gy", action = "copy_absolute_path" },
-						{ key = "q", action = "close" },
-						{ key = "u", action = "toggle_custom" },
-						{ key = "i", action = "toggle_git_ignored" },
-						{ key = "h", action = "toggle_dotfiles" },
-						{
-							key = "<C-Space>",
-							action = "show_node_actions",
-							action_cb = ProjectExplorer.tree_actions_menu,
-						},
-						{
-							key = "<leader>f",
-							action = "search_in_node",
-							action_cb = ProjectExplorer.search_in_node,
-						},
+}
+
+ProjectExplorer.setup = function()
+	ProjectExplorer._setup_keymaps()
+	ProjectExplorer._setup_plugins()
+end
+
+ProjectExplorer._setup_keymaps = function()
+	key.nmap({ "<leader>e", ProjectExplorer.toggle })
+end
+
+ProjectExplorer._setup_plugins = function()
+	vim.g.nvim_tree_highlight_opened_files = 3
+	vim.g.nvim_tree_group_empty = 1
+	-- NvimTree
+	require("nvim-tree").setup({
+		hijack_netrw = true,
+		hijack_cursor = true,
+		-- hijack_directories = true,
+		auto_reload_on_write = true,
+		open_on_tab = true,
+		diagnostics = {
+			enable = true,
+			show_on_dirs = true,
+		},
+		git = {
+			enable = true,
+			ignore = false,
+		},
+		update_focused_file = {
+			enable = true,
+		},
+		view = {
+			preserve_window_proportions = true,
+			mappings = {
+				custom_only = true,
+				list = {
+					{ key = "<leader>k", action = "toggle_file_info" },
+					{ key = "<C-y>", action = "vsplit" },
+					{ key = "<C-x>", action = "split" },
+					{ key = "<C-t>", action = "tabnew" },
+					{ key = "<C-r>", action = "refresh" },
+					{ key = "h", action = "close_node" },
+					{ key = "H", action = "collapse_all" },
+					{ key = "K", action = "parent_node" },
+					{ key = "l", action = "edit_in_place" },
+					{ key = "gk", action = "dir_up" },
+					{ key = "o", action = "cd" },
+					{ key = "O", action = "system_open" },
+					{ key = "[", action = "first_sibling" },
+					{ key = "]", action = "last_sibling" },
+					{ key = "g?", action = "toggle_help" },
+					{ key = "a", action = "create" },
+					{ key = "d", action = "remove" },
+					{ key = "D", action = "trash" },
+					{ key = "r", action = "rename" },
+					{ key = "R", action = "full_rename" },
+					{ key = "c", action = "copy" },
+					{ key = "C", action = "cut" },
+					{ key = "p", action = "paste" },
+					{ key = "y", action = "copy_name" },
+					{ key = "Y", action = "copy_path" },
+					{ key = "gy", action = "copy_absolute_path" },
+					{ key = "q", action = "close" },
+					{ key = "u", action = "toggle_custom" },
+					{ key = "i", action = "toggle_git_ignored" },
+					{ key = "h", action = "toggle_dotfiles" },
+					{
+						key = "<C-Space>",
+						action = "show_node_actions",
+						action_cb = ProjectExplorer.tree_actions_menu,
+					},
+					{
+						key = "<leader>f",
+						action = "search_in_node",
+						action_cb = ProjectExplorer.search_in_node,
 					},
 				},
 			},
-		})
-	end,
-})
+		},
+	})
+end
 
 local validate_node = validator.f.shape({
 	absolute_path = "string",
@@ -176,4 +186,4 @@ ProjectExplorer.toggle = function()
 	require("nvim-tree").open_replacing_current_buffer()
 end
 
-return ProjectExplorer
+return Module:new(ProjectExplorer)

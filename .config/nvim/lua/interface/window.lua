@@ -22,8 +22,6 @@ local default_settings = {
 		["fullwidth.top"] = "<C-S-k>",
 		["equalize"] = "<C-=>",
 		["maximize"] = "<C-+>",
-		-- TODO: move delete to editor.buffer
-		["delete"] = "<C-q>",
 		["split.horizontal"] = "<C-x>",
 		["split.vertical"] = "<C-y>",
 	},
@@ -57,8 +55,6 @@ Window._setup_keymaps = function(settings)
 		-- Maximising current window size
 		{ settings.keymaps["maximize"], "<C-w>_<C-w>|" },
 		-- Splits
-		-- TODO: move delete to editor.buffer
-		{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
 		{ settings.keymaps["split.horizontal"], "<Cmd>split<Cr>" },
 		{ settings.keymaps["split.vertical"], "<Cmd>vsplit<Cr>" }
 	)
@@ -87,8 +83,6 @@ Window._setup_keymaps = function(settings)
 		-- Maximising current window size
 		{ settings.keymaps["maximize"], "<Esc><C-w>_<C-w>|" },
 		-- Splits
-		-- TODO: move delete to editor.buffer
-		{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
 		{ settings.keymaps["split.horizontal"], "<Cmd>split<Cr>" },
 		{ settings.keymaps["split.vertical"], "<Cmd>vsplit<Cr>" }
 	)
@@ -117,8 +111,6 @@ Window._setup_keymaps = function(settings)
 		-- Maximising current window size
 		{ settings.keymaps["maximize"], "<Esc><C-w>_<C-w>|" },
 		-- Splits
-		-- TODO: move delete to editor.buffer
-		{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
 		{ settings.keymaps["split.horizontal"], "<Cmd>split<Cr>" },
 		{ settings.keymaps["split.vertical"], "<Cmd>vsplit<Cr>" }
 	)
@@ -147,8 +139,6 @@ Window._setup_keymaps = function(settings)
 		-- Maximising current window size
 		{ settings.keymaps["maximize"], "<C-\\><C-n><C-w>_<C-w>|" },
 		-- Splits
-		-- TODO: move delete to editor.buffer
-		{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
 		{ settings.keymaps["split.horizontal"], "<Cmd>split<Cr>" },
 		{ settings.keymaps["split.vertical"], "<Cmd>vsplit<Cr>" }
 	)

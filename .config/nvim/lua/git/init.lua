@@ -1,26 +1,44 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
 
-local Git = Module:new({
-	plugins = {
-		-- Add git related info in the signs columns and popups
-		{ "lewis6991/gitsigns.nvim", requires = { "nvim-lua/plenary.nvim" } },
-		-- Github issues and reviews
-		"pwntester/octo.nvim",
-	},
-	setup = function()
-		-- GitSigns
-		-- see https://github.com/whatsthatsmell/dots/blob/master/public%20dots/vim-nvim/lua/joel/mappings.lua
-		require("gitsigns").setup({
-			current_line_blame = true,
-			current_line_blame_opts = {
-				delay = 100,
-			},
-		})
+local Git = {}
 
-		require("octo").setup()
-	end,
-})
+Git.plugins = {
+	-- Add git related info in the signs columns and popups
+	{ "lewis6991/gitsigns.nvim", requires = { "nvim-lua/plenary.nvim" } },
+	-- Github issues and reviews
+	"pwntester/octo.nvim",
+}
+
+Git.setup = function()
+	Git._setup_keymaps()
+	Git._setup_plugins()
+end
+
+Git._setup_keymaps = function()
+	key.nmap(
+		{ "gb", Git.blame },
+		{ "gl", Git.log },
+		{ "gd", Git.diff },
+		{ "gm", Git.mergetool },
+		{ "gh", Git.show_hunk_preview },
+		{ "]c", Git.next_hunk_preview("]c") },
+		{ "[c", Git.prev_hunk_preview("[c") }
+	)
+end
+
+Git._setup_plugins = function()
+	-- GitSigns
+	-- see https://github.com/whatsthatsmell/dots/blob/master/public%20dots/vim-nvim/lua/joel/mappings.lua
+	require("gitsigns").setup({
+		current_line_blame = true,
+		current_line_blame_opts = {
+			delay = 100,
+		},
+	})
+
+	require("octo").setup()
+end
 
 function Git.blame()
 	key.input(":Git blame<CR>")
@@ -71,4 +89,4 @@ function Git.prev_hunk_preview(next)
 	end
 end
 
-return Git
+return Module:new(Git)

@@ -1,15 +1,25 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
 
-local List = Module:new({
-	plugins = {
-		"romainl/vim-qf",
-	},
-	setup = function()
-		vim.api.nvim_set_var("g:qf_save_win_view", false)
-		vim.api.nvim_set_var("qf_mapping_ack_style", true)
-	end,
-})
+local List = {}
+
+List.plugins = {
+	"romainl/vim-qf",
+}
+
+List.setup = function()
+	List._setup_keymaps()
+	List._setup_plugins()
+end
+
+List._setup_keymaps = function()
+	key.nmap({ "<C-c>", List.toggle }, { "<leader>c", List.jump }, { "<C-]>", List.next }, { "<C-[>", List.prev })
+end
+
+List._setup_plugins = function()
+	vim.api.nvim_set_var("g:qf_save_win_view", false)
+	vim.api.nvim_set_var("qf_mapping_ack_style", true)
+end
 
 local function toggle_location_list()
 	key.input("<Plug>(qf_loc_toggle)", "m")
@@ -75,4 +85,4 @@ function List.jump()
 	key.input("<Plug>(qf_qf_switch)", "m")
 end
 
-return List
+return Module:new(List)

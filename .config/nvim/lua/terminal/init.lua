@@ -97,41 +97,56 @@ function Job:spawn()
 	self:_start()
 end
 
-local Terminal = Module:new({
-	setup = function()
-		-- In the terminal emulator, insert mode becomes the default mode
-		-- see https://github.com/neovim/neovim/issues/8816
-		-- NOTE: there are some caveats and related workarounds documented at the link
-		-- TODO: enter insert mode even when the buffer reloaded from being hidden
-		-- also, no line numbers in the terminal
-		au.group({
-			"Terminal",
-			{
-				{
-					"TermOpen",
-					"term://*",
-					function()
-						vim.cmd("setlocal nonumber norelativenumber")
-						vim.cmd("startinsert")
-						-- Allow closing a process directly from normal mode
-						key.nmap({ "<C-c>", "i<C-c>" })
-					end,
-				},
-				{
-					"BufEnter",
-					"term://*",
-					"if &buftype == 'terminal' | :startinsert | endif",
-					nested = true,
-				},
-			},
-		})
+local Terminal = {}
 
-		-- TODO: verify if possible to do this in lua
-		vim.cmd([[
+Terminal.setup = function()
+	Terminal._setup_keymaps()
+	Terminal._setup_commands()
+end
+
+Terminal._setup_keymaps = function()
+	-- Exiting term mode using esc
+	key.tmap({ "<Esc>", "<C-\\><C-n>" })
+	-- TODO: pass jobs from settings
+	key.nmap({
+		"<C-g>",
+		Terminal.job({ "lazygit" }),
+	})
+end
+
+Terminal._setup_commands = function()
+	-- In the terminal emulator, insert mode becomes the default mode
+	-- see https://github.com/neovim/neovim/issues/8816
+	-- NOTE: there are some caveats and related workarounds documented at the link
+	-- TODO: enter insert mode even when the buffer reloaded from being hidden
+	-- also, no line numbers in the terminal
+	au.group({
+		"Terminal",
+		{
+			{
+				"TermOpen",
+				"term://*",
+				function()
+					vim.cmd("setlocal nonumber norelativenumber")
+					vim.cmd("startinsert")
+					-- Allow closing a process directly from normal mode
+					key.nmap({ "<C-c>", "i<C-c>" })
+				end,
+			},
+			{
+				"BufEnter",
+				"term://*",
+				"if &buftype == 'terminal' | :startinsert | endif",
+				nested = true,
+			},
+		},
+	})
+
+	-- TODO: verify if possible to do this in lua
+	vim.cmd([[
 			:command! EditConfig :tabedit ~/.config/nvim
 		]])
-	end,
-})
+end
 
 Terminal.job = validator.f.arguments({ validator.f.shape({ "string" }) })
 	.. function(job)
@@ -142,4 +157,4 @@ Terminal.job = validator.f.arguments({ validator.f.shape({ "string" }) })
 		end
 	end
 
-return Terminal
+return Module:new(Terminal)

@@ -2,54 +2,83 @@ local Module = require("_shared.module")
 local key = require("_shared.key")
 local validator = require("_shared.validator")
 
-local Finder = Module:new({
-	plugins = {
-		-- UI to select things (files, grep results, open buffers...)
-		{ "nvim-telescope/telescope.nvim", requires = { "nvim-lua/plenary.nvim" } },
-		"nvim-telescope/telescope-project.nvim",
-		"AckslD/nvim-neoclip.lua",
-		{
-			"folke/todo-comments.nvim",
-			requires = "nvim-lua/plenary.nvim",
-		},
-	},
-	modules = {
-		list = require("finder.list"),
-	},
-	setup = function()
-		require("telescope").setup({
-			defaults = {
-				dynamic_preview_title = true,
-				color_devicons = true,
-				mappings = {
-					i = {
-						["<esc>"] = require("telescope.actions").close,
-					},
-					n = {},
-				},
-			},
-			pickers = {
-				find_files = {},
-				current_buffer_fuzzy_find = {
-					layout_strategy = "horizontal",
-				},
-				buffers = {
-					sort_lastused = true,
-				},
-				commands = {},
-				spell_suggest = {
-					theme = "cursor",
-				},
-				help_tags = {},
-			},
-		})
+local Finder = {}
 
-		-- Telescope extensions
-		require("telescope").load_extension("project")
-		-- Todo comments
-		require("todo-comments").setup({})
-	end,
-})
+Finder.plugins = {
+	-- UI to select things (files, grep results, open buffers...)
+	{ "nvim-telescope/telescope.nvim", requires = { "nvim-lua/plenary.nvim" } },
+	"nvim-telescope/telescope-project.nvim",
+	"AckslD/nvim-neoclip.lua",
+	{
+		"folke/todo-comments.nvim",
+		requires = "nvim-lua/plenary.nvim",
+	},
+}
+
+Finder.modules = {
+	list = require("finder.list"),
+}
+
+Finder.setup = function()
+	Finder._setup_keymaps()
+	Finder._setup_plugins()
+end
+
+Finder._setup_keymaps = function()
+	key.nmap(
+		-- Clearing search highlighting
+		{ "<Esc>", ":noh<CR><Esc>" },
+		-- { "<BS>", ":noh<CR>" },
+		-- Keep search results centred
+		{ "n", "nzzzv" },
+		{ "N", "Nzzzv" },
+		-- finder
+		{ "<C-p>", Finder.find_files },
+		{ "<C-S-p>", Finder.find_commands },
+		{ "<C-S-e>", Finder.find_projects },
+		{ "<leader>f", Finder.find_in_buffer },
+		{ "<leader>F", Finder.find_in_directory },
+		-- { "<C-y>", Finder.find_yanks },
+		{ "<F1>", Finder.find_in_documentation },
+		{ "<C-z>", Finder.find_spelling },
+		{ "<C-b>", Finder.find_buffers }
+		-- { "<C-t>", modules.finder.find_todos }
+	)
+end
+
+Finder._setup_plugins = function()
+	require("telescope").setup({
+		defaults = {
+			dynamic_preview_title = true,
+			color_devicons = true,
+			mappings = {
+				i = {
+					["<esc>"] = require("telescope.actions").close,
+				},
+				n = {},
+			},
+		},
+		pickers = {
+			find_files = {},
+			current_buffer_fuzzy_find = {
+				layout_strategy = "horizontal",
+			},
+			buffers = {
+				sort_lastused = true,
+			},
+			commands = {},
+			spell_suggest = {
+				theme = "cursor",
+			},
+			help_tags = {},
+		},
+	})
+
+	-- Telescope extensions
+	require("telescope").load_extension("project")
+	-- Todo comments
+	require("todo-comments").setup({})
+end
 
 Finder.find_files = function()
 	require("telescope.builtin").find_files()
@@ -145,4 +174,4 @@ Finder.contex_menu = validator.f.arguments({
 		require("telescope.pickers").new(theme, opts):find()
 	end
 
-return Finder
+return Module:new(Finder)
