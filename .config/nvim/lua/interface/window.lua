@@ -1,18 +1,107 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
+local key = require("_shared.key")
 local validator = require("_shared.validator")
 
-local defaults = {
+local default_settings = {
 	modal = {
 		border = "solid",
 		style = "minimal",
 		relative = "editor",
 	},
+	keymaps = {
+		["cursor.left"] = "<C-h>",
+		["cursor.down"] = "<C-j>",
+		["cursor.up"] = "<C-k>",
+		["cursor.right"] = "<C-l>",
+		["cursor.next"] = "<C-n>",
+		["cursor.prev"] = "<C-p>",
+		--
+		["swap.next"] = "<C-;>",
+		["shrink.horizontal"] = "<C-A-j>",
+		["shrink.vertical"] = "<C-A-h>",
+		["expand.vertical"] = "<C-A-l>",
+		["expand.horizontal"] = "<C-A-k>",
+		-- Moving windows
+		["fullwidth.bottom"] = "<C-S-j>",
+		["fullheight.left"] = "<C-S-h>",
+		["fullheight.right"] = "<C-S-l>",
+		["fullwidth.top"] = "<C-S-k>",
+		-- Resetting windows size
+		["equalize"] = "<C-=>",
+		-- Maximising current window size
+		["maximize"] = "<C-+>",
+		-- Splits
+		["delete"] = "<C-q>",
+		["split.horizontal"] = "<C-x>",
+		["split.vertical"] = "<C-y>",
+	},
 }
 
-local Window = Module:new({
-	plugins = {},
-})
+local Window = {}
+
+Window.plugins = {}
+
+Window.setup = function(settings)
+	settings = vim.tbl_deep_extend("force", default_settings, settings)
+
+	key.nmap(
+		-- Windows navigation
+		{ settings.keymaps["cursor.left"], "<C-w>h" },
+		{ settings.keymaps["cursor.down"], "<C-w>j" },
+		{ settings.keymaps["cursor.up"], "<C-w>k" },
+		{ settings.keymaps["cursor.right"], "<C-w>l" },
+		{ settings.keymaps["cursor.next"], "<C-w>w" },
+		{ settings.keymaps["cursor.prev"], "<C-w>W" },
+		-- Exchange current window with the next one
+		{ settings.keymaps["swap.next"], "<C-w>x" },
+		-- Resizing the current window
+		{ settings.keymaps["shrink.horizontal"], ":resize -3<Cr>" },
+		{ settings.keymaps["shrink.vertical"], ":vertical :resize -3<Cr>" },
+		{ settings.keymaps["expand.vertical"], ":vertical :resize +3<Cr>" },
+		{ settings.keymaps["expand.horizontal"], ":resize +3<Cr>" },
+		-- Moving windows
+		{ settings.keymaps["fullwidth.bottom"], "<C-w>J" },
+		{ settings.keymaps["fullheight.left"], "<C-w>H" },
+		{ settings.keymaps["fullheight.right"], "<C-w>L" },
+		{ settings.keymaps["fullwidth.top"], "<C-w>K" },
+		-- Resetting windows size
+		{ settings.keymaps["equalize"], "<C-w>=" },
+		-- Maximising current window size
+		{ settings.keymaps["maximize"], "<C-w>_<C-w>|" },
+		-- Splits
+		{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
+		{ settings.keymaps["split.horizontal"], "<Cmd>split<Cr>" },
+		{ settings.keymaps["split.vertical"], "<Cmd>vsplit<Cr>" }
+	)
+	key.vmap(
+		-- Windows Navigation
+		{ settings.keymaps["cursor.left"], "<Esc><C-w>h" },
+		{ settings.keymaps["cursor.down"], "<Esc><C-w>j" },
+		{ settings.keymaps["cursor.up"], "<Esc><C-w>k" },
+		{ settings.keymaps["cursor.right"], "<Esc><C-w>l" },
+		{ settings.keymaps["cursor.next"], "<Esc><C-w>w" },
+		{ settings.keymaps["cursor.prev"], "<Esc><C-w>W" }
+	)
+	key.imap(
+		-- Windows Navigation
+		{ settings.keymaps["cursor.left"], "<Esc><C-w>h" },
+		{ settings.keymaps["cursor.down"], "<Esc><C-w>j" },
+		{ settings.keymaps["cursor.up"], "<Esc><C-w>k" },
+		{ settings.keymaps["cursor.right"], "<Esc><C-w>l" },
+		{ settings.keymaps["cursor.next"], "<Esc><C-w>w" },
+		{ settings.keymaps["cursor.prev"], "<Esc><C-w>W" }
+	)
+	key.tmap(
+		-- Windows navigation
+		{ settings.keymaps["cursor.left"], "<C-\\><C-n><C-w>h" },
+		{ settings.keymaps["cursor.down"], "<C-\\><C-n><C-w>j" },
+		{ settings.keymaps["cursor.up"], "<C-\\><C-n><C-w>k" },
+		{ settings.keymaps["cursor.right"], "<C-\\><C-n><C-w>l" },
+		{ settings.keymaps["cursor.next"], "<C-\\><C-n><C-w>w" },
+		{ settings.keymaps["cursor.prev"], "<C-\\><C-n><C-w>W" }
+	)
+end
 
 Window._get_modal_config = function()
 	local width = math.ceil(math.min(vim.o.columns, math.max(80, vim.o.columns - 20)))
@@ -24,7 +113,7 @@ Window._get_modal_config = function()
 		row = row,
 		width = width,
 		height = height,
-	}, defaults.modal)
+	}, default_settings.modal)
 end
 
 Window.modal = validator.f.arguments({
@@ -68,4 +157,4 @@ Window.modal = validator.f.arguments({
 	return window
 end
 
-return Window
+return Module:new(Window)

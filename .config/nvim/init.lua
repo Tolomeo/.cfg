@@ -62,13 +62,6 @@ key.imap(
 	{ "<Right>", "<nop>" },
 	{ "<Up>", "<nop>" },
 	{ "<Down>", "<nop>" },
-	-- Windows Navigation
-	{ "<C-h>", "<Esc><C-w>h" },
-	{ "<C-j>", "<Esc><C-w>j" },
-	{ "<C-k>", "<Esc><C-w>k" },
-	{ "<C-l>", "<Esc><C-w>l" },
-	{ "<C-n>", "<Esc><C-w>w" },
-	{ "<C-p>", "<Esc><C-w>W" },
 	-- Move cursor within insert mode
 	{ "<A-h>", "<Left>" },
 	{ "<A-l>", "<Right>" },
@@ -80,6 +73,11 @@ key.imap(
 )
 
 key.vmap(
+	-- Arrows are disabled
+	{ "<Left>", "<nop>" },
+	{ "<Right>", "<nop>" },
+	{ "<Up>", "<nop>" },
+	{ "<Down>", "<nop>" },
 	-- Multipliers
 	-- Left
 	{ "<S-h>", "b" },
@@ -129,29 +127,7 @@ key.tmap({ "<Esc>", "<C-\\><C-n>" })
 -- Windows and buffers
 
 key.nmap(
-	-- Windows navigation
-	{ "<C-h>", "<C-w>h" },
-	{ "<C-j>", "<C-w>j" },
-	{ "<C-k>", "<C-w>k" },
-	{ "<C-l>", "<C-w>l" },
-	{ "<C-n>", "<C-w>w" },
-	{ "<C-p>", "<C-w>W" },
-	-- Exchange current window with the next one
-	{ "<C-;>", "<C-w>x" },
-	-- Resizing the current window
-	{ "<C-A-j>", ":resize -3<Cr>" },
-	{ "<C-A-h>", ":vertical :resize -3<Cr>" },
-	{ "<C-A-l>", ":vertical :resize +3<Cr>" },
-	{ "<C-A-k>", ":resize +3<Cr>" },
-	-- Moving windows
-	{ "<C-S-j>", "<C-w>J" },
-	{ "<C-S-h>", "<C-w>H" },
-	{ "<C-S-l>", "<C-w>L" },
-	{ "<C-S-k>", "<C-w>K" },
-	-- Resetting windows size
-	{ "<C-=>", "<C-w>=" },
-	-- Maximising current window size
-	{ "<C-f>", "<C-w>_<C-w>|" },
+	{ "<C-t>", "<Cmd>tabnew<Cr>" },
 	-- Buffers navigation
 	{ "<A-Tab>", ":bnext<Cr>" },
 	{ "<A-S-Tab>", ":bprev<Cr>" },
@@ -162,121 +138,17 @@ key.nmap(
 	-- quit (or close window)
 	{ "<leader>q", "<Cmd>:q<Cr>" },
 	-- Discard all changed buffers & quit
-	{ "<leader>Q", "<Cmd>:q!<Cr>" },
-	-- Splits
-	{ "<C-q>", "<Cmd>bdelete<Cr>" },
-	{ "<C-x>", "<Cmd>split<Cr>" },
-	{ "<C-y>", "<Cmd>vsplit<Cr>" },
-	{ "<C-t>", "<Cmd>tabnew<Cr>" }
+	{ "<leader>Q", "<Cmd>:q!<Cr>" }
 )
-
--- key.imap(
--- Windows Navigation
--- { "<C-h>", "<Esc><C-w>h" },
--- { "<C-j>", "<Esc><C-w>j" },
--- { "<C-k>", "<Esc><C-w>k" },
--- { "<C-l>", "<Esc><C-w>l" },
--- { "<C-n>", "<Esc><C-w>w" },
--- { "<C-p>", "<Esc><C-w>W" }
--- Exchange with next window
--- { "<C-;>", "<Esc><C-w>x" },
--- Resizing
--- { "<C-A-j>", "<Esc>:resize -3<Cr>gi" },
--- { "<C-A-h>", "<Esc>:vertical :resize -3<Cr>gi" },
--- { "<C-A-l>", "<Esc>:vertical :resize +3<Cr>gi" },
--- { "<C-A-k>", "<Esc>:resize +3<Cr>gi" },
--- Moving windows
--- { "<C-S-j>", "<Esc><C-w>Jgi" },
--- { "<C-S-h>", "<Esc><C-w>Hgi" },
--- { "<C-S-l>", "<Esc><C-w>Lgi" },
--- { "<C-S-k>", "<Esc><C-w>Kgi" },
--- Resetting windows size
--- { "<C-=>", "<Esc><C-w>=gi" },
--- Maximising current window size
--- { "<C-f>", "<Esc><C-w>_<C-w>|gi" },
--- Buffers navigation
--- { "<A-Tab>", "<Esc>:bnext<Cr>" },
--- { "<A-S-Tab>", "<Esc>:bprev<Cr>" },
--- Splits
--- { "<C-q>", "<Esc>:bdelete<Cr>" },
--- { "<C-x>", "<Esc>:split<Cr>" },
--- { "<C-y>", "<Esc>:vsplit<Cr>" },
--- { "<C-t>", "<Esc>:tabnew<Cr>" }
--- )
-
--- key.vmap(
--- Navigation
--- { "<C-h>", "<Esc><C-w>h" },
--- { "<C-j>", "<Esc><C-w>j" },
--- { "<C-k>", "<Esc><C-w>k" },
--- { "<C-l>", "<Esc><C-w>l" },
--- { "<C-n>", "<Esc><C-w>w" },
--- { "<C-p>", "<Esc><C-w>W" },
--- Exchange with next window
--- { "<C-;>", "<Esc><C-w>x" },
--- Resizing
--- { "<C-A-j>", "<Esc>:resize -3<Cr>gv" },
--- { "<C-A-h>", "<Esc>:vertical :resize -3<Cr>gv" },
--- { "<C-A-l>", "<Esc>:vertical :resize +3<Cr>gv" },
--- { "<C-A-k>", "<Esc>:resize +3<Cr>gv" },
--- Moving windows
--- { "<C-S-j>", "<Esc><C-w>Jgv" },
--- { "<C-S-h>", "<Esc><C-w>Hgv" },
--- { "<C-S-l>", "<Esc><C-w>Lgv" },
--- { "<C-S-k>", "<Esc><C-w>Kgv" },
--- Resetting windows size
--- { "<C-f>", "<Esc><C-w>=gv" },
--- Maximising current window size
--- { "<C-+>", "<Esc><C-w>_<C-w>|gv" },
--- Buffers navigation
--- { "<A-Tab>", "<Esc>:bnext<Cr>" },
--- { "<A-S-Tab>", "<Esc>:bprev<Cr>" },
--- Splits
--- { "<C-q>", "<Esc>:bdelete<Cr>" },
--- { "<C-x>", "<Esc>:split<Cr>" },
--- { "<C-y>", "<Esc>:vsplit<Cr>" },
--- { "<C-t>", "<Esc>:tabnew<Cr>" }
--- )
 
 key.cmap({ "<A-h>", "<Left>" }, { "<A-l>", "<Right>" }, { "<A-k>", "<Up>" }, { "<A-j>", "<Down>" })
 
 key.tmap(
-	-- Windows navigation
-	{ "<C-h>", "<C-\\><C-n><C-w>h" },
-	{ "<C-j>", "<C-\\><C-n><C-w>j" },
-	{ "<C-k>", "<C-\\><C-n><C-w>k" },
-	{ "<C-l>", "<C-\\><C-n><C-w>l" },
-	{ "<C-n>", "<C-\\><C-n><C-w>w" },
-	{ "<C-p>", "<C-\\><C-n><C-w>W" },
 	-- Moving the cursor when in insert
 	{ "<A-h>", "<Left>" },
 	{ "<A-l>", "<Right>" },
 	{ "<A-k>", "<Up>" },
 	{ "<A-j>", "<Down>" }
-	-- Exchange with next window
-	-- { "<C-;>", "<C-\\><C-n><C-w>x" },
-	-- Resizing
-	-- { "<C-A-j>", "<C-\\><C-n>:resize -3<Cr>i" },
-	-- { "<C-A-h>", "<C-\\><C-n>:vertical :resize -3<Cr>i" },
-	-- { "<C-A-l>", "<C-\\><C-n>:vertical :resize +3<Cr>i" },
-	-- { "<C-A-k>", "<C-\\><C-n>:resize +3<Cr>i" },
-	-- Moving windows
-	-- { "<C-S-j>", "<C-\\><C-n><C-w>Ji" },
-	-- { "<C-S-h>", "<C-\\><C-n><C-w>Hi" },
-	-- { "<C-S-l>", "<C-\\><C-n><C-w>Li" },
-	-- { "<C-S-k>", "<C-\\><C-n><C-w>Ki" },
-	-- Resetting windows size
-	-- { "<C-f>", "<C-\\><C-n><C-w>=i" },
-	-- Maximising current window size
-	-- { "<C-+>", "<C-\\><C-n><C-w>_<C-w>|i" },
-	-- Buffers navigation
-	-- { "<A-Tab>", "<C-\\><C-n>:bnext<Cr>" },
-	-- { "<A-S-Tab>", "<C-\\><C-n>:bprev<Cr>" },
-	-- Splits
-	-- { "<C-q>", "<C-c><C-\\><C-n>:bdelete!<Cr>" },
-	-- { "<C-x>", "<C-\\><C-n>:split<Cr>" },
-	-- { "<C-y>", "<C-\\><C-n>:vsplit<Cr>" },
-	-- { "<C-t>", "<C-\\><C-n>:tabnew<Cr>" }
 )
 
 -- Search
