@@ -44,14 +44,14 @@ Window._setup_keymaps = function(settings)
 		{ settings.keymaps["swap.next"], "<C-w>x" },
 		-- Resizing the current window
 		{ settings.keymaps["shrink.horizontal"], "<Cmd>resize -3<Cr>" },
-		{ settings.keymaps["shrink.vertical"], "<Cmd>vertical :resize -3<Cr>" },
-		{ settings.keymaps["expand.vertical"], "<Cmd>vertical :resize +3<Cr>" },
+		{ settings.keymaps["shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
+		{ settings.keymaps["expand.vertical"], "<Cmd>vertical resize +3<Cr>" },
 		{ settings.keymaps["expand.horizontal"], "<Cmd>resize +3<Cr>" },
 		-- moving windows
-		{ settings.keymaps["fullwidth.bottom"], "<c-w>J" },
-		{ settings.keymaps["fullheight.left"], "<c-w>H" },
-		{ settings.keymaps["fullheight.right"], "<c-w>L" },
-		{ settings.keymaps["fullwidth.top"], "<c-w>K" },
+		{ settings.keymaps["fullwidth.bottom"], "<C-w>J" },
+		{ settings.keymaps["fullheight.left"], "<C-w>H" },
+		{ settings.keymaps["fullheight.right"], "<C-w>L" },
+		{ settings.keymaps["fullwidth.top"], "<C-w>K" },
 		-- Resetting windows size
 		{ settings.keymaps["equalize"], "<C-w>=" },
 		-- Maximising current window size
@@ -74,14 +74,14 @@ Window._setup_keymaps = function(settings)
 		{ settings.keymaps["swap.next"], "<Esc><C-w>x" },
 		-- Resizing the current window
 		{ settings.keymaps["shrink.horizontal"], "<Cmd>resize -3<Cr>" },
-		{ settings.keymaps["shrink.vertical"], "<Cmd>vertical :resize -3<Cr>" },
-		{ settings.keymaps["expand.vertical"], "<Cmd>vertical :resize +3<Cr>" },
+		{ settings.keymaps["shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
+		{ settings.keymaps["expand.vertical"], "<Cmd>vertical resize +3<Cr>" },
 		{ settings.keymaps["expand.horizontal"], "<Cmd>resize +3<Cr>" },
 		-- moving windows
-		{ settings.keymaps["fullwidth.bottom"], "<Esc><c-w>J" },
-		{ settings.keymaps["fullheight.left"], "<Esc><c-w>H" },
-		{ settings.keymaps["fullheight.right"], "<Esc><c-w>L" },
-		{ settings.keymaps["fullwidth.top"], "<Esc><c-w>K" },
+		{ settings.keymaps["fullwidth.bottom"], "<Esc><C-w>J" },
+		{ settings.keymaps["fullheight.left"], "<Esc><C-w>H" },
+		{ settings.keymaps["fullheight.right"], "<Esc><C-w>L" },
+		{ settings.keymaps["fullwidth.top"], "<Esc><C-w>K" },
 		-- Resetting windows size
 		{ settings.keymaps["equalize"], "<Esc><C-w>=" },
 		-- Maximising current window size
@@ -104,14 +104,14 @@ Window._setup_keymaps = function(settings)
 		{ settings.keymaps["swap.next"], "<Esc><C-w>x" },
 		-- Resizing the current window
 		{ settings.keymaps["shrink.horizontal"], "<Cmd>resize -3<Cr>" },
-		{ settings.keymaps["shrink.vertical"], "<Cmd>vertical :resize -3<Cr>" },
-		{ settings.keymaps["expand.vertical"], "<Cmd>vertical :resize +3<Cr>" },
+		{ settings.keymaps["shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
+		{ settings.keymaps["expand.vertical"], "<Cmd>vertical resize +3<Cr>" },
 		{ settings.keymaps["expand.horizontal"], "<Cmd>resize +3<Cr>" },
 		-- moving windows
-		{ settings.keymaps["fullwidth.bottom"], "<Esc><c-w>J" },
-		{ settings.keymaps["fullheight.left"], "<Esc><c-w>H" },
-		{ settings.keymaps["fullheight.right"], "<Esc><c-w>L" },
-		{ settings.keymaps["fullwidth.top"], "<Esc><c-w>K" },
+		{ settings.keymaps["fullwidth.bottom"], "<Esc><C-w>J" },
+		{ settings.keymaps["fullheight.left"], "<Esc><C-w>H" },
+		{ settings.keymaps["fullheight.right"], "<Esc><C-w>L" },
+		{ settings.keymaps["fullwidth.top"], "<Esc><C-w>K" },
 		-- Resetting windows size
 		{ settings.keymaps["equalize"], "<Esc><C-w>=" },
 		-- Maximising current window size
@@ -134,14 +134,14 @@ Window._setup_keymaps = function(settings)
 		{ settings.keymaps["swap.next"], "<C-\\><C-n><C-w>x" },
 		-- Resizing the current window
 		{ settings.keymaps["shrink.horizontal"], "<Cmd>resize -3<Cr>" },
-		{ settings.keymaps["shrink.vertical"], "<Cmd>vertical :resize -3<Cr>" },
-		{ settings.keymaps["expand.vertical"], "<Cmd>vertical :resize +3<Cr>" },
+		{ settings.keymaps["shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
+		{ settings.keymaps["expand.vertical"], "<Cmd>vertical resize +3<Cr>" },
 		{ settings.keymaps["expand.horizontal"], "<Cmd>resize +3<Cr>" },
 		-- moving windows
-		{ settings.keymaps["fullwidth.bottom"], "<C-\\><C-n><c-w>J" },
-		{ settings.keymaps["fullheight.left"], "<C-\\><C-n><c-w>H" },
-		{ settings.keymaps["fullheight.right"], "<C-\\><C-n><c-w>L" },
-		{ settings.keymaps["fullwidth.top"], "<C-\\><C-n><c-w>K" },
+		{ settings.keymaps["fullwidth.bottom"], "<C-\\><C-n><C-w>J" },
+		{ settings.keymaps["fullheight.left"], "<C-\\><C-n><C-w>H" },
+		{ settings.keymaps["fullheight.right"], "<C-\\><C-n><C-w>L" },
+		{ settings.keymaps["fullwidth.top"], "<C-\\><C-n><C-w>K" },
 		-- Resetting windows size
 		{ settings.keymaps["equalize"], "<C-\\><C-n><C-w>=" },
 		-- Maximising current window size
