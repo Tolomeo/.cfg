@@ -53,7 +53,7 @@ key.nmap(
 	-- Cleaning a line
 	{ "<leader>d", ":.s/\v^.*$/<Cr>:noh<Cr>" },
 	-- Commenting lines
-	{ "<leader><space>", modules.editor.text.comment_line }
+	{ "<leader><space>", modules.editor.buffer.comment_line }
 )
 
 key.imap(
@@ -118,7 +118,7 @@ key.vmap(
 	-- Cleaning selected lines
 	{ "<leader>d", "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" },
 	-- Commenting lines
-	{ "<leader><space>", modules.editor.text.comment_selection }
+	{ "<leader><space>", modules.editor.buffer.comment_selection }
 )
 
 -- Exiting term mode using esc

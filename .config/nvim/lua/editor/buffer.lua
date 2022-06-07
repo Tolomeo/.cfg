@@ -17,9 +17,9 @@ end
 -- Make visual yanks remain in visual mode
 key.vmap({ "y", "ygv" })
 
-local Text = {}
+local Buffer = {}
 
-Text.plugins = {
+Buffer.plugins = {
 	-- Indentation guides
 	"lukas-reineke/indent-blankline.nvim",
 	-- Comments
@@ -41,7 +41,7 @@ Text.plugins = {
 	"norcalli/nvim-colorizer.lua",
 }
 
-Text.setup = function()
+Buffer.setup = function()
 	-- Autotag
 	require("nvim-ts-autotag").setup()
 
@@ -88,18 +88,18 @@ Text.setup = function()
 end
 
 -- vim.api.nvim_set_keymap("n", "<leader>/", "<Plug>kommentary_line_default", {})
-function Text.comment_line()
+function Buffer.comment_line()
 	key.input("<Plug>kommentary_line_default", "m")
 end
 
 -- vim.api.nvim_set_keymap("x", "<leader>/", "<Plug>kommentary_visual_default", {}
-function Text.comment_selection()
+function Buffer.comment_selection()
 	key.input("<Plug>kommentary_visual_default", "m")
 end
 
 -- Returns the current word under the cursor
-function Text.cword()
+function Buffer.cword()
 	return vim.call("expand", "<cword>")
 end
 
-return Module:new(Text)
+return Module:new(Buffer)
