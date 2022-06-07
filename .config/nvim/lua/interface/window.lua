@@ -31,6 +31,129 @@ local default_settings = {
 
 local Window = {}
 
+Window._setup_keymaps = function(settings)
+	key.nmap(
+		-- Windows navigation
+		{ settings.keymaps["cursor.left"], "<C-w>h" },
+		{ settings.keymaps["cursor.down"], "<C-w>j" },
+		{ settings.keymaps["cursor.up"], "<C-w>k" },
+		{ settings.keymaps["cursor.right"], "<C-w>l" },
+		{ settings.keymaps["cursor.next"], "<C-w>w" },
+		{ settings.keymaps["cursor.prev"], "<C-w>W" },
+		-- Exchange current window with the next one
+		{ settings.keymaps["swap.next"], "<C-w>x" },
+		-- Resizing the current window
+		{ settings.keymaps["shrink.horizontal"], "<Cmd>resize -3<Cr>" },
+		{ settings.keymaps["shrink.vertical"], "<Cmd>vertical :resize -3<Cr>" },
+		{ settings.keymaps["expand.vertical"], "<Cmd>vertical :resize +3<Cr>" },
+		{ settings.keymaps["expand.horizontal"], "<Cmd>resize +3<Cr>" },
+		-- moving windows
+		{ settings.keymaps["fullwidth.bottom"], "<c-w>J" },
+		{ settings.keymaps["fullheight.left"], "<c-w>H" },
+		{ settings.keymaps["fullheight.right"], "<c-w>L" },
+		{ settings.keymaps["fullwidth.top"], "<c-w>K" },
+		-- Resetting windows size
+		{ settings.keymaps["equalize"], "<C-w>=" },
+		-- Maximising current window size
+		{ settings.keymaps["maximize"], "<C-w>_<C-w>|" },
+		-- Splits
+		-- TODO: move delete to editor.buffer
+		{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
+		{ settings.keymaps["split.horizontal"], "<Cmd>split<Cr>" },
+		{ settings.keymaps["split.vertical"], "<Cmd>vsplit<Cr>" }
+	)
+	key.vmap(
+		-- Windows Navigation
+		{ settings.keymaps["cursor.left"], "<Esc><C-w>h" },
+		{ settings.keymaps["cursor.down"], "<Esc><C-w>j" },
+		{ settings.keymaps["cursor.up"], "<Esc><C-w>k" },
+		{ settings.keymaps["cursor.right"], "<Esc><C-w>l" },
+		{ settings.keymaps["cursor.next"], "<Esc><C-w>w" },
+		{ settings.keymaps["cursor.prev"], "<Esc><C-w>W" },
+		-- Exchange current window with the next one
+		{ settings.keymaps["swap.next"], "<Esc><C-w>x" },
+		-- Resizing the current window
+		{ settings.keymaps["shrink.horizontal"], "<Cmd>resize -3<Cr>" },
+		{ settings.keymaps["shrink.vertical"], "<Cmd>vertical :resize -3<Cr>" },
+		{ settings.keymaps["expand.vertical"], "<Cmd>vertical :resize +3<Cr>" },
+		{ settings.keymaps["expand.horizontal"], "<Cmd>resize +3<Cr>" },
+		-- moving windows
+		{ settings.keymaps["fullwidth.bottom"], "<Esc><c-w>J" },
+		{ settings.keymaps["fullheight.left"], "<Esc><c-w>H" },
+		{ settings.keymaps["fullheight.right"], "<Esc><c-w>L" },
+		{ settings.keymaps["fullwidth.top"], "<Esc><c-w>K" },
+		-- Resetting windows size
+		{ settings.keymaps["equalize"], "<Esc><C-w>=" },
+		-- Maximising current window size
+		{ settings.keymaps["maximize"], "<Esc><C-w>_<C-w>|" },
+		-- Splits
+		-- TODO: move delete to editor.buffer
+		{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
+		{ settings.keymaps["split.horizontal"], "<Cmd>split<Cr>" },
+		{ settings.keymaps["split.vertical"], "<Cmd>vsplit<Cr>" }
+	)
+	key.imap(
+		-- Windows Navigation
+		{ settings.keymaps["cursor.left"], "<Esc><C-w>h" },
+		{ settings.keymaps["cursor.down"], "<Esc><C-w>j" },
+		{ settings.keymaps["cursor.up"], "<Esc><C-w>k" },
+		{ settings.keymaps["cursor.right"], "<Esc><C-w>l" },
+		{ settings.keymaps["cursor.next"], "<Esc><C-w>w" },
+		{ settings.keymaps["cursor.prev"], "<Esc><C-w>W" },
+		-- Exchange current window with the next one
+		{ settings.keymaps["swap.next"], "<Esc><C-w>x" },
+		-- Resizing the current window
+		{ settings.keymaps["shrink.horizontal"], "<Cmd>resize -3<Cr>" },
+		{ settings.keymaps["shrink.vertical"], "<Cmd>vertical :resize -3<Cr>" },
+		{ settings.keymaps["expand.vertical"], "<Cmd>vertical :resize +3<Cr>" },
+		{ settings.keymaps["expand.horizontal"], "<Cmd>resize +3<Cr>" },
+		-- moving windows
+		{ settings.keymaps["fullwidth.bottom"], "<Esc><c-w>J" },
+		{ settings.keymaps["fullheight.left"], "<Esc><c-w>H" },
+		{ settings.keymaps["fullheight.right"], "<Esc><c-w>L" },
+		{ settings.keymaps["fullwidth.top"], "<Esc><c-w>K" },
+		-- Resetting windows size
+		{ settings.keymaps["equalize"], "<Esc><C-w>=" },
+		-- Maximising current window size
+		{ settings.keymaps["maximize"], "<Esc><C-w>_<C-w>|" },
+		-- Splits
+		-- TODO: move delete to editor.buffer
+		{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
+		{ settings.keymaps["split.horizontal"], "<Cmd>split<Cr>" },
+		{ settings.keymaps["split.vertical"], "<Cmd>vsplit<Cr>" }
+	)
+	key.tmap(
+		-- Windows navigation
+		{ settings.keymaps["cursor.left"], "<C-\\><C-n><C-w>h" },
+		{ settings.keymaps["cursor.down"], "<C-\\><C-n><C-w>j" },
+		{ settings.keymaps["cursor.up"], "<C-\\><C-n><C-w>k" },
+		{ settings.keymaps["cursor.right"], "<C-\\><C-n><C-w>l" },
+		{ settings.keymaps["cursor.next"], "<C-\\><C-n><C-w>w" },
+		{ settings.keymaps["cursor.prev"], "<C-\\><C-n><C-w>W" },
+		-- Exchange current window with the next one
+		{ settings.keymaps["swap.next"], "<C-\\><C-n><C-w>x" },
+		-- Resizing the current window
+		{ settings.keymaps["shrink.horizontal"], "<Cmd>resize -3<Cr>" },
+		{ settings.keymaps["shrink.vertical"], "<Cmd>vertical :resize -3<Cr>" },
+		{ settings.keymaps["expand.vertical"], "<Cmd>vertical :resize +3<Cr>" },
+		{ settings.keymaps["expand.horizontal"], "<Cmd>resize +3<Cr>" },
+		-- moving windows
+		{ settings.keymaps["fullwidth.bottom"], "<C-\\><C-n><c-w>J" },
+		{ settings.keymaps["fullheight.left"], "<C-\\><C-n><c-w>H" },
+		{ settings.keymaps["fullheight.right"], "<C-\\><C-n><c-w>L" },
+		{ settings.keymaps["fullwidth.top"], "<C-\\><C-n><c-w>K" },
+		-- Resetting windows size
+		{ settings.keymaps["equalize"], "<C-\\><C-n><C-w>=" },
+		-- Maximising current window size
+		{ settings.keymaps["maximize"], "<C-\\><C-n><C-w>_<C-w>|" },
+		-- Splits
+		-- TODO: move delete to editor.buffer
+		{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
+		{ settings.keymaps["split.horizontal"], "<Cmd>split<Cr>" },
+		{ settings.keymaps["split.vertical"], "<Cmd>vsplit<Cr>" }
+	)
+end
+
 Window.plugins = {}
 
 Window.setup = validator.f.arguments({
@@ -64,126 +187,7 @@ Window.setup = validator.f.arguments({
 	.. function(settings)
 		settings = vim.tbl_deep_extend("force", default_settings, settings)
 
-		key.nmap(
-			-- Windows navigation
-			{ settings.keymaps["cursor.left"], "<C-w>h" },
-			{ settings.keymaps["cursor.down"], "<C-w>j" },
-			{ settings.keymaps["cursor.up"], "<C-w>k" },
-			{ settings.keymaps["cursor.right"], "<C-w>l" },
-			{ settings.keymaps["cursor.next"], "<C-w>w" },
-			{ settings.keymaps["cursor.prev"], "<C-w>W" },
-			-- Exchange current window with the next one
-			{ settings.keymaps["swap.next"], "<C-w>x" },
-			-- Resizing the current window
-			{ settings.keymaps["shrink.horizontal"], "<Cmd>resize -3<Cr>" },
-			{ settings.keymaps["shrink.vertical"], "<Cmd>vertical :resize -3<Cr>" },
-			{ settings.keymaps["expand.vertical"], "<Cmd>vertical :resize +3<Cr>" },
-			{ settings.keymaps["expand.horizontal"], "<Cmd>resize +3<Cr>" },
-			-- moving windows
-			{ settings.keymaps["fullwidth.bottom"], "<c-w>J" },
-			{ settings.keymaps["fullheight.left"], "<c-w>H" },
-			{ settings.keymaps["fullheight.right"], "<c-w>L" },
-			{ settings.keymaps["fullwidth.top"], "<c-w>K" },
-			-- Resetting windows size
-			{ settings.keymaps["equalize"], "<C-w>=" },
-			-- Maximising current window size
-			{ settings.keymaps["maximize"], "<C-w>_<C-w>|" },
-			-- Splits
-			-- TODO: move delete to editor.buffer
-			{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
-			{ settings.keymaps["split.horizontal"], "<Cmd>split<Cr>" },
-			{ settings.keymaps["split.vertical"], "<Cmd>vsplit<Cr>" }
-		)
-		key.vmap(
-			-- Windows Navigation
-			{ settings.keymaps["cursor.left"], "<Esc><C-w>h" },
-			{ settings.keymaps["cursor.down"], "<Esc><C-w>j" },
-			{ settings.keymaps["cursor.up"], "<Esc><C-w>k" },
-			{ settings.keymaps["cursor.right"], "<Esc><C-w>l" },
-			{ settings.keymaps["cursor.next"], "<Esc><C-w>w" },
-			{ settings.keymaps["cursor.prev"], "<Esc><C-w>W" },
-			-- Exchange current window with the next one
-			{ settings.keymaps["swap.next"], "<Esc><C-w>x" },
-			-- Resizing the current window
-			{ settings.keymaps["shrink.horizontal"], "<Cmd>resize -3<Cr>" },
-			{ settings.keymaps["shrink.vertical"], "<Cmd>vertical :resize -3<Cr>" },
-			{ settings.keymaps["expand.vertical"], "<Cmd>vertical :resize +3<Cr>" },
-			{ settings.keymaps["expand.horizontal"], "<Cmd>resize +3<Cr>" },
-			-- moving windows
-			{ settings.keymaps["fullwidth.bottom"], "<Esc><c-w>J" },
-			{ settings.keymaps["fullheight.left"], "<Esc><c-w>H" },
-			{ settings.keymaps["fullheight.right"], "<Esc><c-w>L" },
-			{ settings.keymaps["fullwidth.top"], "<Esc><c-w>K" },
-			-- Resetting windows size
-			{ settings.keymaps["equalize"], "<Esc><C-w>=" },
-			-- Maximising current window size
-			{ settings.keymaps["maximize"], "<Esc><C-w>_<C-w>|" },
-			-- Splits
-			-- TODO: move delete to editor.buffer
-			{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
-			{ settings.keymaps["split.horizontal"], "<Cmd>split<Cr>" },
-			{ settings.keymaps["split.vertical"], "<Cmd>vsplit<Cr>" }
-		)
-		key.imap(
-			-- Windows Navigation
-			{ settings.keymaps["cursor.left"], "<Esc><C-w>h" },
-			{ settings.keymaps["cursor.down"], "<Esc><C-w>j" },
-			{ settings.keymaps["cursor.up"], "<Esc><C-w>k" },
-			{ settings.keymaps["cursor.right"], "<Esc><C-w>l" },
-			{ settings.keymaps["cursor.next"], "<Esc><C-w>w" },
-			{ settings.keymaps["cursor.prev"], "<Esc><C-w>W" },
-			-- Exchange current window with the next one
-			{ settings.keymaps["swap.next"], "<Esc><C-w>x" },
-			-- Resizing the current window
-			{ settings.keymaps["shrink.horizontal"], "<Cmd>resize -3<Cr>" },
-			{ settings.keymaps["shrink.vertical"], "<Cmd>vertical :resize -3<Cr>" },
-			{ settings.keymaps["expand.vertical"], "<Cmd>vertical :resize +3<Cr>" },
-			{ settings.keymaps["expand.horizontal"], "<Cmd>resize +3<Cr>" },
-			-- moving windows
-			{ settings.keymaps["fullwidth.bottom"], "<Esc><c-w>J" },
-			{ settings.keymaps["fullheight.left"], "<Esc><c-w>H" },
-			{ settings.keymaps["fullheight.right"], "<Esc><c-w>L" },
-			{ settings.keymaps["fullwidth.top"], "<Esc><c-w>K" },
-			-- Resetting windows size
-			{ settings.keymaps["equalize"], "<Esc><C-w>=" },
-			-- Maximising current window size
-			{ settings.keymaps["maximize"], "<Esc><C-w>_<C-w>|" },
-			-- Splits
-			-- TODO: move delete to editor.buffer
-			{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
-			{ settings.keymaps["split.horizontal"], "<Cmd>split<Cr>" },
-			{ settings.keymaps["split.vertical"], "<Cmd>vsplit<Cr>" }
-		)
-		key.tmap(
-			-- Windows navigation
-			{ settings.keymaps["cursor.left"], "<C-\\><C-n><C-w>h" },
-			{ settings.keymaps["cursor.down"], "<C-\\><C-n><C-w>j" },
-			{ settings.keymaps["cursor.up"], "<C-\\><C-n><C-w>k" },
-			{ settings.keymaps["cursor.right"], "<C-\\><C-n><C-w>l" },
-			{ settings.keymaps["cursor.next"], "<C-\\><C-n><C-w>w" },
-			{ settings.keymaps["cursor.prev"], "<C-\\><C-n><C-w>W" },
-			-- Exchange current window with the next one
-			{ settings.keymaps["swap.next"], "<C-\\><C-n><C-w>x" },
-			-- Resizing the current window
-			{ settings.keymaps["shrink.horizontal"], "<Cmd>resize -3<Cr>" },
-			{ settings.keymaps["shrink.vertical"], "<Cmd>vertical :resize -3<Cr>" },
-			{ settings.keymaps["expand.vertical"], "<Cmd>vertical :resize +3<Cr>" },
-			{ settings.keymaps["expand.horizontal"], "<Cmd>resize +3<Cr>" },
-			-- moving windows
-			{ settings.keymaps["fullwidth.bottom"], "<C-\\><C-n><c-w>J" },
-			{ settings.keymaps["fullheight.left"], "<C-\\><C-n><c-w>H" },
-			{ settings.keymaps["fullheight.right"], "<C-\\><C-n><c-w>L" },
-			{ settings.keymaps["fullwidth.top"], "<C-\\><C-n><c-w>K" },
-			-- Resetting windows size
-			{ settings.keymaps["equalize"], "<C-\\><C-n><C-w>=" },
-			-- Maximising current window size
-			{ settings.keymaps["maximize"], "<C-\\><C-n><C-w>_<C-w>|" },
-			-- Splits
-			-- TODO: move delete to editor.buffer
-			{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
-			{ settings.keymaps["split.horizontal"], "<Cmd>split<Cr>" },
-			{ settings.keymaps["split.vertical"], "<Cmd>vsplit<Cr>" }
-		)
+		Window._setup_keymaps(settings)
 	end
 
 Window._get_modal_config = function()
