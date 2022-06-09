@@ -25,15 +25,14 @@ ProjectExplorer._setup_keymaps = function()
 end
 
 ProjectExplorer._setup_plugins = function()
-	vim.g.nvim_tree_highlight_opened_files = 3
-	vim.g.nvim_tree_group_empty = 1
 	-- NvimTree
 	require("nvim-tree").setup({
 		hijack_netrw = true,
 		hijack_cursor = true,
-		-- hijack_directories = true,
+		update_cwd = false,
 		auto_reload_on_write = true,
 		open_on_tab = true,
+		open_on_setup = true,
 		diagnostics = {
 			enable = true,
 			show_on_dirs = true,
@@ -42,8 +41,22 @@ ProjectExplorer._setup_plugins = function()
 			enable = true,
 			ignore = false,
 		},
+		filters = {
+			dotfiles = false,
+		},
 		update_focused_file = {
 			enable = true,
+			update_cwd = false,
+		},
+		actions = {
+			open_file = {
+				resize_window = true,
+			},
+		},
+		renderer = {
+			highlight_opened_files = "all",
+			highlight_git = true,
+			group_empty = true,
 		},
 		view = {
 			preserve_window_proportions = true,
@@ -79,7 +92,7 @@ ProjectExplorer._setup_plugins = function()
 					{ key = "q", action = "close" },
 					{ key = "u", action = "toggle_custom" },
 					{ key = "i", action = "toggle_git_ignored" },
-					{ key = "h", action = "toggle_dotfiles" },
+					{ key = ".", action = "toggle_dotfiles" },
 					{
 						key = "<C-Space>",
 						action = "show_node_actions",
@@ -177,13 +190,31 @@ ProjectExplorer.tree_actions_menu = validator.f.arguments({ validate_node })
 	end
 
 ProjectExplorer.toggle = function()
-	local view = require("nvim-tree.view")
+	local tree_view = require("nvim-tree.view")
 
-	if view.is_visible() then
-		return view.close()
+	if tree_view.is_visible() then
+		return tree_view.close()
 	end
 
-	require("nvim-tree").open_replacing_current_buffer()
+	local tree = require("nvim-tree.core")
+	local tree_renderer = require("nvim-tree.renderer")
+	local find_tree_file = require("nvim-tree.actions.find-file").fn
+	local root = vim.loop.cwd()
+	local buf = vim.api.nvim_get_current_buf()
+	local bufname = vim.api.nvim_buf_get_name(buf)
+
+	if not tree.get_explorer() then
+		tree.init(root)
+	end
+
+	tree_view.open_in_current_win({ hijack_current_buf = false, resize = false })
+	tree_renderer.draw()
+
+	if bufname == "" or vim.loop.fs_stat(bufname) == nil then
+		return
+	end
+
+	find_tree_file(bufname)
 end
 
 return Module:new(ProjectExplorer)
