@@ -1,7 +1,7 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
 local key = require("_shared.key")
-local validator = require("_shared.validator")
+-- local validator = require("_shared.validator")
 
 local Job = {}
 
@@ -33,7 +33,8 @@ function Jobs:_find_index(job)
 end
 
 function Jobs:register(job)
-	table.insert(self.list, job)
+	table.insert(self.list, Job:new(job))
+	-- vim.api.nvim_buf_set_option(job.buffer, "buflisted", false)
 	print(vim.inspect(self.list))
 end
 
