@@ -17,6 +17,12 @@ Module.modules = {}
 ---@diagnostic disable-next-line: unused-local
 Module.setup = function(options) end
 
+--- Inspects the value given
+---@param value any
+Module.debug = function(value)
+	print(vim.inspect(value))
+end
+
 --- Initializes the module
 ---@type fun(self: Module, options: table)
 Module.init = validator.f.arguments({

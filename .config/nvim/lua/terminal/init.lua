@@ -6,10 +6,45 @@ local validator = require("_shared.validator")
 local Job = {}
 
 function Job:new(job)
+	setmetatable(job, {
+		__index = self,
+	})
+	self.__index = self
+
+	return job
+end
+
+local Jobs = {}
+
+Jobs.list = {}
+
+Jobs.current = #Jobs.list
+
+function Jobs:_find_index(job)
+	local index = nil
+
+	for list_index, list_value in ipairs(self.list) do
+		if job.file == list_value.file then
+			return list_index
+		end
+	end
+
+	return index
+end
+
+function Jobs:register(job)
+	table.insert(self.list, job)
+	print(vim.inspect(self.list))
+end
+
+function Jobs:unregister(job)
+	table.remove(self.list, self:_find_index(job))
+	print(vim.inspect(self.list))
+end
+
+--[[ function Job:new(job)
 	job = vim.tbl_extend("force", job, {
-		id = nil,
-		buffer = nil,
-		window = nil,
+		id = nil, buffer = nil, window = nil,
 	})
 	setmetatable(job, {
 		__index = self,
@@ -95,7 +130,7 @@ end
 function Job:spawn()
 	self:_show()
 	self:_start()
-end
+end ]]
 
 local Terminal = {}
 
@@ -108,10 +143,10 @@ Terminal._setup_keymaps = function()
 	-- Exiting term mode using esc
 	key.tmap({ "<Esc>", "<C-\\><C-n>" })
 	-- TODO: pass jobs from settings
-	key.nmap({
+	--[[ key.nmap({
 		"<C-g>",
 		Terminal.job({ "lazygit" }),
-	})
+	}) ]]
 end
 
 Terminal._setup_commands = function()
@@ -126,7 +161,8 @@ Terminal._setup_commands = function()
 			{
 				"TermOpen",
 				"term://*",
-				function()
+				function(autocmd)
+					Jobs:register({ buffer = autocmd.buf, file = autocmd.file })
 					vim.cmd("setlocal nonumber norelativenumber")
 					vim.cmd("startinsert")
 					-- Allow closing a process directly from normal mode
@@ -139,6 +175,13 @@ Terminal._setup_commands = function()
 				"if &buftype == 'terminal' | :startinsert | endif",
 				nested = true,
 			},
+			{
+				"TermClose",
+				"term://*",
+				function(autocmd)
+					Jobs:unregister({ buffer = autocmd.buf, file = autocmd.file })
+				end,
+			},
 		},
 	})
 
@@ -148,13 +191,13 @@ Terminal._setup_commands = function()
 		]])
 end
 
-Terminal.job = validator.f.arguments({ validator.f.shape({ "string" }) })
+--[[ Terminal.job = validator.f.arguments({ validator.f.shape({ "string" }) })
 	.. function(job)
 		job = Job:new(job)
 
 		return function()
 			job:spawn()
 		end
-	end
+	end ]]
 
 return Module:new(Terminal)
