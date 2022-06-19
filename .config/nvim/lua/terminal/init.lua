@@ -1,11 +1,19 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
 local key = require("_shared.key")
--- local validator = require("_shared.validator")
+local validator = require("_shared.validator")
 
 local Job = {}
 
-function Job:new(job)
+Job.validator = validator.f.shape({
+	file = "string",
+	buffer = "number",
+})
+
+Job.new = validator.f.arguments({
+	validator.f.equal(Job),
+	Job.validator,
+}) .. function(self, job)
 	setmetatable(job, {
 		__index = self,
 	})
@@ -20,29 +28,41 @@ Jobs.list = {}
 
 Jobs.current = 0
 
-function Jobs:_find_index(job)
-	local index = nil
-
-	-- TODO: move to fn._find_index
-	for job_index, job_buffer in ipairs(self.list) do
-		if job.buffer == job_buffer then
-			return job_index
+Jobs._find_index = validator.f.arguments({
+	validator.f.equal(Jobs),
+	Job.validator,
+})
+	.. function(self, job)
+		-- TODO: move to fn._find_index
+		for job_index, job_buffer in ipairs(self.list) do
+			if job.buffer == job_buffer then
+				return job_index
+			end
 		end
+
+		return nil
 	end
 
-	return index
-end
+Jobs.register = validator.f.arguments({
+	validator.f.equal(Jobs),
+	Job.validator,
+})
+	.. function(self, job)
+		table.insert(self.list, job.buffer)
+		self.list[tostring(job.buffer)] = Job:new(job)
+		vim.api.nvim_buf_set_option(job.buffer, "buflisted", false)
+		--NOTE: Changing the buffer name would require to dynamically change every job buffer name on creation/deletion of a job
+		--[[ vim.api.nvim_buf_set_name(
+		job.buffer,
+		string.format("%s %d of %d", vim.api.nvim_buf_get_name(job.buffer), #self.list, #self.list)
+	) ]]
+		self.current = #self.list
+	end
 
-function Jobs:register(job)
-	vim.api.nvim_buf_set_option(job.buffer, "buflisted", false)
-	table.insert(self.list, job.buffer)
-	self.list[tostring(job.buffer)] = Job:new(job)
-	self.current = #self.list
-
-	print(vim.inspect(self))
-end
-
-function Jobs:unregister(job)
+Jobs.unregister = validator.f.arguments({
+	validator.f.equal(Jobs),
+	Job.validator,
+}) .. function(self, job)
 	local index = self:_find_index(job)
 
 	if not index then
@@ -55,129 +75,69 @@ function Jobs:unregister(job)
 	if not self.list[self.current] then
 		self.current = self.list[1] and 1 or 0
 	end
-
-	print(vim.inspect(self))
 end
 
-function Jobs:_get_displayed()
-	local window_to_job = function(window)
-		local buffer = vim.api.nvim_win_get_buf(window)
-		local job = self.list[tostring(buffer)]
+Jobs._get_window_job = validator.f.arguments({
+	validator.f.equal(Jobs),
+	"number",
+}) .. function(self, window_handler)
+	local buffer_handler = vim.api.nvim_win_get_buf(window_handler)
+	local job = self.list[tostring(buffer_handler)]
 
-		if job then
-			return job
-		end
-
-		return nil
+	if job then
+		return job
 	end
 
+	return nil
+end
+
+function Jobs:get_displayed()
 	local windows = vim.api.nvim_list_wins()
+	local windows_jobs = vim.tbl_map(function(window_handler)
+		return self:_get_window_job(window_handler)
+	end, windows)
 
 	return vim.tbl_filter(function(job)
 		return job and true or false
-	end, vim.tbl_map(window_to_job, windows))
+	end, windows_jobs)
 end
 
-function Jobs:show() end
-
-function Jobs:hide(job) end
-
-function Jobs:toggle()
-	for _, displayed_job in ipairs(self:_get_displayed()) do
-		self:hide(displayed_job)
-	end
+function Jobs:create()
+	return vim.api.nvim_command("terminal")
 end
 
-function Jobs:next() end
---[[ function Job:new(job)
-	job = vim.tbl_extend("force", job, {
-		id = nil, buffer = nil, window = nil,
-	})
-	setmetatable(job, {
-		__index = self,
-		__call = self.spawn,
-	})
-	self.__index = self
+function Jobs:next()
+	local jobs_count = #self.list
 
-	return job
-end
-
-function Job:_start()
-	if self.id then
-		self:_stop()
+	if jobs_count < 1 then
+		print("No running jobs found")
 	end
 
-	local cmd = self[1]
+	local current_buffer = vim.api.nvim_get_current_buf()
+	local current_buffer_job = self.list[tostring(current_buffer)]
 
-	self.id = vim.fn.termopen(cmd, {
-		on_stdout = self.on_stdout,
-		on_stderr = self.on_stderr,
-		-- Closing everything as soon as the job exits
-		on_exit = function()
-			self.id = nil
-			self:_hide()
-
-			if self.on_exit then
-				self.on_exit()
-			end
-		end,
-	})
-end
-
-function Job:_stop()
-	if not self.id then
+	if current_buffer_job and jobs_count == 1 then
+		print("Job 1/1")
 		return
 	end
 
-	vim.fn.jobstop(self.id)
-	self.id = nil
-end
+	if current_buffer_job then
+		local current_buffer_job_index = self:_find_index(current_buffer_job)
+		local next_job_index = self.list[current_buffer_job_index + 1] and current_buffer_job_index + 1 or 1
 
-function Job:_show()
-	if self.buffer or self.window then
-		self:_hide()
+		vim.api.nvim_command("buffer " .. tostring(self.list[next_job_index]))
+		-- TODO: replace with emitting an event
+		-- this stopinsert shouldn't be here as it refers to a specific way to use the terminals
+		-- replace with self:emit("job_next") and letting subscribers execute business logic
+		vim.api.nvim_command("stopinsert")
+		self.current = next_job_index
+		print(string.format("Job %d/%d", self.current, jobs_count))
+		return
 	end
 
-	self.buffer = vim.api.nvim_create_buf(false, false)
-	self.window = require("interface.window").modal({
-		self.buffer,
-		on_resized = function(update)
-			vim.fn.jobresize(self.id, update.width, update.height)
-		end,
-	})
-
-	-- When the window gets closed, close the job as well
-	-- on_exit will be triggered and clean all the rest
-	au.command({
-		{ "WinClosed", "BufLeave" },
-		self.buffer,
-		function()
-			self:_stop()
-		end,
-	})
-
-	-- some programs use esc to cancel operations
-	-- TODO: make these passed as an option for the command or annull all terminal custom mappings
-	key.tmap({ "<Esc>", "<Esc>", buffer = self.buffer })
+	vim.api.nvim_command("buffer " .. self.list[self.current])
+	print(string.format("Job %d/%d", self.current, jobs_count))
 end
-
-function Job:_hide()
-	if self.window and vim.api.nvim_win_is_valid(self.window) then
-		vim.api.nvim_win_close(self.window, true)
-	end
-
-	if self.buffer and vim.api.nvim_buf_is_loaded(self.buffer) then
-		vim.api.nvim_buf_delete(self.buffer, { force = true })
-	end
-
-	self.window = nil
-	self.buffer = nil
-end
-
-function Job:spawn()
-	self:_show()
-	self:_start()
-end ]]
 
 local Terminal = {}
 
@@ -197,7 +157,13 @@ Terminal._setup_keymaps = function()
 	key.nmap({
 		"<leader>t",
 		function()
-			print(vim.inspect(Jobs:_get_displayed()))
+			Jobs:next()
+		end,
+	})
+	key.nmap({
+		"<leader>T",
+		function()
+			Jobs:create()
 		end,
 	})
 end
