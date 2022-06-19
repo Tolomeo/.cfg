@@ -18,14 +18,15 @@ local Jobs = {}
 
 Jobs.list = {}
 
-Jobs.current = #Jobs.list
+Jobs.current = 0
 
 function Jobs:_find_index(job)
 	local index = nil
 
-	for list_index, list_value in ipairs(self.list) do
-		if job.file == list_value.file then
-			return list_index
+	-- TODO: move to fn._find_index
+	for job_index, job_buffer in ipairs(self.list) do
+		if job.buffer == job_buffer then
+			return job_index
 		end
 	end
 
@@ -33,16 +34,61 @@ function Jobs:_find_index(job)
 end
 
 function Jobs:register(job)
-	table.insert(self.list, Job:new(job))
-	-- vim.api.nvim_buf_set_option(job.buffer, "buflisted", false)
-	print(vim.inspect(self.list))
+	vim.api.nvim_buf_set_option(job.buffer, "buflisted", false)
+	table.insert(self.list, job.buffer)
+	self.list[tostring(job.buffer)] = Job:new(job)
+	self.current = #self.list
+
+	print(vim.inspect(self))
 end
 
 function Jobs:unregister(job)
-	table.remove(self.list, self:_find_index(job))
-	print(vim.inspect(self.list))
+	local index = self:_find_index(job)
+
+	if not index then
+		return
+	end
+
+	table.remove(self.list, index)
+	self.list[tostring(job.buffer)] = nil
+
+	if not self.list[self.current] then
+		self.current = self.list[1] and 1 or 0
+	end
+
+	print(vim.inspect(self))
 end
 
+function Jobs:_get_displayed()
+	local window_to_job = function(window)
+		local buffer = vim.api.nvim_win_get_buf(window)
+		local job = self.list[tostring(buffer)]
+
+		if job then
+			return job
+		end
+
+		return nil
+	end
+
+	local windows = vim.api.nvim_list_wins()
+
+	return vim.tbl_filter(function(job)
+		return job and true or false
+	end, vim.tbl_map(window_to_job, windows))
+end
+
+function Jobs:show() end
+
+function Jobs:hide(job) end
+
+function Jobs:toggle()
+	for _, displayed_job in ipairs(self:_get_displayed()) do
+		self:hide(displayed_job)
+	end
+end
+
+function Jobs:next() end
 --[[ function Job:new(job)
 	job = vim.tbl_extend("force", job, {
 		id = nil, buffer = nil, window = nil,
@@ -148,6 +194,12 @@ Terminal._setup_keymaps = function()
 		"<C-g>",
 		Terminal.job({ "lazygit" }),
 	}) ]]
+	key.nmap({
+		"<leader>t",
+		function()
+			print(vim.inspect(Jobs:_get_displayed()))
+		end,
+	})
 end
 
 Terminal._setup_commands = function()
