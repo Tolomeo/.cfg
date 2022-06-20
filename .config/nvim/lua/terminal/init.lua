@@ -1,5 +1,6 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
+local fn = require("_shared.fn")
 local key = require("_shared.key")
 local validator = require("_shared.validator")
 
@@ -32,21 +33,25 @@ end
 Terminal._setup_keymaps = function()
 	-- Exiting term mode using esc
 	key.tmap({ "<Esc>", "<C-\\><C-n>" })
-	-- TODO: pass jobs from settings
-	--[[ key.nmap({
-		"<C-g>",
-		Terminal.job({ "lazygit" }),
-	}) ]]
+
 	key.nmap({
-		"<leader>t",
+		"<leader>tt",
 		function()
 			Terminal:next()
 		end,
 	})
+
 	key.nmap({
 		"<leader>T",
 		function()
 			Terminal:create()
+		end,
+	})
+
+	key.nmap({
+		"<leader>tj",
+		function()
+			Terminal:jump()
 		end,
 	})
 end
@@ -97,21 +102,6 @@ Terminal.jobs = {}
 
 Terminal.current = 0
 
-Terminal._find_index = validator.f.arguments({
-	validator.f.equal(Terminal),
-	Job.validator,
-})
-	.. function(self, job)
-		-- TODO: move to fn._find_index
-		for job_index, job_buffer in ipairs(self.jobs) do
-			if job.buffer == job_buffer then
-				return job_index
-			end
-		end
-
-		return nil
-	end
-
 Terminal.register = validator.f.arguments({
 	validator.f.equal(Terminal),
 	Job.validator,
@@ -132,13 +122,15 @@ Terminal.unregister = validator.f.arguments({
 	validator.f.equal(Terminal),
 	Job.validator,
 }) .. function(self, job)
-	local index = self:_find_index(job)
+	local job_index = fn.find_index(self.jobs, function(registered_job)
+		return registered_job == job.buffer
+	end)
 
-	if not index then
+	if not job_index then
 		return
 	end
 
-	table.remove(self.jobs, index)
+	table.remove(self.jobs, job_index)
 	self.jobs[tostring(job.buffer)] = nil
 
 	if not self.jobs[self.current] then
@@ -160,15 +152,50 @@ Terminal._get_window_job = validator.f.arguments({
 	return nil
 end
 
-function Terminal:get_displayed()
+function Terminal:visible_jobs()
 	local windows = vim.api.nvim_list_wins()
-	local windows_jobs = vim.tbl_map(function(window_handler)
-		return self:_get_window_job(window_handler)
-	end, windows)
+	return fn.reduce(windows, function(visible_jobs, window_handler)
+		local job = self:_get_window_job(window_handler)
 
-	return vim.tbl_filter(function(job)
-		return job and true or false
-	end, windows_jobs)
+		if not job then
+			return visible_jobs
+		end
+
+		local visible_job = vim.tbl_extend("force", {}, job, { window = window_handler })
+		table.insert(visible_jobs, visible_job)
+
+		return visible_jobs
+	end, {})
+end
+
+function Terminal:jump()
+	local visible_jobs = self:visible_jobs()
+
+	if #visible_jobs < 1 then
+		Terminal:next()
+		return
+	end
+
+	local current_buffer = vim.api.nvim_get_current_buf()
+	local current_window = vim.api.nvim_get_current_win()
+	local current_buffer_job = self.jobs[tostring(current_buffer)]
+
+	if current_buffer_job and #visible_jobs == 1 then
+		return
+	end
+
+	if current_buffer_job then
+		local current_job_window_index = fn.find_index(visible_jobs, function(visible_job)
+			return visible_job.window == current_window
+		end)
+		local next_job_window_index = visible_jobs[current_job_window_index + 1] and current_job_window_index + 1 or 1
+		local next_job_window = visible_jobs[next_job_window_index]
+		vim.api.nvim_set_current_win(next_job_window.window)
+		return
+	end
+
+	local next_job_window = visible_jobs[1]
+	vim.api.nvim_set_current_win(next_job_window.window)
 end
 
 function Terminal:create()
@@ -180,6 +207,7 @@ function Terminal:next()
 
 	if jobs_count < 1 then
 		print("No running jobs found")
+		return
 	end
 
 	local current_buffer = vim.api.nvim_get_current_buf()
@@ -191,13 +219,15 @@ function Terminal:next()
 	end
 
 	if current_buffer_job then
-		local current_buffer_job_index = self:_find_index(current_buffer_job)
+		local current_buffer_job_index = fn.find_index(self.jobs, function(registered_job)
+			return registered_job == current_buffer_job.buffer
+		end)
 		local next_job_index = self.jobs[current_buffer_job_index + 1] and current_buffer_job_index + 1 or 1
 
 		vim.api.nvim_command("buffer " .. tostring(self.jobs[next_job_index]))
 		-- TODO: replace with emitting an event
 		-- this stopinsert shouldn't be here as it refers to a specific way to use the terminals
-		-- replace with self:emit("job_next") and letting subscribers execute business logic
+		-- replace with self:emit("jobs:next") and letting subscribers execute business logic
 		vim.api.nvim_command("stopinsert")
 		self.current = next_job_index
 		print(string.format("Job %d/%d", self.current, jobs_count))
@@ -207,14 +237,5 @@ function Terminal:next()
 	vim.api.nvim_command("buffer " .. self.jobs[self.current])
 	print(string.format("Job %d/%d", self.current, jobs_count))
 end
-
---[[ Terminal.job = validator.f.arguments({ validator.f.shape({ "string" }) })
-	.. function(job)
-		job = Job:new(job)
-
-		return function()
-			job:spawn()
-		end
-	end ]]
 
 return Module:new(Terminal)
