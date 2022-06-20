@@ -35,7 +35,7 @@ Terminal._setup_keymaps = function()
 	key.tmap({ "<Esc>", "<C-\\><C-n>" })
 
 	key.nmap({
-		"<leader>tt",
+		"<leader>t",
 		function()
 			Terminal:next()
 		end,
@@ -45,13 +45,6 @@ Terminal._setup_keymaps = function()
 		"<leader>T",
 		function()
 			Terminal:create()
-		end,
-	})
-
-	key.nmap({
-		"<leader>tj",
-		function()
-			Terminal:jump()
 		end,
 	})
 end
@@ -71,16 +64,9 @@ Terminal._setup_commands = function()
 				function(autocmd)
 					Terminal:register({ buffer = autocmd.buf, file = autocmd.file })
 					vim.cmd("setlocal nonumber norelativenumber")
-					vim.cmd("startinsert")
 					-- Allow closing a process directly from normal mode
-					key.nmap({ "<C-c>", "i<C-c>" })
+					key.nmap({ "<C-c>", "i<C-c>", buffer = autocmd.buf })
 				end,
-			},
-			{
-				"BufEnter",
-				"term://*",
-				"if &buftype == 'terminal' | :startinsert | endif",
-				nested = true,
 			},
 			{
 				"TermClose",
