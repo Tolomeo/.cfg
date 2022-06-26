@@ -52,6 +52,10 @@ ProjectExplorer._setup_plugins = function()
 			open_file = {
 				resize_window = true,
 			},
+			change_dir = {
+				enable = false,
+				restrict_above_cwd = true,
+			},
 		},
 		renderer = {
 			highlight_opened_files = "all",
