@@ -70,7 +70,7 @@ ProjectExplorer._setup_plugins = function()
 					{ key = "<leader>k", action = "toggle_file_info" },
 					{ key = "<C-y>", action = "vsplit" },
 					{ key = "<C-x>", action = "split" },
-					{ key = "<C-t>", action = "tabnew" },
+					-- { key = "<C-t>", action = "tabnew" },
 					{ key = "<C-r>", action = "refresh" },
 					{ key = "h", action = "close_node" },
 					{ key = "H", action = "collapse_all" },
