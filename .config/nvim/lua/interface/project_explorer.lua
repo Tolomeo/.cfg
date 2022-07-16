@@ -1,5 +1,5 @@
 local Module = require("_shared.module")
-local au = require("_shared.au")
+-- local au = require("_shared.au")
 local key = require("_shared.key")
 local validator = require("_shared.validator")
 
@@ -107,6 +107,10 @@ ProjectExplorer._setup_plugins = function()
 						action = "search_in_node",
 						action_cb = ProjectExplorer.search_in_node,
 					},
+					{
+						key = "/",
+						action = "search_node",
+					},
 				},
 			},
 		},
@@ -127,20 +131,14 @@ ProjectExplorer.search_in_node = validator.f.arguments({ validate_node })
 		end
 
 		if node.fs_stat.type == "file" then
-			require("nvim-tree.actions.open-file").fn("edit_in_place", node.absolute_path)
+			require("nvim-tree.actions.node.open-file").fn("edit_in_place", node.absolute_path)
 			require("finder").find_in_buffer()
 		end
 	end
 
-local function run_dispatch(action)
-  return function()
-    require("nvim-tree.actions.dispatch").dispatch(action)
-  end
-end
-
 -- https://github.com/kyazdani42/nvim-tree.lua/blob/master/lua/nvim-tree/actions/init.lua
 ProjectExplorer.tree_actions = {
-	{ "Create", require('nvim-tree.actions.fs.create-file').fn },
+	{ "Create", require("nvim-tree.actions.fs.create-file").fn },
 	{ "Rename", require("nvim-tree.actions.fs.rename-file").fn(false) },
 	{ "Rename full", require("nvim-tree.actions.fs.rename-file").fn(true) },
 	{ "Copy relative path", require("nvim-tree.actions.fs.copy-paste").copy_path },
@@ -151,7 +149,6 @@ ProjectExplorer.tree_actions = {
 	{ "Paste", require("nvim-tree.actions.fs.copy-paste").paste },
 	{ "Delete", require("nvim-tree.actions.fs.remove-file").fn },
 	{ "Move to trash", require("nvim-tree.actions.fs.trash").fn },
-	{ "Search here", ProjectExplorer.search_in_node },
 	{ "Open in file manager", require("nvim-tree.actions.node.system-open").fn },
 	{ "Run command", require("nvim-tree.actions.node.run-command").run_file_command },
 	{ "View info", require("nvim-tree.actions.node.file-popup").toggle_file_info },
@@ -159,6 +156,8 @@ ProjectExplorer.tree_actions = {
 	{ "Toggle dotfiles visibility", require("nvim-tree.actions.tree-modifiers.toggles").dotfiles },
 	{ "Toggle custom filtered files visibility", require("nvim-tree.actions.tree-modifiers.toggles").custom },
 	{ "Refresh tree", require("nvim-tree.actions.reloaders.reloaders").reload_explorer },
+	{ "Search file", require("nvim-tree.actions.finders.search-node").fn },
+	{ "Search here", ProjectExplorer.search_in_node },
 	-- { "Close tree", require("nvim-tree.view").close },
 	-- toggle_help = require("nvim-tree.actions.toggles").help,
 	-- search_node = require("nvim-tree.actions.search-node").fn,
@@ -208,7 +207,7 @@ ProjectExplorer.toggle = function()
 
 	local tree = require("nvim-tree.core")
 	local tree_renderer = require("nvim-tree.renderer")
-	local find_tree_file = require("nvim-tree.actions.find-file").fn
+	local find_tree_file = require("nvim-tree.actions.finders.find-file").fn
 	local root = vim.loop.cwd()
 	local buf = vim.api.nvim_get_current_buf()
 	local bufname = vim.api.nvim_buf_get_name(buf)
