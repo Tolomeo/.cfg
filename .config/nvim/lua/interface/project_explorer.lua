@@ -54,7 +54,7 @@ ProjectExplorer._setup_plugins = function()
 			},
 			change_dir = {
 				enable = false,
-				restrict_above_cwd = true,
+				restrict_above_cwd = false,
 			},
 		},
 		renderer = {
@@ -63,7 +63,7 @@ ProjectExplorer._setup_plugins = function()
 			group_empty = true,
 		},
 		view = {
-			preserve_window_proportions = true,
+			preserve_window_proportions = false,
 			mappings = {
 				custom_only = true,
 				list = {
@@ -132,28 +132,34 @@ ProjectExplorer.search_in_node = validator.f.arguments({ validate_node })
 		end
 	end
 
+local function run_dispatch(action)
+  return function()
+    require("nvim-tree.actions.dispatch").dispatch(action)
+  end
+end
+
 -- https://github.com/kyazdani42/nvim-tree.lua/blob/master/lua/nvim-tree/actions/init.lua
 ProjectExplorer.tree_actions = {
-	{ "Create", require("nvim-tree.actions.create-file").fn },
-	{ "Rename", require("nvim-tree.actions.rename-file").fn(false) },
-	{ "Rename full", require("nvim-tree.actions.rename-file").fn(true) },
-	{ "Copy", require("nvim-tree.actions.copy-paste").copy },
-	{ "Cut", require("nvim-tree.actions.copy-paste").cut },
-	{ "Paste", require("nvim-tree.actions.copy-paste").paste },
-	{ "Delete", require("nvim-tree.actions.remove-file").fn },
-	{ "Copy name", require("nvim-tree.actions.copy-paste").copy_filename },
-	{ "Copy relative path", require("nvim-tree.actions.copy-paste").copy_path },
-	{ "Copy absolute path", require("nvim-tree.actions.copy-paste").copy_absolute_path },
+	{ "Create", require('nvim-tree.actions.fs.create-file').fn },
+	{ "Rename", require("nvim-tree.actions.fs.rename-file").fn(false) },
+	{ "Rename full", require("nvim-tree.actions.fs.rename-file").fn(true) },
+	{ "Copy relative path", require("nvim-tree.actions.fs.copy-paste").copy_path },
+	{ "Copy absolute path", require("nvim-tree.actions.fs.copy-paste").copy_absolute_path },
+	{ "Copy name", require("nvim-tree.actions.fs.copy-paste").copy_filename },
+	{ "Copy", require("nvim-tree.actions.fs.copy-paste").copy },
+	{ "Cut", require("nvim-tree.actions.fs.copy-paste").cut },
+	{ "Paste", require("nvim-tree.actions.fs.copy-paste").paste },
+	{ "Delete", require("nvim-tree.actions.fs.remove-file").fn },
+	{ "Move to trash", require("nvim-tree.actions.fs.trash").fn },
 	{ "Search here", ProjectExplorer.search_in_node },
-	{ "Open in file manager", require("nvim-tree.actions.system-open").fn },
-	{ "Toggle git.ignored files visibility", require("nvim-tree.actions.toggles").git_ignored },
-	{ "Toggle dotfiles visibility", require("nvim-tree.actions.toggles").dotfiles },
-	{ "Toggle custom filtered files visibility", require("nvim-tree.actions.toggles").custom },
-	{ "Refresh tree", require("nvim-tree.actions.reloaders").reload_explorer },
-	{ "Run command", require("nvim-tree.actions.run-command").run_file_command },
-	{ "Move to trash", require("nvim-tree.actions.trash").fn },
-	{ "View info", require("nvim-tree.actions.file-popup").toggle_file_info },
-	{ "Close tree", require("nvim-tree.view").close },
+	{ "Open in file manager", require("nvim-tree.actions.node.system-open").fn },
+	{ "Run command", require("nvim-tree.actions.node.run-command").run_file_command },
+	{ "View info", require("nvim-tree.actions.node.file-popup").toggle_file_info },
+	{ "Toggle git.ignored files visibility", require("nvim-tree.actions.tree-modifiers.toggles").git_ignored },
+	{ "Toggle dotfiles visibility", require("nvim-tree.actions.tree-modifiers.toggles").dotfiles },
+	{ "Toggle custom filtered files visibility", require("nvim-tree.actions.tree-modifiers.toggles").custom },
+	{ "Refresh tree", require("nvim-tree.actions.reloaders.reloaders").reload_explorer },
+	-- { "Close tree", require("nvim-tree.view").close },
 	-- toggle_help = require("nvim-tree.actions.toggles").help,
 	-- search_node = require("nvim-tree.actions.search-node").fn,
 	-- close_node = require("nvim-tree.actions.movements").parent_node(true),
