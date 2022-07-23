@@ -13,6 +13,7 @@ Finder.plugins = {
 		"folke/todo-comments.nvim",
 		requires = "nvim-lua/plenary.nvim",
 	},
+	"romainl/vim-cool",
 }
 
 Finder.modules = {
@@ -26,9 +27,6 @@ end
 
 Finder._setup_keymaps = function()
 	key.nmap(
-		-- Clearing search highlighting
-		{ "<Esc>", ":noh<CR><Esc>" },
-		-- { "<BS>", ":noh<CR>" },
 		-- Keep search results centred
 		{ "n", "nzzzv" },
 		{ "N", "Nzzzv" },
@@ -78,6 +76,9 @@ Finder._setup_plugins = function()
 	require("telescope").load_extension("project")
 	-- Todo comments
 	require("todo-comments").setup({})
+
+	-- Vim-cool
+	vim.g.CoolTotalMatches = 1
 end
 
 Finder.find_files = function()
