@@ -117,22 +117,32 @@ ProjectExplorer._setup_plugins = function()
 	})
 end
 
-local validate_node = validator.f.shape({
-	absolute_path = "string",
-	fs_stat = validator.f.shape({
-		type = "string",
+local validate_node = validator.f.any_of({
+	validator.f.shape({
+		absolute_path = "string",
+		fs_stat = validator.f.shape({
+			type = "string",
+		}),
+	}),
+	validator.f.shape({
+		name = "string",
 	}),
 })
 
 ProjectExplorer.search_in_node = validator.f.arguments({ validate_node })
 	.. function(node)
+		-- when the selected node is the one pointing at the parent director absolute_path will not be present
+		if not node.absolute_path then
+			return require("finder").find_in_directory()
+		end
+
 		if node.fs_stat.type == "directory" then
-			require("finder").find_in_directory(node.absolute_path)
+			return require("finder").find_in_directory(node.absolute_path)
 		end
 
 		if node.fs_stat.type == "file" then
 			require("nvim-tree.actions.node.open-file").fn("edit_in_place", node.absolute_path)
-			require("finder").find_in_buffer()
+			return require("finder").find_in_buffer()
 		end
 	end
 

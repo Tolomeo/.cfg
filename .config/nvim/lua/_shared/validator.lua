@@ -55,6 +55,33 @@ Validator.validate = function(validationMap, error_message)
 end
 
 Validator.f = {
+	--- Has a validator returning true when at least one of the passed validators returns true
+	--- NOTE: doesn't support table validators
+	---@param validators table the validators to be applied
+	---@param error_message? string error message thrown
+	---@return function
+	any_of = function(validators, error_message)
+		error_message = error_message or "Any_of validation error: %s"
+
+		return function(value)
+			for _, validator in ipairs(validators) do
+				local valid = ({
+					string = function(v)
+						return type(v) == validator
+					end,
+					["function"] = function(v)
+						return validator(v)
+					end,
+				})[type(validator)](value)
+
+				if valid then
+					return true
+				end
+			end
+
+			return false, string.format(error_message, "none of the validators succeeded")
+		end
+	end,
 	--- Has a validator returning true when a nil value is passed to it
 	---@param validator function|table|string the validator to be enhanced
 	---@return function|table
