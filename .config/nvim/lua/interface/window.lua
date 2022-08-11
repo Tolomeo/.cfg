@@ -22,8 +22,8 @@ local default_settings = {
 		["fullwidth.top"] = "<C-S-k>",
 		["equalize"] = "<C-=>",
 		["maximize"] = "<C-+>",
-		["split.horizontal"] = "<C-x>",
-		["split.vertical"] = "<C-y>",
+		["split.horizontal"] = "<C-S-x>",
+		["split.vertical"] = "<C-x>",
 	},
 }
 
