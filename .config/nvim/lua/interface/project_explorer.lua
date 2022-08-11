@@ -30,9 +30,11 @@ ProjectExplorer._setup_plugins = function()
 		hijack_netrw = true,
 		hijack_cursor = true,
 		update_cwd = false,
+		open_on_tab = false,
+		open_on_setup = false,
+		open_on_setup_file = false,
 		auto_reload_on_write = true,
-		open_on_tab = true,
-		open_on_setup = true,
+		hijack_unnamed_buffer_when_opening = true,
 		diagnostics = {
 			enable = true,
 			show_on_dirs = true,
@@ -50,20 +52,28 @@ ProjectExplorer._setup_plugins = function()
 		},
 		actions = {
 			open_file = {
-				resize_window = true,
+				resize_window = false,
+				quit_on_open = true,
 			},
 			change_dir = {
 				enable = false,
 				restrict_above_cwd = false,
+			},
+			expand_all = {
+				exclude = {
+					".git",
+					"node_modules",
+				},
 			},
 		},
 		renderer = {
 			highlight_opened_files = "all",
 			highlight_git = true,
 			group_empty = true,
+			full_name = true,
 		},
 		view = {
-			preserve_window_proportions = false,
+			preserve_window_proportions = true,
 			mappings = {
 				custom_only = true,
 				list = {
@@ -118,12 +128,14 @@ ProjectExplorer._setup_plugins = function()
 end
 
 local validate_node = validator.f.any_of({
+	-- Directory or file
 	validator.f.shape({
 		absolute_path = "string",
 		fs_stat = validator.f.shape({
 			type = "string",
 		}),
 	}),
+	-- Upper directory
 	validator.f.shape({
 		name = "string",
 	}),
