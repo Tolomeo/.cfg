@@ -6,6 +6,12 @@ local validator = require("_shared.validator")
 
 local Job = {}
 
+local default_keymaps = {
+	["new"] = "<C-t>",
+	["next"] = "<leader>t",
+	["prev"] = "<leader>T",
+}
+
 Job.validator = validator.f.shape({
 	file = "string",
 	buffer = "number",
@@ -35,17 +41,17 @@ Terminal._setup_keymaps = function()
 	key.tmap({ "<Esc>", "<C-\\><C-n>" })
 
 	key.nmap({
-		"<leader>t",
+		default_keymaps["next"],
 		function()
 			Terminal:cycle("forward")
 		end,
 	}, {
-		"<leader>T",
+		default_keymaps["prev"],
 		function()
 			Terminal:cycle("backward")
 		end,
 	}, {
-		"<C-t>",
+		default_keymaps["new"],
 		function()
 			Terminal:create()
 			vim.api.nvim_command("startinsert")

@@ -3,6 +3,16 @@ local key = require("_shared.key")
 
 local Git = {}
 
+local default_keymaps = {
+	["git.blame"] = "gb",
+	["git.log"] = "gl",
+	["git.diff"] = "gd",
+	["git.merge"] = "gm",
+	["git.hunk"] = "gh",
+	["git.hunk.next"] = "]c",
+	["git.hunk.prev"] = "[c",
+}
+
 Git.plugins = {
 	-- Add git related info in the signs columns and popups
 	{ "lewis6991/gitsigns.nvim", requires = { "nvim-lua/plenary.nvim" } },
@@ -17,13 +27,13 @@ end
 
 Git._setup_keymaps = function()
 	key.nmap(
-		{ "gb", Git.blame },
-		{ "gl", Git.log },
-		{ "gd", Git.diff },
-		{ "gm", Git.mergetool },
-		{ "gh", Git.show_hunk_preview },
-		{ "]c", Git.next_hunk_preview("]c") },
-		{ "[c", Git.prev_hunk_preview("[c") }
+		{ default_keymaps["git.blame"], Git.blame },
+		{ default_keymaps["git.log"], Git.log },
+		{ default_keymaps["git.diff"], Git.diff },
+		{ default_keymaps["git.merge"], Git.mergetool },
+		{ default_keymaps["git.hunk"], Git.show_hunk_preview },
+		{ default_keymaps["git.hunk.next"], Git.next_hunk_preview(default_keymaps["git.hunk.next"]) },
+		{ default_keymaps["git.hunk.prev"], Git.prev_hunk_preview(default_keymaps["git.hunk.prev"]) }
 	)
 end
 

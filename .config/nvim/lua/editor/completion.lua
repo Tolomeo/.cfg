@@ -1,4 +1,4 @@
-local Module = require("_shared.module")
+	local Module = require("_shared.module")
 
 local Completion = {}
 

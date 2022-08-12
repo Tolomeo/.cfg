@@ -4,6 +4,19 @@ local validator = require("_shared.validator")
 
 local Finder = {}
 
+local default_keymaps = {
+	["finder.files"] = "<C-p>",
+	["finder.commands"] = "<C-S-p>",
+	["finder.projects"] = "<C-S-e>",
+	["finder.search.buffer"] = "<leader>f",
+	["finder.search.directory"] = "<leader>F",
+	["finder.help"] = "<leader>?",
+	["finder.spelling"] = "<C-z>",
+	["finder.buffers"] = "<C-b>",
+	-- { "<C-y>", Finder.find_yanks },
+	-- { "<C-y>", Finder.find_yanks },
+}
+
 Finder.plugins = {
 	-- UI to select things (files, grep results, open buffers...)
 	{ "nvim-telescope/telescope.nvim", requires = { "nvim-lua/plenary.nvim" } },
@@ -31,15 +44,15 @@ Finder._setup_keymaps = function()
 		{ "n", "nzzzv" },
 		{ "N", "Nzzzv" },
 		-- finder
-		{ "<C-p>", Finder.find_files },
-		{ "<C-S-p>", Finder.find_commands },
-		{ "<C-S-e>", Finder.find_projects },
-		{ "<leader>f", Finder.find_in_buffer },
-		{ "<leader>F", Finder.find_in_directory },
+		{ default_keymaps["finder.files"], Finder.find_files },
+		{ default_keymaps["finder.commands"], Finder.find_commands },
+		{ default_keymaps["finder.projects"], Finder.find_projects },
+		{ default_keymaps["finder.search.buffer"], Finder.find_in_buffer },
+		{ default_keymaps["finder.search.directory"], Finder.find_in_directory },
+		{ default_keymaps["finder.help"], Finder.find_in_documentation },
+		{ default_keymaps["finder.spelling"], Finder.find_spelling },
+		{ default_keymaps["finder.buffers"], Finder.find_buffers }
 		-- { "<C-y>", Finder.find_yanks },
-		{ "<F1>", Finder.find_in_documentation },
-		{ "<C-z>", Finder.find_spelling },
-		{ "<C-b>", Finder.find_buffers }
 		-- { "<C-t>", modules.finder.find_todos }
 	)
 end

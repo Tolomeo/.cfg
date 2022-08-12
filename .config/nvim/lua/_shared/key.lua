@@ -104,7 +104,7 @@ Key.feed = validator.f.arguments({ "string", validator.f.optional(validator.f.pa
 --- come from a mapping or were typed by the user.
 --- Replaces terminal codes and keycodes (<CR>, <Esc>, ...) in a
 --- string with the internal representation.
----@type fun(keys: string, mode: string): number
+---@type fun(keys: string, mode?: string): number
 Key.input = validator.f.arguments({ "string", validator.f.optional(validator.f.pattern("^[mntix!]+$")) })
 	.. function(keys, input_mode)
 		local mode = input_mode or "n" -- Noremap mode by default

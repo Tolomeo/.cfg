@@ -3,13 +3,64 @@ local au = require("_shared.au")
 local key = require("_shared.key")
 local register = require("_shared.register")
 
-local default_settings = {
-	keymaps = {
-		["delete"] = "<C-q>",
-	},
-}
+local default_settings = {}
 
 local Buffer = {}
+
+local default_keymaps = {
+	-- Buffers navigation
+	["next"] = "<A-Tab>",
+	["prev"] = "<A-S-Tab>",
+	-- write only if changed
+	["save"] = "<leader>w",
+	-- write all and quit
+	["save.all"] = "<leader>W",
+	-- quit (or close window)
+	["close"] = "<leader>q",
+	-- Delete buffer
+	["close.delete"] = "<leader>Q",
+	-- Left
+	["cursor.prev"] = "<S-h>",
+	["cursor.prev.big"] = "<A-S-h>",
+	-- Right
+	["cursor.next"] = "<S-l>",
+	["cursor.next.big"] = "<A-S-l>",
+	-- Up
+	["cursor.above"] = "<S-k>",
+	["cursor.above.big"] = "<A-S-k>",
+	-- Down
+	["cursor.below"] = "<S-j>",
+	["cursor.below.big"] = "<A-S-j>",
+	-- Controlling indentation
+	["line.indent"] = "<Tab>",
+	["line.outdent"] = "<S-Tab>",
+	-- Join lines and restore cursor location
+	["line.join"] = "<leader>j",
+	-- Line bubbling
+	["line.bubble.up"] = "<A-j>",
+	["line.bubble.down"] = "<A-k>",
+	-- Duplicating lines up and down
+	["line.duplicate.up"] = "<leader>P",
+	["line.duplicate.down"] = "<leader>p",
+	-- Adding blank lines with cr
+	["line.new.up"] = "<leader>O",
+	["line.new.down"] = "<leader>o",
+	-- Cleaning a line
+	["line.clear"] = "<leader>d",
+	-- Commenting lines
+	["line.comment"] = "<leader><space>",
+	-- Replace word under cursor in buffer
+	["word.substitute"] = "<leader>S",
+	-- Replace word under cursor in line
+	["word.substitute.line"] = "<leader>s",
+	-- Because we are mapping S-Tab to indent, now C-i indents too so we need to recover it
+	["jump.out"] = "<C-S-o>",
+	["jump.in"] = "<C-o>",
+	-- Repeating last macro with Q
+	["macro.repeat.last"] = "Q",
+	-- Easy select all of file
+	["select.all"] = "<leader>%",
+}
 
 Buffer.plugins = {
 	-- Indentation guides
@@ -55,65 +106,40 @@ Buffer._setup_keymaps = function(settings)
 
 	-- Editor
 	key.nmap(
-		-- Buffers navigation
-		{ "<A-Tab>", ":bnext<Cr>" },
-		{ "<A-S-Tab>", ":bprev<Cr>" },
-		-- write only if changed
-		{ "<leader>w", "<Cmd>up<Cr>", silent = false },
-		-- write all and quit
-		{ "<leader>W", "<Cmd>w!<Cr>", silent = false },
-		-- quit (or close window)
-		{ "<leader>q", "<Cmd>:q<Cr>" },
-		-- Discard all changed buffers & quit
-		{ "<leader>Q", "<Cmd>:q!<Cr>" },
-		-- Delete buffer
-		{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
-		-- Multipliers
-		-- Left
-		{ "<S-h>", "b" },
-		{ "<A-S-h>", "B" },
-		-- Right
-		{ "<S-l>", "w" },
-		{ "<A-S-l>", "W" },
-		-- Up
-		{ "<S-k>", "9k" },
-		{ "<A-S-k>", "18k" },
-		-- Down
-		{ "<S-j>", "9j" },
-		{ "<A-S-j>", "18j" },
-		-- Controlling indentation
-		{ "<Tab>", ">>" },
-		{ "<S-Tab>", "<<" },
-		-- Because we are mapping S-Tab to indent, now C-i indents too so we need to recover it
-		{ "<C-S-o>", "<C-i>" },
-		-- Repeating last macro with Q
-		{ "Q", "@@" },
-		-- Easy select all of file
-		{ "<leader>%", "ggVG<c-$>" },
-		-- Join lines and restore cursor location
-		{ "<leader>j", "mjJ`j" },
-		-- Line bubbling
-		{ "<A-j>", ":m .+1<CR>==" },
-		{ "<A-k>", ":m .-2<CR>==" },
-		-- Duplicating lines up and down
-		{ "<leader>P", "mayyP`a" },
-		{ "<leader>p", "mayyp`a" },
-		-- Replace word under cursor in buffer
-		{ "<leader>S", ":%s/<C-r><C-w>//gI<left><left><left>", silent = false },
-		-- Replace word under cursor in line
-		{ "<leader>s", ":s/<C-r><C-w>//gI<left><left><left>", silent = false },
-		-- Adding blank lines with cr
-		{ "<leader>O", "mm:put! _<CR>`m" },
-		{ "<leader>o", "mm:put _<CR>`m" },
-		-- Cleaning a line
-		{ "<leader>d", ":.s/\v^.*$/<Cr>:noh<Cr>" },
-		-- Commenting lines
-		{ "<leader><space>", Buffer.comment_line }
+		{ default_keymaps["next"], ":bnext<Cr>" },
+		{ default_keymaps["prev"], ":bprev<Cr>" },
+		{ default_keymaps["save"], "<Cmd>up<Cr>", silent = false },
+		{ default_keymaps["save.all"], "<Cmd>wa<Cr>", silent = false },
+		{ default_keymaps["close"], "<Cmd>q<Cr>" },
+		{ default_keymaps["close.delete"], "<Cmd>bdelete<Cr>" },
+		{ default_keymaps["cursor.prev"], "b" },
+		{ default_keymaps["cursor.prev.big"], "B" },
+		{ default_keymaps["cursor.next"], "w" },
+		{ default_keymaps["cursor.next.big"], "W" },
+		{ default_keymaps["cursor.above"], "9k" },
+		{ default_keymaps["cursor.above.big"], "18k" },
+		{ default_keymaps["cursor.below"], "9j" },
+		{ default_keymaps["cursor.below.big"], "18j" },
+		{ default_keymaps["line.indent"], ">>" },
+		{ default_keymaps["line.outdent"], "<<" },
+		{ default_keymaps["line.join"], "mjJ`j" },
+		{ default_keymaps["line.bubble.up"], ":m .+1<CR>==" },
+		{ default_keymaps["line.bubble.down"], ":m .-2<CR>==" },
+		{ default_keymaps["line.duplicate.up"], "mayyP`a" },
+		{ default_keymaps["line.duplicate.down"], "mayyp`a" },
+		{ default_keymaps["line.new.up"], "mm:put! _<CR>`m" },
+		{ default_keymaps["line.new.down"], "mm:put _<CR>`m" },
+		{ default_keymaps["line.clear"], ":.s/\v^.*$/<Cr>:noh<Cr>" },
+		{ default_keymaps["line.comment"], Buffer.comment_line },
+		{ default_keymaps["word.substitute"], ":%s/<C-r><C-w>//gI<left><left><left>", silent = false },
+		{ default_keymaps["word.substitute.line"], ":s/<C-r><C-w>//gI<left><left><left>", silent = false },
+		{ default_keymaps["jump.in"], "<C-i>" },
+		{ default_keymaps["jump.out"], "<C-o>" },
+		{ default_keymaps["macro.repeat.last"], "@@" },
+		{ default_keymaps["select.all"], "ggVG<c-$>" }
 	)
 
 	key.vmap(
-		-- delete buffer
-		{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
 		-- Make visual yanks remain in visual mode
 		{ "y", "ygv" },
 		-- Arrows are disabled
@@ -121,52 +147,39 @@ Buffer._setup_keymaps = function(settings)
 		{ "<Right>", "<nop>" },
 		{ "<Up>", "<nop>" },
 		{ "<Down>", "<nop>" },
-		-- Multipliers
-		-- Left
-		{ "<S-h>", "b" },
-		{ "<A-S-h>", "B" },
-		-- Right
-		{ "<S-l>", "w" },
-		{ "<A-S-l>", "W" },
-		-- Up
-		{ "<S-k>", "9k" },
-		{ "<A-S-k>", "18k" },
-		-- Down
-		{ "<S-j>", "9j" },
-		{ "<A-S-j>", "18j" },
-		-- Indentation
-		{ "<Tab>", ">gv" },
-		{ "<S-Tab>", "<gv" },
-		-- adding blank lines
+		{ default_keymaps["cursor.prev"], "b" },
+		{ default_keymaps["cursor.prev.big"], "B" },
+		{ default_keymaps["cursor.next"], "w" },
+		{ default_keymaps["cursor.next.big"], "W" },
+		{ default_keymaps["cursor.above"], "9k" },
+		{ default_keymaps["cursor.above.big"], "18k" },
+		{ default_keymaps["cursor.below"], "9j" },
+		{ default_keymaps["line.indent"], ">gv" },
+		{ default_keymaps["cursor.below.big"], "18j" },
+		{ default_keymaps["line.outdent"], "<gv" },
 		{
-			"<leader>o",
+			default_keymaps["line.new.down"],
 			"mm<Esc>:'>put _<CR>`mgv",
 		},
 		{
-			"<leader>O",
+			default_keymaps["line.new.up"],
 			"mm<Esc>:'<put! _<CR>`mgv",
 		},
-		-- Bubbling
-		{ "<A-j>", ":m '>+1<CR>gv=gv" },
-		{ "<A-k>", ":m '<-2<CR>gv=gv" },
-		-- Duplicating selection up and down
+		{ default_keymaps["line.bubble.up"], ":m '>+1<CR>gv=gv" },
+		{ default_keymaps["line.bubble.down"], ":m '<-2<CR>gv=gv" },
 		{
-			"<leader>P",
+			default_keymaps["line.duplicate.up"],
 			"mmy'<P`mgv",
 		},
 		{
-			"<leader>p",
+			default_keymaps["line.duplicate.down"],
 			"mmy'>p`mgv",
 		},
-		-- Cleaning selected lines
-		{ "<leader>d", "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" },
-		-- Commenting lines
-		{ "<leader><space>", Buffer.comment_selection }
+		{ default_keymaps["line.clear"], "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" },
+		{ default_keymaps["line.comment"], Buffer.comment_selection }
 	)
 
 	key.imap(
-		-- Delete buffer
-		{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
 		-- Arrows are disabled
 		{ "<Left>", "<nop>" },
 		{ "<Right>", "<nop>" },
@@ -178,15 +191,13 @@ Buffer._setup_keymaps = function(settings)
 		{ "<A-k>", "<Up>" },
 		{ "<A-j>", "<Down>" },
 		-- Indentation
-		{ "<C-Tab>", "<C-t>" },
-		{ "<C-S-Tab>", "<C-d>" }
+		{ default_keymaps["line.indent"], "<C-t>" },
+		{ default_keymaps["line.outdent"], "<C-d>" }
 	)
 
 	key.cmap({ "<A-h>", "<Left>" }, { "<A-l>", "<Right>" }, { "<A-k>", "<Up>" }, { "<A-j>", "<Down>" })
 
 	key.tmap(
-		-- Delete buffer
-		{ settings.keymaps["delete"], "<Cmd>bdelete<Cr>" },
 		-- Moving the cursor when in insert
 		{ "<A-h>", "<Left>" },
 		{ "<A-l>", "<Right>" },
