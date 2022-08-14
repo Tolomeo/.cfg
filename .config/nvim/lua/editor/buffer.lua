@@ -2,65 +2,9 @@ local Module = require("_shared.module")
 local au = require("_shared.au")
 local key = require("_shared.key")
 local register = require("_shared.register")
-
-local default_settings = {}
+local settings = require("settings")
 
 local Buffer = {}
-
-local default_keymaps = {
-	-- Buffers navigation
-	["next"] = "<A-Tab>",
-	["prev"] = "<A-S-Tab>",
-	-- write only if changed
-	["save"] = "<leader>w",
-	-- write all and quit
-	["save.all"] = "<leader>W",
-	-- quit (or close window)
-	["close"] = "<leader>q",
-	-- Delete buffer
-	["close.delete"] = "<leader>Q",
-	-- Left
-	["cursor.prev"] = "<S-h>",
-	["cursor.prev.big"] = "<A-S-h>",
-	-- Right
-	["cursor.next"] = "<S-l>",
-	["cursor.next.big"] = "<A-S-l>",
-	-- Up
-	["cursor.above"] = "<S-k>",
-	["cursor.above.big"] = "<A-S-k>",
-	-- Down
-	["cursor.below"] = "<S-j>",
-	["cursor.below.big"] = "<A-S-j>",
-	-- Controlling indentation
-	["line.indent"] = "<Tab>",
-	["line.outdent"] = "<S-Tab>",
-	-- Join lines and restore cursor location
-	["line.join"] = "<leader>j",
-	-- Line bubbling
-	["line.bubble.up"] = "<A-j>",
-	["line.bubble.down"] = "<A-k>",
-	-- Duplicating lines up and down
-	["line.duplicate.up"] = "<leader>P",
-	["line.duplicate.down"] = "<leader>p",
-	-- Adding blank lines with cr
-	["line.new.up"] = "<leader>O",
-	["line.new.down"] = "<leader>o",
-	-- Cleaning a line
-	["line.clear"] = "<leader>d",
-	-- Commenting lines
-	["line.comment"] = "<leader><space>",
-	-- Replace word under cursor in buffer
-	["word.substitute"] = "<leader>S",
-	-- Replace word under cursor in line
-	["word.substitute.line"] = "<leader>s",
-	-- Because we are mapping S-Tab to indent, now C-i indents too so we need to recover it
-	["jump.out"] = "<C-S-o>",
-	["jump.in"] = "<C-o>",
-	-- Repeating last macro with Q
-	["macro.repeat.last"] = "Q",
-	-- Easy select all of file
-	["select.all"] = "<leader>%",
-}
 
 Buffer.plugins = {
 	-- Indentation guides
@@ -84,15 +28,13 @@ Buffer.plugins = {
 	"norcalli/nvim-colorizer.lua",
 }
 
-Buffer.setup = function(settings)
-	settings = vim.tbl_deep_extend("force", default_settings, settings)
-
-	Buffer._setup_keymaps(settings)
+Buffer.setup = function()
+	Buffer._setup_keymaps()
 	Buffer._setup_plugins()
 	Buffer._setup_commands()
 end
 
-Buffer._setup_keymaps = function(settings)
+Buffer._setup_keymaps = function()
 	-- Register 0 always contains the last yank.
 	-- Unfortunately selecting register 0 all the time can be quite annoying, so it would be nice if p used "0
 	-- https://stackoverflow.com/a/32488853
@@ -104,39 +46,40 @@ Buffer._setup_keymaps = function(settings)
 		key.nmap({ paste, paste, remap = true }, { Paste, Paste, remap = true })
 	end
 
+	local keymaps = settings.keymaps()
 	-- Editor
 	key.nmap(
-		{ default_keymaps["next"], ":bnext<Cr>" },
-		{ default_keymaps["prev"], ":bprev<Cr>" },
-		{ default_keymaps["save"], "<Cmd>up<Cr>", silent = false },
-		{ default_keymaps["save.all"], "<Cmd>wa<Cr>", silent = false },
-		{ default_keymaps["close"], "<Cmd>q<Cr>" },
-		{ default_keymaps["close.delete"], "<Cmd>bdelete<Cr>" },
-		{ default_keymaps["cursor.prev"], "b" },
-		{ default_keymaps["cursor.prev.big"], "B" },
-		{ default_keymaps["cursor.next"], "w" },
-		{ default_keymaps["cursor.next.big"], "W" },
-		{ default_keymaps["cursor.above"], "9k" },
-		{ default_keymaps["cursor.above.big"], "18k" },
-		{ default_keymaps["cursor.below"], "9j" },
-		{ default_keymaps["cursor.below.big"], "18j" },
-		{ default_keymaps["line.indent"], ">>" },
-		{ default_keymaps["line.outdent"], "<<" },
-		{ default_keymaps["line.join"], "mjJ`j" },
-		{ default_keymaps["line.bubble.up"], ":m .+1<CR>==" },
-		{ default_keymaps["line.bubble.down"], ":m .-2<CR>==" },
-		{ default_keymaps["line.duplicate.up"], "mayyP`a" },
-		{ default_keymaps["line.duplicate.down"], "mayyp`a" },
-		{ default_keymaps["line.new.up"], "mm:put! _<CR>`m" },
-		{ default_keymaps["line.new.down"], "mm:put _<CR>`m" },
-		{ default_keymaps["line.clear"], ":.s/\v^.*$/<Cr>:noh<Cr>" },
-		{ default_keymaps["line.comment"], Buffer.comment_line },
-		{ default_keymaps["word.substitute"], ":%s/<C-r><C-w>//gI<left><left><left>", silent = false },
-		{ default_keymaps["word.substitute.line"], ":s/<C-r><C-w>//gI<left><left><left>", silent = false },
-		{ default_keymaps["jump.in"], "<C-i>" },
-		{ default_keymaps["jump.out"], "<C-o>" },
-		{ default_keymaps["macro.repeat.last"], "@@" },
-		{ default_keymaps["select.all"], "ggVG<c-$>" }
+		{ keymaps["buffer.next"], ":bnext<Cr>" },
+		{ keymaps["buffer.prev"], ":bprev<Cr>" },
+		{ keymaps["buffer.save"], "<Cmd>up<Cr>", silent = false },
+		{ keymaps["buffer.save.all"], "<Cmd>wa<Cr>", silent = false },
+		{ keymaps["buffer.close"], "<Cmd>q<Cr>" },
+		{ keymaps["buffer.close.delete"], "<Cmd>bdelete<Cr>" },
+		{ keymaps["buffer.cursor.prev"], "b" },
+		{ keymaps["buffer.cursor.prev.big"], "B" },
+		{ keymaps["buffer.cursor.next"], "w" },
+		{ keymaps["buffer.cursor.next.big"], "W" },
+		{ keymaps["buffer.cursor.above"], "9k" },
+		{ keymaps["buffer.cursor.above.big"], "18k" },
+		{ keymaps["buffer.cursor.below"], "9j" },
+		{ keymaps["buffer.cursor.below.big"], "18j" },
+		{ keymaps["buffer.line.indent"], ">>" },
+		{ keymaps["buffer.line.outdent"], "<<" },
+		{ keymaps["buffer.line.join"], "mjJ`j" },
+		{ keymaps["buffer.line.bubble.up"], ":m .+1<CR>==" },
+		{ keymaps["buffer.line.bubble.down"], ":m .-2<CR>==" },
+		{ keymaps["buffer.line.duplicate.up"], "mayyP`a" },
+		{ keymaps["buffer.line.duplicate.down"], "mayyp`a" },
+		{ keymaps["buffer.line.new.up"], "mm:put! _<CR>`m" },
+		{ keymaps["buffer.line.new.down"], "mm:put _<CR>`m" },
+		{ keymaps["buffer.line.clear"], ":.s/\v^.*$/<Cr>:noh<Cr>" },
+		{ keymaps["buffer.line.comment"], Buffer.comment_line },
+		{ keymaps["buffer.word.substitute"], ":%s/<C-r><C-w>//gI<left><left><left>", silent = false },
+		{ keymaps["buffer.word.substitute.line"], ":s/<C-r><C-w>//gI<left><left><left>", silent = false },
+		{ keymaps["buffer.jump.in"], "<C-i>" },
+		{ keymaps["buffer.jump.out"], "<C-o>" },
+		{ keymaps["buffer.macro.repeat.last"], "@@" },
+		{ keymaps["buffer.select.all"], "ggVG<c-$>" }
 	)
 
 	key.vmap(
@@ -147,36 +90,36 @@ Buffer._setup_keymaps = function(settings)
 		{ "<Right>", "<nop>" },
 		{ "<Up>", "<nop>" },
 		{ "<Down>", "<nop>" },
-		{ default_keymaps["cursor.prev"], "b" },
-		{ default_keymaps["cursor.prev.big"], "B" },
-		{ default_keymaps["cursor.next"], "w" },
-		{ default_keymaps["cursor.next.big"], "W" },
-		{ default_keymaps["cursor.above"], "9k" },
-		{ default_keymaps["cursor.above.big"], "18k" },
-		{ default_keymaps["cursor.below"], "9j" },
-		{ default_keymaps["line.indent"], ">gv" },
-		{ default_keymaps["cursor.below.big"], "18j" },
-		{ default_keymaps["line.outdent"], "<gv" },
+		{ keymaps["buffer.cursor.prev"], "b" },
+		{ keymaps["buffer.cursor.prev.big"], "B" },
+		{ keymaps["buffer.cursor.next"], "w" },
+		{ keymaps["buffer.cursor.next.big"], "W" },
+		{ keymaps["buffer.cursor.above"], "9k" },
+		{ keymaps["buffer.cursor.above.big"], "18k" },
+		{ keymaps["buffer.cursor.below"], "9j" },
+		{ keymaps["buffer.line.indent"], ">gv" },
+		{ keymaps["buffer.cursor.below.big"], "18j" },
+		{ keymaps["buffer.line.outdent"], "<gv" },
 		{
-			default_keymaps["line.new.down"],
+			keymaps["buffer.line.new.down"],
 			"mm<Esc>:'>put _<CR>`mgv",
 		},
 		{
-			default_keymaps["line.new.up"],
+			keymaps["buffer.line.new.up"],
 			"mm<Esc>:'<put! _<CR>`mgv",
 		},
-		{ default_keymaps["line.bubble.up"], ":m '>+1<CR>gv=gv" },
-		{ default_keymaps["line.bubble.down"], ":m '<-2<CR>gv=gv" },
+		{ keymaps["buffer.line.bubble.up"], ":m '>+1<CR>gv=gv" },
+		{ keymaps["buffer.line.bubble.down"], ":m '<-2<CR>gv=gv" },
 		{
-			default_keymaps["line.duplicate.up"],
+			keymaps["buffer.line.duplicate.up"],
 			"mmy'<P`mgv",
 		},
 		{
-			default_keymaps["line.duplicate.down"],
+			keymaps["buffer.line.duplicate.down"],
 			"mmy'>p`mgv",
 		},
-		{ default_keymaps["line.clear"], "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" },
-		{ default_keymaps["line.comment"], Buffer.comment_selection }
+		{ keymaps["buffer.line.clear"], "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" },
+		{ keymaps["buffer.line.comment"], Buffer.comment_selection }
 	)
 
 	key.imap(
@@ -191,8 +134,8 @@ Buffer._setup_keymaps = function(settings)
 		{ "<A-k>", "<Up>" },
 		{ "<A-j>", "<Down>" },
 		-- Indentation
-		{ default_keymaps["line.indent"], "<C-t>" },
-		{ default_keymaps["line.outdent"], "<C-d>" }
+		{ keymaps["buffer.line.indent"], "<C-t>" },
+		{ keymaps["buffer.line.outdent"], "<C-d>" }
 	)
 
 	key.cmap({ "<A-h>", "<Left>" }, { "<A-l>", "<Right>" }, { "<A-k>", "<Up>" }, { "<A-j>", "<Down>" })

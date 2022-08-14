@@ -1,9 +1,10 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
+local settings = require("settings")
 
 local Git = {}
 
-local default_keymaps = {
+--[[ local default_keymaps = {
 	["git.blame"] = "gb",
 	["git.log"] = "gl",
 	["git.diff"] = "gd",
@@ -11,7 +12,7 @@ local default_keymaps = {
 	["git.hunk"] = "gh",
 	["git.hunk.next"] = "]c",
 	["git.hunk.prev"] = "[c",
-}
+} ]]
 
 Git.plugins = {
 	-- Add git related info in the signs columns and popups
@@ -26,14 +27,16 @@ Git.setup = function()
 end
 
 Git._setup_keymaps = function()
+	local keymaps = settings.keymaps()
+
 	key.nmap(
-		{ default_keymaps["git.blame"], Git.blame },
-		{ default_keymaps["git.log"], Git.log },
-		{ default_keymaps["git.diff"], Git.diff },
-		{ default_keymaps["git.merge"], Git.mergetool },
-		{ default_keymaps["git.hunk"], Git.show_hunk_preview },
-		{ default_keymaps["git.hunk.next"], Git.next_hunk_preview(default_keymaps["git.hunk.next"]) },
-		{ default_keymaps["git.hunk.prev"], Git.prev_hunk_preview(default_keymaps["git.hunk.prev"]) }
+		{ keymaps["git.blame"], Git.blame },
+		{ keymaps["git.log"], Git.log },
+		{ keymaps["git.diff"], Git.diff },
+		{ keymaps["git.merge"], Git.mergetool },
+		{ keymaps["git.hunk"], Git.show_hunk_preview },
+		{ keymaps["git.hunk.next"], Git.next_hunk_preview(keymaps["git.hunk.next"]) },
+		{ keymaps["git.hunk.prev"], Git.prev_hunk_preview(keymaps["git.hunk.prev"]) }
 	)
 end
 

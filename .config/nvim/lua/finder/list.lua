@@ -1,14 +1,8 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
+local settings = require("settings")
 
 local List = {}
-
-local default_keymaps = {
-	["toggle"] = "<C-c>",
-	["jump"] = "<leader>c",
-	["item.next"] = "<C-]>",
-	["item.prev"] = "<C-[>",
-}
 
 List.plugins = {
 	"romainl/vim-qf",
@@ -20,11 +14,13 @@ List.setup = function()
 end
 
 List._setup_keymaps = function()
+	local keymaps = settings.keymaps()
+
 	key.nmap(
-		{ default_keymaps["toggle"], List.toggle },
-		{ default_keymaps["jump"], List.jump },
-		{ default_keymaps["item.next"], List.next },
-		{ default_keymaps["item.prev"], List.prev }
+		{ keymaps["list.toggle"], List.toggle },
+		{ keymaps["list.jump"], List.jump },
+		{ keymaps["list.item.next"], List.next },
+		{ keymaps["list.item.prev"], List.prev }
 	)
 end
 

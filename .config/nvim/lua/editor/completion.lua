@@ -1,17 +1,18 @@
-	local Module = require("_shared.module")
+local Module = require("_shared.module")
+local settings = require("settings")
 
 local Completion = {}
 
 Completion.update_capabilities = function(capabilities)
-	return require('cmp_nvim_lsp').update_capabilities(capabilities)
+	return require("cmp_nvim_lsp").update_capabilities(capabilities)
 end
 
 Completion.plugins = {
 	"hrsh7th/nvim-cmp",
-	'hrsh7th/cmp-nvim-lsp',
-	'hrsh7th/cmp-buffer',
-	'hrsh7th/cmp-path',
-	'saadparwaiz1/cmp_luasnip'
+	"hrsh7th/cmp-nvim-lsp",
+	"hrsh7th/cmp-buffer",
+	"hrsh7th/cmp-path",
+	"saadparwaiz1/cmp_luasnip",
 }
 
 local has_words_before = function()
@@ -20,8 +21,9 @@ local has_words_before = function()
 end
 
 Completion.setup = function()
-	local cmp = require 'cmp'
-	local luasnip = require('luasnip')
+	local cmp = require("cmp")
+	local luasnip = require("luasnip")
+	local keymaps = settings.keymaps()
 
 	cmp.setup({
 		snippet = {
@@ -30,7 +32,7 @@ Completion.setup = function()
 			end,
 		},
 		mapping = cmp.mapping.preset.insert({
-			["<Tab>"] = cmp.mapping(function(fallback)
+			[keymaps["dropdown.item.next"]] = cmp.mapping(function(fallback)
 				if cmp.visible() then
 					cmp.select_next_item()
 				elseif luasnip.expand_or_jumpable() then
@@ -42,7 +44,7 @@ Completion.setup = function()
 				end
 			end, { "i", "s" }),
 
-			["<S-Tab>"] = cmp.mapping(function(fallback)
+			[keymaps["dropdown.item.prev"]] = cmp.mapping(function(fallback)
 				if cmp.visible() then
 					cmp.select_prev_item()
 				elseif luasnip.jumpable(-1) then
@@ -53,16 +55,16 @@ Completion.setup = function()
 			end, { "i", "s" }),
 			-- ['<C-b>'] = cmp.mapping.scroll_docs(-4),
 			-- ['<C-f>'] = cmp.mapping.scroll_docs(4),
-			['<C-Space>'] = cmp.mapping.complete(),
+			[keymaps["dropdown.open"]] = cmp.mapping.complete(),
 			-- ['<C-e>'] = cmp.mapping.abort(),
-			['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+			[keymaps["dropdown.item.confirm"]] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
 		}),
 		sources = cmp.config.sources({
-			{ name = 'nvim_lsp' },
-			{ name = 'luasnip' }, -- For luasnip users.
+			{ name = "nvim_lsp" },
+			{ name = "luasnip" }, -- For luasnip users.
 		}, {
-			{ name = 'buffer' },
-		})
+			{ name = "buffer" },
+		}),
 	})
 
 	-- Set configuration for specific filetype.

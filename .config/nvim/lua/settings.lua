@@ -1,0 +1,330 @@
+local validator = require("_shared.validator")
+-- see https://github.com/NvChad/NvChad/blob/main/lua/core/options.lua
+local Settings = {}
+
+Settings._globals = {
+	-- asking for confirmation instead of just failing certain commands
+	confirm = true,
+	--Incremental live completion (note: this is now a default on master)
+	inccommand = "nosplit",
+	-- Set highlight on search
+	hlsearch = true,
+	-- Highlighting the cursor line
+	cul = true,
+	-- Avoid rerendering during macros, registers etc
+	lazyredraw = true,
+	-- Command line height
+	cmdheight = 1,
+	--Make line numbers default
+	number = true,
+	--Do not save when switching buffers (note: this is now a default on master)
+	hidden = true,
+	-- Do not automatically create backup files
+	backup = false,
+	writebackup = false,
+	--Enable mouse mode
+	mouse = "a",
+	--Enable break indent
+	breakindent = true,
+	--Save undo history
+	undofile = true,
+	--Case insensitive searching UNLESS /C or capital in search
+	ignorecase = true,
+	smartcase = true,
+	--Decrease update time
+	updatetime = 250,
+	-- Always show signcolumn
+	signcolumn = "yes",
+	--Set colorscheme (order is impotant here)
+	termguicolors = true,
+	--Indent size
+	shiftwidth = 2,
+	tabstop = 2,
+	autoindent = true,
+	smartindent = true,
+	-- Avoid word wrap because it's weird
+	wrap = false,
+	-- Spellcheck targets british english, but disabled by default
+	spell = false,
+	spelllang = "en_gb",
+	-- Using system clipbard as default register
+	clipboard = "unnamedplus",
+	-- Invisible chars render
+	list = true,
+	listchars = { eol = "↲", tab = "▸ ", trail = "·", space = "·", extends = "…", precedes = "…" },
+	-- The minimal number of screen columns to keep to the left and to the right of the cursor
+	-- set to 1 to allow seeing EOL listchar without truncating the text
+	sidescrolloff = 1,
+	-- Cursor shape and blinking behaviours
+	guicursor = { "a:block-blinkon0", "v-ve-sm-o-r:block-blinkon1", "i-c-ci-cr:ver1-blinkon1" },
+	-- Folds
+	foldenable = false,
+	foldmethod = "indent",
+	-- Single global statusline
+	laststatus = 3,
+	-- Preferred split direction
+	splitright = true,
+	splitbelow = true,
+	-- Mapping movements able to wrap on the next/previous line
+	whichwrap = {
+		b = true, -- backspace
+		s = true, -- space
+		[">"] = true, -- right in normal and visual
+		["<"] = true, --  left in normal and visual
+		["]"] = true, -- right in insert and replace
+		["["] = true, -- left in insert and replace
+		["h"] = true, -- h
+		["l"] = true, -- l
+	},
+	--
+	completeopt = { "menu", "menuone", "noselect" },
+}
+
+-- see https://github.com/NvChad/NvChad/blob/main/lua/core/options.lua
+Settings._plugins = {
+	["2html_plugin"] = false,
+	getscript = false,
+	getscriptPlugin = false,
+	gzip = false,
+	logipat = false,
+	netrw = false,
+	netrwPlugin = false,
+	netrwSettings = false,
+	netrwFileHandlers = false,
+	matchit = false,
+	tar = false,
+	tarPlugin = false,
+	rrhelper = false,
+	spellfile_plugin = false,
+	vimball = false,
+	vimballPlugin = false,
+	zip = false,
+	zipPlugin = false,
+}
+
+function Settings.globals(globals)
+	if not globals then
+		return Settings._globals
+	end
+
+	Settings._globals = vim.tbl_extend("force", Settings._globals, globals)
+
+	for option_name, option_value in pairs(Settings._globals) do
+		vim.opt[option_name] = option_value
+	end
+
+	for plugin_name, plugin_enabled in pairs(Settings._plugins) do
+		if not plugin_enabled then
+			vim.g["loaded_" .. plugin_name] = 1
+		end
+	end
+
+	return Settings._globals
+end
+
+Settings._keymaps = {
+	leader = " ",
+	-- Buffers navigation
+	["buffer.next"] = "<A-Tab>",
+	["buffer.prev"] = "<A-S-Tab>",
+	-- write only if changed
+	["buffer.save"] = "<leader>w",
+	-- write all and quit
+	["buffer.save.all"] = "<leader>W",
+	-- quit (or close window)
+	["buffer.close"] = "<leader>q",
+	-- Delete buffer
+	["buffer.close.delete"] = "<leader>Q",
+	-- Left
+	["buffer.cursor.prev"] = "<S-h>",
+	["buffer.cursor.prev.big"] = "<A-S-h>",
+	-- Right
+	["buffer.cursor.next"] = "<S-l>",
+	["buffer.cursor.next.big"] = "<A-S-l>",
+	-- Up
+	["buffer.cursor.above"] = "<S-k>",
+	["buffer.cursor.above.big"] = "<A-S-k>",
+	-- Down
+	["buffer.cursor.below"] = "<S-j>",
+	["buffer.cursor.below.big"] = "<A-S-j>",
+	-- Controlling indentation
+	["buffer.line.indent"] = "<Tab>",
+	["buffer.line.outdent"] = "<S-Tab>",
+	-- Join lines and restore cursor location
+	["buffer.line.join"] = "<leader>j",
+	-- Line bubbling
+	["buffer.line.bubble.up"] = "<A-j>",
+	["buffer.line.bubble.down"] = "<A-k>",
+	-- Duplicating lines up and down
+	["buffer.line.duplicate.up"] = "<leader>P",
+	["buffer.line.duplicate.down"] = "<leader>p",
+	-- Adding blank lines with cr
+	["buffer.line.new.up"] = "<leader>O",
+	["buffer.line.new.down"] = "<leader>o",
+	-- Cleaning a line
+	["buffer.line.clear"] = "<leader>d",
+	-- Commenting lines
+	["buffer.line.comment"] = "<leader><space>",
+	-- Replace word under cursor in buffer
+	["buffer.word.substitute"] = "<leader>S",
+	-- Replace word under cursor in line
+	["buffer.word.substitute.line"] = "<leader>s",
+	-- Because we are mapping S-Tab to indent, now C-i indents too so we need to recover it
+	["buffer.jump.out"] = "<C-S-o>",
+	["buffer.jump.in"] = "<C-o>",
+	-- Repeating last macro with Q
+	["buffer.macro.repeat.last"] = "Q",
+	-- Easy select all of file
+	["buffer.select.all"] = "<leader>%",
+	-- Dropdowns and context menus
+	["dropdown.open"] = "<C-Space>",
+	["dropdown.item.next"] = "<Tab>",
+	["dropdown.item.prev"] = "<S-Tab>",
+	["dropdown.item.confirm"] = "<CR>",
+	-- Language
+	["language.lsp.hover"] = "<leader>k",
+	["language.lsp.document_symbol"] = "<leader>K",
+	["language.lsp.references"] = "<leader>gr",
+	["language.lsp.definition"] = "<leader>gd",
+	["language.lsp.declaration"] = "<leader>gD",
+	["language.lsp.type_definition"] = "<leader>gt",
+	["language.lsp.implementation"] = "<leader>gi",
+	["language.lsp.rename"] = "<leader>r",
+	["language.lsp.code_action"] = "<C-Space>",
+	["language.diagnostic.next"] = "<leader>dj",
+	["language.diagnostic.prev"] = "<leader>dk",
+	["language.diagnostic.list"] = "<leader>dl",
+	["language.format"] = "<leader>b",
+	-- finder
+	["finder.files"] = "<C-p>",
+	["finder.commands"] = "<C-S-p>",
+	["finder.projects"] = "<C-S-e>",
+	["finder.search.buffer"] = "<leader>f",
+	["finder.search.directory"] = "<leader>F",
+	["finder.help"] = "<leader>?",
+	["finder.spelling"] = "<C-z>",
+	["finder.buffers"] = "<C-b>",
+	-- lists
+	["list.toggle"] = "<C-c>",
+	["list.jump"] = "<leader>c",
+	["list.item.next"] = "<C-]>",
+	["list.item.prev"] = "<C-[>",
+	-- git
+	["git.blame"] = "gb",
+	["git.log"] = "gl",
+	["git.diff"] = "gd",
+	["git.merge"] = "gm",
+	["git.hunk"] = "gh",
+	["git.hunk.next"] = "]c",
+	["git.hunk.prev"] = "[c",
+	-- Project tree
+	["project.tree.node.info"] = "<leader>k",
+	["project.tree.node.open.vertical"] = "<C-x>",
+	["project.tree.node.open.horizontal"] = "<C-S-x>",
+	["project.tree.node.open.tab"] = "<C-t>",
+	["project.tree.node.collapse"] = "h",
+	["project.tree.node.open"] = "l",
+	["project.tree.node.open.system"] = "O",
+	["project.tree.navigate.parent"] = "H",
+	["project.tree.navigate.sibling.first"] = "[",
+	["project.tree.navigate.sibling.last"] = "]",
+	["project.tree.fs.enter"] = "o",
+	["project.tree.fs.create"] = "a",
+	["project.tree.fs.remove"] = "d",
+	["project.tree.fs.trash"] = "D",
+	["project.tree.fs.rename"] = "r",
+	["project.tree.fs.rename.full"] = "R",
+	["project.tree.fs.copy.node"] = "c",
+	["project.tree.fs.cut"] = "C",
+	["project.tree.fs.paste"] = "p",
+	["project.tree.fs.copy.filename"] = "y",
+	["project.tree.fs.copy.path.relative"] = "Y",
+	["project.tree.fs.copy.path.absolute"] = "gy",
+	["project.tree.refresh"] = "<C-r>",
+	["project.tree.collapse.all"] = "gh",
+	["project.tree.root.parent"] = "gk",
+	["project.tree.help"] = "g?",
+	["project.tree.toggle.filter.custom"] = "u",
+	["project.tree.toggle.filter.gitignore"] = "i",
+	["project.tree.toggle.filter.dotfiles"] = ".",
+	["project.tree.actions"] = "<C-Space>",
+	["project.tree.search.node.content"] = "<leader>f",
+	["project.tree.search.node"] = "/",
+	["project.tree.close"] = "q",
+	["project.tree.toggle"] = "<leader>e",
+	-- Windows
+	["window.cursor.left"] = "<C-h>",
+	["window.cursor.down"] = "<C-j>",
+	["window.cursor.up"] = "<C-k>",
+	["window.cursor.right"] = "<C-l>",
+	["window.cursor.next"] = "<C-n>",
+	["window.cursor.prev"] = "<C-S-n>",
+	["window.swap.next"] = "<C-;>",
+	["window.shrink.horizontal"] = "<C-A-j>",
+	["window.shrink.vertical"] = "<C-A-h>",
+	["window.expand.vertical"] = "<C-A-l>",
+	["window.expand.horizontal"] = "<C-A-k>",
+	["window.fullwidth.bottom"] = "<C-S-j>",
+	["window.fullheight.left"] = "<C-S-h>",
+	["window.fullheight.right"] = "<C-S-l>",
+	["window.fullwidth.top"] = "<C-S-k>",
+	["window.equalize"] = "<C-=>",
+	["window.maximize"] = "<C-+>",
+	["window.split.horizontal"] = "<C-S-x>",
+	["window.split.vertical"] = "<C-x>",
+	-- Terminal
+	["terminal.new"] = "<C-t>",
+	["terminal.next"] = "<leader>t",
+	["terminal.prev"] = "<leader>T",
+}
+
+Settings.keymaps = validator.f.arguments({
+	validator.f.optional(validator.f.shape({
+		leader = validator.f.optional("string"),
+		-- leader = validator.f.optional("string"),
+	})),
+})
+	.. function(keymaps)
+		if not keymaps then
+			return Settings._keymaps
+		end
+
+		Settings._keymaps = vim.tbl_extend("force", Settings._keymaps, keymaps)
+
+		return Settings._keymaps
+	end
+
+Settings._options = {
+	["language.parsers"] = {},
+	["language.servers"] = {},
+	["theme.colorscheme"] = "nightfox",
+	["theme.component_separator"] = "│",
+	["theme.section_separator"] = "",
+}
+
+Settings.options = validator.f.arguments({
+	validator.f.optional(validator.f.shape({
+		["language.parsers"] = validator.f.optional(validator.f.list({ "string" })),
+		["language.servers"] = validator.f.optional(validator.f.list({
+			validator.f.shape({
+				name = "string",
+				settings = validator.f.optional("function"),
+			}),
+		})),
+		["theme.colorscheme"] = validator.f.optional(
+			validator.f.one_of({ "edge", "onedark", "nightfox", "ayu", "tokyonight", "rose-pine" })
+		),
+		["theme.component_separator"] = validator.f.optional("string"),
+		["theme.section_separator"] = validator.f.optional("string"),
+	})),
+}) .. function(options)
+	if not options then
+		return Settings._options
+	end
+
+	Settings._options = vim.tbl_extend("force", Settings._options, options)
+
+	return Settings._options
+end
+
+return Settings

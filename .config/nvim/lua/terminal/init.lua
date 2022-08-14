@@ -3,14 +3,9 @@ local au = require("_shared.au")
 local fn = require("_shared.fn")
 local key = require("_shared.key")
 local validator = require("_shared.validator")
+local settings = require("settings")
 
 local Job = {}
-
-local default_keymaps = {
-	["new"] = "<C-t>",
-	["next"] = "<leader>t",
-	["prev"] = "<leader>T",
-}
 
 Job.validator = validator.f.shape({
 	file = "string",
@@ -37,21 +32,22 @@ Terminal.setup = function()
 end
 
 Terminal._setup_keymaps = function()
+	local keymaps = settings.keymaps()
 	-- Exiting term mode using esc
 	key.tmap({ "<Esc>", "<C-\\><C-n>" })
 
 	key.nmap({
-		default_keymaps["next"],
+		keymaps["terminal.next"],
 		function()
 			Terminal:cycle("forward")
 		end,
 	}, {
-		default_keymaps["prev"],
+		keymaps["terminal.prev"],
 		function()
 			Terminal:cycle("backward")
 		end,
 	}, {
-		default_keymaps["new"],
+		keymaps["terminal.new"],
 		function()
 			Terminal:create()
 			vim.api.nvim_command("startinsert")

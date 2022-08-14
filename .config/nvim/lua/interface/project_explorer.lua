@@ -2,45 +2,9 @@ local Module = require("_shared.module")
 -- local au = require("_shared.au")
 local key = require("_shared.key")
 local validator = require("_shared.validator")
+local settings = require("settings")
 
 local ProjectExplorer = {}
-
-local default_keymaps = {
-	["node.info"] = "<leader>k",
-	["node.open.vertical"] = "<C-x>",
-	["node.open.horizontal"] = "<C-S-x>",
-	["node.open.tab"] = "<C-t>",
-	["node.collapse"] = "h",
-	["node.open"] = "l",
-	["node.open.system"] = "O",
-	["navigate.parent"] = "H",
-	["navigate.sibling.first"] = "[",
-	["navigate.sibling.last"] = "]",
-	["fs.enter"] = "o",
-	["fs.create"] = "a",
-	["fs.remove"] = "d",
-	["fs.trash"] = "D",
-	["fs.rename"] = "r",
-	["fs.rename.full"] = "R",
-	["fs.copy.node"] = "c",
-	["fs.cut"] = "C",
-	["fs.paste"] = "p",
-	["fs.copy.filename"] = "y",
-	["fs.copy.path.relative"] = "Y",
-	["fs.copy.path.absolute"] = "gy",
-	["refresh"] = "<C-r>",
-	["collapse.all"] = "gh",
-	["root.parent"] = "gk",
-	["help"] = "g?",
-	["toggle.filter.custom"] = "u",
-	["toggle.filter.gitignore"] = "i",
-	["toggle.filter.dotfiles"] = ".",
-	["actions"] = "<C-Space>",
-	["search.node.content"] = "<leader>f",
-	["search.node"] = "/",
-	["close"] = "q",
-	["toggle"] = "<leader>e",
-}
 
 ProjectExplorer.plugins = {
 	-- File tree
@@ -58,10 +22,14 @@ ProjectExplorer.setup = function()
 end
 
 ProjectExplorer._setup_keymaps = function()
-	key.nmap({ default_keymaps["toggle"], ProjectExplorer.toggle })
+	local keymaps = settings.keymaps()
+
+	key.nmap({ keymaps["project.tree.toggle"], ProjectExplorer.toggle })
 end
 
 ProjectExplorer._setup_plugins = function()
+	local keymaps = settings.keymaps()
+
 	-- NvimTree
 	require("nvim-tree").setup({
 		hijack_netrw = true,
@@ -114,48 +82,48 @@ ProjectExplorer._setup_plugins = function()
 			mappings = {
 				custom_only = true,
 				list = {
-					{ key = default_keymaps["node.info"], action = "toggle_file_info" },
-					{ key = default_keymaps["node.open.vertical"], action = "vsplit" },
-					{ key = default_keymaps["node.open.horizontal"], action = "split" },
-					{ key = default_keymaps["node.collapse"], action = "close_node" },
-					{ key = default_keymaps["node.open"], action = "edit_in_place" },
-					{ key = default_keymaps["node.open.tab"], action = "tabnew" },
-					{ key = default_keymaps["fs.enter"], action = "cd" },
-					{ key = default_keymaps["fs.open.system"], action = "system_open" },
-					{ key = default_keymaps["fs.create"], action = "create" },
-					{ key = default_keymaps["fs.remove"], action = "remove" },
-					{ key = default_keymaps["fs.trash"], action = "trash" },
-					{ key = default_keymaps["fs.rename"], action = "rename" },
-					{ key = default_keymaps["fs.rename.full"], action = "full_rename" },
-					{ key = default_keymaps["fs.copy.node"], action = "copy" },
-					{ key = default_keymaps["fs.cut"], action = "cut" },
-					{ key = default_keymaps["fs.paste"], action = "paste" },
-					{ key = default_keymaps["fs.copy.filename"], action = "copy_name" },
-					{ key = default_keymaps["fs.copy.path.relative"], action = "copy_path" },
-					{ key = default_keymaps["fs.copy.path.absolute"], action = "copy_absolute_path" },
-					{ key = default_keymaps["refresh"], action = "refresh" },
-					{ key = default_keymaps["collapse.all"], action = "collapse_all" },
-					{ key = default_keymaps["navigate.parent"], action = "parent_node" },
-					{ key = default_keymaps["navigate.sibling.first"], action = "first_sibling" },
-					{ key = default_keymaps["navigate.sibling.last"], action = "last_sibling" },
-					{ key = default_keymaps["help"], action = "toggle_help" },
-					{ key = default_keymaps["close"], action = "close" },
-					{ key = default_keymaps["root.parent"], action = "dir_up" },
-					{ key = default_keymaps["toggle.filter.custom"], action = "toggle_custom" },
-					{ key = default_keymaps["toggle.filter.gitignore"], action = "toggle_git_ignored" },
-					{ key = default_keymaps["toggle.filter.dotfiles"], action = "toggle_dotfiles" },
+					{ key = keymaps["project.tree.node.info"], action = "toggle_file_info" },
+					{ key = keymaps["project.tree.node.open.vertical"], action = "vsplit" },
+					{ key = keymaps["project.tree.node.open.horizontal"], action = "split" },
+					{ key = keymaps["project.tree.node.collapse"], action = "close_node" },
+					{ key = keymaps["project.tree.node.open"], action = "edit_in_place" },
+					{ key = keymaps["project.tree.node.open.tab"], action = "tabnew" },
+					{ key = keymaps["project.tree.fs.enter"], action = "cd" },
+					{ key = keymaps["project.tree.fs.open.system"], action = "system_open" },
+					{ key = keymaps["project.tree.fs.create"], action = "create" },
+					{ key = keymaps["project.tree.fs.remove"], action = "remove" },
+					{ key = keymaps["project.tree.fs.trash"], action = "trash" },
+					{ key = keymaps["project.tree.fs.rename"], action = "rename" },
+					{ key = keymaps["project.tree.fs.rename.full"], action = "full_rename" },
+					{ key = keymaps["project.tree.fs.copy.node"], action = "copy" },
+					{ key = keymaps["project.tree.fs.cut"], action = "cut" },
+					{ key = keymaps["project.tree.fs.paste"], action = "paste" },
+					{ key = keymaps["project.tree.fs.copy.filename"], action = "copy_name" },
+					{ key = keymaps["project.tree.fs.copy.path.relative"], action = "copy_path" },
+					{ key = keymaps["project.tree.fs.copy.path.absolute"], action = "copy_absolute_path" },
+					{ key = keymaps["project.tree.refresh"], action = "refresh" },
+					{ key = keymaps["project.tree.collapse.all"], action = "collapse_all" },
+					{ key = keymaps["project.tree.navigate.parent"], action = "parent_node" },
+					{ key = keymaps["project.tree.navigate.sibling.first"], action = "first_sibling" },
+					{ key = keymaps["project.tree.navigate.sibling.last"], action = "last_sibling" },
+					{ key = keymaps["project.tree.help"], action = "toggle_help" },
+					{ key = keymaps["project.tree.close"], action = "close" },
+					{ key = keymaps["project.tree.root.parent"], action = "dir_up" },
+					{ key = keymaps["project.tree.toggle.filter.custom"], action = "toggle_custom" },
+					{ key = keymaps["project.tree.toggle.filter.gitignore"], action = "toggle_git_ignored" },
+					{ key = keymaps["project.tree.toggle.filter.dotfiles"], action = "toggle_dotfiles" },
 					{
-						key = default_keymaps["actions"],
+						key = keymaps["project.tree.actions"],
 						action = "show_node_actions",
 						action_cb = ProjectExplorer.tree_actions_menu,
 					},
 					{
-						key = default_keymaps["search.node.content"],
+						key = keymaps["project.tree.search.node.content"],
 						action = "search_in_node",
 						action_cb = ProjectExplorer.search_in_node,
 					},
 					{
-						key = default_keymaps["search.node"],
+						key = keymaps["project.tree.search.node"],
 						action = "search_node",
 					},
 				},

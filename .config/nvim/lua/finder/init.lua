@@ -1,21 +1,9 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
 local validator = require("_shared.validator")
+local settings = require("settings")
 
 local Finder = {}
-
-local default_keymaps = {
-	["finder.files"] = "<C-p>",
-	["finder.commands"] = "<C-S-p>",
-	["finder.projects"] = "<C-S-e>",
-	["finder.search.buffer"] = "<leader>f",
-	["finder.search.directory"] = "<leader>F",
-	["finder.help"] = "<leader>?",
-	["finder.spelling"] = "<C-z>",
-	["finder.buffers"] = "<C-b>",
-	-- { "<C-y>", Finder.find_yanks },
-	-- { "<C-y>", Finder.find_yanks },
-}
 
 Finder.plugins = {
 	-- UI to select things (files, grep results, open buffers...)
@@ -39,19 +27,21 @@ Finder.setup = function()
 end
 
 Finder._setup_keymaps = function()
+	local keymaps = settings.keymaps()
+
 	key.nmap(
 		-- Keep search results centred
 		{ "n", "nzzzv" },
 		{ "N", "Nzzzv" },
 		-- finder
-		{ default_keymaps["finder.files"], Finder.find_files },
-		{ default_keymaps["finder.commands"], Finder.find_commands },
-		{ default_keymaps["finder.projects"], Finder.find_projects },
-		{ default_keymaps["finder.search.buffer"], Finder.find_in_buffer },
-		{ default_keymaps["finder.search.directory"], Finder.find_in_directory },
-		{ default_keymaps["finder.help"], Finder.find_in_documentation },
-		{ default_keymaps["finder.spelling"], Finder.find_spelling },
-		{ default_keymaps["finder.buffers"], Finder.find_buffers }
+		{ keymaps["finder.files"], Finder.find_files },
+		{ keymaps["finder.commands"], Finder.find_commands },
+		{ keymaps["finder.projects"], Finder.find_projects },
+		{ keymaps["finder.search.buffer"], Finder.find_in_buffer },
+		{ keymaps["finder.search.directory"], Finder.find_in_directory },
+		{ keymaps["finder.help"], Finder.find_in_documentation },
+		{ keymaps["finder.spelling"], Finder.find_spelling },
+		{ keymaps["finder.buffers"], Finder.find_buffers }
 		-- { "<C-y>", Finder.find_yanks },
 		-- { "<C-t>", modules.finder.find_todos }
 	)

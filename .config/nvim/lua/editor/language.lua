@@ -1,29 +1,9 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
 local key = require("_shared.key")
-local validator = require("_shared.validator")
+local settings = require("settings")
 
 local Language = {}
-
-local default_settings = {
-	parsers = {},
-	servers = {},
-	keymaps = {
-		["lsp.hover"] = "<leader>k",
-		["lsp.document_symbol"] = "<leader>K",
-		["lsp.references"] = "<leader>gr",
-		["lsp.definition"] = "<leader>gd",
-		["lsp.declaration"] = "<leader>gD",
-		["lsp.type_definition"] = "<leader>gt",
-		["lsp.implementation"] = "<leader>gi",
-		["lsp.rename"] = "<leader>r",
-		["lsp.code_action"] = "<C-Space>",
-		["diagnostic.next"] = "<leader>dj",
-		["diagnostic.prev"] = "<leader>dk",
-		["diagnostic.list"] = "<leader>dl",
-		format = "<leader>b",
-	},
-}
 
 Language.plugins = {
 	-- Highlight, edit, and code navigation parsing library
@@ -39,7 +19,9 @@ Language.plugins = {
 	{ "danymat/neogen", requires = "nvim-treesitter/nvim-treesitter" },
 }
 
-Language.setup_servers = function(settings)
+Language.setup_servers = function()
+	local keymaps = settings.keymaps()
+	local options = settings.options()
 	local capabilities = require("editor.completion").update_capabilities(vim.lsp.protocol.make_client_capabilities())
 	local on_attach = function(client, buffer)
 		-- avoid using formatting coming from lsp
@@ -47,18 +29,18 @@ Language.setup_servers = function(settings)
 		client.server_capabilities.documentRangeFormattingProvider = false
 
 		key.nmap(
-			{ settings.keymaps["lsp.hover"], vim.lsp.buf.hover, buffer = buffer },
-			{ settings.keymaps["lsp.document_symbol"], vim.lsp.buf.document_symbol, buffer = buffer },
-			{ settings.keymaps["lsp.references"], vim.lsp.buf.references, buffer = buffer },
-			{ settings.keymaps["lsp.definition"], vim.lsp.buf.definition, buffer = buffer },
-			{ settings.keymaps["lsp.declaration"], vim.lsp.buf.declaration, buffer = buffer },
-			{ settings.keymaps["lsp.type_definition"], vim.lsp.buf.type_definition, buffer = buffer },
-			{ settings.keymaps["lsp.implementation"], vim.lsp.buf.implementation, buffer = buffer },
-			{ settings.keymaps["lsp.code_action"], vim.lsp.buf.code_action, buffer = buffer },
-			{ settings.keymaps["lsp.rename"], vim.lsp.buf.rename, buffer = buffer },
-			{ settings.keymaps["diagnostic.next"], vim.diagnostic.goto_next, buffer = buffer },
-			{ settings.keymaps["diagnostic.prev"], vim.diagnostic.goto_prev, buffer = buffer },
-			{ settings.keymaps["diagnostic.list"], require("finder").find_diagnostics, buffer = buffer }
+			{ keymaps["language.lsp.hover"], vim.lsp.buf.hover, buffer = buffer },
+			{ keymaps["language.lsp.document_symbol"], vim.lsp.buf.document_symbol, buffer = buffer },
+			{ keymaps["language.lsp.references"], vim.lsp.buf.references, buffer = buffer },
+			{ keymaps["language.lsp.definition"], vim.lsp.buf.definition, buffer = buffer },
+			{ keymaps["language.lsp.declaration"], vim.lsp.buf.declaration, buffer = buffer },
+			{ keymaps["language.lsp.type_definition"], vim.lsp.buf.type_definition, buffer = buffer },
+			{ keymaps["language.lsp.implementation"], vim.lsp.buf.implementation, buffer = buffer },
+			{ keymaps["language.lsp.code_action"], vim.lsp.buf.code_action, buffer = buffer },
+			{ keymaps["language.lsp.rename"], vim.lsp.buf.rename, buffer = buffer },
+			{ keymaps["language.diagnostic.next"], vim.diagnostic.goto_next, buffer = buffer },
+			{ keymaps["language.diagnostic.prev"], vim.diagnostic.goto_prev, buffer = buffer },
+			{ keymaps["language.diagnostic.list"], require("finder").find_diagnostics, buffer = buffer }
 		)
 
 		if not client.server_capabilities.documentHighlightProvider then
@@ -96,7 +78,7 @@ Language.setup_servers = function(settings)
 		automatic_installation = true,
 	})
 
-	for _, server in ipairs(settings.servers) do
+	for _, server in ipairs(options["language.servers"]) do
 		local setup_server = require("lspconfig")[server.name].setup
 		local server_settings = type(server.settings) == "function" and server.settings(server_base_settings)
 			or server_base_settings
@@ -105,9 +87,11 @@ Language.setup_servers = function(settings)
 	end
 end
 
-Language.setup_parsers = function(settings)
+Language.setup_parsers = function()
+	local options = settings.options()
+
 	require("nvim-treesitter.configs").setup({
-		ensure_installed = settings.parsers,
+		ensure_installed = options["language.parsers"],
 		sync_install = true,
 		highlight = {
 			enable = true, -- false will disable the whole extension
@@ -171,7 +155,8 @@ Language.setup_parsers = function(settings)
 	})
 end
 
-Language.setup_formatter = function(settings)
+Language.setup_formatter = function()
+	local keymaps = settings.keymaps()
 	-- Enable basic formatting when a filetype is not found
 	vim.g.neoformat_basic_format_retab = 1
 	vim.g.neoformat_basic_format_align = 1
@@ -179,30 +164,18 @@ Language.setup_formatter = function(settings)
 	-- Have Neoformat look for a formatter executable in the node_modules/.bin directory in the current working directory or one of its parents
 	vim.g.neoformat_try_node_exe = 1
 	-- Mappings
-	key.nmap({ settings.keymaps.format, "<cmd>Neoformat<Cr>" })
+	key.nmap({ keymaps["language.format"], "<cmd>Neoformat<Cr>" })
 end
 
 Language.setup_annotator = function(_)
 	require("neogen").setup({})
 end
 
-Language.setup = validator.f.arguments({
-	validator.f.shape({
-		parsers = validator.f.optional(validator.f.list({ "string" })),
-		servers = validator.f.optional(validator.f.list({
-			validator.f.shape({
-				name = "string",
-				settings = validator.f.optional("function"),
-			}),
-		})),
-	}),
-}) .. function(settings)
-	settings = vim.tbl_deep_extend("force", default_settings, settings)
-
-	Language.setup_servers(settings)
-	Language.setup_parsers(settings)
-	Language.setup_formatter(settings)
-	Language.setup_annotator(settings)
+Language.setup = function()
+	Language.setup_servers()
+	Language.setup_parsers()
+	Language.setup_formatter()
+	Language.setup_annotator()
 end
 
 return Module:new(Language)

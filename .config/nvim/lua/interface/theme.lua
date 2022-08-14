@@ -1,5 +1,5 @@
 local Module = require("_shared.module")
-local validator = require("_shared.validator")
+local settings = require("settings")
 
 local color_schemes = {
 	nord = function()
@@ -77,50 +77,43 @@ Theme.plugins = {
 	},
 }
 
-local default_settings = {
+--[[ local default_settings = {
 	color_scheme = "nightfox",
 	component_separator = "│",
 	section_separator = "",
-}
+} ]]
 
-Theme.setup = validator.f.arguments({
-	validator.f.shape({
-		color_scheme = validator.f.optional(validator.f.one_of(vim.tbl_keys(color_schemes))),
-		component_separator = validator.f.optional("string"),
-		section_separator = validator.f.optional("string"),
-	}),
-})
-	.. function(settings)
-		settings = vim.tbl_extend("force", default_settings, settings)
+Theme.setup = function()
+	local options = settings.options()
 
-		-- TODO: passing options to customise color schemes
-		color_schemes[settings.color_scheme]()
+	-- TODO: passing options to customise color schemes
+	color_schemes[options["theme.colorscheme"]]()
 
-		-- Statusbar
-		require("lualine").setup({
-			options = {
-				globalstatus = true, -- TODO: derive this from 'laststatus' option
-				theme = settings.color_scheme,
-				component_separators = {
-					left = settings.component_separator,
-					right = settings.component_separator,
-				},
-				section_separators = {
-					left = settings.section_separator,
-					right = settings.section_separator,
-				},
+	-- Statusbar
+	require("lualine").setup({
+		options = {
+			globalstatus = true, -- TODO: derive this from 'laststatus' option
+			theme = options["theme.colorscheme"],
+			component_separators = {
+				left = options["theme.component_separator"],
+				right = options["theme.component_separator"],
 			},
-		})
-
-		require("tabline").setup({
-			enable = true,
-			options = {
-				component_separators = { settings.component_separator, settings.component_separator },
-				section_separators = { settings.section_separator, settings.section_separator },
-				show_tabs_always = true, -- this shows tabs only when there are more than one tab or if the first tab is named
-				modified_icon = "~ ", -- change the default modified icon
+			section_separators = {
+				left = options["theme.section_separator"],
+				right = options["theme.section_separator"],
 			},
-		})
-	end
+		},
+	})
+
+	require("tabline").setup({
+		enable = true,
+		options = {
+			component_separators = { options["theme.component_separator"], options["theme.component_separator"] },
+			section_separators = { options["theme.section_separator"], options["theme.section_separator"] },
+			show_tabs_always = true, -- this shows tabs only when there are more than one tab or if the first tab is named
+			modified_icon = "~ ", -- change the default modified icon
+		},
+	})
+end
 
 return Module:new(Theme)
