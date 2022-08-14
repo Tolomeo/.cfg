@@ -13,9 +13,9 @@ Module.plugins = {}
 Module.modules = {}
 
 --- Setups module specific configurations, like plugins scaffolding
----@type fun(options: table, keymaps: table)
+---@type fun()
 ---@diagnostic disable-next-line: unused-local
-Module.setup = function(options, keymaps) end
+Module.setup = function() end
 
 --- Inspects the value given
 ---@param value any
@@ -25,17 +25,11 @@ end
 
 --- Initializes the module
 ---@type fun(self: Module, options: table)
-Module.init = validator.f.arguments({
-	validator.f.instance_of(Module),
-	validator.f.optional("table"),
-	validator.f.optional("table"),
-}) .. function(self, options, keymaps)
-	options = options or {}
+Module.init = function(self)
+	self.setup()
 
-	self.setup(options, keymaps)
-
-	for child_module_name, child_module in pairs(self.modules) do
-		child_module:init(options[child_module_name], keymaps)
+	for _, child_module in pairs(self.modules) do
+		child_module:init()
 	end
 end
 

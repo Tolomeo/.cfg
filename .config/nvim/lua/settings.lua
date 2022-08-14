@@ -327,4 +327,23 @@ Settings.options = validator.f.arguments({
 	return Settings._options
 end
 
-return Settings
+return setmetatable(Settings, {
+	__call = validator.f.arguments({
+		validator.f.equal(Settings),
+		validator.f.shape({
+			globals = validator.f.optional("table"),
+			keymaps = validator.f.optional("table"),
+			options = validator.f.optional("table"),
+		}),
+	}) .. function(self, settings)
+		local globals = settings.globals or {}
+		local keymaps = settings.keymaps or {}
+		local options = settings.options or {}
+
+		self.globals(globals)
+		self.keymaps(keymaps)
+		self.options(options)
+
+		return self
+	end,
+})
