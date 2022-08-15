@@ -1,12 +1,11 @@
 local Module = require("_shared.module")
--- local au = require("_shared.au")
 local key = require("_shared.key")
 local validator = require("_shared.validator")
 local settings = require("settings")
 
-local ProjectExplorer = {}
+local Tree = {}
 
-ProjectExplorer.plugins = {
+Tree.plugins = {
 	-- File tree
 	{
 		"kyazdani42/nvim-tree.lua",
@@ -16,18 +15,18 @@ ProjectExplorer.plugins = {
 	},
 }
 
-ProjectExplorer.setup = function()
-	ProjectExplorer._setup_keymaps()
-	ProjectExplorer._setup_plugins()
+Tree.setup = function()
+	Tree._setup_keymaps()
+	Tree._setup_plugins()
 end
 
-ProjectExplorer._setup_keymaps = function()
+Tree._setup_keymaps = function()
 	local keymaps = settings.keymaps()
 
-	key.nmap({ keymaps["project.tree.toggle"], ProjectExplorer.toggle })
+	key.nmap({ keymaps["project.tree.toggle"], Tree.toggle })
 end
 
-ProjectExplorer._setup_plugins = function()
+Tree._setup_plugins = function()
 	local keymaps = settings.keymaps()
 
 	-- NvimTree
@@ -115,12 +114,12 @@ ProjectExplorer._setup_plugins = function()
 					{
 						key = keymaps["project.tree.actions"],
 						action = "show_node_actions",
-						action_cb = ProjectExplorer.tree_actions_menu,
+						action_cb = Tree.tree_actions_menu,
 					},
 					{
 						key = keymaps["project.tree.search.node.content"],
 						action = "search_in_node",
-						action_cb = ProjectExplorer.search_in_node,
+						action_cb = Tree.search_in_node,
 					},
 					{
 						key = keymaps["project.tree.search.node"],
@@ -146,7 +145,7 @@ local validate_node = validator.f.any_of({
 	}),
 })
 
-ProjectExplorer.search_in_node = validator.f.arguments({ validate_node })
+Tree.search_in_node = validator.f.arguments({ validate_node })
 	.. function(node)
 		-- when the selected node is the one pointing at the parent director absolute_path will not be present
 		if not node.absolute_path then
@@ -164,7 +163,7 @@ ProjectExplorer.search_in_node = validator.f.arguments({ validate_node })
 	end
 
 -- https://github.com/kyazdani42/nvim-tree.lua/blob/master/lua/nvim-tree/actions/init.lua
-ProjectExplorer.tree_actions = {
+Tree.tree_actions = {
 	{ "Create", require("nvim-tree.actions.fs.create-file").fn },
 	{ "Rename", require("nvim-tree.actions.fs.rename-file").fn(false) },
 	{ "Rename full", require("nvim-tree.actions.fs.rename-file").fn(true) },
@@ -184,7 +183,7 @@ ProjectExplorer.tree_actions = {
 	{ "Toggle custom filtered files visibility", require("nvim-tree.actions.tree-modifiers.toggles").custom },
 	{ "Refresh tree", require("nvim-tree.actions.reloaders.reloaders").reload_explorer },
 	{ "Search file", require("nvim-tree.actions.finders.search-node").fn },
-	{ "Search here", ProjectExplorer.search_in_node },
+	{ "Search here", Tree.search_in_node },
 	{ "Directory up", require("nvim-tree.actions.root.dir-up").fn },
 	-- { "Close tree", require("nvim-tree.view").close },
 	-- toggle_help = require("nvim-tree.actions.toggles").help,
@@ -200,10 +199,10 @@ ProjectExplorer.tree_actions = {
 	-- prev_sibling = require("nvim-tree.actions.movements").sibling(-1),
 }
 
-ProjectExplorer.tree_actions_menu = validator.f.arguments({ validate_node })
+Tree.tree_actions_menu = validator.f.arguments({ validate_node })
 	.. function(node)
 		local items = {
-			results = ProjectExplorer.tree_actions,
+			results = Tree.tree_actions,
 			entry_maker = function(tree_action)
 				return {
 					value = tree_action,
@@ -225,7 +224,7 @@ ProjectExplorer.tree_actions_menu = validator.f.arguments({ validate_node })
 		require("finder").contex_menu(items, on_select, options)
 	end
 
-ProjectExplorer.toggle = function()
+Tree.toggle = function()
 	local tree_view = require("nvim-tree.view")
 
 	if tree_view.is_visible() then
@@ -253,4 +252,4 @@ ProjectExplorer.toggle = function()
 	find_tree_file(bufname)
 end
 
-return Module:new(ProjectExplorer)
+return Module:new(Tree)
