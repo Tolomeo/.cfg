@@ -4,16 +4,6 @@ local settings = require("settings")
 
 local Git = {}
 
---[[ local default_keymaps = {
-	["git.blame"] = "gb",
-	["git.log"] = "gl",
-	["git.diff"] = "gd",
-	["git.merge"] = "gm",
-	["git.hunk"] = "gh",
-	["git.hunk.next"] = "]c",
-	["git.hunk.prev"] = "[c",
-} ]]
-
 Git.plugins = {
 	-- Add git related info in the signs columns and popups
 	{ "lewis6991/gitsigns.nvim", requires = { "nvim-lua/plenary.nvim" } },

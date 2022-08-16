@@ -52,4 +52,16 @@ function Fn.find_index(tbl, func)
 	return nil
 end
 
+--- Creates a new table populated with the results of calling a provided functions
+---on every numeric indexed element in the calling table
+---@param tbl table
+---@param func function
+---@return table
+function Fn.imap(tbl, func)
+	return Fn.ireduce(tbl, function(new_tbl, value, index)
+		table.insert(new_tbl, func(value, index))
+		return new_tbl
+	end, {})
+end
+
 return Fn

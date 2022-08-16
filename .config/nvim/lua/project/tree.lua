@@ -1,6 +1,7 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
 local validator = require("_shared.validator")
+local fn = require("_shared.fn")
 local settings = require("settings")
 
 local Tree = {}
@@ -15,6 +16,163 @@ Tree.plugins = {
 	},
 }
 
+Tree.actions = function()
+	local keymaps = settings.keymaps()
+
+	return {
+		{
+			name = "View info",
+			keymap = keymaps["project.tree.node.info"],
+			handler = require("nvim-tree.api").node.show_info_popup,
+		},
+		{
+			name = "Edit in vertical split",
+			keymap = keymaps["project.tree.node.open.vertical"],
+			handler = require("nvim-tree.api").node.open.vertical,
+		},
+		{
+			name = "Edit in horizontal split",
+			keymap = keymaps["project.tree.node.open.horizontal"],
+			handler = require("nvim-tree.api").node.open.horizontal,
+		},
+		{
+			name = "Edit in tab",
+			keymap = keymaps["project.tree.node.open.tab"],
+			handler = require("nvim-tree.api").node.open.tab,
+		},
+		{
+			name = "Close node",
+			keymap = keymaps["project.tree.node.collapse"],
+			handler = require("nvim-tree.api").node.navigate.parent_close,
+		},
+		{
+			name = "Open node",
+			keymap = keymaps["project.tree.node.open"],
+			handler = require("nvim-tree.api").node.open.replace_tree_buffer,
+		},
+		{
+			name = "Change directory here",
+			keymap = keymaps["project.tree.fs.enter"],
+			handler = require("nvim-tree.api").tree.change_root_to_node,
+		},
+		{
+			name = "Open with in OS",
+			keymap = keymaps["project.tree.node.open.system"],
+			handler = require("nvim-tree.api").node.run.system,
+		},
+		{
+			name = "Create node",
+			keymap = keymaps["project.tree.fs.create"],
+			handler = require("nvim-tree.api").fs.create,
+		},
+		{
+			name = "Remove node",
+			keymap = keymaps["project.tree.fs.remove"],
+			handler = require("nvim-tree.api").fs.remove,
+		},
+		{
+			name = "Trash node",
+			keymap = keymaps["project.tree.fs.trash"],
+			handler = require("nvim-tree.api").fs.trash,
+		},
+		{
+			name = "Rename node",
+			keymap = keymaps["project.tree.fs.rename"],
+			handler = require("nvim-tree.api").fs.rename,
+		},
+		{
+			name = "Fully rename node",
+			keymap = keymaps["project.tree.fs.rename.full"],
+			handler = require("nvim-tree.api").fs.rename_sub,
+		},
+		{
+			name = "Copy",
+			keymap = keymaps["project.tree.fs.copy.node"],
+			handler = require("nvim-tree.api").fs.copy.node,
+		},
+		{ name = "Cut", keymap = keymaps["project.tree.fs.cut"], handler = require("nvim-tree.api").fs.cut },
+		{ name = "Paste", keymap = keymaps["project.tree.fs.paste"], handler = require("nvim-tree.api").fs.paste },
+		{
+			name = "Copy node name",
+			keymap = keymaps["project.tree.fs.copy.filename"],
+			handler = require("nvim-tree.api").fs.copy.filename,
+		},
+		{
+			name = "Copy relative path",
+			keymap = keymaps["project.tree.fs.copy.path.relative"],
+			handler = require("nvim-tree.api").fs.copy.relative_path,
+		},
+		{
+			name = "Copy absolute path",
+			keymap = keymaps["project.tree.fs.copy.path.absolute"],
+			handler = require("nvim-tree.api").fs.copy.absolute_path,
+		},
+		{ name = "Refresh", keymap = keymaps["project.tree.refresh"], handler = require("nvim-tree.api").tree.reload },
+		{
+			name = "Collapse all nodes",
+			keymap = keymaps["project.tree.collapse.all"],
+			handler = require("nvim-tree.api").tree.collapse_all,
+		},
+		-- { name = "Expand all nodes", keymap = keymaps["project.tree.expand.all"], handler = require("nvim-tree.api").tree.expand_all },
+		{
+			name = "Go to node parent",
+			keymap = keymaps["project.tree.navigate.parent"],
+			handler = require("nvim-tree.api").node.navigate.parent,
+		},
+		{
+			name = "Go to first sibling",
+			keymap = keymaps["project.tree.navigate.sibling.first"],
+			handler = require("nvim-tree.api").node.navigate.sibling.first,
+		},
+		{
+			name = "Go to last sibling",
+			keymap = keymaps["project.tree.navigate.sibling.last"],
+			handler = require("nvim-tree.api").node.navigate.sibling.last,
+		},
+		{
+			name = "Toggle help",
+			keymap = keymaps["project.tree.help"],
+			handler = require("nvim-tree.api").tree.toggle_help,
+		},
+		{ name = "Close", keymap = keymaps["project.tree.close"], handler = require("nvim-tree.api").tree.close },
+		{
+			name = "Change root up one directory",
+			keymap = keymaps["project.tree.root.parent"],
+			handler = require("nvim-tree.api").tree.change_root_to_parent,
+		},
+		{
+			name = "Toggle custom filter",
+			keymap = keymaps["project.tree.toggle.filter.custom"],
+			handler = require("nvim-tree.api").tree.toggle_custom_filter,
+		},
+		{
+			name = "Toggle gitignore filter",
+			keymap = keymaps["project.tree.toggle.filter.gitignore"],
+			handler = require("nvim-tree.api").tree.toggle_gitignore_filter,
+		},
+		{
+			name = "Toggle dotfiles filter",
+			keymap = keymaps["project.tree.toggle.filter.dotfiles"],
+			handler = require("nvim-tree.api").tree.toggle_hidden_filter,
+		},
+		{
+			name = "Show actions",
+			keymap = keymaps["project.tree.actions"],
+			handler = require("nvim-tree.utils").inject_node(Tree.tree_actions_menu),
+		},
+		{
+			name = "Search node contents",
+			keymap = keymaps["project.tree.search.node.content"],
+			handler = require("nvim-tree.utils").inject_node(Tree.search_in_node),
+		},
+		{
+			name = "Search node",
+			keymap = keymaps["project.tree.search.node"],
+			handler = require("nvim-tree.api").tree.search_node,
+		},
+	}
+end
+
 Tree.setup = function()
 	Tree._setup_keymaps()
 	Tree._setup_plugins()
@@ -27,8 +185,6 @@ Tree._setup_keymaps = function()
 end
 
 Tree._setup_plugins = function()
-	local keymaps = settings.keymaps()
-
 	-- NvimTree
 	require("nvim-tree").setup({
 		hijack_netrw = true,
@@ -78,56 +234,16 @@ Tree._setup_plugins = function()
 		},
 		view = {
 			preserve_window_proportions = true,
-			mappings = {
-				custom_only = true,
-				list = {
-					{ key = keymaps["project.tree.node.info"], action = "toggle_file_info" },
-					{ key = keymaps["project.tree.node.open.vertical"], action = "vsplit" },
-					{ key = keymaps["project.tree.node.open.horizontal"], action = "split" },
-					{ key = keymaps["project.tree.node.collapse"], action = "close_node" },
-					{ key = keymaps["project.tree.node.open"], action = "edit_in_place" },
-					{ key = keymaps["project.tree.node.open.tab"], action = "tabnew" },
-					{ key = keymaps["project.tree.fs.enter"], action = "cd" },
-					{ key = keymaps["project.tree.fs.open.system"], action = "system_open" },
-					{ key = keymaps["project.tree.fs.create"], action = "create" },
-					{ key = keymaps["project.tree.fs.remove"], action = "remove" },
-					{ key = keymaps["project.tree.fs.trash"], action = "trash" },
-					{ key = keymaps["project.tree.fs.rename"], action = "rename" },
-					{ key = keymaps["project.tree.fs.rename.full"], action = "full_rename" },
-					{ key = keymaps["project.tree.fs.copy.node"], action = "copy" },
-					{ key = keymaps["project.tree.fs.cut"], action = "cut" },
-					{ key = keymaps["project.tree.fs.paste"], action = "paste" },
-					{ key = keymaps["project.tree.fs.copy.filename"], action = "copy_name" },
-					{ key = keymaps["project.tree.fs.copy.path.relative"], action = "copy_path" },
-					{ key = keymaps["project.tree.fs.copy.path.absolute"], action = "copy_absolute_path" },
-					{ key = keymaps["project.tree.refresh"], action = "refresh" },
-					{ key = keymaps["project.tree.collapse.all"], action = "collapse_all" },
-					{ key = keymaps["project.tree.navigate.parent"], action = "parent_node" },
-					{ key = keymaps["project.tree.navigate.sibling.first"], action = "first_sibling" },
-					{ key = keymaps["project.tree.navigate.sibling.last"], action = "last_sibling" },
-					{ key = keymaps["project.tree.help"], action = "toggle_help" },
-					{ key = keymaps["project.tree.close"], action = "close" },
-					{ key = keymaps["project.tree.root.parent"], action = "dir_up" },
-					{ key = keymaps["project.tree.toggle.filter.custom"], action = "toggle_custom" },
-					{ key = keymaps["project.tree.toggle.filter.gitignore"], action = "toggle_git_ignored" },
-					{ key = keymaps["project.tree.toggle.filter.dotfiles"], action = "toggle_dotfiles" },
-					{
-						key = keymaps["project.tree.actions"],
-						action = "show_node_actions",
-						action_cb = Tree.tree_actions_menu,
-					},
-					{
-						key = keymaps["project.tree.search.node.content"],
-						action = "search_in_node",
-						action_cb = Tree.search_in_node,
-					},
-					{
-						key = keymaps["project.tree.search.node"],
-						action = "search_node",
-					},
-				},
-			},
 		},
+		on_attach = function(tree_buffer)
+			local actions = Tree.actions()
+			local mappings = fn.imap(actions, function(action)
+				return { action.keymap, action.handler, buffer = tree_buffer }
+			end)
+
+			key.nmap(unpack(mappings))
+		end,
+		remove_keymaps = true,
 	})
 end
 
@@ -162,47 +278,13 @@ Tree.search_in_node = validator.f.arguments({ validate_node })
 		end
 	end
 
--- https://github.com/kyazdani42/nvim-tree.lua/blob/master/lua/nvim-tree/actions/init.lua
-Tree.tree_actions = {
-	{ "Create", require("nvim-tree.actions.fs.create-file").fn },
-	{ "Rename", require("nvim-tree.actions.fs.rename-file").fn(false) },
-	{ "Rename full", require("nvim-tree.actions.fs.rename-file").fn(true) },
-	{ "Copy relative path", require("nvim-tree.actions.fs.copy-paste").copy_path },
-	{ "Copy absolute path", require("nvim-tree.actions.fs.copy-paste").copy_absolute_path },
-	{ "Copy name", require("nvim-tree.actions.fs.copy-paste").copy_filename },
-	{ "Copy", require("nvim-tree.actions.fs.copy-paste").copy },
-	{ "Cut", require("nvim-tree.actions.fs.copy-paste").cut },
-	{ "Paste", require("nvim-tree.actions.fs.copy-paste").paste },
-	{ "Delete", require("nvim-tree.actions.fs.remove-file").fn },
-	{ "Move to trash", require("nvim-tree.actions.fs.trash").fn },
-	{ "Open in file manager", require("nvim-tree.actions.node.system-open").fn },
-	{ "Run command", require("nvim-tree.actions.node.run-command").run_file_command },
-	{ "View info", require("nvim-tree.actions.node.file-popup").toggle_file_info },
-	{ "Toggle git.ignored files visibility", require("nvim-tree.actions.tree-modifiers.toggles").git_ignored },
-	{ "Toggle dotfiles visibility", require("nvim-tree.actions.tree-modifiers.toggles").dotfiles },
-	{ "Toggle custom filtered files visibility", require("nvim-tree.actions.tree-modifiers.toggles").custom },
-	{ "Refresh tree", require("nvim-tree.actions.reloaders.reloaders").reload_explorer },
-	{ "Search file", require("nvim-tree.actions.finders.search-node").fn },
-	{ "Search here", Tree.search_in_node },
-	{ "Directory up", require("nvim-tree.actions.root.dir-up").fn },
-	-- { "Close tree", require("nvim-tree.view").close },
-	-- toggle_help = require("nvim-tree.actions.toggles").help,
-	-- search_node = require("nvim-tree.actions.search-node").fn,
-	-- close_node = require("nvim-tree.actions.movements").parent_node(true),
-	-- collapse_all = require("nvim-tree.actions.collapse-all").fn,
-	-- first_sibling = require("nvim-tree.actions.movements").sibling(-math.huge),
-	-- last_sibling = require("nvim-tree.actions.movements").sibling(math.huge),
-	-- next_git_item = require("nvim-tree.actions.movements").find_git_item "next",
-	-- next_sibling = require("nvim-tree.actions.movements").sibling(1),
-	-- parent_node = require("nvim-tree.actions.movements").parent_node(false),
-	-- prev_git_item = require("nvim-tree.actions.movements").find_git_item "prev",
-	-- prev_sibling = require("nvim-tree.actions.movements").sibling(-1),
-}
-
 Tree.tree_actions_menu = validator.f.arguments({ validate_node })
 	.. function(node)
+		local results = fn.imap(Tree.actions(), function(action)
+			return { action.name, action.handler }
+		end)
 		local items = {
-			results = Tree.tree_actions,
+			results = results,
 			entry_maker = function(tree_action)
 				return {
 					value = tree_action,
