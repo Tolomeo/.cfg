@@ -14,7 +14,6 @@ Config.plugins = { "wbthomason/packer.nvim" }
 Config.modules = {
 	interface = require("interface"),
 	project = require("project"),
-	git = require("git"),
 	editor = require("editor"),
 	finder = require("finder"),
 	terminal = require("terminal"),
