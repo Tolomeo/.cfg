@@ -8,7 +8,20 @@ Git.plugins = {
 	-- Add git related info in the signs columns and popups
 	{ "lewis6991/gitsigns.nvim", requires = { "nvim-lua/plenary.nvim" } },
 	-- Github issues and reviews
-	"pwntester/octo.nvim",
+	{
+		"pwntester/octo.nvim",
+		requires = {
+			"nvim-lua/plenary.nvim",
+			"nvim-telescope/telescope.nvim",
+			"kyazdani42/nvim-web-devicons",
+		},
+	},
+	{
+		"xiyaowong/telescope-octo-commands.nvim",
+		requires = {
+			"pwntester/octo.nvim",
+		},
+	},
 }
 
 Git.setup = function()
@@ -40,7 +53,9 @@ Git._setup_plugins = function()
 		},
 	})
 
+	-- Octo
 	require("octo").setup()
+	require("telescope").load_extension("octo_commands")
 end
 
 function Git.blame()

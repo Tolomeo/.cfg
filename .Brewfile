@@ -8,7 +8,7 @@ brew "gh"
 brew "htop"
 brew "lazygit"
 brew "luajit", args: ["HEAD"]
-brew "neovim", args: ["HEAD"]
+brew "neovim"
 brew "nvm"
 brew "ripgrep"
 brew "stylua"
