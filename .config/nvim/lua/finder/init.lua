@@ -1,5 +1,6 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
+local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 local settings = require("settings")
 
@@ -30,7 +31,7 @@ Finder._setup_keymaps = function()
 	local keymaps = settings.keymaps()
 
 	key.nmap(
-		-- Keep search results centred
+		-- Keep search results centered
 		{ "n", "nzzzv" },
 		{ "N", "Nzzzv" },
 		-- finder
@@ -109,8 +110,103 @@ Finder.find_buffers = function()
 	require("telescope.builtin").buffers()
 end
 
+local Finders = {}
+
+Finders.new = validator.f.arguments({
+	-- This would be cool but it is not possible because builtin pickers are launched directly
+	-- validator.f.list({ validator.f.instance_of(require("telescope.pickers")._Picker) }),
+	validator.f.equal(Finders),
+	validator.f.list({ validator.f.shape({ prompt_title = "string", find = "function" }) }),
+})
+	.. function(self, finders)
+		finders._current = 0
+
+		setmetatable(finders, self)
+		self.__index = self
+
+		return finders
+	end
+
+function Finders:_options()
+	local prompt_title = fn.ireduce(self, function(picker_prompt_title, p, i)
+		if i ~= 1 then
+			picker_prompt_title = picker_prompt_title .. " - "
+		end
+
+		if i == self._current then
+			picker_prompt_title = picker_prompt_title .. "[ " .. p.prompt_title .. " ]"
+		else
+			picker_prompt_title = picker_prompt_title .. p.prompt_title
+		end
+
+		return picker_prompt_title
+	end, "")
+	local attach_mappings = function(buffer)
+		key.imap({
+			"<M-]>",
+			fn.bind(self.next, self),
+			buffer = buffer,
+		}, {
+			"<M-[>",
+			fn.bind(self.prev, self),
+			buffer = buffer,
+		})
+
+		return true
+	end
+
+	return {
+		prompt_title = prompt_title,
+		attach_mappings = attach_mappings,
+	}
+end
+
+function Finders:prev()
+	if self._current <= 1 then
+		return
+	end
+
+	self._current = self._current - 1
+
+	local options = self:_options()
+	local picker = self[self._current]
+
+	return picker.find(options)
+end
+
+function Finders:next()
+	if self._current >= #self then
+		return
+	end
+
+	self._current = self._current + 1
+
+	local options = self:_options()
+	local picker = self[self._current]
+
+	return picker.find(options)
+end
+
+function Finders:find()
+	if self._current > 0 then
+		return
+	end
+
+	return self:next()
+end
+
 Finder.find_in_documentation = function()
-	require("telescope.builtin").help_tags()
+	local finders = {
+		{ prompt_title = "Help", find = require("telescope.builtin").help_tags },
+		{ prompt_title = "Commands", find = require("telescope.builtin").commands },
+		{ prompt_title = "Options", find = require("telescope.builtin").vim_options },
+		{ prompt_title = "Autocommands", find = require("telescope.builtin").autocommands },
+		{ prompt_title = "Keymaps", find = require("telescope.builtin").keymaps },
+		{ prompt_title = "Filetypes", find = require("telescope.builtin").filetypes },
+		{ prompt_title = "Highlights", find = require("telescope.builtin").highlights },
+	}
+
+	return Finders:new(finders):find()
 end
 
 Finder.find_projects = function()

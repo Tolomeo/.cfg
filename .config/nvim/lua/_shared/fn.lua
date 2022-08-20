@@ -64,4 +64,17 @@ function Fn.imap(tbl, func)
 	end, {})
 end
 
+--- Creates a new function that, when called,
+---has its arguments preceded by any provided ones
+---@param func function
+---@vararg any
+---@return function
+function Fn.bind(func, ...)
+	local boundArgs = { ... }
+
+	return function(...)
+		return func(unpack(boundArgs), ...)
+	end
+end
+
 return Fn

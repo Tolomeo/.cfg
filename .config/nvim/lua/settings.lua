@@ -196,7 +196,7 @@ Settings._keymaps = {
 	["language.diagnostic.list"] = "<leader>dl",
 	["language.format"] = "<leader>b",
 	-- finder
-	["finder.files"] = "<C-p>",
+	["finder.files"] = "<leader>E",
 	["finder.commands"] = "<C-S-p>",
 	["finder.projects"] = "<C-S-e>",
 	["finder.search.buffer"] = "<leader>f",
