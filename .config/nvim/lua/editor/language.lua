@@ -40,7 +40,7 @@ Language.setup_servers = function()
 			{ keymaps["language.lsp.rename"], vim.lsp.buf.rename, buffer = buffer },
 			{ keymaps["language.diagnostic.next"], vim.diagnostic.goto_next, buffer = buffer },
 			{ keymaps["language.diagnostic.prev"], vim.diagnostic.goto_prev, buffer = buffer },
-			{ keymaps["language.diagnostic.list"], require("finder").find_diagnostics, buffer = buffer }
+			{ keymaps["language.diagnostic.list"], require("finder.picker").find_diagnostics, buffer = buffer }
 		)
 
 		if not client.server_capabilities.documentHighlightProvider then
