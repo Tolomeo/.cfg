@@ -51,6 +51,11 @@ end
 Finder._setup_plugins = function()
 	require("telescope").setup({
 		defaults = {
+			layout_strategy = "flex",
+			layout_config = {
+				prompt_position = "top",
+			},
+			sorting_strategy = "ascending",
 			dynamic_preview_title = true,
 			color_devicons = true,
 			mappings = {
@@ -62,16 +67,12 @@ Finder._setup_plugins = function()
 		},
 		pickers = {
 			find_files = {},
-			current_buffer_fuzzy_find = {
-				layout_strategy = "horizontal",
-			},
+			current_buffer_fuzzy_find = {},
 			buffers = {
 				sort_lastused = true,
 			},
 			commands = {},
-			spell_suggest = {
-				theme = "cursor",
-			},
+			spell_suggest = {},
 			help_tags = {},
 		},
 	})
@@ -119,7 +120,7 @@ Finders.new = validator.f.arguments({
 	validator.f.list({ validator.f.shape({ prompt_title = "string", find = "function" }) }),
 })
 	.. function(self, finders)
-		finders._current = 0
+		finders._current = 1
 
 		setmetatable(finders, self)
 		self.__index = self
@@ -127,46 +128,74 @@ Finders.new = validator.f.arguments({
 		return finders
 	end
 
+function Finders:_prompt_title()
+	local globals = settings.globals()
+
+	-- NOTE: this is a lot of code just to calculate a fancy prompt title
+	-- TODO: refactor
+	local current_picker_title = self[self._current].prompt_title
+	current_picker_title = "[ " .. current_picker_title .. (#current_picker_title % 2 == 0 and " ]" or "  ]")
+
+	local i_left = self._current - 1
+	local prev_picker_titles = { string.sub(current_picker_title, 1, #current_picker_title / 2) }
+	repeat
+		if i_left < 1 then
+			i_left = #self
+			goto continue_left
+		end
+
+		table.insert(prev_picker_titles, 1, self[i_left].prompt_title)
+		i_left = i_left - 1
+
+		::continue_left::
+	until i_left == self._current
+
+	local i_right = self._current + 1
+	local next_picker_titles = { string.sub(current_picker_title, (#current_picker_title / 2) + 1, #current_picker_title) }
+	repeat
+		if i_right > #self then
+			i_right = 1
+			goto continue_right
+		end
+
+		table.insert(next_picker_titles, self[i_right].prompt_title)
+		i_right = i_right + 1
+
+		::continue_right::
+	until i_right == self._current
+
+	local prompt_title_left = string.reverse(string.sub(string.reverse(table.concat(prev_picker_titles, globals.listchars.space)), 1, 19))
+	local prompt_title_right = string.sub(table.concat(next_picker_titles, globals.listchars.space), 1, 19)
+	local prompt_title = globals.listchars.precedes .. prompt_title_left .. prompt_title_right .. globals.listchars.extends
+
+	return prompt_title
+end
+
+function Finders:_attach_mappings(buffer)
+	local keymaps = settings.keymaps()
+
+	key.imap({
+		keymaps["buffer.next"],
+		fn.bind(self.next, self),
+		buffer = buffer,
+	}, {
+		keymaps["buffer.prev"],
+		fn.bind(self.prev, self),
+		buffer = buffer,
+	})
+
+	return true
+end
+
 function Finders:_options()
-	local prompt_title = fn.ireduce(self, function(picker_prompt_title, p, i)
-		if i ~= 1 then
-			picker_prompt_title = picker_prompt_title .. " - "
-		end
-
-		if i == self._current then
-			picker_prompt_title = picker_prompt_title .. "[ " .. p.prompt_title .. " ]"
-		else
-			picker_prompt_title = picker_prompt_title .. p.prompt_title
-		end
-
-		return picker_prompt_title
-	end, "")
-	local attach_mappings = function(buffer)
-		key.imap({
-			"<M-]>",
-			fn.bind(self.next, self),
-			buffer = buffer,
-		}, {
-			"<M-[>",
-			fn.bind(self.prev, self),
-			buffer = buffer,
-		})
-
-		return true
-	end
-
 	return {
-		prompt_title = prompt_title,
-		attach_mappings = attach_mappings,
+		prompt_title = self:_prompt_title(),
+		attach_mappings = fn.bind(self._attach_mappings, self),
 	}
 end
 
 function Finders:prev()
-	if self._current <= 1 then
-		return
-	end
-
-	self._current = self._current - 1
+	self._current = self._current <= 1 and #self or self._current - 1
 
 	local options = self:_options()
 	local picker = self[self._current]
@@ -175,11 +204,7 @@ function Finders:prev()
 end
 
 function Finders:next()
-	if self._current >= #self then
-		return
-	end
-
-	self._current = self._current + 1
+	self._current = self._current >= #self and 1 or self._current + 1
 
 	local options = self:_options()
 	local picker = self[self._current]
@@ -188,11 +213,10 @@ function Finders:next()
 end
 
 function Finders:find()
-	if self._current > 0 then
-		return
-	end
+	local options = self:_options()
+	local picker = self[self._current]
 
-	return self:next()
+	return picker.find(options)
 end
 
 Finder.find_in_documentation = function()
