@@ -265,16 +265,16 @@ Tree.search_in_node = validator.f.arguments({ validate_node })
 	.. function(node)
 		-- when the selected node is the one pointing at the parent director absolute_path will not be present
 		if not node.absolute_path then
-			return require("finder.picker").find_in_directory()
+			return require("finder.picker").text()
 		end
 
 		if node.fs_stat.type == "directory" then
-			return require("finder.picker").find_in_directory(node.absolute_path)
+			return require("finder.picker").text(node.absolute_path)
 		end
 
 		if node.fs_stat.type == "file" then
 			require("nvim-tree.actions.node.open-file").fn("edit_in_place", node.absolute_path)
-			return require("finder.picker").find_in_buffer()
+			return require("finder.picker").buffer_text()
 		end
 	end
 

@@ -25,12 +25,12 @@ function Pickers:_prompt_title()
 	-- NOTE: this is a lot of code just to calculate a fancy prompt title
 	-- TODO: refactor
 	local globals = settings.globals()
+	local current_picker_title = "[ " .. self[self._current].prompt_title .. " ]"
 
-	local current_picker_title = self[self._current].prompt_title
-	current_picker_title = "[ " .. current_picker_title .. (#current_picker_title % 2 == 0 and " ]" or "  ]")
-
+	-- Creating a table containing all titles making up for the left half of the title
+	-- starting from the left half of the current picker title and looping backward
 	local i_left = self._current - 1
-	local prev_picker_titles = { string.sub(current_picker_title, 1, #current_picker_title / 2) }
+	local prev_picker_titles = { string.sub(current_picker_title, 1, math.floor(#current_picker_title / 2)) }
 	repeat
 		if i_left < 1 then
 			i_left = #self
@@ -40,9 +40,11 @@ function Pickers:_prompt_title()
 		end
 	until i_left == self._current
 
+	-- Creating a table containing all titles making up for the right half of the title
+	-- starting from the right half of the current picker title and looping onward
 	local i_right = self._current + 1
 	local next_picker_titles =
-		{ string.sub(current_picker_title, (#current_picker_title / 2) + 1, #current_picker_title) }
+		{ string.sub(current_picker_title, (math.floor(#current_picker_title / 2)) + 1, #current_picker_title) }
 	repeat
 		if i_right > #self then
 			i_right = 1
@@ -52,9 +54,11 @@ function Pickers:_prompt_title()
 		end
 	until i_right == self._current
 
-	local prompt_title_left =
-		string.reverse(string.sub(string.reverse(table.concat(prev_picker_titles, globals.listchars.space)), 1, 19))
-	local prompt_title_right = string.sub(table.concat(next_picker_titles, globals.listchars.space), 1, 19)
+	-- Merging left and right, capping at 40 chars length
+	local prompt_title_left = string.reverse(
+		string.sub(string.reverse(table.concat(prev_picker_titles, " ")), 1, (20 - #globals.listchars.precedes))
+	)
+	local prompt_title_right = string.sub(table.concat(next_picker_titles, " "), 1, (20 - #globals.listchars.extends))
 	local prompt_title = globals.listchars.precedes
 		.. prompt_title_left
 		.. prompt_title_right
@@ -131,14 +135,14 @@ Picker._setup_keymaps = function()
 	local keymaps = settings.keymaps()
 
 	key.nmap(
-		{ keymaps["finder.files"], Picker.find_files },
-		{ keymaps["finder.commands"], Picker.find_commands },
-		{ keymaps["finder.projects"], Picker.find_projects },
-		{ keymaps["finder.search.buffer"], Picker.find_in_buffer },
-		{ keymaps["finder.search.directory"], Picker.find_in_directory },
-		{ keymaps["finder.help"], Picker.help },
-		{ keymaps["finder.spelling"], Picker.find_spelling },
-		{ keymaps["finder.buffers"], Picker.find_buffers }
+		{ keymaps["find.files"], Picker.files },
+		{ keymaps["find.projects"], Picker.projects },
+		{ keymaps["find.search.buffer"], Picker.buffer_text },
+		{ keymaps["find.search.directory"], Picker.text },
+		{ keymaps["find.help"], Picker.help },
+		{ keymaps["find.spelling"], Picker.spelling },
+		{ keymaps["find.buffers"], Picker.buffers },
+		{ keymaps["find.todos"], Picker.todos }
 	)
 end
 
@@ -175,11 +179,11 @@ Picker._setup_plugins = function()
 	require("todo-comments").setup({})
 end
 
-Picker.find_files = function()
+Picker.files = function()
 	require("telescope.builtin").find_files()
 end
 
-Picker.find_in_directory = validator.f.arguments({ validator.f.optional("string") })
+Picker.text = validator.f.arguments({ validator.f.optional("string") })
 	.. function(directory)
 		local root = vim.loop.cwd()
 		local searchDirectory = directory or root
@@ -192,16 +196,16 @@ Picker.find_in_directory = validator.f.arguments({ validator.f.optional("string"
 		require("telescope.builtin").live_grep(options)
 	end
 
-Picker.find_in_buffer = function()
+Picker.buffer_text = function()
 	require("telescope.builtin").current_buffer_fuzzy_find()
 end
 
-Picker.find_buffers = function()
+Picker.buffers = function()
 	require("telescope.builtin").buffers()
 end
 
 Picker.help = function()
-	local finders = {
+	local pickers = {
 		{ prompt_title = "Help", find = require("telescope.builtin").help_tags },
 		{ prompt_title = "Commands", find = require("telescope.builtin").commands },
 		{ prompt_title = "Options", find = require("telescope.builtin").vim_options },
@@ -211,18 +215,18 @@ Picker.help = function()
 		{ prompt_title = "Highlights", find = require("telescope.builtin").highlights },
 	}
 
-	return Pickers:new(finders):find()
+	return Pickers:new(pickers):find()
 end
 
-Picker.find_projects = function()
+Picker.projects = function()
 	require("telescope").extensions.project.project({ display_type = "full" })
 end
 
-Picker.find_todos = function()
+Picker.todos = function()
 	key.input(":TodoTelescope<CR>")
 end
 
-Picker.find_commands = function()
+Picker.commands = function()
 	require("telescope.builtin").commands()
 end
 
@@ -230,7 +234,7 @@ Picker.find_diagnostics = function()
 	require("telescope.builtin").diagnostics()
 end
 
-Picker.find_spelling = function()
+Picker.spelling = function()
 	require("telescope.builtin").spell_suggest()
 end
 
