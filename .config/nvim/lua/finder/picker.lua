@@ -43,8 +43,9 @@ function Pickers:_prompt_title()
 	-- Creating a table containing all titles making up for the right half of the title
 	-- starting from the right half of the current picker title and looping onward
 	local i_right = self._current + 1
-	local next_picker_titles =
-		{ string.sub(current_picker_title, (math.floor(#current_picker_title / 2)) + 1, #current_picker_title) }
+	local next_picker_titles = {
+		string.sub(current_picker_title, (math.floor(#current_picker_title / 2)) + 1, #current_picker_title),
+	}
 	repeat
 		if i_right > #self then
 			i_right = 1
@@ -179,6 +180,11 @@ Picker._setup_plugins = function()
 	require("todo-comments").setup({})
 end
 
+Picker.Pickers = function(pickers)
+	Picker.debug(pickers)
+	return Pickers:new(pickers)
+end
+
 Picker.files = function()
 	require("telescope.builtin").find_files()
 end
@@ -205,7 +211,7 @@ Picker.buffers = function()
 end
 
 Picker.help = function()
-	local pickers = {
+	return Picker.Pickers({
 		{ prompt_title = "Help", find = require("telescope.builtin").help_tags },
 		{ prompt_title = "Commands", find = require("telescope.builtin").commands },
 		{ prompt_title = "Options", find = require("telescope.builtin").vim_options },
@@ -213,9 +219,7 @@ Picker.help = function()
 		{ prompt_title = "Keymaps", find = require("telescope.builtin").keymaps },
 		{ prompt_title = "Filetypes", find = require("telescope.builtin").filetypes },
 		{ prompt_title = "Highlights", find = require("telescope.builtin").highlights },
-	}
-
-	return Pickers:new(pickers):find()
+	}):find()
 end
 
 Picker.projects = function()
@@ -237,6 +241,46 @@ end
 Picker.spelling = function()
 	require("telescope.builtin").spell_suggest()
 end
+
+Picker.modal_menu = validator.f.arguments({
+	validator.f.shape({
+		results = validator.f.list({ validator.f.list({ "string", "function" }) }),
+		entry_maker = "function",
+	}),
+	"function",
+	validator.f.optional(validator.f.shape({
+		prompt_title = "string",
+	})),
+})
+	.. function(items, on_select, options)
+		options = options or {}
+		local finder = require("telescope.finders").new_table(items)
+		local sorter = require("telescope.sorters").get_generic_fuzzy_sorter()
+		local actions = require("telescope.actions")
+		local state = require("telescope.actions.state")
+		local theme = require("telescope.themes").get_dropdown()
+		local default_options = vim.tbl_extend("force", theme, {
+			finder = finder,
+			sorter = sorter,
+			attach_mappings = function(prompt_buffer_number)
+				-- On select item
+				actions.select_default:replace(function()
+					on_select({ buffer = prompt_buffer_number, state = state, actions = actions })
+				end)
+				-- Disabling any kind of multiple selection
+				actions.add_selection:replace(function() end)
+				actions.remove_selection:replace(function() end)
+				actions.toggle_selection:replace(function() end)
+				actions.select_all:replace(function() end)
+				actions.drop_all:replace(function() end)
+				actions.toggle_all:replace(function() end)
+
+				return true
+			end,
+		})
+
+		require("telescope.pickers").new(options, default_options):find()
+	end
 
 Picker.context_menu = validator.f.arguments({
 	validator.f.shape({

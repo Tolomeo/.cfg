@@ -1,5 +1,6 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
+local fn = require("_shared.fn")
 local settings = require("settings")
 
 local Git = {}
@@ -39,8 +40,102 @@ Git._setup_keymaps = function()
 		{ keymaps["git.merge"], Git.mergetool },
 		{ keymaps["git.hunk"], Git.show_hunk_preview },
 		{ keymaps["git.hunk.next"], Git.next_hunk_preview(keymaps["git.hunk.next"]) },
-		{ keymaps["git.hunk.prev"], Git.prev_hunk_preview(keymaps["git.hunk.prev"]) }
+		{ keymaps["git.hunk.prev"], Git.prev_hunk_preview(keymaps["git.hunk.prev"]) },
+		{ "<leader>G", Git.github_actions_menu }
 	)
+end
+
+Git.github_prs_actions_menu = function(options)
+	local results = {
+		{
+			"List",
+			function()
+				vim.fn.execute("Octo pr list", "")
+			end,
+		},
+		{
+			"Create",
+			function()
+				vim.fn.execute("Octo pr create", "")
+			end,
+		},
+		{
+			"Search",
+			function()
+				vim.fn.execute("Octo pr search", "")
+			end,
+		},
+	}
+	local items = {
+		results = results,
+		entry_maker = function(pull_request_action)
+			return {
+				value = pull_request_action,
+				ordinal = pull_request_action[1],
+				display = pull_request_action[1],
+			}
+		end,
+	}
+	local on_select = function(modal_menu)
+		local selection = modal_menu.state.get_selected_entry()
+		local pull_request_action = selection.value[2]
+		modal_menu.actions.close(modal_menu.buffer)
+		vim.defer_fn(function()
+			pull_request_action()
+		end, 1)
+	end
+
+	require("finder.picker").modal_menu(items, on_select, options)
+end
+
+Git.github_issues_actions_menu = function(options)
+	local results = {
+		{
+			"List",
+			function()
+				vim.fn.execute("Octo issue list", "")
+			end,
+		},
+		{
+			"Create",
+			function()
+				vim.fn.execute("Octo issue create", "")
+			end,
+		},
+		{
+			"Search",
+			function()
+				vim.fn.execute("Octo issue search", "")
+			end,
+		},
+	}
+	local items = {
+		results = results,
+		entry_maker = function(pull_request_action)
+			return {
+				value = pull_request_action,
+				ordinal = pull_request_action[1],
+				display = pull_request_action[1],
+			}
+		end,
+	}
+	local on_select = function(modal_menu)
+		local selection = modal_menu.state.get_selected_entry()
+		local pull_request_action = selection.value[2]
+		modal_menu.actions.close(modal_menu.buffer)
+		vim.defer_fn(function()
+			pull_request_action()
+		end, 1)
+	end
+
+	require("finder.picker").modal_menu(items, on_select, options)
+end
+
+Git.github_actions_menu = function()
+	require("finder.picker").Pickers({
+		{ prompt_title = "Pull Requests", find = Git.github_prs_actions_menu },
+		{ prompt_title = "Issues", find = Git.github_issues_actions_menu },
+	}):find()
 end
 
 Git._setup_plugins = function()
