@@ -76,7 +76,7 @@ end
 Git.github_issues = function(options)
 	local results = {
 		{ "List issues", fn.bind(vim.fn.execute, "Octo issue list", "") },
-		{ "Create a new issue", fn.bind(vim.fn.execute("Octo issue create"), "") },
+		{ "Create a new issue", fn.bind(vim.fn.execute, "Octo issue create", "") },
 		{ "List all issues", fn.bind(vim.fn.execute, "Octo issue search", "") },
 	}
 	local items = {
