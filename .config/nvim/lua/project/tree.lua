@@ -293,17 +293,17 @@ Tree.tree_actions_menu = validator.f.arguments({ validate_node })
 				}
 			end,
 		}
-		local on_select = function(context_menu)
-			local selection = context_menu.state.get_selected_entry()
-			local tree_action = selection.value[2]
-			context_menu.actions.close(context_menu.buffer)
-			vim.defer_fn(function()
+		local handlers = {
+			on_select = function(context_menu)
+				local selection = context_menu.state.get_selected_entry()
+				local tree_action = selection.value[2]
+				context_menu.actions.close(context_menu.buffer)
 				tree_action(node)
-			end, 50)
-		end
+			end,
+		}
 		local options = { prompt_title = node.name }
 
-		require("finder.picker").context_menu(items, on_select, options)
+		require("finder.picker").context_menu(items, handlers, options)
 	end
 
 Tree.toggle = function()

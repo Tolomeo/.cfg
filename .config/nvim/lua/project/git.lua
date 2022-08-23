@@ -45,26 +45,11 @@ Git._setup_keymaps = function()
 	)
 end
 
-Git.github_prs_actions_menu = function(options)
+Git.github_pull_requests = function(options)
 	local results = {
-		{
-			"List",
-			function()
-				vim.fn.execute("Octo pr list", "")
-			end,
-		},
-		{
-			"Create",
-			function()
-				vim.fn.execute("Octo pr create", "")
-			end,
-		},
-		{
-			"Search",
-			function()
-				vim.fn.execute("Octo pr search", "")
-			end,
-		},
+		{ "List open pull requests", fn.bind(vim.fn.execute, "Octo pr list", "") },
+		{ "Create a new pull request", fn.bind(vim.fn.execute, "Octo pr create", "") },
+		{ "List all pull requests", fn.bind(vim.fn.execute, "Octo pr search", "") },
 	}
 	local items = {
 		results = results,
@@ -76,38 +61,23 @@ Git.github_prs_actions_menu = function(options)
 			}
 		end,
 	}
-	local on_select = function(modal_menu)
-		local selection = modal_menu.state.get_selected_entry()
-		local pull_request_action = selection.value[2]
-		modal_menu.actions.close(modal_menu.buffer)
-		vim.defer_fn(function()
+	local handlers = {
+		on_select = function(modal_menu)
+			local selection = modal_menu.state.get_selected_entry()
+			local pull_request_action = selection.value[2]
+			modal_menu.actions.close(modal_menu.buffer)
 			pull_request_action()
-		end, 1)
-	end
+		end,
+	}
 
-	require("finder.picker").modal_menu(items, on_select, options)
+	require("finder.picker").modal_menu(items, handlers, options)
 end
 
-Git.github_issues_actions_menu = function(options)
+Git.github_issues = function(options)
 	local results = {
-		{
-			"List",
-			function()
-				vim.fn.execute("Octo issue list", "")
-			end,
-		},
-		{
-			"Create",
-			function()
-				vim.fn.execute("Octo issue create", "")
-			end,
-		},
-		{
-			"Search",
-			function()
-				vim.fn.execute("Octo issue search", "")
-			end,
-		},
+		{ "List issues", fn.bind(vim.fn.execute, "Octo issue list", "") },
+		{ "Create a new issue", fn.bind(vim.fn.execute("Octo issue create"), "") },
+		{ "List all issues", fn.bind(vim.fn.execute, "Octo issue search", "") },
 	}
 	local items = {
 		results = results,
@@ -119,22 +89,22 @@ Git.github_issues_actions_menu = function(options)
 			}
 		end,
 	}
-	local on_select = function(modal_menu)
-		local selection = modal_menu.state.get_selected_entry()
-		local pull_request_action = selection.value[2]
-		modal_menu.actions.close(modal_menu.buffer)
-		vim.defer_fn(function()
+	local handlers = {
+		on_select = function(modal_menu)
+			local selection = modal_menu.state.get_selected_entry()
+			local pull_request_action = selection.value[2]
+			modal_menu.actions.close(modal_menu.buffer)
 			pull_request_action()
-		end, 1)
-	end
+		end,
+	}
 
-	require("finder.picker").modal_menu(items, on_select, options)
+	require("finder.picker").modal_menu(items, handlers, options)
 end
 
 Git.github_actions_menu = function()
 	require("finder.picker").Pickers({
-		{ prompt_title = "Pull Requests", find = Git.github_prs_actions_menu },
-		{ prompt_title = "Issues", find = Git.github_issues_actions_menu },
+		{ prompt_title = "GH Pull Requests", find = Git.github_pull_requests },
+		{ prompt_title = "GH Issues", find = Git.github_issues },
 	}):find()
 end
 
