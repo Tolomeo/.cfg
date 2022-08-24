@@ -148,6 +148,8 @@ Picker._setup_keymaps = function()
 end
 
 Picker._setup_plugins = function()
+	local keymaps = settings.keymaps()
+	 
 	require("telescope").setup({
 		defaults = {
 			layout_strategy = "flex",
@@ -160,6 +162,8 @@ Picker._setup_plugins = function()
 			mappings = {
 				i = {
 					["<esc>"] = require("telescope.actions").close,
+					[keymaps["window.cursor.down"]] = require('telescope.actions').move_selection_next,
+					[keymaps["window.cursor.up"]] = require("telescope.actions").move_selection_previous,
 				},
 				n = {},
 			},

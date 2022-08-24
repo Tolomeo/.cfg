@@ -283,7 +283,7 @@ Tree.tree_actions_menu = validator.f.arguments({ validate_node })
 		local menu = vim.tbl_extend(
 			"error",
 			fn.imap(Tree.actions(), function(action)
-				return { action.name, handler = action.handler }
+				return { action.name, action.keymap, handler = action.handler }
 			end),
 			{
 				on_select = function(context_menu)
