@@ -58,7 +58,7 @@ Git.github_pull_requests = function(options)
 	local handlers = {
 		on_select = function(modal_menu)
 			local selection = modal_menu.state.get_selected_entry()
-			local pull_request_action = selection.value[2]
+			local pull_request_action = selection.value[3]
 			modal_menu.actions.close(modal_menu.buffer)
 			pull_request_action()
 		end,
@@ -76,7 +76,7 @@ Git.github_issues = function(options)
 	local handlers = {
 		on_select = function(modal_menu)
 			local selection = modal_menu.state.get_selected_entry()
-			local pull_request_action = selection.value[2]
+			local pull_request_action = selection.value[3]
 			modal_menu.actions.close(modal_menu.buffer)
 			pull_request_action()
 		end,
