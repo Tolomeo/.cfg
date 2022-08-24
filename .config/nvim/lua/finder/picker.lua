@@ -241,9 +241,9 @@ Picker.spelling = function()
 	require("telescope.builtin").spell_suggest()
 end
 
-Picker.modal_menu = validator.f.arguments({
+Picker.menu = validator.f.arguments({
 	validator.f.shape({
-		validator.f.list({ "string", "string", validator.f.optional("function") }),
+		validator.f.list({ "string", validator.f.optional("string") }),
 		on_select = "function",
 	}),
 	validator.f.optional(validator.f.shape({
@@ -268,7 +268,7 @@ Picker.modal_menu = validator.f.arguments({
 		local make_display = function(entry)
 			return displayer({
 				entry.value[1],
-				{ entry.value[2], "Comment" },
+				{ entry.value[2] or "", "Comment" },
 			})
 		end
 		local entry_maker = function(menu_item)
@@ -312,48 +312,11 @@ Picker.modal_menu = validator.f.arguments({
 		require("telescope.pickers").new(options, default_options):find()
 	end
 
-Picker.context_menu = validator.f.arguments({
-	validator.f.shape({
-		results = validator.f.list({ validator.f.list({ "string", "function" }) }),
-		entry_maker = "function",
-	}),
-	validator.f.shape({
-		on_select = "function",
-	}),
-	validator.f.optional(validator.f.shape({
-		prompt_title = "string",
-	})),
-})
-	.. function(items, handlers, options)
-		options = options or {}
+Picker.context_menu = function(menu, options)
+	local theme = require("telescope.themes").get_cursor()
+	options = vim.tbl_extend("force", theme, options or {})
 
-		local finder = require("telescope.finders").new_table(items)
-		local sorter = require("telescope.sorters").get_generic_fuzzy_sorter()
-		local theme = require("telescope.themes").get_cursor()
-		local default_options = vim.tbl_extend("force", theme, {
-			prompt_title = options.prompt_title,
-			finder = finder,
-			sorter = sorter,
-			attach_mappings = function(prompt_buffer_number)
-				local actions = require("telescope.actions")
-				local state = require("telescope.actions.state")
-				-- On select item
-				actions.select_default:replace(function()
-					handlers.on_select({ buffer = prompt_buffer_number, state = state, actions = actions })
-				end)
-				-- Disabling any kind of multiple selection
-				actions.add_selection:replace(function() end)
-				actions.remove_selection:replace(function() end)
-				actions.toggle_selection:replace(function() end)
-				actions.select_all:replace(function() end)
-				actions.drop_all:replace(function() end)
-				actions.toggle_all:replace(function() end)
-
-				return true
-			end,
-		})
-
-		require("telescope.pickers").new(options, default_options):find()
-	end
+	return Picker.menu(menu, options)
+end
 
 return Module:new(Picker)

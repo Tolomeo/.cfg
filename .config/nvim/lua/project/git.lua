@@ -47,38 +47,56 @@ end
 
 Git.github_pull_requests = function(options)
 	local menu = {
-		{ "List", "Lists pending pull requests in the current repo", fn.bind(vim.fn.execute, "Octo pr list", "") },
+		{
+			"List",
+			"Lists pending pull requests in the current repo",
+			handler = fn.bind(vim.fn.execute, "Octo pr list", ""),
+		},
 		{
 			"Create",
 			"Creates a new pull request for the current branch",
-			fn.bind(vim.fn.execute, "Octo pr create", ""),
+			handler = fn.bind(vim.fn.execute, "Octo pr create", ""),
 		},
-		{ "List all", "Lists all pull requests in the current repo", fn.bind(vim.fn.execute, "Octo pr search", "") },
+		{
+			"List all",
+			"Lists all pull requests in the current repo",
+			handler = fn.bind(vim.fn.execute, "Octo pr search", ""),
+		},
 		on_select = function(modal_menu)
 			local selection = modal_menu.state.get_selected_entry()
-			local pull_request_action = selection.value[3]
 			modal_menu.actions.close(modal_menu.buffer)
-			pull_request_action()
+			selection.value.handler()
 		end,
 	}
 
-	require("finder.picker").modal_menu(menu, options)
+	require("finder.picker").menu(menu, options)
 end
 
 Git.github_issues = function(options)
 	local menu = {
-		{ "List", "Lists pending issues in the current repo", fn.bind(vim.fn.execute, "Octo issue list", "") },
-		{ "Create", "Creates a new issue in the current repo", fn.bind(vim.fn.execute, "Octo issue create", "") },
-		{ "List all", "Lists all issues in the current repo", fn.bind(vim.fn.execute, "Octo issue search", "") },
+		{
+			"List",
+			"Lists pending issues in the current repo",
+			handler = fn.bind(vim.fn.execute, "Octo issue list", ""),
+		},
+		{
+			"Create",
+			"Creates a new issue in the current repo",
+			handler = fn.bind(vim.fn.execute, "Octo issue create", ""),
+		},
+		{
+			"List all",
+			"Lists all issues in the current repo",
+			handler = fn.bind(vim.fn.execute, "Octo issue search", ""),
+		},
 		on_select = function(modal_menu)
 			local selection = modal_menu.state.get_selected_entry()
-			local pull_request_action = selection.value[3]
 			modal_menu.actions.close(modal_menu.buffer)
-			pull_request_action()
+			selection.value.handler()
 		end,
 	}
 
-	require("finder.picker").modal_menu(menu, options)
+	require("finder.picker").menu(menu, options)
 end
 
 Git.github_actions_menu = function()

@@ -280,30 +280,22 @@ Tree.search_in_node = validator.f.arguments({ validate_node })
 
 Tree.tree_actions_menu = validator.f.arguments({ validate_node })
 	.. function(node)
-		local results = fn.imap(Tree.actions(), function(action)
-			return { action.name, action.handler }
-		end)
-		local items = {
-			results = results,
-			entry_maker = function(tree_action)
-				return {
-					value = tree_action,
-					ordinal = tree_action[1],
-					display = tree_action[1],
-				}
-			end,
-		}
-		local handlers = {
-			on_select = function(context_menu)
-				local selection = context_menu.state.get_selected_entry()
-				local tree_action = selection.value[2]
-				context_menu.actions.close(context_menu.buffer)
-				tree_action(node)
-			end,
-		}
+		local menu = vim.tbl_extend(
+			"error",
+			fn.imap(Tree.actions(), function(action)
+				return { action.name, handler = action.handler }
+			end),
+			{
+				on_select = function(context_menu)
+					local selection = context_menu.state.get_selected_entry()
+					context_menu.actions.close(context_menu.buffer)
+					selection.value.handler(node)
+				end,
+			}
+		)
 		local options = { prompt_title = node.name }
 
-		require("finder.picker").context_menu(items, handlers, options)
+		require("finder.picker").context_menu(menu, options)
 	end
 
 Tree.toggle = function()
