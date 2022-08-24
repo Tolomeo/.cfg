@@ -243,10 +243,7 @@ Picker.spelling = function()
 end
 
 Picker.modal_menu = validator.f.arguments({
-	validator.f.shape({
-		results = validator.f.list({ validator.f.list({ "string", "function" }) }),
-		entry_maker = "function",
-	}),
+	validator.f.list({ validator.f.list({ "string", "string", "function" }) }),
 	validator.f.shape({
 		on_select = "function",
 	}),
@@ -254,10 +251,38 @@ Picker.modal_menu = validator.f.arguments({
 		prompt_title = "string",
 	})),
 })
-	.. function(items, handlers, options)
+	.. function(results, handlers, options)
 		options = options or {}
+		local entry_display = require("telescope.pickers.entry_display")
+		local displayer = entry_display.create({
+			separator = " ",
+			items = {
+				-- calculating the max with needed for the column
+				fn.ireduce(results, function(item, result)
+					item.width = math.max(item.width, #result[1])
+					return item
+				end, { width = 10 }),
+				{ remaining = true },
+			},
+		})
+		local make_display = function(entry)
+			return displayer({
+				entry.value[1],
+				entry.value[2],
+			})
+		end
+		local entry_maker = function(result)
+			return {
+				value = result,
+				ordinal = result[1],
+				display = make_display,
+			}
+		end
 
-		local finder = require("telescope.finders").new_table(items)
+		local finder = require("telescope.finders").new_table({
+			results = results,
+			entry_maker = entry_maker,
+		})
 		local sorter = require("telescope.sorters").get_generic_fuzzy_sorter()
 		local default_options = {
 			finder = finder,

@@ -47,19 +47,13 @@ end
 
 Git.github_pull_requests = function(options)
 	local results = {
-		{ "List open pull requests", fn.bind(vim.fn.execute, "Octo pr list", "") },
-		{ "Create a new pull request", fn.bind(vim.fn.execute, "Octo pr create", "") },
-		{ "List all pull requests", fn.bind(vim.fn.execute, "Octo pr search", "") },
-	}
-	local items = {
-		results = results,
-		entry_maker = function(pull_request_action)
-			return {
-				value = pull_request_action,
-				ordinal = pull_request_action[1],
-				display = pull_request_action[1],
-			}
-		end,
+		{ "List", "Lists pending pull requests in the current repo", fn.bind(vim.fn.execute, "Octo pr list", "") },
+		{
+			"Create",
+			"Creates a new pull request for the current branch",
+			fn.bind(vim.fn.execute, "Octo pr create", ""),
+		},
+		{ "List all", "Lists all pull requests in the current repo", fn.bind(vim.fn.execute, "Octo pr search", "") },
 	}
 	local handlers = {
 		on_select = function(modal_menu)
@@ -70,24 +64,14 @@ Git.github_pull_requests = function(options)
 		end,
 	}
 
-	require("finder.picker").modal_menu(items, handlers, options)
+	require("finder.picker").modal_menu(results, handlers, options)
 end
 
 Git.github_issues = function(options)
 	local results = {
-		{ "List issues", fn.bind(vim.fn.execute, "Octo issue list", "") },
-		{ "Create a new issue", fn.bind(vim.fn.execute, "Octo issue create", "") },
-		{ "List all issues", fn.bind(vim.fn.execute, "Octo issue search", "") },
-	}
-	local items = {
-		results = results,
-		entry_maker = function(pull_request_action)
-			return {
-				value = pull_request_action,
-				ordinal = pull_request_action[1],
-				display = pull_request_action[1],
-			}
-		end,
+		{ "List", "Lists pending issues in the current repo", fn.bind(vim.fn.execute, "Octo issue list", "") },
+		{ "Create", "Creates a new issue in the current repo", fn.bind(vim.fn.execute, "Octo issue create", "") },
+		{ "List all", "Lists all issues in the current repo", fn.bind(vim.fn.execute, "Octo issue search", "") },
 	}
 	local handlers = {
 		on_select = function(modal_menu)
@@ -98,14 +82,16 @@ Git.github_issues = function(options)
 		end,
 	}
 
-	require("finder.picker").modal_menu(items, handlers, options)
+	require("finder.picker").modal_menu(results, handlers, options)
 end
 
 Git.github_actions_menu = function()
-	require("finder.picker").Pickers({
-		{ prompt_title = "GH Pull Requests", find = Git.github_pull_requests },
-		{ prompt_title = "GH Issues", find = Git.github_issues },
-	}):find()
+	require("finder.picker")
+		.Pickers({
+			{ prompt_title = "GH Pull Requests", find = Git.github_pull_requests },
+			{ prompt_title = "GH Issues", find = Git.github_issues },
+		})
+		:find()
 end
 
 Git._setup_plugins = function()
