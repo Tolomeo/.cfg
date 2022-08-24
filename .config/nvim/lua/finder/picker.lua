@@ -181,7 +181,6 @@ Picker._setup_plugins = function()
 end
 
 Picker.Pickers = function(pickers)
-	Picker.debug(pickers)
 	return Pickers:new(pickers)
 end
 
@@ -243,22 +242,23 @@ Picker.spelling = function()
 end
 
 Picker.modal_menu = validator.f.arguments({
-	validator.f.list({ validator.f.list({ "string", "string", "function" }) }),
 	validator.f.shape({
+		validator.f.list({ "string", "string", validator.f.optional("function") }),
 		on_select = "function",
 	}),
 	validator.f.optional(validator.f.shape({
 		prompt_title = "string",
 	})),
 })
-	.. function(results, handlers, options)
+	.. function(menu, options)
 		options = options or {}
+
 		local entry_display = require("telescope.pickers.entry_display")
 		local displayer = entry_display.create({
 			separator = " ",
 			items = {
 				-- calculating the max with needed for the column
-				fn.ireduce(results, function(item, result)
+				fn.ireduce(menu, function(item, result)
 					item.width = math.max(item.width, #result[1])
 					return item
 				end, { width = 10 }),
@@ -268,19 +268,21 @@ Picker.modal_menu = validator.f.arguments({
 		local make_display = function(entry)
 			return displayer({
 				entry.value[1],
-				entry.value[2],
+				{ entry.value[2], "Comment" },
 			})
 		end
-		local entry_maker = function(result)
+		local entry_maker = function(menu_item)
 			return {
-				value = result,
-				ordinal = result[1],
+				value = menu_item,
+				ordinal = menu_item[1],
 				display = make_display,
 			}
 		end
 
 		local finder = require("telescope.finders").new_table({
-			results = results,
+			results = fn.imap(menu, function(menu_item)
+				return menu_item
+			end),
 			entry_maker = entry_maker,
 		})
 		local sorter = require("telescope.sorters").get_generic_fuzzy_sorter()
@@ -292,13 +294,14 @@ Picker.modal_menu = validator.f.arguments({
 				local state = require("telescope.actions.state")
 				-- On select item
 				actions.select_default:replace(function()
-					handlers.on_select({ buffer = prompt_buffer_number, state = state, actions = actions })
+					menu.on_select({ buffer = prompt_buffer_number, state = state, actions = actions })
 				end)
 				-- Disabling any kind of multiple selection
 				actions.add_selection:replace(function() end)
 				actions.remove_selection:replace(function() end)
 				actions.toggle_selection:replace(function() end)
 				actions.select_all:replace(function() end)
+
 				actions.drop_all:replace(function() end)
 				actions.toggle_all:replace(function() end)
 

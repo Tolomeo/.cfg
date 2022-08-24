@@ -46,7 +46,7 @@ Git._setup_keymaps = function()
 end
 
 Git.github_pull_requests = function(options)
-	local results = {
+	local menu = {
 		{ "List", "Lists pending pull requests in the current repo", fn.bind(vim.fn.execute, "Octo pr list", "") },
 		{
 			"Create",
@@ -54,8 +54,6 @@ Git.github_pull_requests = function(options)
 			fn.bind(vim.fn.execute, "Octo pr create", ""),
 		},
 		{ "List all", "Lists all pull requests in the current repo", fn.bind(vim.fn.execute, "Octo pr search", "") },
-	}
-	local handlers = {
 		on_select = function(modal_menu)
 			local selection = modal_menu.state.get_selected_entry()
 			local pull_request_action = selection.value[3]
@@ -64,16 +62,14 @@ Git.github_pull_requests = function(options)
 		end,
 	}
 
-	require("finder.picker").modal_menu(results, handlers, options)
+	require("finder.picker").modal_menu(menu, options)
 end
 
 Git.github_issues = function(options)
-	local results = {
+	local menu = {
 		{ "List", "Lists pending issues in the current repo", fn.bind(vim.fn.execute, "Octo issue list", "") },
 		{ "Create", "Creates a new issue in the current repo", fn.bind(vim.fn.execute, "Octo issue create", "") },
 		{ "List all", "Lists all issues in the current repo", fn.bind(vim.fn.execute, "Octo issue search", "") },
-	}
-	local handlers = {
 		on_select = function(modal_menu)
 			local selection = modal_menu.state.get_selected_entry()
 			local pull_request_action = selection.value[3]
@@ -82,16 +78,14 @@ Git.github_issues = function(options)
 		end,
 	}
 
-	require("finder.picker").modal_menu(results, handlers, options)
+	require("finder.picker").modal_menu(menu, options)
 end
 
 Git.github_actions_menu = function()
-	require("finder.picker")
-		.Pickers({
-			{ prompt_title = "GH Pull Requests", find = Git.github_pull_requests },
-			{ prompt_title = "GH Issues", find = Git.github_issues },
-		})
-		:find()
+	require("finder.picker").Pickers({
+		{ prompt_title = "GH Pull Requests", find = Git.github_pull_requests },
+		{ prompt_title = "GH Issues", find = Git.github_issues },
+	}):find()
 end
 
 Git._setup_plugins = function()
