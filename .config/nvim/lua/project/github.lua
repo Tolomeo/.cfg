@@ -122,14 +122,14 @@ Github.issues_menu = function(options)
 	require("finder.picker").menu(menu, options)
 end
 
-Github._is_review_diff = function()
+Github._is_changed_file_diff = function()
 	local has_review = require("octo.reviews").get_current_review()
 	local in_diff_window = require("octo.utils").in_diff_window()
 
 	return has_review and in_diff_window
 end
 
-Github.diff_menu = function(options)
+Github.changed_file_diff_menu = function(options)
 	local menu = {
 		{
 			"Add comment",
@@ -195,7 +195,7 @@ Github._is_changed_files_list = function()
 	return vim.api.nvim_buf_get_option(0, "filetype") == "octo_panel"
 end
 
-Github.files_changes_menu = function(options)
+Github.changed_files_list_menu = function(options)
 	local menu = {
 		{
 			"Next changed file",
@@ -252,16 +252,158 @@ Github.files_changes_menu = function(options)
 	require("finder.picker").context_menu(menu, options)
 end
 
+Github._is_pull_request = function()
+	return vim.api.nvim_buf_get_option(0, "filetype") == "octo"
+end
+
+Github.pull_request_menu = function(options)
+	local menu = {
+		{
+			"Checkout pull request",
+			"<space>po",
+			handler = require("octo.mappings").checkout_pr,
+		},
+		{
+			"Merge pull request",
+			"<space>pm",
+			handler = require("octo.mappings").merge_pr,
+		},
+		{
+			"Squash and merge pull request",
+			"<space>psm",
+			handler = require("octo.mappings").squash_and_merge_pr,
+		},
+		{
+			"List pull request commits",
+			"<space>pc",
+			handler = require("octo.mappings").list_commits,
+		},
+		{
+			"List pull request changes",
+			"<space>pf",
+			handler = require("octo.mappings").list_changed_files,
+		},
+		{
+			"Show pull request diff",
+			"<space>pd",
+			handler = require("octo.mappings").show_pr_diff,
+		},
+		{
+			"Add pull request reviewer",
+			"<space>va",
+			handler = require("octo.mappings").add_reviewer,
+		},
+		{
+			"Remove pull request reviewer",
+			"<space>vd",
+			handler = require("octo.mappings").remove_reviewer,
+		},
+		{
+			"Close pull request",
+			"<space>ic",
+			handler = require("octo.mappings").close_issue,
+		},
+		{
+			"Reopen pull request",
+			"<space>io",
+			handler = require("octo.mappings").reopen_issue,
+		},
+		{
+			"Reload pull request",
+			"<C-r>",
+			handler = require("octo.mappings").reload,
+		},
+		{
+			"Open pull request in browser",
+			"<C-b>",
+			handler = require("octo.mappings").open_in_browser,
+		},
+		{
+			"Copy pull request url",
+			"<C-y>",
+			handler = require("octo.mappings").copy_url,
+		},
+		--[[ {
+			"Go to file",
+			"gf",
+			handler = require("octo.mappings").goto_file,
+		}, ]]
+		{
+			"Add pull request assignee",
+			"<space>aa",
+			handler = require("octo.mappings").add_assignee,
+		},
+		{
+			"Remove pull request assignee",
+			"<space>ad",
+			handler = require("octo.mappings").remove_assignee,
+		},
+		--[[ {
+			"Create label",
+			"<space>lc",
+			handler = require("octo.mappings").create_label,
+		}, ]]
+		{
+			"Add pull request label",
+			"<space>la",
+			handler = require("octo.mappings").add_label,
+		},
+		{
+			"Remove pull request label",
+			"<space>la",
+			handler = require("octo.mappings").remove_label,
+		},
+		{
+			"Add pull request comment",
+			"<space>ca",
+			handler = require("octo.mappings").add_comment,
+		},
+		{
+			"Remove pull request comment",
+			"<space>cd",
+			handler = require("octo.mappings").delete_comment,
+		},
+		{
+			"Go to next comment",
+			"]c",
+			handler = require("octo.mappings").next_comment,
+		},
+		{
+			"Go to previous comment",
+			"[c",
+			handler = require("octo.mappings").prev_comment,
+		},
+
+		-- react_hooray = { lhs = "<space>rp", desc = "add/remove 🎉 reaction" },
+		-- react_heart = { lhs = "<space>rh", desc = "add/remove ❤️ reaction" },
+		-- react_eyes = { lhs = "<space>re", desc = "add/remove 👀 reaction" },
+		-- react_thumbs_up = { lhs = "<space>r+", desc = "add/remove 👍 reaction" },
+		-- react_thumbs_down = { lhs = "<space>r-", desc = "add/remove 👎 reaction" },
+		-- react_rocket = { lhs = "<space>rr", desc = "add/remove 🚀 reaction" },
+		-- react_laugh = { lhs = "<space>rl", desc = "add/remove 😄 reaction" },
+		-- react_confused = { lhs = "<space>rc", desc = "add/remove 😕 reaction" }
+		on_select = function(modal_menu)
+			local selection = modal_menu.state.get_selected_entry()
+			modal_menu.actions.close(modal_menu.buffer)
+			selection.value.handler()
+		end,
+	}
+
+	require("finder.picker").context_menu(menu, options)
+end
+
 Github.github_actions_menu = function()
 	local github_pickers = {
 		{ prompt_title = "GH Pull Requests", find = Github.pull_requests_menu },
 		{ prompt_title = "GH Issues", find = Github.issues_menu },
 	}
 
-	if Github._is_review_diff() then
-		table.insert(github_pickers, 1, { prompt_title = "Diff actions", find = Github.diff_menu })
+	if Github._is_changed_file_diff() then
+		table.insert(github_pickers, 1, { prompt_title = "Diff actions", find = Github.changed_file_diff_menu })
 	elseif Github._is_changed_files_list() then
-		table.insert(github_pickers, 1, { prompt_title = "Changed files", find = Github.files_changes_menu })
+		table.insert(github_pickers, 1, { prompt_title = "Changed files", find = Github.changed_files_list_menu })
+	elseif Github._is_pull_request() then
+		table.insert(github_pickers, 1, { prompt_title = "Pull request", find = Github.pull_request_menu })
 	end
 
 	require("finder.picker").Pickers(github_pickers):find()
