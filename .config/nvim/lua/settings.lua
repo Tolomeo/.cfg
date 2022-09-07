@@ -299,7 +299,7 @@ Settings._options = {
 	["language.servers"] = {},
 	["theme.colorscheme"] = "nightfox",
 	["theme.component_separator"] = "│",
-	["theme.section_separator"] = "",
+	["theme.section_separator"] = "█",
 }
 
 Settings.options = validator.f.arguments({

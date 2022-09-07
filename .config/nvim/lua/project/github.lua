@@ -410,20 +410,13 @@ Github.github_actions_menu = function()
 end
 
 Github._setup_plugins = function()
-	-- GithubSigns
-	-- see https://github.com/whatsthatsmell/dots/blob/master/public%20dots/vim-nvim/lua/joel/mappings.lua
-	require("gitsigns").setup({
-		current_line_blame = true,
-		current_line_blame_opts = {
-			delay = 100,
-		},
+	local options = require("settings").options()
+
+	require("octo").setup({
+		right_bubble_delimiter = options["theme.section_separator"],
+		left_bubble_delimiter = options["theme.section_separator"],
 	})
 
-	-- Octo
-	require("octo").setup({
-		right_bubble_delimiter = "┃",
-		left_bubble_delimiter = "┃",
-	})
 	require("telescope").load_extension("octo_commands")
 end
 
