@@ -233,6 +233,10 @@ Github.changed_files_list_menu = function(options)
 			handler = require("octo.mappings").select_prev_entry,
 		},
 		{
+			"List pending comments",
+			handler = fn.bind(vim.fn.execute, "Octo review comments", ""),
+		},
+		{
 			"Close review tab",
 			"<C-c>",
 			handler = require("octo.mappings").close_review_tab,
@@ -264,6 +268,31 @@ Github.pull_request_menu = function(options)
 			handler = require("octo.mappings").checkout_pr,
 		},
 		{
+			"Start pull request review",
+			handler = fn.bind(vim.fn.execute, "Octo review start", ""),
+		},
+		{
+			"Resume pull request review",
+			handler = fn.bind(vim.fn.execute, "Octo review resume", ""),
+		},
+		{
+			"Review pull request commit",
+			handler = fn.bind(vim.fn.execute, "Octo review commmit", ""),
+		},
+		{
+			"Discard pull request review",
+			handler = fn.bind(vim.fn.execute, "Octo review discard", ""),
+		},
+		{
+			"Submit pull request review",
+			handler = fn.bind(vim.fn.execute, "Octo review submit", ""),
+		},
+		{
+			"List pull request commits",
+			"<space>pc",
+			handler = require("octo.mappings").list_commits,
+		},
+		{
 			"Merge pull request",
 			"<space>pm",
 			handler = require("octo.mappings").merge_pr,
@@ -272,11 +301,6 @@ Github.pull_request_menu = function(options)
 			"Squash and merge pull request",
 			"<space>psm",
 			handler = require("octo.mappings").squash_and_merge_pr,
-		},
-		{
-			"List pull request commits",
-			"<space>pc",
-			handler = require("octo.mappings").list_commits,
 		},
 		{
 			"List pull request changes",
@@ -389,21 +413,26 @@ Github.pull_request_menu = function(options)
 		end,
 	}
 
-	require("finder.picker").context_menu(menu, options)
+	require("finder.picker").menu(menu, options)
 end
 
 Github.github_actions_menu = function()
+	local buffer_name = vim.api.nvim_buf_get_name(0)
 	local github_pickers = {
 		{ prompt_title = "GH Pull Requests", find = Github.pull_requests_menu },
 		{ prompt_title = "GH Issues", find = Github.issues_menu },
 	}
 
-	if Github._is_changed_file_diff() then
-		table.insert(github_pickers, 1, { prompt_title = "Diff actions", find = Github.changed_file_diff_menu })
-	elseif Github._is_changed_files_list() then
+	if string.match(buffer_name, "octo://.+/pull/%d+$") then
+		local prompt_title = "Pull request #" .. vim.fn.fnamemodify(buffer_name, ":t")
+		table.insert(github_pickers, 1, { prompt_title = prompt_title, find = Github.pull_request_menu })
+	elseif string.match(buffer_name, "^.+/OctoChangedFiles%-%d+$") then
 		table.insert(github_pickers, 1, { prompt_title = "Changed files", find = Github.changed_files_list_menu })
-	elseif Github._is_pull_request() then
-		table.insert(github_pickers, 1, { prompt_title = "Pull request", find = Github.pull_request_menu })
+	elseif string.match(buffer_name, "^octo://.+/review/.+/file/.+$") then
+		local prompt_title = vim.fn.fnamemodify(buffer_name, ":t")
+		table.insert(github_pickers, 1, { prompt_title = prompt_title, find = Github.changed_file_diff_menu })
+	elseif string.match(buffer_name, "octo://.+/review/.+/threads/.+$") then
+		print("thread")
 	end
 
 	require("finder.picker").Pickers(github_pickers):find()
