@@ -29,87 +29,39 @@ Github.setup = function()
 end
 
 Github._setup_keymaps = function()
-	-- local keymaps = settings.keymaps()
-
-	key.nmap({ "<leader>G", Github.github_actions_menu })
-
-	--[[ au.group({
-		"OctoBuffer",
-		{
-			{
-				"FileType",
-				"octo",
-				function(cmd)
-					local octo_buffer = _G.octo_buffers[cmd.buf]
-
-					-- vim.pretty_print(_G.octo_buffers)
-					vim.pretty_print(cmd)
-					-- vim.pretty_print(_G.octo_buffers[cmd.buf])
-				end,
-			},
-			{
-				"FileType",
-				"octo_panel",
-				function(cmd)
-					-- vim.pretty_print(_G.octo_buffers)
-					vim.pretty_print(cmd)
-					-- vim.pretty_print(_G.octo_buffers[cmd.buf])
-				end,
-			},
-			{
-				"BufEnter",
-				-- "octo://*/review/*/file/*",
-				"octo://",
-				function(cmd)
-					vim.pretty_print(cmd)
-				end,
-			},
-		},
-	}) ]]
+	key.nmap({ "<leader>G", Github.actions_menu })
 end
 
-Github.pull_requests_menu = function(options)
+Github.repository_menu = function(options)
 	local menu = {
 		{
-			"List",
+			"List pull requests",
 			"Lists pending pull requests in the current repo",
 			handler = fn.bind(vim.fn.execute, "Octo pr list", ""),
 		},
 		{
-			"Create",
+			"Create pull request",
 			"Creates a new pull request for the current branch",
 			handler = fn.bind(vim.fn.execute, "Octo pr create", ""),
 		},
 		{
-			"List all",
-			"Lists all pull requests in the current repo",
+			"List all pull requests",
+			"Search among all pull requests in the current repo",
 			handler = fn.bind(vim.fn.execute, "Octo pr search", ""),
 		},
-		on_select = function(modal_menu)
-			local selection = modal_menu.state.get_selected_entry()
-			modal_menu.actions.close(modal_menu.buffer)
-			selection.value.handler()
-		end,
-	}
-
-	require("finder.picker").menu(menu, options)
-end
-
-Github.issues_menu = function(options)
-	local menu = {
 		{
-			"List",
+			"List issues",
 			"Lists pending issues in the current repo",
 			handler = fn.bind(vim.fn.execute, "Octo issue list", ""),
 		},
 		{
-			"Create",
+			"Create issue",
 			"Creates a new issue in the current repo",
 			handler = fn.bind(vim.fn.execute, "Octo issue create", ""),
 		},
 		{
-			"List all",
-			"Lists all issues in the current repo",
+			"List all issues",
+			"Search among all issues in the current repo",
 			handler = fn.bind(vim.fn.execute, "Octo issue search", ""),
 		},
 		on_select = function(modal_menu)
@@ -122,11 +74,79 @@ Github.issues_menu = function(options)
 	require("finder.picker").menu(menu, options)
 end
 
-Github._is_changed_file_diff = function()
-	local has_review = require("octo.reviews").get_current_review()
-	local in_diff_window = require("octo.utils").in_diff_window()
+Github.pending_review_menu = function(options)
+	local menu = {
+		{
+			"List pending comments",
+			handler = fn.bind(vim.fn.execute, "Octo review comments", ""),
+		},
+		{
+			"Discard pull request review",
+			handler = fn.bind(vim.fn.execute, "Octo review discard", ""),
+		},
+		{
+			"Submit pull request review",
+			handler = fn.bind(vim.fn.execute, "Octo review submit", ""),
+		},
+		on_select = function(modal_menu)
+			local selection = modal_menu.state.get_selected_entry()
+			modal_menu.actions.close(modal_menu.buffer)
+			selection.value.handler()
+		end,
+	}
 
-	return has_review and in_diff_window
+	require("finder.picker").context_menu(menu, options)
+end
+Github.reactions_menu = function(options)
+	local menu = {
+		{
+			"Add/remove 🎉 reaction",
+			"<space>rp",
+			handler = require("octo.mappings").react_hooray,
+		},
+		{
+			"Add/remove ❤️ reaction",
+			"<space>rh",
+			handler = require("octo.mappings").react_heart,
+		},
+		{
+			"Add/remove 👀 reaction",
+			"<space>re",
+			handler = require("octo.mappings").react_eyes,
+		},
+		{
+			"Add/remove 👍 reaction",
+			"<space>r+",
+			handler = require("octo.mappings").react_thumbs_up,
+		},
+		{
+			"Add/remove 👎 reaction",
+			"<space>r-",
+			handler = require("octo.mappings").react_thumbs_down,
+		},
+		{
+			"Add/remove 🚀 reaction",
+			"<space>rr",
+			handler = require("octo.mappings").react_rocket,
+		},
+		{
+			"Add/remove 😄 reaction",
+			"<space>rl",
+			handler = require("octo.mappings").react_laugh,
+		},
+		{
+			"Add/remove 😕 reaction",
+			"<space>rc",
+			handler = require("octo.mappings").react_confused,
+		},
+		on_select = function(modal_menu)
+			local selection = modal_menu.state.get_selected_entry()
+			modal_menu.actions.close(modal_menu.buffer)
+			selection.value.handler()
+		end,
+	}
+
+	require("finder.picker").context_menu(menu, options)
 end
 
 Github.changed_file_diff_menu = function(options)
@@ -142,16 +162,6 @@ Github.changed_file_diff_menu = function(options)
 			handler = require("octo.mappings").add_review_suggestion,
 		},
 		{
-			"Move to changed files",
-			"<leader>e",
-			handler = require("octo.mappings").focus_files,
-		},
-		{
-			"Toggle changed files",
-			"<leader>b",
-			handler = require("octo.mappings").toggle_files,
-		},
-		{
 			"Move to next comment thread",
 			"]t",
 			handler = require("octo.mappings").next_thread,
@@ -160,6 +170,11 @@ Github.changed_file_diff_menu = function(options)
 			"Move to previous comment thread",
 			"[t",
 			handler = require("octo.mappings").prev_thread,
+		},
+		{
+			"Move to changed files",
+			"<leader>e",
+			handler = require("octo.mappings").focus_files,
 		},
 		{
 			"Select next changed file",
@@ -172,14 +187,19 @@ Github.changed_file_diff_menu = function(options)
 			handler = require("octo.mappings").select_prev_entry,
 		},
 		{
+			"Mark/Unmark file as viewed",
+			"<leader><space>",
+			handler = require("octo.mappings").toggle_viewed,
+		},
+		{
+			"Open/Close changed files list",
+			"<leader>b",
+			handler = require("octo.mappings").toggle_files,
+		},
+		{
 			"Close review tab",
 			"<C-c>",
 			handler = require("octo.mappings").close_review_tab,
-		},
-		{
-			"Toggle viewed files",
-			"<leader><space>",
-			handler = require("octo.mappings").toggle_viewed,
 		},
 		on_select = function(modal_menu)
 			local selection = modal_menu.state.get_selected_entry()
@@ -189,10 +209,6 @@ Github.changed_file_diff_menu = function(options)
 	}
 
 	require("finder.picker").context_menu(menu, options)
-end
-
-Github._is_changed_files_list = function()
-	return vim.api.nvim_buf_get_option(0, "filetype") == "octo_panel"
 end
 
 Github.changed_files_list_menu = function(options)
@@ -213,16 +229,6 @@ Github.changed_files_list_menu = function(options)
 			handler = require("octo.mappings").select_entry,
 		},
 		{
-			"Refresh changed files",
-			"R",
-			handler = require("octo.mappings").refresh_files,
-		},
-		{
-			"Toggle changed files",
-			"<leader>b",
-			handler = require("octo.mappings").toggle_files,
-		},
-		{
 			"Select next changed file",
 			"]q",
 			handler = require("octo.mappings").select_next_entry,
@@ -233,18 +239,24 @@ Github.changed_files_list_menu = function(options)
 			handler = require("octo.mappings").select_prev_entry,
 		},
 		{
-			"List pending comments",
-			handler = fn.bind(vim.fn.execute, "Octo review comments", ""),
+			"Mark/Unmark file as viewed",
+			"<leader><space>",
+			handler = require("octo.mappings").toggle_viewed,
+		},
+		{
+			"Refresh changed files",
+			"R",
+			handler = require("octo.mappings").refresh_files,
+		},
+		{
+			"Open/Close changed files list",
+			"<leader>b",
+			handler = require("octo.mappings").toggle_files,
 		},
 		{
 			"Close review tab",
 			"<C-c>",
 			handler = require("octo.mappings").close_review_tab,
-		},
-		{
-			"Toggle viewed files",
-			"<leader><space>",
-			handler = require("octo.mappings").toggle_viewed,
 		},
 		on_select = function(modal_menu)
 			local selection = modal_menu.state.get_selected_entry()
@@ -254,10 +266,6 @@ Github.changed_files_list_menu = function(options)
 	}
 
 	require("finder.picker").context_menu(menu, options)
-end
-
-Github._is_pull_request = function()
-	return vim.api.nvim_buf_get_option(0, "filetype") == "octo"
 end
 
 Github.pull_request_menu = function(options)
@@ -278,14 +286,6 @@ Github.pull_request_menu = function(options)
 		{
 			"Review pull request commit",
 			handler = fn.bind(vim.fn.execute, "Octo review commmit", ""),
-		},
-		{
-			"Discard pull request review",
-			handler = fn.bind(vim.fn.execute, "Octo review discard", ""),
-		},
-		{
-			"Submit pull request review",
-			handler = fn.bind(vim.fn.execute, "Octo review submit", ""),
 		},
 		{
 			"List pull request commits",
@@ -397,15 +397,6 @@ Github.pull_request_menu = function(options)
 			"[c",
 			handler = require("octo.mappings").prev_comment,
 		},
-
-		-- react_hooray = { lhs = "<space>rp", desc = "add/remove 🎉 reaction" },
-		-- react_heart = { lhs = "<space>rh", desc = "add/remove ❤️ reaction" },
-		-- react_eyes = { lhs = "<space>re", desc = "add/remove 👀 reaction" },
-		-- react_thumbs_up = { lhs = "<space>r+", desc = "add/remove 👍 reaction" },
-		-- react_thumbs_down = { lhs = "<space>r-", desc = "add/remove 👎 reaction" },
-		-- react_rocket = { lhs = "<space>rr", desc = "add/remove 🚀 reaction" },
-		-- react_laugh = { lhs = "<space>rl", desc = "add/remove 😄 reaction" },
-		-- react_confused = { lhs = "<space>rc", desc = "add/remove 😕 reaction" }
 		on_select = function(modal_menu)
 			local selection = modal_menu.state.get_selected_entry()
 			modal_menu.actions.close(modal_menu.buffer)
@@ -413,29 +404,102 @@ Github.pull_request_menu = function(options)
 		end,
 	}
 
-	require("finder.picker").menu(menu, options)
+	require("finder.picker").context_menu(menu, options)
 end
 
-Github.github_actions_menu = function()
+Github.thread_actions_menu = function(options)
+	local menu = {
+		{
+			"Add comment",
+			"<space>ca",
+			handler = require("octo.mappings").add_comment,
+		},
+		-- NOTE: this seems not to be working
+		--[[ {
+			"Add suggestion",
+			"<space>sa",
+			handler = require("octo.mappings").add_suggestion,
+		}, ]]
+		{
+			"Delete comment",
+			"<space>cd",
+			handler = require("octo.mappings").delete_comment,
+		},
+		{
+			"Go to next comment",
+			"]c",
+			handler = require("octo.mappings").next_comment,
+		},
+		{
+			"Go to previous comment",
+			"[c",
+			handler = require("octo.mappings").prev_comment,
+		},
+		{
+			"Move to changed files list",
+			"<leader>e",
+			handler = require("octo.mappings").focus_files,
+		},
+		{
+			"Select next changed file",
+			"]q",
+			handler = require("octo.mappings").select_next_entry,
+		},
+		{
+			"Select previous changed file",
+			"[q",
+			handler = require("octo.mappings").select_prev_entry,
+		},
+		{
+			"Open/Close changed files list",
+			"<leader>b",
+			handler = require("octo.mappings").toggle_files,
+		},
+		{
+			"Close review tab",
+			"<C-c>",
+			handler = require("octo.mappings").close_review_tab,
+		},
+		on_select = function(modal_menu)
+			local selection = modal_menu.state.get_selected_entry()
+			modal_menu.actions.close(modal_menu.buffer)
+			selection.value.handler()
+		end,
+	}
+
+	require("finder.picker").context_menu(menu, options)
+end
+
+Github.actions_menu = function()
 	local buffer_name = vim.api.nvim_buf_get_name(0)
 	local github_pickers = {
-		{ prompt_title = "GH Pull Requests", find = Github.pull_requests_menu },
-		{ prompt_title = "GH Issues", find = Github.issues_menu },
+		{ prompt_title = "Repository", find = Github.repository_menu },
 	}
 
 	if string.match(buffer_name, "octo://.+/pull/%d+$") then
-		local prompt_title = "Pull request #" .. vim.fn.fnamemodify(buffer_name, ":t")
-		table.insert(github_pickers, 1, { prompt_title = prompt_title, find = Github.pull_request_menu })
+		local pr_menu_prompt_title = "Pull request #" .. vim.fn.fnamemodify(buffer_name, ":t")
+		table.insert(github_pickers, 1, { prompt_title = "Reactions", find = Github.reactions_menu })
+		table.insert(github_pickers, 1, { prompt_title = pr_menu_prompt_title, find = Github.pull_request_menu })
 	elseif string.match(buffer_name, "^.+/OctoChangedFiles%-%d+$") then
+		table.insert(github_pickers, 1, { prompt_title = "Pending review", find = Github.pending_review_menu })
 		table.insert(github_pickers, 1, { prompt_title = "Changed files", find = Github.changed_files_list_menu })
 	elseif string.match(buffer_name, "^octo://.+/review/.+/file/.+$") then
 		local prompt_title = vim.fn.fnamemodify(buffer_name, ":t")
+		table.insert(github_pickers, 1, { prompt_title = "Pending review", find = Github.pending_review_menu })
 		table.insert(github_pickers, 1, { prompt_title = prompt_title, find = Github.changed_file_diff_menu })
 	elseif string.match(buffer_name, "octo://.+/review/.+/threads/.+$") then
-		print("thread")
+		local thread_menu_prompt_title = vim.fn.fnamemodify(buffer_name, ":t")
+		table.insert(github_pickers, 1, { prompt_title = "Pending review", find = Github.pending_review_menu })
+		table.insert(github_pickers, 1, { prompt_title = "Reactions", find = Github.reactions_menu })
+		table.insert(github_pickers, 1, { prompt_title = thread_menu_prompt_title, find = Github.thread_actions_menu })
 	end
 
-	require("finder.picker").Pickers(github_pickers):find()
+	if #github_pickers > 1 then
+		return require("finder.picker").Pickers(github_pickers):find()
+	end
+
+	local repository_picker = github_pickers[1]
+	return repository_picker.find({ prompt_title = repository_picker.prompt_title })
 end
 
 Github._setup_plugins = function()
