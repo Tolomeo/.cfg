@@ -302,8 +302,43 @@ Github.pull_request_menu = function(options)
 			"<space>pc",
 			handler = require("octo.mappings").list_commits,
 		},
-		-- TODO: map octo commands -> Octo pr merge [commit|rebase|squash] [delete]
 		{
+			"Merge pull request with merge commit",
+			handler = function()
+				local delete_branch = vim.fn.confirm("Delete branch after merging?", "&Yes\n&No\n&Cancel", 2)
+
+				if delete_branch == 1 then
+					return vim.fn.execute("Octo pr merge commit delete")
+				elseif delete_branch == 2 then
+					return vim.fn.execute("Octo pr merge commit")
+				end
+			end,
+		},
+		{
+			"Squash and merge pull request",
+			handler = function()
+				local delete_branch = vim.fn.confirm("Delete branch after merging?", "&Yes\n&No\n&Cancel", 2)
+
+				if delete_branch == 1 then
+					return vim.fn.execute("Octo pr merge squash delete")
+				elseif delete_branch == 2 then
+					return vim.fn.execute("Octo pr merge squash")
+				end
+			end,
+		},
+		{
+			"Rebase and merge",
+			handler = function()
+				local delete_branch = vim.fn.confirm("Delete branch after merging?", "&Yes\n&No\n&Cancel", 2)
+
+				if delete_branch == 1 then
+					return vim.fn.execute("Octo pr merge rebase delete")
+				elseif delete_branch == 2 then
+					return vim.fn.execute("Octo pr merge rebase")
+				end
+			end,
+		},
+		--[[ {
 			"Merge pull request",
 			"<space>pm",
 			handler = require("octo.mappings").merge_pr,
@@ -312,7 +347,7 @@ Github.pull_request_menu = function(options)
 			"Squash and merge pull request",
 			"<space>psm",
 			handler = require("octo.mappings").squash_and_merge_pr,
-		},
+		}, ]]
 		{
 			"Add pull request reviewer",
 			"<space>va",
