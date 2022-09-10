@@ -288,10 +288,21 @@ Github.pull_request_menu = function(options)
 			handler = fn.bind(vim.fn.execute, "Octo review commmit", ""),
 		},
 		{
+			"List pull request changes",
+			"<space>pf",
+			handler = require("octo.mappings").list_changed_files,
+		},
+		{
+			"Show pull request diff",
+			"<space>pd",
+			handler = require("octo.mappings").show_pr_diff,
+		},
+		{
 			"List pull request commits",
 			"<space>pc",
 			handler = require("octo.mappings").list_commits,
 		},
+		-- TODO: map octo commands -> Octo pr merge [commit|rebase|squash] [delete]
 		{
 			"Merge pull request",
 			"<space>pm",
@@ -303,16 +314,6 @@ Github.pull_request_menu = function(options)
 			handler = require("octo.mappings").squash_and_merge_pr,
 		},
 		{
-			"List pull request changes",
-			"<space>pf",
-			handler = require("octo.mappings").list_changed_files,
-		},
-		{
-			"Show pull request diff",
-			"<space>pd",
-			handler = require("octo.mappings").show_pr_diff,
-		},
-		{
 			"Add pull request reviewer",
 			"<space>va",
 			handler = require("octo.mappings").add_reviewer,
@@ -321,6 +322,14 @@ Github.pull_request_menu = function(options)
 			"Remove pull request reviewer",
 			"<space>vd",
 			handler = require("octo.mappings").remove_reviewer,
+		},
+		{
+			"Mark pull request as ready for review",
+			handler = fn.bind(vim.fn.execute, "Octo pr ready", ""),
+		},
+		{
+			"Show the status of pull request checks",
+			handler = fn.bind(vim.fn.execute, "Octo pr checks", ""),
 		},
 		{
 			"Close pull request",
@@ -347,11 +356,11 @@ Github.pull_request_menu = function(options)
 			"<C-y>",
 			handler = require("octo.mappings").copy_url,
 		},
-		--[[ {
-			"Go to file",
+		{
+			"Go to commented file",
 			"gf",
 			handler = require("octo.mappings").goto_file,
-		}, ]]
+		},
 		{
 			"Add pull request assignee",
 			"<space>aa",
@@ -362,11 +371,11 @@ Github.pull_request_menu = function(options)
 			"<space>ad",
 			handler = require("octo.mappings").remove_assignee,
 		},
-		--[[ {
+		{
 			"Create label",
 			"<space>lc",
 			handler = require("octo.mappings").create_label,
-		}, ]]
+		},
 		{
 			"Add pull request label",
 			"<space>la",
@@ -414,7 +423,7 @@ Github.thread_actions_menu = function(options)
 			"<space>ca",
 			handler = require("octo.mappings").add_comment,
 		},
-		-- NOTE: this seems not to be working
+		-- NOTE: this seems not to be working in threads
 		--[[ {
 			"Add suggestion",
 			"<space>sa",
@@ -471,35 +480,37 @@ Github.thread_actions_menu = function(options)
 end
 
 Github.actions_menu = function()
+	local context_menus = {}
 	local buffer_name = vim.api.nvim_buf_get_name(0)
-	local github_pickers = {
-		{ prompt_title = "Repository", find = Github.repository_menu },
-	}
 
-	if string.match(buffer_name, "octo://.+/pull/%d+$") then
+	-- Pull request buffer
+	if string.match(buffer_name, "^octo://.+/pull/%d+$") then
 		local pr_menu_prompt_title = "Pull request #" .. vim.fn.fnamemodify(buffer_name, ":t")
-		table.insert(github_pickers, 1, { prompt_title = "Reactions", find = Github.reactions_menu })
-		table.insert(github_pickers, 1, { prompt_title = pr_menu_prompt_title, find = Github.pull_request_menu })
+		table.insert(context_menus, { prompt_title = pr_menu_prompt_title, find = Github.pull_request_menu })
+		table.insert(context_menus, { prompt_title = "Reactions", find = Github.reactions_menu })
+	-- Changed files panel
 	elseif string.match(buffer_name, "^.+/OctoChangedFiles%-%d+$") then
-		table.insert(github_pickers, 1, { prompt_title = "Pending review", find = Github.pending_review_menu })
-		table.insert(github_pickers, 1, { prompt_title = "Changed files", find = Github.changed_files_list_menu })
+		table.insert(context_menus, { prompt_title = "Changed files", find = Github.changed_files_list_menu })
+		table.insert(context_menus, { prompt_title = "Pending review", find = Github.pending_review_menu })
+	-- Changed file diff panel (either left or right)
 	elseif string.match(buffer_name, "^octo://.+/review/.+/file/.+$") then
 		local prompt_title = vim.fn.fnamemodify(buffer_name, ":t")
-		table.insert(github_pickers, 1, { prompt_title = "Pending review", find = Github.pending_review_menu })
-		table.insert(github_pickers, 1, { prompt_title = prompt_title, find = Github.changed_file_diff_menu })
-	elseif string.match(buffer_name, "octo://.+/review/.+/threads/.+$") then
+		table.insert(context_menus, { prompt_title = prompt_title, find = Github.changed_file_diff_menu })
+		table.insert(context_menus, { prompt_title = "Pending review", find = Github.pending_review_menu })
+	-- Comment thread panel
+	elseif string.match(buffer_name, "^octo://.+/review/.+/threads/.+$") then
 		local thread_menu_prompt_title = vim.fn.fnamemodify(buffer_name, ":t")
-		table.insert(github_pickers, 1, { prompt_title = "Pending review", find = Github.pending_review_menu })
-		table.insert(github_pickers, 1, { prompt_title = "Reactions", find = Github.reactions_menu })
-		table.insert(github_pickers, 1, { prompt_title = thread_menu_prompt_title, find = Github.thread_actions_menu })
+		table.insert(context_menus, { prompt_title = thread_menu_prompt_title, find = Github.thread_actions_menu })
+		table.insert(context_menus, { prompt_title = "Reactions", find = Github.reactions_menu })
+		table.insert(context_menus, { prompt_title = "Pending review", find = Github.pending_review_menu })
 	end
 
-	if #github_pickers > 1 then
-		return require("finder.picker").Pickers(github_pickers):find()
+	if #context_menus > 1 then
+		table.insert(context_menus, { prompt_title = "Repository", find = Github.repository_menu })
+		return require("finder.picker").Pickers(context_menus):find()
 	end
 
-	local repository_picker = github_pickers[1]
-	return repository_picker.find({ prompt_title = repository_picker.prompt_title })
+	return Github.repository_menu({ prompt_title = "Repository" })
 end
 
 Github._setup_plugins = function()
