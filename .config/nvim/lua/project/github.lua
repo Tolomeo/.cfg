@@ -277,6 +277,26 @@ Github.pull_request_menu = function(options)
 			handler = require("octo.mappings").checkout_pr,
 		},
 		{
+			"Add comment",
+			keymaps["github.comment.add"],
+			handler = require("octo.mappings").add_comment,
+		},
+		{
+			"Delete comment",
+			keymaps["github.comment.delete"],
+			handler = require("octo.mappings").delete_comment,
+		},
+		{
+			"Go to next comment",
+			keymaps["github.comment.next"],
+			handler = require("octo.mappings").next_comment,
+		},
+		{
+			"Go to previous comment",
+			keymaps["github.comment.previous"],
+			handler = require("octo.mappings").prev_comment,
+		},
+		{
 			"Start pull request review",
 			handler = fn.bind(vim.fn.execute, "Octo review start", ""),
 		},
