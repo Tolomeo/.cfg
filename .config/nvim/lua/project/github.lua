@@ -723,8 +723,6 @@ Github._setup_plugins = function()
 			},
 		},
 	})
-
-	require("telescope").load_extension("octo_commands")
 end
 
 return Module:new(Github)
