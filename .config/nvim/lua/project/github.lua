@@ -31,6 +31,11 @@ end
 Github.repository_menu = function(options)
 	local menu = {
 		{
+			"Create pull request",
+			"Creates a new PR for the current branch",
+			handler = fn.bind(vim.fn.execute, "Octo pr create", ""),
+		},
+		{
 			"List pull requests",
 			"Lists pending pull requests in the current repo",
 			handler = fn.bind(vim.fn.execute, "Octo pr list", ""),
@@ -322,6 +327,11 @@ Github.pull_request_menu = function(options)
 			"List pull request commits",
 			keymaps["github.pull.commits.diff"],
 			handler = require("octo.mappings").list_commits,
+		},
+		{
+			"Add comment",
+			keymaps["github.comment.add"],
+			handler = require("octo.mappings").add_comment,
 		},
 		{
 			"Merge pull request with merge commit",
