@@ -52,6 +52,11 @@ Terminal._setup_keymaps = function()
 			Terminal:create()
 			vim.api.nvim_command("startinsert")
 		end,
+	}, {
+		keymaps["terminal.jobs"],
+		function()
+			Terminal.jobs_menu()
+		end,
 	})
 end
 
@@ -155,7 +160,12 @@ Terminal.cycle = validator.f.arguments({ validator.f.equal(Terminal), validator.
 		local jobs_count = #self.jobs
 
 		if jobs_count < 1 then
-			print("No running jobs found")
+			local create_job = vim.fn.confirm("No running jobs found, do you want to create one?", "&Yes\n&No", 1)
+
+			if create_job == 1 then
+				return Terminal:create()
+			end
+
 			return
 		end
 
@@ -187,5 +197,27 @@ Terminal.cycle = validator.f.arguments({ validator.f.equal(Terminal), validator.
 		self.current = next_job_index
 		self:open_current()
 	end
+
+Terminal.jobs_menu = function(options)
+	local menu = fn.imap(Terminal.jobs, function(job_buffer)
+		local job_description = Terminal.jobs[tostring(job_buffer)]
+		return {
+			job_description.file,
+			handler = function()
+				Terminal.current = fn.find_index(Terminal.jobs, function(registered_job_buffer)
+					return registered_job_buffer == job_description.buffer
+				end)
+				Terminal:open_current()
+			end,
+		}
+	end)
+	menu.on_select = function(modal_menu)
+		local selection = modal_menu.state.get_selected_entry()
+		modal_menu.actions.close(modal_menu.buffer)
+		selection.value.handler()
+	end
+
+	require("finder.picker").menu(menu, options)
+end
 
 return Module:new(Terminal)

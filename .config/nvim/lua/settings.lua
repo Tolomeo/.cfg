@@ -329,6 +329,7 @@ Settings._keymaps = {
 	["terminal.new"] = "<C-t>",
 	["terminal.next"] = "<leader>t",
 	["terminal.prev"] = "<leader>T",
+	["terminal.jobs"] = "<leader>J",
 }
 
 Settings.keymaps = validator.f.arguments({
