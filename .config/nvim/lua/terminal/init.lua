@@ -199,6 +199,18 @@ Terminal.cycle = validator.f.arguments({ validator.f.equal(Terminal), validator.
 	end
 
 Terminal.jobs_menu = function(options)
+	if #Terminal.jobs < 1 then
+		return
+	end
+
+	options = options or {}
+	options = vim.tbl_extend("force", {
+		prompt_title = "Terminal jobs",
+		--[[ previewer = require("telescope.previewers").new_buffer_previewer({
+			define_preview = function(self, entry, status) end,
+		}), ]]
+	}, options)
+
 	local menu = fn.imap(Terminal.jobs, function(job_buffer)
 		local job_description = Terminal.jobs[tostring(job_buffer)]
 		return {

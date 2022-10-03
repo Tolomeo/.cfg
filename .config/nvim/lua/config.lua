@@ -9,7 +9,10 @@ local config_files = vim.fn.expand("~", false) .. "/.config/nvim/**/*"
 
 local Config = {}
 
-Config.plugins = { "wbthomason/packer.nvim" }
+Config.plugins = {
+	"wbthomason/packer.nvim",
+	"kyazdani42/nvim-web-devicons",
+}
 
 Config.modules = {
 	interface = require("interface"),

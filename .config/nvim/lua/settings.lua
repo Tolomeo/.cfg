@@ -236,8 +236,8 @@ Settings._keymaps = {
 	["github.suggestion.add"] = "<space>sa",
 
 	["github.review.files.focus"] = "<space>e",
-	["github.review.thread.next"] = "]t",
-	["github.review.thread.previous"] = "[t",
+	["github.review.thread.next"] = "]C",
+	["github.review.thread.previous"] = "[C",
 	["github.review.files.next"] = "j",
 	["github.review.files.previous"] = "k",
 	["github.review.files.next.select"] = "]q",
@@ -326,10 +326,10 @@ Settings._keymaps = {
 	["window.split.horizontal"] = "<C-S-x>",
 	["window.split.vertical"] = "<C-x>",
 	-- Terminal
-	["terminal.new"] = "<C-t>",
-	["terminal.next"] = "<leader>t",
-	["terminal.prev"] = "<leader>T",
-	["terminal.jobs"] = "<leader>J",
+	["terminal.next"] = "]t",
+	["terminal.prev"] = "[t",
+	["terminal.new"] = "<leader>T",
+	["terminal.jobs"] = "<leader>t",
 }
 
 Settings.keymaps = validator.f.arguments({
