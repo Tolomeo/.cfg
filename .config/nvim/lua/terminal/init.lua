@@ -24,6 +24,110 @@ Job.new = validator.f.arguments({
 	return job
 end
 
+local Jobs = {
+	current = 0,
+	list = {},
+}
+
+Jobs.get_job_by_buffer = validator.f.arguments({
+	validator.f.equal(Jobs),
+	"number",
+}) .. function(self, buffer_handler)
+	local job = self.list[tostring(buffer_handler)]
+	return job and job or nil
+end
+
+Jobs.get_job_by_window = validator.f.arguments({
+	validator.f.equal(Jobs),
+	"number",
+}) .. function(self, window_handler)
+	return self:get_job_by_buffer(vim.api.nvim_win_get_buf(window_handler))
+end
+
+Jobs.register = validator.f.arguments({
+	validator.f.equal(Jobs),
+	Job.validator,
+})
+	.. function(self, job)
+		table.insert(self.list, job.buffer)
+		self.list[tostring(job.buffer)] = job
+		--NOTE: Changing the buffer name would require to dynamically change every job buffer name on creation/deletion of a job
+		--[[ vim.api.nvim_buf_set_name(
+		job.buffer,
+		string.format("%s %d of %d", vim.api.nvim_buf_get_name(job.buffer), #self.list, #self.list)
+	) ]]
+		self.current = #self.list
+	end
+
+Jobs.unregister = validator.f.arguments({
+	validator.f.equal(Jobs),
+	"number",
+}) .. function(self, job_buffer)
+	local job_index = fn.find_index(self.list, function(registered_job)
+		return registered_job == job_buffer
+	end)
+
+	if not job_index then
+		return
+	end
+
+	table.remove(self.list, job_index)
+	self.list[tostring(job_buffer)] = nil
+
+	if not self.list[self.current] then
+		self.current = self.list[1] and 1 or 0
+	end
+end
+
+function Jobs:get()
+	return self.list
+end
+
+function Jobs:get_current()
+	return self.list[self.current]
+end
+
+function Jobs:set_current(job_buffer)
+	local job_buffer_index = fn.find_index(self.list, function(registered_job_buffer)
+		return registered_job_buffer == job_buffer
+	end)
+
+	if not job_buffer_index then
+		return
+	end
+
+	self.current = job_buffer_index
+end
+
+function Jobs:count()
+	return #self:get()
+end
+
+function Jobs:map(func)
+	return fn.imap(self.list, function(registered_job_buffer, registered_job_index)
+		local registered_job = self.list[tostring(registered_job_buffer)]
+		return func(registered_job, registered_job_index)
+	end)
+end
+
+Jobs.cycle = validator.f.arguments({ validator.f.equal(Jobs), validator.f.one_of({ "forward", "backward" }) })
+	.. function(self, direction)
+		local current_job_buffer = self.list[self.current]
+		local current_job_index = fn.find_index(self.list, function(registered_job_buffer)
+			return registered_job_buffer == current_job_buffer
+		end)
+		local next_job_index = ({
+			forward = function(current_index)
+				return self.list[current_index + 1] and current_index + 1 or 1
+			end,
+			backward = function(current_index)
+				return self.list[current_index - 1] and current_index - 1 or #self.list
+			end,
+		})[direction](current_job_index)
+
+		self.current = next_job_index
+	end
+
 local Terminal = {}
 
 Terminal.setup = function()
@@ -38,20 +142,13 @@ Terminal._setup_keymaps = function()
 
 	key.nmap({
 		keymaps["terminal.next"],
-		function()
-			Terminal:cycle("forward")
-		end,
+		Terminal.next,
 	}, {
 		keymaps["terminal.prev"],
-		function()
-			Terminal:cycle("backward")
-		end,
+		Terminal.prev,
 	}, {
-		keymaps["terminal.new"],
-		function()
-			Terminal:create()
-			vim.api.nvim_command("startinsert")
-		end,
+		keymaps["terminal.create"],
+		Terminal.create,
 	}, {
 		keymaps["terminal.jobs"],
 		function()
@@ -78,128 +175,87 @@ Terminal._setup_commands = function()
 					-- Allow closing a process directly from normal mode
 					key.nmap({ "<C-c>", "i<C-c>", buffer = autocmd.buf })
 
-					Terminal:register({ buffer = buffer, file = file })
+					Jobs:register(Job:new({ buffer = buffer, file = file }))
 				end,
 			},
 			{
 				"TermClose",
 				"term://*",
 				function(autocmd)
-					Terminal:unregister({ buffer = autocmd.buf, file = autocmd.file })
+					local buffer = autocmd.buf
+					Jobs:unregister(buffer)
 				end,
 			},
 		},
 	})
 end
 
-Terminal.jobs = {}
+function Terminal.show()
+	local current_job = Jobs.current
+	local jobs_count = Jobs:count()
+	local current_job_buffer = Jobs:get_current()
 
-Terminal.current = 0
+	vim.api.nvim_command("buffer " .. current_job_buffer)
+	print(string.format("Job %d/%d", current_job, jobs_count))
+end
 
-Terminal.register = validator.f.arguments({
-	validator.f.equal(Terminal),
-	Job.validator,
-})
-	.. function(self, job)
-		table.insert(self.jobs, job.buffer)
-		self.jobs[tostring(job.buffer)] = Job:new(job)
-		--NOTE: Changing the buffer name would require to dynamically change every job buffer name on creation/deletion of a job
-		--[[ vim.api.nvim_buf_set_name(
-		job.buffer,
-		string.format("%s %d of %d", vim.api.nvim_buf_get_name(job.buffer), #self.jobs, #self.jobs)
-	) ]]
-		self.current = #self.jobs
-	end
+function Terminal.create()
+	vim.api.nvim_command("terminal")
+	vim.api.nvim_command("startinsert")
+end
 
-Terminal.unregister = validator.f.arguments({
-	validator.f.equal(Terminal),
-	Job.validator,
-}) .. function(self, job)
-	local job_index = fn.find_index(self.jobs, function(registered_job)
-		return registered_job == job.buffer
-	end)
+Terminal.next = function()
+	local jobs_count = Jobs:count()
 
-	if not job_index then
+	if jobs_count < 1 then
+		local create_job = vim.fn.confirm("No running jobs found, do you want to create one?", "&Yes\n&No", 1)
+
+		if create_job == 1 then
+			return Terminal.create()
+		end
+
 		return
 	end
 
-	table.remove(self.jobs, job_index)
-	self.jobs[tostring(job.buffer)] = nil
+	local current_buffer_job = Jobs:get_job_by_buffer(vim.api.nvim_get_current_buf())
 
-	if not self.jobs[self.current] then
-		self.current = self.jobs[1] and 1 or 0
+	if not current_buffer_job then
+		Terminal.show()
+		return
 	end
+
+	Jobs:cycle("forward")
+	Terminal.show()
 end
 
-Terminal._get_buffer_job = validator.f.arguments({
-	validator.f.equal(Terminal),
-	"number",
-}) .. function(self, buffer_handler)
-	local job = self.jobs[tostring(buffer_handler)]
-	return job and job or nil
-end
+Terminal.prev = function()
+	local jobs_count = Jobs:count()
 
-Terminal._get_window_job = validator.f.arguments({
-	validator.f.equal(Terminal),
-	"number",
-}) .. function(self, window_handler)
-	return self:_get_buffer_job(vim.api.nvim_win_get_buf(window_handler))
-end
+	if jobs_count < 1 then
+		local create_job = vim.fn.confirm("No running jobs found, do you want to create one?", "&Yes\n&No", 1)
 
-function Terminal:open_current()
-	vim.api.nvim_command("buffer " .. self.jobs[self.current])
-	print(string.format("Job %d/%d", self.current, #self.jobs))
-end
-
-function Terminal:create()
-	return vim.api.nvim_command("terminal")
-end
-
-Terminal.cycle = validator.f.arguments({ validator.f.equal(Terminal), validator.f.one_of({ "forward", "backward" }) })
-	.. function(self, direction)
-		local jobs_count = #self.jobs
-
-		if jobs_count < 1 then
-			local create_job = vim.fn.confirm("No running jobs found, do you want to create one?", "&Yes\n&No", 1)
-
-			if create_job == 1 then
-				return Terminal:create()
-			end
-
-			return
+		if create_job == 1 then
+			return Terminal.create()
 		end
 
-		local current_buffer = vim.api.nvim_get_current_buf()
-		local current_buffer_job = self.jobs[tostring(current_buffer)]
-
-		if not current_buffer_job then
-			self:open_current()
-			return
-		end
-
-		if jobs_count == 1 then
-			print("Only 1 job present")
-			return
-		end
-
-		local current_job_index = fn.find_index(self.jobs, function(registered_job)
-			return registered_job == current_buffer_job.buffer
-		end)
-		local next_job_index = ({
-			forward = function(current_index)
-				return self.jobs[current_index + 1] and current_index + 1 or 1
-			end,
-			backward = function(current_index)
-				return self.jobs[current_index - 1] and current_index - 1 or #self.jobs
-			end,
-		})[direction](current_job_index)
-
-		self.current = next_job_index
-		self:open_current()
+		return
 	end
+
+	local current_buffer_job = Jobs:get_job_by_buffer(vim.api.nvim_get_current_buf())
+
+	if not current_buffer_job then
+		Terminal.show()
+		return
+	end
+
+	Jobs:cycle("backward")
+	Terminal.show()
+end
 
 Terminal.jobs_menu = function(options)
-	if #Terminal.jobs < 1 then
+	local jobs_count = Jobs:count()
+
+	if jobs_count < 1 then
 		return
 	end
 
@@ -211,15 +267,12 @@ Terminal.jobs_menu = function(options)
 		}), ]]
 	}, options)
 
-	local menu = fn.imap(Terminal.jobs, function(job_buffer)
-		local job_description = Terminal.jobs[tostring(job_buffer)]
+	local menu = Jobs:map(function(job_description)
 		return {
 			job_description.file,
 			handler = function()
-				Terminal.current = fn.find_index(Terminal.jobs, function(registered_job_buffer)
-					return registered_job_buffer == job_description.buffer
-				end)
-				Terminal:open_current()
+				Jobs:set_current(job_description.buffer)
+				Terminal:show()
 			end,
 		}
 	end)

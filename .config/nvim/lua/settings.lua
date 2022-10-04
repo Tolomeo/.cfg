@@ -328,7 +328,7 @@ Settings._keymaps = {
 	-- Terminal
 	["terminal.next"] = "]t",
 	["terminal.prev"] = "[t",
-	["terminal.new"] = "<leader>T",
+	["terminal.create"] = "<leader>T",
 	["terminal.jobs"] = "<leader>t",
 }
 
