@@ -7,18 +7,14 @@ local settings = require("settings")
 
 local Job = {}
 
-Job.validator = validator.f.shape({
-	file = "string",
-	buffer = "number",
-})
-
 Job.new = validator.f.arguments({
 	validator.f.equal(Job),
-	Job.validator,
+	validator.f.shape({
+		file = "string",
+		buffer = "number",
+	}),
 }) .. function(self, job)
-	setmetatable(job, {
-		__index = self,
-	})
+	setmetatable(job, self)
 	self.__index = self
 
 	return job
@@ -46,7 +42,7 @@ end
 
 Jobs.register = validator.f.arguments({
 	validator.f.equal(Jobs),
-	Job.validator,
+	validator.f.instance_of(Job),
 })
 	.. function(self, job)
 		table.insert(self.list, job.buffer)
@@ -175,6 +171,8 @@ Terminal._setup_commands = function()
 					-- Allow closing a process directly from normal mode
 					key.nmap({ "<C-c>", "i<C-c>", buffer = autocmd.buf })
 
+					--[[ local test = Job:new({ buffer = buffer, file = file })
+					print(getmetatable(test)) ]]
 					Jobs:register(Job:new({ buffer = buffer, file = file }))
 				end,
 			},
@@ -220,8 +218,7 @@ Terminal.next = function()
 	local current_buffer_job = Jobs:get_job_by_buffer(vim.api.nvim_get_current_buf())
 
 	if not current_buffer_job then
-		Terminal.show()
-		return
+		return Terminal.show()
 	end
 
 	Jobs:cycle("forward")
@@ -244,8 +241,7 @@ Terminal.prev = function()
 	local current_buffer_job = Jobs:get_job_by_buffer(vim.api.nvim_get_current_buf())
 
 	if not current_buffer_job then
-		Terminal.show()
-		return
+		return Terminal.show()
 	end
 
 	Jobs:cycle("backward")
