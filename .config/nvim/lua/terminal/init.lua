@@ -21,7 +21,7 @@ Job.new = validator.f.arguments({
 end
 
 local Jobs = {
-	current = 0,
+	_current = 0,
 	list = {},
 }
 
@@ -52,7 +52,7 @@ Jobs.register = validator.f.arguments({
 	validator.f.instance_of(Job),
 }) .. function(self, job)
 	table.insert(self.list, job)
-	self.current = #self.list
+	self._current = #self.list
 end
 
 Jobs.unregister = validator.f.arguments({
@@ -69,51 +69,49 @@ Jobs.unregister = validator.f.arguments({
 
 	table.remove(self.list, job_index)
 
-	if not self.list[self.current] then
-		self.current = self.list[1] and 1 or 0
+	if not self.list[self._current] then
+		self._current = self.list[1] and 1 or 0
 	end
-end
-
-function Jobs:get()
-	return self.list
-end
-
-function Jobs:get_current()
-	return self.list[self.current]
-end
-
-function Jobs:set_current(job_buffer)
-	local job_index = fn.find_index(self.list, function(job)
-		return job.buffer == job_buffer
-	end)
-
-	if not job_index then
-		return
-	end
-
-	self.current = job_index
 end
 
 function Jobs:count()
-	return #self:get()
+	return #self.list
 end
 
-function Jobs:map(func)
-	return fn.imap(self.list, func)
-end
+Jobs.map = validator.f.arguments({ validator.f.equal(Jobs), "function" })
+	.. function(self, func)
+		return fn.imap(self.list, func)
+	end
 
-Jobs.cycle = validator.f.arguments({ validator.f.equal(Jobs), validator.f.one_of({ "forward", "backward" }) })
-	.. function(self, direction)
-		local next_job_index = ({
-			forward = function()
-				return self.list[self.current + 1] and self.current + 1 or 1
-			end,
-			backward = function()
-				return self.list[self.current - 1] and self.current - 1 or #self.list
-			end,
-		})[direction]()
+Jobs.current = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
+	.. function(self, job_buffer)
+		local index = job_buffer and fn.find_index(self.list, function(job)
+			return job.buffer == job_buffer
+		end) or self._current
 
-		self.current = next_job_index
+		return self.list[index], index
+	end
+
+Jobs.next = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
+	.. function(self, job_buffer)
+		local index = job_buffer and fn.find_index(self.list, function(job)
+			return job.buffer == job_buffer
+		end) or self._current
+		local next_index = self.list[index + 1] and index + 1 or 1
+
+		self._current = next_index
+		return self:current()
+	end
+
+Jobs.prev = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
+	.. function(self, job_buffer)
+		local index = job_buffer and fn.find_index(self.list, function(job)
+			return job.buffer == job_buffer
+		end) or self._current
+		local next_index = self.list[index - 1] and index - 1 or #self.list
+
+		self._current = next_index
+		return self:current()
 	end
 
 local Terminal = {}
@@ -163,8 +161,6 @@ Terminal._setup_commands = function()
 					-- Allow closing a process directly from normal mode
 					key.nmap({ "<C-c>", "i<C-c>", buffer = autocmd.buf })
 
-					--[[ local test = Job:new({ buffer = buffer, file = file })
-					print(getmetatable(test)) ]]
 					Jobs:register(Job:new({ buffer = buffer, file = file }))
 				end,
 			},
@@ -181,12 +177,11 @@ Terminal._setup_commands = function()
 end
 
 function Terminal.show()
-	local current_job_index = Jobs.current
-	local jobs_count = Jobs:count()
-	local current_job_buffer = Jobs:get_current().buffer
+	local job, index = Jobs:current()
+	local count = Jobs:count()
 
-	vim.api.nvim_command("buffer " .. current_job_buffer)
-	print(string.format("Job %d/%d", current_job_index, jobs_count))
+	vim.api.nvim_command("buffer " .. job.buffer)
+	print(string.format("Job %d/%d", index, count))
 end
 
 function Terminal.create()
@@ -196,8 +191,6 @@ end
 
 Terminal.next = function()
 	local jobs_count = Jobs:count()
-
-	print(jobs_count)
 
 	if jobs_count < 1 then
 		local create_job = vim.fn.confirm("No running jobs found, do you want to create one?", "&Yes\n&No", 1)
@@ -211,14 +204,11 @@ Terminal.next = function()
 
 	local current_buffer_job = Jobs:get_job_by_buffer(vim.api.nvim_get_current_buf())
 
-	print(current_buffer_job)
-
 	if not current_buffer_job then
 		return Terminal.show()
 	end
 
-	Jobs:set_current(current_buffer_job.buffer)
-	Jobs:cycle("forward")
+	Jobs:next(current_buffer_job.buffer)
 	Terminal.show()
 end
 
@@ -241,8 +231,7 @@ Terminal.prev = function()
 		return Terminal.show()
 	end
 
-	Jobs:set_current(current_buffer_job.buffer)
-	Jobs:cycle("backward")
+	Jobs:prev(current_buffer_job.buffer)
 	Terminal.show()
 end
 
@@ -287,7 +276,7 @@ Terminal.jobs_menu = function(options)
 	menu.on_select = function(modal_menu)
 		local selection = modal_menu.state.get_selected_entry()
 		modal_menu.actions.close(modal_menu.buffer)
-		Jobs:set_current(selection.value.job.buffer)
+		Jobs:current(selection.value.job.buffer)
 		Terminal.show()
 	end
 
