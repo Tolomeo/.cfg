@@ -52,6 +52,25 @@ function Fn.find_index(tbl, func)
 	return nil
 end
 
+function Fn.find_last_index(tbl, func)
+	for index = #tbl, 1, -1 do
+		if func(tbl[index], index) then
+			return index
+		end
+	end
+end
+
+function Fn.slice(tbl, startIndex, endIndex)
+	local slice = {}
+	endIndex = endIndex or #tbl
+
+	for index = startIndex, endIndex do
+		table.insert(slice, tbl[index])
+	end
+
+	return slice
+end
+
 --- Creates a new table populated with the results of calling a provided functions
 ---on every numeric indexed element in the calling table
 ---@param tbl table

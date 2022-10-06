@@ -259,14 +259,22 @@ Terminal.jobs_menu = function(options)
 	options = vim.tbl_extend("force", {
 		prompt_title = "Terminal jobs",
 		previewer = require("telescope.previewers").new_buffer_previewer({
-			define_preview = function(self, entry, status)
+			define_preview = function(self, entry)
 				local job_buffer = entry.value.job.buffer
-				local preview_buffer = self.state.bufnr
 				local job_lines = vim.api.nvim_buf_get_lines(job_buffer, 0, -1, false)
+				local preview_lines = fn.slice(
+					job_lines,
+					1,
+					fn.find_last_index(job_lines, function(line)
+						return line ~= ""
+					end)
+				)
+				local preview_buffer = self.state.bufnr
+				local preview_window = self.state.winid
 
-				vim.api.nvim_buf_set_lines(preview_buffer, 0, 0, false, job_lines)
+				vim.api.nvim_buf_set_lines(preview_buffer, 0, 0, false, preview_lines)
 				vim.schedule(function()
-					vim.api.nvim_win_set_cursor(status.preview_win, { #job_lines, 0 })
+					vim.api.nvim_win_set_cursor(preview_window, { #preview_lines, 0 })
 				end)
 			end,
 		}),
