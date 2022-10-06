@@ -28,39 +28,39 @@ local Jobs = {
 Jobs.get_job_by_buffer = validator.f.arguments({
 	validator.f.equal(Jobs),
 	"number",
-}) .. function(self, buffer_handler)
-	local job = self.list[tostring(buffer_handler)]
-	return job and job or nil
+}) .. function(self, job_buffer)
+	local job_index = fn.find_index(self.list, function(job)
+		return job.buffer == job_buffer
+	end)
+
+	if not job_index then
+		return nil
+	end
+
+	return self.list[job_index]
 end
 
 Jobs.get_job_by_window = validator.f.arguments({
 	validator.f.equal(Jobs),
 	"number",
-}) .. function(self, window_handler)
-	return self:get_job_by_buffer(vim.api.nvim_win_get_buf(window_handler))
+}) .. function(self, window)
+	return self:get_job_by_buffer(vim.api.nvim_win_get_buf(window))
 end
 
 Jobs.register = validator.f.arguments({
 	validator.f.equal(Jobs),
 	validator.f.instance_of(Job),
-})
-	.. function(self, job)
-		table.insert(self.list, job.buffer)
-		self.list[tostring(job.buffer)] = job
-		--NOTE: Changing the buffer name would require to dynamically change every job buffer name on creation/deletion of a job
-		--[[ vim.api.nvim_buf_set_name(
-		job.buffer,
-		string.format("%s %d of %d", vim.api.nvim_buf_get_name(job.buffer), #self.list, #self.list)
-	) ]]
-		self.current = #self.list
-	end
+}) .. function(self, job)
+	table.insert(self.list, job)
+	self.current = #self.list
+end
 
 Jobs.unregister = validator.f.arguments({
 	validator.f.equal(Jobs),
 	"number",
 }) .. function(self, job_buffer)
-	local job_index = fn.find_index(self.list, function(registered_job)
-		return registered_job == job_buffer
+	local job_index = fn.find_index(self.list, function(job)
+		return job.buffer == job_buffer
 	end)
 
 	if not job_index then
@@ -68,7 +68,6 @@ Jobs.unregister = validator.f.arguments({
 	end
 
 	table.remove(self.list, job_index)
-	self.list[tostring(job_buffer)] = nil
 
 	if not self.list[self.current] then
 		self.current = self.list[1] and 1 or 0
@@ -84,15 +83,15 @@ function Jobs:get_current()
 end
 
 function Jobs:set_current(job_buffer)
-	local job_buffer_index = fn.find_index(self.list, function(registered_job_buffer)
-		return registered_job_buffer == job_buffer
+	local job_index = fn.find_index(self.list, function(job)
+		return job.buffer == job_buffer
 	end)
 
-	if not job_buffer_index then
+	if not job_index then
 		return
 	end
 
-	self.current = job_buffer_index
+	self.current = job_index
 end
 
 function Jobs:count()
@@ -100,26 +99,19 @@ function Jobs:count()
 end
 
 function Jobs:map(func)
-	return fn.imap(self.list, function(registered_job_buffer, registered_job_index)
-		local registered_job = self.list[tostring(registered_job_buffer)]
-		return func(registered_job, registered_job_index)
-	end)
+	return fn.imap(self.list, func)
 end
 
 Jobs.cycle = validator.f.arguments({ validator.f.equal(Jobs), validator.f.one_of({ "forward", "backward" }) })
 	.. function(self, direction)
-		local current_job_buffer = self.list[self.current]
-		local current_job_index = fn.find_index(self.list, function(registered_job_buffer)
-			return registered_job_buffer == current_job_buffer
-		end)
 		local next_job_index = ({
-			forward = function(current_index)
-				return self.list[current_index + 1] and current_index + 1 or 1
+			forward = function()
+				return self.list[self.current + 1] and self.current + 1 or 1
 			end,
-			backward = function(current_index)
-				return self.list[current_index - 1] and current_index - 1 or #self.list
+			backward = function()
+				return self.list[self.current - 1] and self.current - 1 or #self.list
 			end,
-		})[direction](current_job_index)
+		})[direction]()
 
 		self.current = next_job_index
 	end
@@ -189,12 +181,12 @@ Terminal._setup_commands = function()
 end
 
 function Terminal.show()
-	local current_job = Jobs.current
+	local current_job_index = Jobs.current
 	local jobs_count = Jobs:count()
-	local current_job_buffer = Jobs:get_current()
+	local current_job_buffer = Jobs:get_current().buffer
 
 	vim.api.nvim_command("buffer " .. current_job_buffer)
-	print(string.format("Job %d/%d", current_job, jobs_count))
+	print(string.format("Job %d/%d", current_job_index, jobs_count))
 end
 
 function Terminal.create()
@@ -204,6 +196,8 @@ end
 
 Terminal.next = function()
 	local jobs_count = Jobs:count()
+
+	print(jobs_count)
 
 	if jobs_count < 1 then
 		local create_job = vim.fn.confirm("No running jobs found, do you want to create one?", "&Yes\n&No", 1)
@@ -217,10 +211,13 @@ Terminal.next = function()
 
 	local current_buffer_job = Jobs:get_job_by_buffer(vim.api.nvim_get_current_buf())
 
+	print(current_buffer_job)
+
 	if not current_buffer_job then
 		return Terminal.show()
 	end
 
+	Jobs:set_current(current_buffer_job.buffer)
 	Jobs:cycle("forward")
 	Terminal.show()
 end
@@ -244,6 +241,7 @@ Terminal.prev = function()
 		return Terminal.show()
 	end
 
+	Jobs:set_current(current_buffer_job.buffer)
 	Jobs:cycle("backward")
 	Terminal.show()
 end
@@ -259,7 +257,7 @@ Terminal.jobs_menu = function(options)
 	options = vim.tbl_extend("force", {
 		prompt_title = "Terminal jobs",
 		previewer = require("telescope.previewers").new_buffer_previewer({
-			define_preview = function(self, entry)
+			define_preview = function(previewer, entry)
 				local job_buffer = entry.value.job.buffer
 				local job_lines = vim.api.nvim_buf_get_lines(job_buffer, 0, -1, false)
 				local preview_lines = fn.slice(
@@ -269,8 +267,8 @@ Terminal.jobs_menu = function(options)
 						return line ~= ""
 					end)
 				)
-				local preview_buffer = self.state.bufnr
-				local preview_window = self.state.winid
+				local preview_buffer = previewer.state.bufnr
+				local preview_window = previewer.state.winid
 
 				vim.api.nvim_buf_set_lines(preview_buffer, 0, 0, false, preview_lines)
 				vim.schedule(function()
@@ -284,16 +282,13 @@ Terminal.jobs_menu = function(options)
 		return {
 			job.file,
 			job = job,
-			handler = function()
-				Jobs:set_current(job.buffer)
-				Terminal:show()
-			end,
 		}
 	end)
 	menu.on_select = function(modal_menu)
 		local selection = modal_menu.state.get_selected_entry()
 		modal_menu.actions.close(modal_menu.buffer)
-		selection.value.handler()
+		Jobs:set_current(selection.value.job.buffer)
+		Terminal.show()
 	end
 
 	require("finder.picker").menu(menu, options)
