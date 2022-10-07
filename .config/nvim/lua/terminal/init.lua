@@ -22,14 +22,13 @@ end
 
 local Jobs = {
 	_current = 0,
-	list = {},
 }
 
-Jobs.get_job_by_buffer = validator.f.arguments({
+Jobs.find_index_by_buffer = validator.f.arguments({
 	validator.f.equal(Jobs),
 	"number",
 }) .. function(self, job_buffer)
-	local job_index = fn.find_index(self.list, function(job)
+	local job_index = fn.find_index(self, function(job)
 		return job.buffer == job_buffer
 	end)
 
@@ -37,29 +36,29 @@ Jobs.get_job_by_buffer = validator.f.arguments({
 		return nil
 	end
 
-	return self.list[job_index]
+	return self[job_index]
 end
 
-Jobs.get_job_by_window = validator.f.arguments({
+Jobs.find_index_by_window = validator.f.arguments({
 	validator.f.equal(Jobs),
 	"number",
 }) .. function(self, window)
-	return self:get_job_by_buffer(vim.api.nvim_win_get_buf(window))
+	return self:find_index_by_buffer(vim.api.nvim_win_get_buf(window))
 end
 
 Jobs.register = validator.f.arguments({
 	validator.f.equal(Jobs),
 	validator.f.instance_of(Job),
 }) .. function(self, job)
-	table.insert(self.list, job)
-	self._current = #self.list
+	table.insert(self, job)
+	self._current = #self
 end
 
 Jobs.unregister = validator.f.arguments({
 	validator.f.equal(Jobs),
 	"number",
 }) .. function(self, job_buffer)
-	local job_index = fn.find_index(self.list, function(job)
+	local job_index = fn.find_index(self, function(job)
 		return job.buffer == job_buffer
 	end)
 
@@ -67,45 +66,36 @@ Jobs.unregister = validator.f.arguments({
 		return
 	end
 
-	table.remove(self.list, job_index)
+	table.remove(self, job_index)
 
-	if not self.list[self._current] then
-		self._current = self.list[1] and 1 or 0
+	if not self[self._current] then
+		self._current = self[1] and 1 or 0
 	end
 end
 
 function Jobs:count()
-	return #self.list
+	return #self
 end
-
-Jobs.map = validator.f.arguments({ validator.f.equal(Jobs), "function" })
-	.. function(self, func)
-		return fn.imap(self.list, func)
-	end
 
 Jobs.current = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
 	.. function(self, job_buffer)
 		if not job_buffer then
-			return self.list[self._current], self._current
+			return self[self._current], self._current
 		end
 
-		local job_index = fn.find_index(self.list, function(job)
+		self._current = fn.find_index(self, function(job)
 			return job.buffer == job_buffer
-		end)
+		end) or self._current
 
-		if job_index then
-			self._current = job_index
-		end
-
-		return self.list[self._current], self._current
+		return self[self._current], self._current
 	end
 
 Jobs.next = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
 	.. function(self, job_buffer)
-		local index = job_buffer and fn.find_index(self.list, function(job)
+		local index = job_buffer and fn.find_index(self, function(job)
 			return job.buffer == job_buffer
 		end) or self._current
-		local next_index = self.list[index + 1] and index + 1 or 1
+		local next_index = self[index + 1] and index + 1 or 1
 
 		self._current = next_index
 		return self:current()
@@ -113,10 +103,10 @@ Jobs.next = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optiona
 
 Jobs.prev = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
 	.. function(self, job_buffer)
-		local index = job_buffer and fn.find_index(self.list, function(job)
+		local index = job_buffer and fn.find_index(self, function(job)
 			return job.buffer == job_buffer
 		end) or self._current
-		local next_index = self.list[index - 1] and index - 1 or #self.list
+		local next_index = self[index - 1] and index - 1 or #self.list
 
 		self._current = next_index
 		return self:current()
@@ -209,7 +199,7 @@ Terminal.next = function()
 		return
 	end
 
-	local current_buffer_job = Jobs:get_job_by_buffer(vim.api.nvim_get_current_buf())
+	local current_buffer_job = Jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
 
 	if not current_buffer_job then
 		return Terminal.show()
@@ -232,7 +222,7 @@ Terminal.prev = function()
 		return
 	end
 
-	local current_buffer_job = Jobs:get_job_by_buffer(vim.api.nvim_get_current_buf())
+	local current_buffer_job = Jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
 
 	if not current_buffer_job then
 		return Terminal.show()
@@ -268,7 +258,7 @@ Terminal.jobs_menu = function(options)
 		}),
 	}, options)
 
-	local menu = Jobs:map(function(job)
+	local menu = fn.imap(Jobs, function(job)
 		return {
 			job.file,
 			job = job,
@@ -310,14 +300,11 @@ Terminal.actions_menu = function(options)
 	}
 
 	for _, user_job in ipairs(user_options["terminal.jobs"]) do
-		local command_name = vim.fn.split(user_job.command, " ")[1]:gsub("^%l", string.upper)
-		local command = "e term://" .. user_job.command
-
 		table.insert(menu, {
-			command_name,
-			command,
+			"Launch " .. user_job.command,
+			":e term://" .. user_job.command,
 			handler = function()
-				vim.api.nvim_command(command)
+				vim.api.nvim_command("e term://" .. user_job.command)
 				vim.schedule(function()
 					vim.api.nvim_command("startinsert")
 				end)
@@ -335,15 +322,16 @@ Terminal.actions_menu = function(options)
 end
 
 Terminal.menu = function()
-	local menus = {}
-
-	if Jobs:count() > 0 then
-		table.insert(menus, { prompt_title = "Running Jobs", find = Terminal.jobs_menu })
+	if Jobs:count() < 1 then
+		return Terminal.actions_menu()
 	end
 
-	table.insert(menus, { prompt_title = "Terminal", find = Terminal.actions_menu })
+	local pickers = {
+		{ prompt_title = "Running Jobs", find = Terminal.jobs_menu },
+		{ prompt_title = "Terminal", find = Terminal.actions_menu },
+	}
 
-	return require("finder.picker").Pickers(menus):find()
+	return require("finder.picker").Pickers(pickers):find()
 end
 
 return Module:new(Terminal)

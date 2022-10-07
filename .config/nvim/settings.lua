@@ -118,6 +118,9 @@ local options = {
 		{
 			command = "htop",
 		},
+		{
+			command = "node",
+		},
 	},
 }
 
