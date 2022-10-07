@@ -111,6 +111,14 @@ local options = {
 			name = "graphql",
 		},
 	},
+	["terminal.jobs"] = {
+		{
+			command = "lazygit",
+		},
+		{
+			command = "htop",
+		},
+	},
 }
 
 return {

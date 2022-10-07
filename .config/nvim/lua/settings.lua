@@ -354,6 +354,7 @@ Settings._options = {
 	["theme.colorscheme"] = "nightfox",
 	["theme.component_separator"] = "│",
 	["theme.section_separator"] = "█",
+	["terminal.jobs"] = {},
 }
 
 Settings.options = validator.f.arguments({
@@ -370,6 +371,14 @@ Settings.options = validator.f.arguments({
 		),
 		["theme.component_separator"] = validator.f.optional("string"),
 		["theme.section_separator"] = validator.f.optional("string"),
+		["terminal.jobs"] = validator.f.optional(validator.f.list({
+			validator.f.shape({
+				command = "string",
+				--[[ args = validator.f.optional(validator.f.list("string")),
+				cwd = validator.f.optional("string"),
+				env = validator.f.optional("table"), ]]
+			}),
+		})),
 	})),
 }) .. function(options)
 	if not options then

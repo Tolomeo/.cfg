@@ -85,11 +85,19 @@ Jobs.map = validator.f.arguments({ validator.f.equal(Jobs), "function" })
 
 Jobs.current = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
 	.. function(self, job_buffer)
-		local index = job_buffer and fn.find_index(self.list, function(job)
-			return job.buffer == job_buffer
-		end) or self._current
+		if not job_buffer then
+			return self.list[self._current], self._current
+		end
 
-		return self.list[index], index
+		local job_index = fn.find_index(self.list, function(job)
+			return job.buffer == job_buffer
+		end)
+
+		if job_index then
+			self._current = job_index
+		end
+
+		return self.list[self._current], self._current
 	end
 
 Jobs.next = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
@@ -137,9 +145,7 @@ Terminal._setup_keymaps = function()
 		Terminal.create,
 	}, {
 		keymaps["terminal.jobs"],
-		function()
-			Terminal.jobs_menu()
-		end,
+		Terminal.menu,
 	})
 end
 
@@ -149,9 +155,10 @@ Terminal._setup_commands = function()
 		{
 			{
 				"TermOpen",
-				"term://*",
+				"*",
 				function(autocmd)
 					local buffer, file = autocmd.buf, autocmd.file
+					print(buffer, file)
 					-- No numbers
 					vim.cmd("setlocal nonumber norelativenumber")
 					-- vim.api.nvim_buf_set_option(buffer, "number", false)
@@ -166,7 +173,7 @@ Terminal._setup_commands = function()
 			},
 			{
 				"TermClose",
-				"term://*",
+				"*",
 				function(autocmd)
 					local buffer = autocmd.buf
 					Jobs:unregister(buffer)
@@ -236,15 +243,9 @@ Terminal.prev = function()
 end
 
 Terminal.jobs_menu = function(options)
-	local jobs_count = Jobs:count()
-
-	if jobs_count < 1 then
-		return
-	end
-
 	options = options or {}
 	options = vim.tbl_extend("force", {
-		prompt_title = "Terminal jobs",
+		prompt_title = "Running jobs",
 		previewer = require("telescope.previewers").new_buffer_previewer({
 			define_preview = function(previewer, entry)
 				local job_buffer = entry.value.job.buffer
@@ -281,6 +282,68 @@ Terminal.jobs_menu = function(options)
 	end
 
 	require("finder.picker").menu(menu, options)
+end
+
+Terminal.actions_menu = function(options)
+	local keymaps = settings.keymaps()
+	local user_options = settings.options()
+
+	options = options or {}
+	options = vim.tbl_extend("force", { prompt_title = "Terminal actions" }, options)
+
+	local menu = {
+		{
+			"Create a new terminal",
+			keymaps["terminal.create"],
+			handler = Terminal.create,
+		},
+		{
+			"Next terminal",
+			keymaps["terminal.next"],
+			handler = Terminal.next,
+		},
+		{
+			"Previous terminal",
+			keymaps["terminal.prev"],
+			handler = Terminal.prev,
+		},
+	}
+
+	for _, user_job in ipairs(user_options["terminal.jobs"]) do
+		local command_name = vim.fn.split(user_job.command, " ")[1]:gsub("^%l", string.upper)
+		local command = "e term://" .. user_job.command
+
+		table.insert(menu, {
+			command_name,
+			command,
+			handler = function()
+				vim.api.nvim_command(command)
+				vim.schedule(function()
+					vim.api.nvim_command("startinsert")
+				end)
+			end,
+		})
+	end
+
+	menu.on_select = function(modal_menu)
+		local selection = modal_menu.state.get_selected_entry()
+		modal_menu.actions.close(modal_menu.buffer)
+		selection.value.handler()
+	end
+
+	require("finder.picker").menu(menu, options)
+end
+
+Terminal.menu = function()
+	local menus = {}
+
+	if Jobs:count() > 0 then
+		table.insert(menus, { prompt_title = "Running Jobs", find = Terminal.jobs_menu })
+	end
+
+	table.insert(menus, { prompt_title = "Terminal", find = Terminal.actions_menu })
+
+	return require("finder.picker").Pickers(menus):find()
 end
 
 return Module:new(Terminal)

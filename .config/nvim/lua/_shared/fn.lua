@@ -61,14 +61,26 @@ function Fn.find_last_index(tbl, func)
 end
 
 function Fn.slice(tbl, startIndex, endIndex)
-	local slice = {}
+	local sliced = {}
 	endIndex = endIndex or #tbl
 
 	for index = startIndex, endIndex do
-		table.insert(slice, tbl[index])
+		table.insert(sliced, tbl[index])
 	end
 
-	return slice
+	return sliced
+end
+
+function Fn.concat(...)
+	local concatenated = {}
+
+	for _, tbl in ipairs({ ... }) do
+		for _, value in ipairs(tbl) do
+			table.insert(concatenated, value)
+		end
+	end
+
+	return concatenated
 end
 
 --- Creates a new table populated with the results of calling a provided functions
