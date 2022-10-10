@@ -328,14 +328,13 @@ Settings._keymaps = {
 	-- Terminal
 	["terminal.next"] = "]t",
 	["terminal.prev"] = "[t",
-	["terminal.create"] = "<leader>T",
-	["terminal.jobs"] = "<leader>t",
+	["terminal.create"] = "<leader>t",
+	["terminal.jobs"] = "<leader>T",
 }
 
 Settings.keymaps = validator.f.arguments({
 	validator.f.optional(validator.f.shape({
 		leader = validator.f.optional("string"),
-		-- leader = validator.f.optional("string"),
 	})),
 })
 	.. function(keymaps)

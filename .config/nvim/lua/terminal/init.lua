@@ -148,7 +148,6 @@ Terminal._setup_commands = function()
 				"*",
 				function(autocmd)
 					local buffer, file = autocmd.buf, autocmd.file
-					print(buffer, file)
 					-- No numbers
 					vim.cmd("setlocal nonumber norelativenumber")
 					-- vim.api.nvim_buf_set_option(buffer, "number", false)
