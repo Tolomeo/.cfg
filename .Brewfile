@@ -7,7 +7,7 @@ tap "mongodb/brew"
 brew "gh"
 brew "htop"
 brew "lazygit"
-brew "luajit", args: ["HEAD"]
+brew "luajit"
 brew "neovim"
 brew "nvm"
 brew "ripgrep"
