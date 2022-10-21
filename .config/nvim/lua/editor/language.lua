@@ -22,7 +22,7 @@ Language.plugins = {
 Language.setup_servers = function()
 	local keymaps = settings.keymaps()
 	local options = settings.options()
-	local capabilities = require("editor.completion").update_capabilities(vim.lsp.protocol.make_client_capabilities())
+	local capabilities = require("editor.completion").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 	local on_attach = function(client, buffer)
 		-- avoid using formatting coming from lsp
 		client.server_capabilities.documentFormattingProvider = false

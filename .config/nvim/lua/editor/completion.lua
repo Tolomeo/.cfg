@@ -3,8 +3,8 @@ local settings = require("settings")
 
 local Completion = {}
 
-Completion.update_capabilities = function(capabilities)
-	return require("cmp_nvim_lsp").update_capabilities(capabilities)
+Completion.default_capabilities = function(capabilities)
+	return require("cmp_nvim_lsp").default_capabilities(capabilities)
 end
 
 Completion.plugins = {
