@@ -82,7 +82,46 @@ local options = {
 			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#jsonls
 			settings = function(base_settings)
 				base_settings.capabilities.textDocument.completion.completionItem.snippetSupport = true
-				return base_settings
+
+				-- see https://github.com/neovim/nvim-lspconfig/issues/229
+				return vim.tbl_extend("force", base_settings, {
+					settings = {
+						json = {
+							schemas = {
+								{
+									description = "Node project's package file",
+									fileMatch = { "package.json" },
+									url = "https://json.schemastore.org/package.json",
+								},
+								{
+									description = "TypeScript compiler configuration file",
+									fileMatch = { "tsconfig.json", "tsconfig.*.json" },
+									url = "http://json.schemastore.org/tsconfig",
+								},
+								{
+									description = "Lerna config",
+									fileMatch = { "lerna.json" },
+									url = "http://json.schemastore.org/lerna",
+								},
+								{
+									description = "Babel configuration",
+									fileMatch = { ".babelrc.json", ".babelrc", "babel.config.json" },
+									url = "http://json.schemastore.org/lerna",
+								},
+								{
+									description = "ESLint config",
+									fileMatch = { ".eslintrc.json", ".eslintrc" },
+									url = "http://json.schemastore.org/eslintrc",
+								},
+								{
+									description = "Prettier config",
+									fileMatch = { ".prettierrc", ".prettierrc.json", "prettier.config.json" },
+									url = "http://json.schemastore.org/prettierrc",
+								},
+							},
+						},
+					},
+				})
 			end,
 		},
 		{
