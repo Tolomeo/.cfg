@@ -34,7 +34,7 @@ Settings._globals = {
 	--Decrease update time
 	updatetime = 250,
 	-- Always show signcolumn
-	signcolumn = "yes",
+	signcolumn = "number",
 	--Set colorscheme (order is impotant here)
 	termguicolors = true,
 	--Indent size
@@ -52,14 +52,19 @@ Settings._globals = {
 	-- Invisible chars render
 	list = true,
 	listchars = { eol = "↲", tab = "▸ ", trail = "·", space = "·", extends = "…", precedes = "…" },
+	-- 	Characters to fill the statuslines, vertical separators and special lines in the window
+	fillchars = "foldopen:▼,foldclose:►,eob: ",
 	-- The minimal number of screen columns to keep to the left and to the right of the cursor
 	-- set to 1 to allow seeing EOL listchar without truncating the text
 	sidescrolloff = 1,
 	-- Cursor shape and blinking behaviours
 	guicursor = { "a:block-blinkon0", "v-ve-sm-o-r:block-blinkon1", "i-c-ci-cr:ver1-blinkon1" },
 	-- Folds
-	foldenable = false,
-	foldmethod = "indent",
+	foldenable = true,
+	foldmethod = "manual",
+	foldcolumn = "1",
+	foldlevel = 99,
+	foldlevelstart = 99,
 	-- Single global statusline
 	laststatus = 3,
 	-- Preferred split direction
@@ -336,16 +341,15 @@ Settings.keymaps = validator.f.arguments({
 	validator.f.optional(validator.f.shape({
 		leader = validator.f.optional("string"),
 	})),
-})
-	.. function(keymaps)
-		if not keymaps then
-			return Settings._keymaps
-		end
-
-		Settings._keymaps = vim.tbl_extend("force", Settings._keymaps, keymaps)
-
+}) .. function(keymaps)
+	if not keymaps then
 		return Settings._keymaps
 	end
+
+	Settings._keymaps = vim.tbl_extend("force", Settings._keymaps, keymaps)
+
+	return Settings._keymaps
+end
 
 Settings._options = {
 	["language.parsers"] = {},
@@ -379,15 +383,16 @@ Settings.options = validator.f.arguments({
 			}),
 		})),
 	})),
-}) .. function(options)
-	if not options then
+})
+	.. function(options)
+		if not options then
+			return Settings._options
+		end
+
+		Settings._options = vim.tbl_extend("force", Settings._options, options)
+
 		return Settings._options
 	end
-
-	Settings._options = vim.tbl_extend("force", Settings._options, options)
-
-	return Settings._options
-end
 
 return setmetatable(Settings, {
 	__call = validator.f.arguments({

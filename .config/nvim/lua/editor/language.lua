@@ -17,12 +17,20 @@ Language.plugins = {
 	"sbdchd/neoformat",
 	-- Code docs
 	{ "danymat/neogen", requires = "nvim-treesitter/nvim-treesitter" },
+	-- folds
+	{ "kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async" },
 }
 
 Language.setup_servers = function()
 	local keymaps = settings.keymaps()
 	local options = settings.options()
-	local capabilities = require("editor.completion").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+	-- local client_capabilities =
+	local capabilities = require("editor.completion").default_capabilities(
+		vim.tbl_extend("force", vim.lsp.protocol.make_client_capabilities(), {
+			dynamicRegistration = false,
+			lineFoldingOnly = true,
+		})
+	)
 	local on_attach = function(client, buffer)
 		-- avoid using formatting coming from lsp
 		client.server_capabilities.documentFormattingProvider = false
@@ -167,8 +175,12 @@ Language.setup_formatter = function()
 	key.nmap({ keymaps["language.format"], "<cmd>Neoformat<Cr>" })
 end
 
-Language.setup_annotator = function(_)
+Language.setup_annotator = function()
 	require("neogen").setup({})
+end
+
+Language.setup_folding = function()
+	require("ufo").setup()
 end
 
 Language.setup = function()
@@ -176,6 +188,7 @@ Language.setup = function()
 	Language.setup_parsers()
 	Language.setup_formatter()
 	Language.setup_annotator()
+	Language.setup_folding()
 end
 
 return Module:new(Language)
