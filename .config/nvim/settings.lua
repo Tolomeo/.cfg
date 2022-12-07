@@ -121,6 +121,9 @@ local options = {
 		{
 			command = "node",
 		},
+		{
+			command = "glow",
+		},
 	},
 }
 
