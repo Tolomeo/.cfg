@@ -149,7 +149,7 @@ end
 
 Picker._setup_plugins = function()
 	local keymaps = settings.keymaps()
-	 
+
 	require("telescope").setup({
 		defaults = {
 			layout_strategy = "flex",
@@ -162,7 +162,7 @@ Picker._setup_plugins = function()
 			mappings = {
 				i = {
 					["<esc>"] = require("telescope.actions").close,
-					[keymaps["window.cursor.down"]] = require('telescope.actions').move_selection_next,
+					[keymaps["window.cursor.down"]] = require("telescope.actions").move_selection_next,
 					[keymaps["window.cursor.up"]] = require("telescope.actions").move_selection_previous,
 				},
 				n = {},
@@ -170,7 +170,13 @@ Picker._setup_plugins = function()
 		},
 		pickers = {
 			find_files = {},
-			current_buffer_fuzzy_find = {},
+			current_buffer_fuzzy_find = {
+				-- ordering results by line number
+				tiebreak = function(current_entry, existing_entry)
+					-- returning true means preferring current entry
+					return current_entry.lnum < existing_entry.lnum
+				end,
+			},
 			buffers = {
 				sort_lastused = true,
 			},
