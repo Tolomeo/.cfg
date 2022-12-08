@@ -1,11 +1,14 @@
 local Module = require("_shared.module")
+local au = require("_shared.au")
+local fn = require("_shared.fn")
 local key = require("_shared.key")
 local settings = require("settings")
 
 local List = {}
 
 List.plugins = {
-	"romainl/vim-qf",
+	"stevearc/qf_helper.nvim",
+	"https://gitlab.com/yorickpeterse/nvim-pqf.git",
 }
 
 List.setup = function()
@@ -18,79 +21,62 @@ List._setup_keymaps = function()
 
 	key.nmap(
 		{ keymaps["list.toggle"], List.toggle },
-		{ keymaps["list.jump"], List.jump },
+		{ keymaps["list.toggle.navigate"], List.jump },
 		{ keymaps["list.item.next"], List.next },
 		{ keymaps["list.item.prev"], List.prev }
 	)
+
+	au.group({
+		"OnListFileType",
+		{
+			{
+				"FileType",
+				"qf",
+				function(autocmd)
+					local buffer = autocmd.buf
+					local open = require("qf_helper").open_split
+					local navigate = require("qf_helper").navigate
+
+					key.nmap({ keymaps["list.item.open.tab"], "<C-W><CR><C-W>T", buffer = buffer })
+					key.nmap({ keymaps["list.item.open.vertical"], fn.bind(open, "vsplit"), buffer = buffer })
+					key.nmap({ keymaps["list.item.open.horizontal"], fn.bind(open, "split"), buffer = buffer })
+					key.nmap({ keymaps["list.item.preview"], "<CR><C-W>p", buffer = buffer })
+					key.nmap({ keymaps["list.item.preview.prev"], "k<CR><C-W>p", buffer = buffer })
+					key.nmap({ keymaps["list.item.preview.next"], "j<CR><C-W>p", buffer = buffer })
+					key.nmap({ keymaps["list.item.first"], fn.bind(navigate, -1, { by_file = true }), buffer = buffer })
+					key.nmap({ keymaps["list.item.last"], fn.bind(navigate, 1, { by_file = true }), buffer = buffer })
+				end,
+			},
+		},
+	})
 end
 
 List._setup_plugins = function()
-	vim.api.nvim_set_var("g:qf_save_win_view", false)
-	vim.api.nvim_set_var("qf_mapping_ack_style", true)
-end
-
-local function toggle_location_list()
-	key.input("<Plug>(qf_loc_toggle)", "m")
-end
-
-local function next_location()
-	key.input("<Plug>(qf_loc_next)", "m")
-end
-
-local function prev_location()
-	key.input("<Plug>(qf_loc_previous)", "m")
-end
-
-local function toggle_quickfix_list()
-	key.input("<Plug>(qf_qf_toggle)", "m")
-end
-
-local function next_quickfix()
-	key.input("<Plug>(qf_qf_next)", "m")
-end
-
-local function prev_quickfix()
-	key.input("<Plug>(qf_qf_previous)", "m")
-end
-
---[[ local function next_quickfix_group()
-	key.input("<Plug>(qf_qf_next_file)", "m")
-end
-
-local function prev_quickfix_group()
-	key.input("<Plug>(qf_qf_previous_file)", "m")
-end ]]
-
-local function is_quickfix_window_open()
-	return vim.fn["qf#IsQfWindowOpen"]() ~= 0
+	require("pqf").setup()
+	require("qf_helper").setup({
+		quickfix = {
+			default_bindings = false,
+		},
+		loclist = {
+			default_bindings = false,
+		},
+	})
 end
 
 function List.toggle()
-	if is_quickfix_window_open() then
-		return toggle_quickfix_list()
-	end
-
-	return toggle_location_list()
-end
-
-function List.next()
-	if is_quickfix_window_open() then
-		return next_quickfix()
-	end
-
-	return next_location()
-end
-
-function List.prev()
-	if is_quickfix_window_open() then
-		return prev_quickfix()
-	end
-
-	return prev_location()
+	vim.fn.execute("QFToggle!")
 end
 
 function List.jump()
-	key.input("<Plug>(qf_qf_switch)", "m")
+	vim.fn.execute("QFToggle")
+end
+
+function List.next()
+	vim.fn.execute("QNext")
+end
+
+function List.prev()
+	vim.fn.execute("QPrev")
 end
 
 return Module:new(List)
