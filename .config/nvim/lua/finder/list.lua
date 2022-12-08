@@ -20,8 +20,8 @@ List._setup_keymaps = function()
 	local keymaps = settings.keymaps()
 
 	key.nmap(
-		{ keymaps["list.toggle"], List.toggle },
-		{ keymaps["list.toggle.navigate"], List.jump },
+		{ keymaps["list.open"], List.open },
+		{ keymaps["list.close"], List.close },
 		{ keymaps["list.item.next"], List.next },
 		{ keymaps["list.item.prev"], List.prev }
 	)
@@ -63,12 +63,67 @@ List._setup_plugins = function()
 	})
 end
 
-function List.toggle()
-	vim.fn.execute("QFToggle!")
+function List.is_loclist_open(window)
+	window = window or 0
+
+	return vim.fn.getloclist(window, { winid = 0 }).winid ~= 0
 end
 
-function List.jump()
-	vim.fn.execute("QFToggle")
+function List.get_loclist(window)
+	window = window or 0
+
+	return vim.fn.getloclist(window)
+end
+
+function List.has_loclist_items(window)
+	local loclist = List.get_loclist(window)
+	return #loclist > 1
+end
+
+function List.clear_loclist(window)
+	vim.fn.setloclist({})
+end
+
+function List.is_qflist_open()
+	return vim.fn.getqflist({ winid = 0 }).winid ~= 0
+end
+
+function List.get_qflist()
+	return vim.fn.getqflist()
+end
+
+function List.has_qflist_items()
+	local qflist = List.get_qflist()
+
+	return #qflist > 1
+end
+
+function List.clear_qflist()
+	vim.fn.setqflist({})
+end
+
+function List.open()
+	local qf_helper = require("qf_helper")
+
+	if List.has_loclist_items() then
+		return qf_helper.open("l", { enter = true })
+	elseif List.has_qflist_items() then
+		return qf_helper.open("c", { enter = true })
+	end
+end
+
+function List.close()
+	local qf_helper = require("qf_helper")
+
+	if List.is_loclist_open() then
+		qf_helper.close("l")
+		List.clear_loclist()
+		return
+	elseif List.is_qflist_open() then
+		qf_helper.close("c")
+		List.clear_qflist()
+		return
+	end
 end
 
 function List.next()
