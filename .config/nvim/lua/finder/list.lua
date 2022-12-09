@@ -44,29 +44,29 @@ List.actions = validator.f.arguments({
 				},
 				{
 					name = "Open item preview",
-					keymap = keymaps["list.item.preview"],
+					keymap = keymaps["list.item.open.preview"],
 					handler = fn.bind(key.input, "<CR><C-W>p"),
 				},
 				{
 					name = "Open previous item preview",
-					keymap = keymaps["list.item.preview.prev"],
+					keymap = keymaps["list.item.prev.open.preview"],
 					handler = fn.bind(key.input, "k<CR><C-W>p"),
 				},
 				{
 					name = "Open next item preview",
-					keymap = keymaps["list.item.preview.next"],
+					keymap = keymaps["list.item.next.open.preview"],
 					handler = fn.bind(key.input, "j<CR><C-W>p"),
 				},
 				-- NOTE: Navigate methods don't work properly
 				-- TODO: Debug
 				{
 					name = "Navigate to first entry",
-					keymap = keymaps["list.item.first"],
+					keymap = keymaps["list.navigate.first"],
 					handler = fn.bind(navigate, -1, { by_file = true }),
 				},
 				{
 					name = "Navigate to last entry",
-					keymap = keymaps["list.item.last"],
+					keymap = keymaps["list.navigate.last"],
 					handler = fn.bind(navigate, 1, { by_file = true }),
 				},
 				{
@@ -125,8 +125,8 @@ List._setup_keymaps = function()
 	key.nmap(
 		{ keymaps["list.open"], List.open },
 		{ keymaps["list.close"], List.close },
-		{ keymaps["list.item.next"], List.next },
-		{ keymaps["list.item.prev"], List.prev }
+		{ keymaps["list.next"], List.next },
+		{ keymaps["list.prev"], List.prev }
 	)
 
 	au.group({
