@@ -16,53 +16,82 @@ List.setup = function()
 	List._setup_plugins()
 end
 
-List.actions = function()
+List.actions = function(mode)
+	mode = mode or "n"
 	local keymaps = settings.keymaps()
 	local open = require("qf_helper").open_split
 	local navigate = require("qf_helper").navigate
 
-	return {
-		{
-			name = "Open item in new tab",
-			keymap = keymaps["list.item.open.tab"],
-			handler = fn.bind(key.input, "<C-W><CR><C-W>T"),
+	local actions = {
+		n = {
+			{
+				name = "Open item in new tab",
+				keymap = keymaps["list.item.open.tab"],
+				handler = fn.bind(key.input, "<C-W><CR><C-W>T"),
+			},
+			{
+				name = "Open item in vertical split",
+				keymap = keymaps["list.item.open.vertical"],
+				handler = fn.bind(open, "vsplit"),
+			},
+			{
+				name = "Open entry in horizontal split",
+				keymap = keymaps["list.item.open.horizontal"],
+				handler = fn.bind(open, "split"),
+			},
+			{
+				name = "Open item preview",
+				keymap = keymaps["list.item.preview"],
+				handler = fn.bind(key.input, "<CR><C-W>p"),
+			},
+			{
+				name = "Open previous item preview",
+				keymap = keymaps["list.item.preview.prev"],
+				handler = fn.bind(key.input, "k<CR><C-W>p"),
+			},
+			{
+				name = "Open next item preview",
+				keymap = keymaps["list.item.preview.next"],
+				handler = fn.bind(key.input, "j<CR><C-W>p"),
+			},
+			{
+				name = "Navigate to first entry",
+				keymap = keymaps["list.item.first"],
+				handler = fn.bind(navigate, -1, { by_file = true }),
+			},
+			{
+				name = "Navigate to last entry",
+				keymap = keymaps["list.item.first"],
+				handler = fn.bind(navigate, 1, { by_file = true }),
+			},
+			{
+				name = "Remove item",
+				keymap = keymaps["list.item.remove"],
+				handler = fn.bind(vim.fn.execute, "Reject"),
+			},
+			{
+				name = "Keep item",
+				keymap = keymaps["list.item.keep"],
+				handler = fn.bind(vim.fn.execute, "Keep"),
+			},
 		},
-		{
-			name = "Open item in vertical split",
-			keymap = keymaps["list.item.open.vertical"],
-			handler = fn.bind(open, "vsplit"),
-		},
-		{
-			name = "Open entry in horizontal split",
-			keymap = keymaps["list.item.open.horizontal"],
-			handler = fn.bind(open, "split"),
-		},
-		{
-			name = "Open item preview",
-			keymap = keymaps["list.item.preview"],
-			handler = fn.bind(key.input, "<CR><C-W>p"),
-		},
-		{
-			name = "Open previous item preview",
-			keymap = keymaps["list.item.preview.prev"],
-			handler = fn.bind(key.input, "k<CR><C-W>p"),
-		},
-		{
-			name = "Open next item preview",
-			keymap = keymaps["list.item.preview.next"],
-			handler = fn.bind(key.input, "j<CR><C-W>p"),
-		},
-		{
-			name = "Navigate to first entry",
-			keymap = keymaps["list.item.first"],
-			handler = fn.bind(navigate, -1, { by_file = true }),
-		},
-		{
-			name = "Navigate to last entry",
-			keymap = keymaps["list.item.first"],
-			handler = fn.bind(navigate, 1, { by_file = true }),
+		-- NOTE: These actions don't work properly when triggered through the menu
+		-- TODO: investigate why
+		V = {
+			{
+				name = "Remove items selection",
+				keymap = keymaps["list.item.remove"],
+				handler = fn.bind(key.input, ":Reject<Cr>"),
+			},
+			{
+				name = "Keep items selection",
+				keymap = keymaps["list.item.keep"],
+				handler = fn.bind(key.input, ":Keep<Cr>"),
+			},
 		},
 	}
+
+	return actions[mode]
 end
 
 List._setup_keymaps = function()
@@ -81,15 +110,29 @@ List._setup_keymaps = function()
 			{
 				"FileType",
 				"qf",
+				-- TODO: refactor, we could cycle over all actions keys
+				-- and automatically set keymaps
 				function(autocmd)
 					local buffer = autocmd.buf
-					local actions = List.actions()
-					local mappings = fn.imap(actions, function(action)
-						return { action.keymap, action.handler, buffer = buffer }
+					local n_actions = List.actions("n")
+					local n_keymaps = fn.imap(n_actions, function(n_action)
+						return { n_action.keymap, n_action.handler, buffer = buffer }
+					end)
+					local V_actions = List.actions("V")
+					local V_keymaps = fn.imap(V_actions, function(V_action)
+						return { V_action.keymap, V_action.handler, buffer = buffer }
 					end)
 
-					key.nmap(unpack(mappings))
+					key.nmap(unpack(n_keymaps))
 					key.nmap({
+						keymaps["dropdown.open"],
+						function()
+							List.actions_menu()
+						end,
+						buffer = buffer,
+					})
+					key.vmap(unpack(V_keymaps))
+					key.vmap({
 						keymaps["dropdown.open"],
 						function()
 							List.actions_menu()
@@ -203,8 +246,14 @@ function List.prev()
 end
 
 function List.actions_menu()
+	local mode = vim.api.nvim_get_mode().mode
+	local actions = List.actions(mode)
+
+	if not actions then
+		return
+	end
+
 	local is_loclist = List.is_loclist()
-	local actions = List.actions()
 	local menu = vim.tbl_extend(
 		"error",
 		fn.imap(actions, function(action)

@@ -222,6 +222,8 @@ Settings._keymaps = {
 	["list.item.preview.next"] = "]c",
 	["list.item.first"] = "{c",
 	["list.item.last"] = "}c",
+	["list.item.remove"] = "<leader>d",
+	["list.item.keep"] = "<leader>D",
 	-- Git
 	["git.blame"] = "gb",
 	["git.log"] = "gl",
