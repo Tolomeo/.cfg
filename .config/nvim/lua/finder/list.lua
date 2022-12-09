@@ -74,6 +74,19 @@ List.actions = function(mode)
 				keymap = keymaps["list.item.keep"],
 				handler = fn.bind(vim.fn.execute, "Keep"),
 			},
+			{
+				name = "Search items",
+				keymap = keymaps["list.search"],
+				handler = function()
+					local is_loclist = List.is_loclist()
+
+					if is_loclist then
+						return require("finder.picker").loclist()
+					end
+
+					require("finder.picker").qflist()
+				end,
+			},
 		},
 		-- NOTE: These actions don't work properly when triggered through the menu
 		-- TODO: investigate why

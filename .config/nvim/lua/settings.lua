@@ -224,6 +224,7 @@ Settings._keymaps = {
 	["list.item.last"] = "}c",
 	["list.item.remove"] = "<leader>d",
 	["list.item.keep"] = "<leader>D",
+	["list.search"] = "<leader>f",
 	-- Git
 	["git.blame"] = "gb",
 	["git.log"] = "gl",

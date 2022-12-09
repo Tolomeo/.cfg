@@ -239,6 +239,14 @@ Picker.todos = function()
 	key.input(":TodoTelescope<CR>")
 end
 
+Picker.qflist = function()
+	require("telescope.builtin").quickfix()
+end
+
+Picker.loclist = function()
+	require("telescope.builtin").loclist()
+end
+
 Picker.commands = function()
 	require("telescope.builtin").commands()
 end
