@@ -1,5 +1,26 @@
 local Fn = {}
 
+--- https://github.com/lunarmodules/Penlight/blob/master/lua/pl/utils.lua
+--- An iterator over all non-integer keys (inverse of `ipairs`).
+--- This uses `pairs` under the hood, so any value that is iterable using `pairs`
+--- will work with this function.
+---@param t table  the table to iterate over
+---@return string
+---@return any
+function Fn.kpairs(t)
+	local index
+	return function()
+		local value
+		while true do
+			index, value = next(t, index)
+			if type(index) ~= "number" or math.floor(index) ~= index then
+				break
+			end
+		end
+		return index, value
+	end
+end
+
 --- Executes a user-supplied "reducer" callback function on each element of the table indexed with a numeric key, in order, passing in the return value from the calculation on the preceding element
 ---@param tbl table the table to loop against
 ---@param func function the reducer callback

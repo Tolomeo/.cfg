@@ -17,7 +17,6 @@ List.setup = function()
 end
 
 List.actions = function(mode)
-	mode = mode or "n"
 	local keymaps = settings.keymaps()
 	local open = require("qf_helper").open_split
 	local navigate = require("qf_helper").navigate
@@ -90,7 +89,7 @@ List.actions = function(mode)
 		},
 		-- NOTE: These actions don't work properly when triggered through the menu
 		-- TODO: investigate why
-		V = {
+		v = {
 			{
 				name = "Remove items selection",
 				keymap = keymaps["list.item.remove"],
@@ -104,7 +103,11 @@ List.actions = function(mode)
 		},
 	}
 
-	return actions[mode]
+	if mode then
+		return actions[mode]
+	end
+
+	return actions
 end
 
 List._setup_keymaps = function()
@@ -127,31 +130,23 @@ List._setup_keymaps = function()
 				-- and automatically set keymaps
 				function(autocmd)
 					local buffer = autocmd.buf
-					local n_actions = List.actions("n")
-					local n_keymaps = fn.imap(n_actions, function(n_action)
-						return { n_action.keymap, n_action.handler, buffer = buffer }
-					end)
-					local V_actions = List.actions("V")
-					local V_keymaps = fn.imap(V_actions, function(V_action)
-						return { V_action.keymap, V_action.handler, buffer = buffer }
-					end)
+					local actions = List.actions()
 
-					key.nmap(unpack(n_keymaps))
-					key.nmap({
-						keymaps["dropdown.open"],
-						function()
-							List.actions_menu()
-						end,
-						buffer = buffer,
-					})
-					key.vmap(unpack(V_keymaps))
-					key.vmap({
-						keymaps["dropdown.open"],
-						function()
-							List.actions_menu()
-						end,
-						buffer = buffer,
-					})
+					for mode, mode_actions in fn.kpairs(actions) do
+						local mode_keymaps = fn.imap(mode_actions, function(mode_action)
+							return { mode_action.keymap, mode_action.handler, buffer = buffer }
+						end)
+
+						table.insert(mode_keymaps, {
+							keymaps["dropdown.open"],
+							function()
+								List.actions_menu()
+							end,
+							buffer = buffer,
+						})
+
+						key.map(mode, unpack(mode_keymaps))
+					end
 				end,
 			},
 		},
@@ -259,7 +254,10 @@ function List.prev()
 end
 
 function List.actions_menu()
-	local mode = vim.api.nvim_get_mode().mode
+	-- NOTE: the mode returned by vim.api.nvim_get_mode() contains more values than the values allowed for setting keymaps
+	-- see :h nvim_set_keymap and :h mode()
+	-- so we lowercase to transform visual line (V) into visual (v) which will work for any visual mode
+	local mode = string.lower(vim.api.nvim_get_mode().mode)
 	local actions = List.actions(mode)
 
 	if not actions then
