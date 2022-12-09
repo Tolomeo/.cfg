@@ -1,6 +1,7 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
 local fn = require("_shared.fn")
+local validator = require("_shared.validator")
 local key = require("_shared.key")
 local settings = require("settings")
 
@@ -16,99 +17,107 @@ List.setup = function()
 	List._setup_plugins()
 end
 
-List.actions = function(mode)
-	local keymaps = settings.keymaps()
-	local open = require("qf_helper").open_split
-	local navigate = require("qf_helper").navigate
+List.actions = validator.f.arguments({
+	validator.f.optional(validator.f.one_of({ "n", "v", "V" })),
+})
+	.. function(mode)
+		local keymaps = settings.keymaps()
+		local open = require("qf_helper").open_split
+		local navigate = require("qf_helper").navigate
 
-	local actions = {
-		n = {
-			{
-				name = "Open item in new tab",
-				keymap = keymaps["list.item.open.tab"],
-				handler = fn.bind(key.input, "<C-W><CR><C-W>T"),
-			},
-			{
-				name = "Open item in vertical split",
-				keymap = keymaps["list.item.open.vertical"],
-				handler = fn.bind(open, "vsplit"),
-			},
-			{
-				name = "Open entry in horizontal split",
-				keymap = keymaps["list.item.open.horizontal"],
-				handler = fn.bind(open, "split"),
-			},
-			{
-				name = "Open item preview",
-				keymap = keymaps["list.item.preview"],
-				handler = fn.bind(key.input, "<CR><C-W>p"),
-			},
-			{
-				name = "Open previous item preview",
-				keymap = keymaps["list.item.preview.prev"],
-				handler = fn.bind(key.input, "k<CR><C-W>p"),
-			},
-			{
-				name = "Open next item preview",
-				keymap = keymaps["list.item.preview.next"],
-				handler = fn.bind(key.input, "j<CR><C-W>p"),
-			},
-			{
-				name = "Navigate to first entry",
-				keymap = keymaps["list.item.first"],
-				handler = fn.bind(navigate, -1, { by_file = true }),
-			},
-			{
-				name = "Navigate to last entry",
-				keymap = keymaps["list.item.first"],
-				handler = fn.bind(navigate, 1, { by_file = true }),
-			},
-			{
-				name = "Remove item",
-				keymap = keymaps["list.item.remove"],
-				handler = fn.bind(vim.fn.execute, "Reject"),
-			},
-			{
-				name = "Keep item",
-				keymap = keymaps["list.item.keep"],
-				handler = fn.bind(vim.fn.execute, "Keep"),
-			},
-			{
-				name = "Search items",
-				keymap = keymaps["list.search"],
-				handler = function()
-					local is_loclist = List.is_loclist()
+		local actions = {
+			n = {
+				{
+					name = "Open item in new tab",
+					keymap = keymaps["list.item.open.tab"],
+					handler = fn.bind(key.input, "<C-W><CR><C-W>T"),
+				},
+				{
+					name = "Open item in vertical split",
+					keymap = keymaps["list.item.open.vertical"],
+					handler = fn.bind(open, "vsplit"),
+				},
+				{
+					name = "Open entry in horizontal split",
+					keymap = keymaps["list.item.open.horizontal"],
+					handler = fn.bind(open, "split"),
+				},
+				{
+					name = "Open item preview",
+					keymap = keymaps["list.item.preview"],
+					handler = fn.bind(key.input, "<CR><C-W>p"),
+				},
+				{
+					name = "Open previous item preview",
+					keymap = keymaps["list.item.preview.prev"],
+					handler = fn.bind(key.input, "k<CR><C-W>p"),
+				},
+				{
+					name = "Open next item preview",
+					keymap = keymaps["list.item.preview.next"],
+					handler = fn.bind(key.input, "j<CR><C-W>p"),
+				},
+				-- NOTE: Navigate methods don't work properly
+				-- TODO: Debug
+				{
+					name = "Navigate to first entry",
+					keymap = keymaps["list.item.first"],
+					handler = fn.bind(navigate, -1, { by_file = true }),
+				},
+				{
+					name = "Navigate to last entry",
+					keymap = keymaps["list.item.last"],
+					handler = fn.bind(navigate, 1, { by_file = true }),
+				},
+				{
+					name = "Remove item",
+					keymap = keymaps["list.item.remove"],
+					handler = fn.bind(vim.fn.execute, "Reject"),
+				},
+				{
+					name = "Keep item",
+					keymap = keymaps["list.item.keep"],
+					handler = fn.bind(vim.fn.execute, "Keep"),
+				},
+				{
+					name = "Search items",
+					keymap = keymaps["list.search"],
+					handler = function()
+						local is_loclist = List.is_loclist()
 
-					if is_loclist then
-						return require("finder.picker").loclist()
-					end
+						if is_loclist then
+							return require("finder.picker").loclist()
+						end
 
-					require("finder.picker").qflist()
-				end,
+						require("finder.picker").qflist()
+					end,
+				},
 			},
-		},
-		-- NOTE: These actions don't work properly when triggered through the menu
-		-- TODO: investigate why
-		v = {
-			{
-				name = "Remove items selection",
-				keymap = keymaps["list.item.remove"],
-				handler = fn.bind(key.input, ":Reject<Cr>"),
+			-- NOTE: These actions don't work properly when triggered through the menu
+			-- TODO: investigate why
+			v = {
+				{
+					name = "Remove items selection",
+					keymap = keymaps["list.item.remove"],
+					handler = fn.bind(key.input, ":Reject<Cr>"),
+				},
+				{
+					name = "Keep items selection",
+					keymap = keymaps["list.item.keep"],
+					handler = fn.bind(key.input, ":Keep<Cr>"),
+				},
 			},
-			{
-				name = "Keep items selection",
-				keymap = keymaps["list.item.keep"],
-				handler = fn.bind(key.input, ":Keep<Cr>"),
-			},
-		},
-	}
+		}
 
-	if mode then
-		return actions[mode]
+		if mode then
+			-- NOTE: the mode returned by vim.api.nvim_get_mode() contains more values than those allowed for setting keymaps
+			-- see :h nvim_set_keymap and :h mode()
+			-- so we lowercase to transform visual line (V) into visual (v) which will work for any visual mode
+			return actions[string.lower(mode)]
+		end
+
+		return actions
 	end
-
-	return actions
-end
 
 List._setup_keymaps = function()
 	local keymaps = settings.keymaps()
@@ -166,42 +175,47 @@ List._setup_plugins = function()
 	})
 end
 
-function List.is_loclist(window)
-	window = window or vim.api.nvim_get_current_win()
-	local window_info = vim.fn.getwininfo(window)[1]
+List.is_loclist = validator.f.arguments({ validator.f.optional("number") })
+	.. function(window)
+		window = window or vim.api.nvim_get_current_win()
+		local window_info = vim.fn.getwininfo(window)[1]
 
-	return window_info.quickfix == 1 and window_info.loclist == 1
-end
+		return window_info.quickfix == 1 and window_info.loclist == 1
+	end
 
-function List.is_loclist_open(window)
-	window = window or 0
+List.is_loclist_open = validator.f.arguments({ validator.f.optional("number") })
+	.. function(window)
+		window = window or 0
 
-	return vim.fn.getloclist(window, { winid = 0 }).winid ~= 0
-end
+		return vim.fn.getloclist(window, { winid = 0 }).winid ~= 0
+	end
 
-function List.get_loclist(window)
-	window = window or 0
+List.get_loclist = validator.f.arguments({ validator.f.optional("number") })
+	.. function(window)
+		window = window or 0
 
-	return vim.fn.getloclist(window)
-end
+		return vim.fn.getloclist(window)
+	end
 
-function List.has_loclist_items(window)
+List.has_loclist_items = function(window)
 	local loclist = List.get_loclist(window)
 	return #loclist > 1
 end
 
-function List.clear_loclist(window)
-	window = window or 0
+List.clear_loclist = validator.f.arguments({ validator.f.optional("number") })
+	.. function(window)
+		window = window or 0
 
-	vim.fn.setloclist(window, {})
-end
+		vim.fn.setloclist(window, {})
+	end
 
-function List.is_qflist(window)
-	window = window or vim.api.nvim_get_current_win()
-	local window_info = vim.fn.getwininfo(window)[1]
+List.is_qflist = validator.f.arguments({ validator.f.optional("number") })
+	.. function(window)
+		window = window or vim.api.nvim_get_current_win()
+		local window_info = vim.fn.getwininfo(window)[1]
 
-	return window_info.quickfix == 1 and window_info.loclist == 0
-end
+		return window_info.quickfix == 1 and window_info.loclist == 0
+	end
 
 function List.is_qflist_open()
 	return vim.fn.getqflist({ winid = 0 }).winid ~= 0
@@ -254,10 +268,7 @@ function List.prev()
 end
 
 function List.actions_menu()
-	-- NOTE: the mode returned by vim.api.nvim_get_mode() contains more values than the values allowed for setting keymaps
-	-- see :h nvim_set_keymap and :h mode()
-	-- so we lowercase to transform visual line (V) into visual (v) which will work for any visual mode
-	local mode = string.lower(vim.api.nvim_get_mode().mode)
+	local mode = vim.api.nvim_get_mode().mode
 	local actions = List.actions(mode)
 
 	if not actions then
