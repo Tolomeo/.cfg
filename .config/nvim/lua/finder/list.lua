@@ -16,6 +16,55 @@ List.setup = function()
 	List._setup_plugins()
 end
 
+List.actions = function()
+	local keymaps = settings.keymaps()
+	local open = require("qf_helper").open_split
+	local navigate = require("qf_helper").navigate
+
+	return {
+		{
+			name = "Open item in new tab",
+			keymap = keymaps["list.item.open.tab"],
+			handler = fn.bind(key.input, "<C-W><CR><C-W>T"),
+		},
+		{
+			name = "Open item in vertical split",
+			keymap = keymaps["list.item.open.vertical"],
+			handler = fn.bind(open, "vsplit"),
+		},
+		{
+			name = "Open entry in horizontal split",
+			keymap = keymaps["list.item.open.horizontal"],
+			handler = fn.bind(open, "split"),
+		},
+		{
+			name = "Open item preview",
+			keymap = keymaps["list.item.preview"],
+			handler = fn.bind(key.input, "<CR><C-W>p"),
+		},
+		{
+			name = "Open previous item preview",
+			keymap = keymaps["list.item.preview.prev"],
+			handler = fn.bind(key.input, "k<CR><C-W>p"),
+		},
+		{
+			name = "Open next item preview",
+			keymap = keymaps["list.item.preview.next"],
+			handler = fn.bind(key.input, "j<CR><C-W>p"),
+		},
+		{
+			name = "Navigate to first entry",
+			keymap = keymaps["list.item.first"],
+			handler = fn.bind(navigate, -1, { by_file = true }),
+		},
+		{
+			name = "Navigate to last entry",
+			keymap = keymaps["list.item.first"],
+			handler = fn.bind(navigate, 1, { by_file = true }),
+		},
+	}
+end
+
 List._setup_keymaps = function()
 	local keymaps = settings.keymaps()
 
@@ -27,24 +76,26 @@ List._setup_keymaps = function()
 	)
 
 	au.group({
-		"OnListFileType",
+		"OnQFFileType",
 		{
 			{
 				"FileType",
 				"qf",
 				function(autocmd)
 					local buffer = autocmd.buf
-					local open = require("qf_helper").open_split
-					local navigate = require("qf_helper").navigate
+					local actions = List.actions()
+					local mappings = fn.imap(actions, function(action)
+						return { action.keymap, action.handler, buffer = buffer }
+					end)
 
-					key.nmap({ keymaps["list.item.open.tab"], "<C-W><CR><C-W>T", buffer = buffer })
-					key.nmap({ keymaps["list.item.open.vertical"], fn.bind(open, "vsplit"), buffer = buffer })
-					key.nmap({ keymaps["list.item.open.horizontal"], fn.bind(open, "split"), buffer = buffer })
-					key.nmap({ keymaps["list.item.preview"], "<CR><C-W>p", buffer = buffer })
-					key.nmap({ keymaps["list.item.preview.prev"], "k<CR><C-W>p", buffer = buffer })
-					key.nmap({ keymaps["list.item.preview.next"], "j<CR><C-W>p", buffer = buffer })
-					key.nmap({ keymaps["list.item.first"], fn.bind(navigate, -1, { by_file = true }), buffer = buffer })
-					key.nmap({ keymaps["list.item.last"], fn.bind(navigate, 1, { by_file = true }), buffer = buffer })
+					key.nmap(unpack(mappings))
+					key.nmap({
+						keymaps["dropdown.open"],
+						function()
+							List.actions_menu()
+						end,
+						buffer = buffer,
+					})
 				end,
 			},
 		},
@@ -54,6 +105,7 @@ end
 List._setup_plugins = function()
 	require("pqf").setup()
 	require("qf_helper").setup({
+		prefer_loclist = true,
 		quickfix = {
 			default_bindings = false,
 		},
@@ -61,6 +113,13 @@ List._setup_plugins = function()
 			default_bindings = false,
 		},
 	})
+end
+
+function List.is_loclist(window)
+	window = window or vim.api.nvim_get_current_win()
+	local window_info = vim.fn.getwininfo(window)[1]
+
+	return window_info.quickfix == 1 and window_info.loclist == 1
 end
 
 function List.is_loclist_open(window)
@@ -81,7 +140,16 @@ function List.has_loclist_items(window)
 end
 
 function List.clear_loclist(window)
-	vim.fn.setloclist({})
+	window = window or 0
+
+	vim.fn.setloclist(window, {})
+end
+
+function List.is_qflist(window)
+	window = window or vim.api.nvim_get_current_win()
+	local window_info = vim.fn.getwininfo(window)[1]
+
+	return window_info.quickfix == 1 and window_info.loclist == 0
 end
 
 function List.is_qflist_open()
@@ -132,6 +200,29 @@ end
 
 function List.prev()
 	vim.fn.execute("QPrev")
+end
+
+function List.actions_menu()
+	local is_loclist = List.is_loclist()
+	local actions = List.actions()
+	local menu = vim.tbl_extend(
+		"error",
+		fn.imap(actions, function(action)
+			return { action.name, action.keymap, handler = action.handler }
+		end),
+		{
+			on_select = function(modal_menu)
+				local selection = modal_menu.state.get_selected_entry()
+				modal_menu.actions.close(modal_menu.buffer)
+				selection.value.handler()
+			end,
+		}
+	)
+	local options = {
+		prompt_title = is_loclist and "Location list" or "Quickfix list",
+	}
+
+	require("finder.picker").context_menu(menu, options)
 end
 
 return Module:new(List)
