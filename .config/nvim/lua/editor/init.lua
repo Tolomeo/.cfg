@@ -3,11 +3,11 @@ local Module = require("_shared.module")
 local Editor = {}
 
 Editor.modules = {
-	language = require("editor.language"),
-	buffer = require("editor.buffer"),
-	completion = require("editor.completion"),
-	snippet = require("editor.snippet"),
-	spelling = require("editor.spelling")
+	"editor.language",
+	"editor.buffer",
+	"editor.completion",
+	"editor.snippet",
+	"editor.spelling",
 }
 
 return Module:new(Editor)

@@ -8,8 +8,8 @@ Finder.plugins = {
 }
 
 Finder.modules = {
-	list = require("finder.list"),
-	picker = require("finder.picker"),
+	"finder.list",
+	"finder.picker",
 }
 
 Finder.setup = function()

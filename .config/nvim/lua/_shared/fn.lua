@@ -116,6 +116,28 @@ function Fn.imap(tbl, func)
 	end, {})
 end
 
+--- Returns an array of a given table's string-keyed property names.
+---@param tbl table
+---@return table
+function Fn.keys(tbl)
+	local keys = {}
+	for key, _ in Fn.kpairs(tbl) do
+		table.insert(keys, key)
+	end
+	return keys
+end
+
+--- Returns an array of a given table's numbered-keyed property names.
+---@param tbl table
+---@return table
+function Fn.indexes(tbl)
+	local indexes = {}
+	for key, _ in ipairs(tbl) do
+		table.insert(indexes, key)
+	end
+	return indexes
+end
+
 --- Creates a new function that, when called,
 ---has its arguments preceded by any provided ones
 ---@param func function

@@ -2,6 +2,7 @@ local Module = require("_shared.module")
 local key = require("_shared.key")
 local au = require("_shared.au")
 local settings = require("settings")
+local logger = require("_shared.logger")
 
 local installed = nil
 local install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
@@ -15,11 +16,11 @@ Config.plugins = {
 }
 
 Config.modules = {
-	interface = require("interface"),
-	project = require("project"),
-	editor = require("editor"),
-	finder = require("finder"),
-	terminal = require("terminal"),
+	"interface",
+	"project",
+	"editor",
+	"finder",
+	"terminal",
 }
 
 Config.setup = function()
