@@ -4,7 +4,9 @@ local logger = require("_shared.logger")
 ---@class Modules
 local Modules = {}
 
----@type fun(self: Modules, module_name: string): Module
+---Returns a registered configuration module
+---@param module_name string
+---@return Module | nil
 function Modules:get(module_name)
 	return self[module_name]
 end

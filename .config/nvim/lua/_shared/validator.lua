@@ -262,10 +262,14 @@ Validator.f = {
 			return Validator.validate(validation_map, error_message)
 		end
 	end,
+
+	---@class ArgumentsValidator
+	---@operator concat:function
+
 	--- Generates a function decorator which validates arguments passed to the decorated function
 	---@param arguments_validators table validators to use for function arguments
 	---@param error_message? string error message thrown
-	---@return table
+	---@return ArgumentsValidator
 	arguments = function(arguments_validators, error_message)
 		local validate_arguments = Validator.f.list(arguments_validators)
 		error_message = error_message or "Arguments validation error: %s"
