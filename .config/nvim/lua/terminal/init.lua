@@ -118,7 +118,7 @@ Jobs.prev = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optiona
 		local index = job_buffer and fn.find_index(self, function(job)
 			return job.buffer == job_buffer
 		end) or self._current
-		local next_index = self[index - 1] and index - 1 or #self.list
+		local next_index = self[index - 1] and index - 1 or #self
 
 		self._current = next_index
 		return self:current()
