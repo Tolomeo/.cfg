@@ -1,11 +1,12 @@
 local Module = require("_shared.module")
 
-local Editor = {}
+---@class Project
+local Project = {}
 
-Editor.modules = {
+Project.modules = {
 	"project.tree",
 	"project.git",
 	"project.github",
 }
 
-return Module:new(Editor)
+return Module:new(Project)

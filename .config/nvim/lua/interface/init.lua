@@ -1,5 +1,6 @@
 local Module = require("_shared.module")
 
+---@class Interface
 local Interface = {}
 
 Interface.modules = {

@@ -5,8 +5,12 @@ local key = require("_shared.key")
 local validator = require("_shared.validator")
 local settings = require("settings")
 
+---@class TerminalJob
+---@field buffer number
+---@field file string
 local Job = {}
 
+---@type fun(self: TerminalJob, job: { file: string, buffer: number }): TerminalJob
 Job.new = validator.f.arguments({
 	validator.f.equal(Job),
 	validator.f.shape({
@@ -20,10 +24,12 @@ Job.new = validator.f.arguments({
 	return job
 end
 
+---@class TerminalJobs
 local Jobs = {
 	_current = 0,
 }
 
+---@type fun(self: TerminalJobs, job_buffer: number): TerminalJob | nil
 Jobs.find_index_by_buffer = validator.f.arguments({
 	validator.f.equal(Jobs),
 	"number",
@@ -39,6 +45,7 @@ Jobs.find_index_by_buffer = validator.f.arguments({
 	return self[job_index]
 end
 
+---@type fun(self: TerminalJobs, window: number): TerminalJob | nil
 Jobs.find_index_by_window = validator.f.arguments({
 	validator.f.equal(Jobs),
 	"number",
@@ -46,6 +53,7 @@ Jobs.find_index_by_window = validator.f.arguments({
 	return self:find_index_by_buffer(vim.api.nvim_win_get_buf(window))
 end
 
+---@type fun(self: TerminalJobs, job: TerminalJob)
 Jobs.register = validator.f.arguments({
 	validator.f.equal(Jobs),
 	validator.f.instance_of(Job),
@@ -54,6 +62,7 @@ Jobs.register = validator.f.arguments({
 	self._current = #self
 end
 
+---@type fun(self: TerminalJobs, job_buffer: number)
 Jobs.unregister = validator.f.arguments({
 	validator.f.equal(Jobs),
 	"number",
@@ -77,6 +86,7 @@ function Jobs:count()
 	return #self
 end
 
+---@type fun(self: TerminalJobs, job_buffer: number | nil): TerminalJob | nil, number
 Jobs.current = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
 	.. function(self, job_buffer)
 		if not job_buffer then
@@ -90,6 +100,7 @@ Jobs.current = validator.f.arguments({ validator.f.equal(Jobs), validator.f.opti
 		return self[self._current], self._current
 	end
 
+---@type fun(self: TerminalJobs, job_buffer: number | nil): TerminalJob | nil, number
 Jobs.next = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
 	.. function(self, job_buffer)
 		local index = job_buffer and fn.find_index(self, function(job)
@@ -101,6 +112,7 @@ Jobs.next = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optiona
 		return self:current()
 	end
 
+---@type fun(self: TerminalJobs, job_buffer: number | nil): TerminalJob | nil, number
 Jobs.prev = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
 	.. function(self, job_buffer)
 		local index = job_buffer and fn.find_index(self, function(job)
@@ -112,34 +124,35 @@ Jobs.prev = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optiona
 		return self:current()
 	end
 
+---@class Terminal
 local Terminal = {}
 
-Terminal.setup = function()
-	Terminal._setup_keymaps()
-	Terminal._setup_commands()
+function Terminal:setup()
+	self:_setup_keymaps()
+	self:_setup_commands()
 end
 
-Terminal._setup_keymaps = function()
+function Terminal:_setup_keymaps()
 	local keymaps = settings.keymaps()
 	-- Exiting term mode using esc
 	key.tmap({ "<Esc>", "<C-\\><C-n>" })
 
 	key.nmap({
 		keymaps["terminal.next"],
-		Terminal.next,
+		fn.bind(self.next, self),
 	}, {
 		keymaps["terminal.prev"],
-		Terminal.prev,
+		fn.bind(self.prev, self),
 	}, {
 		keymaps["terminal.create"],
-		Terminal.create,
+		fn.bind(self.create, self),
 	}, {
 		keymaps["terminal.jobs"],
-		Terminal.menu,
+		fn.bind(self.menu, self),
 	})
 end
 
-Terminal._setup_commands = function()
+function Terminal:_setup_commands()
 	au.group({
 		"Terminal",
 		{
@@ -172,27 +185,31 @@ Terminal._setup_commands = function()
 	})
 end
 
-function Terminal.show()
+function Terminal:show()
 	local job, index = Jobs:current()
 	local count = Jobs:count()
+
+	if not job then
+		return
+	end
 
 	vim.api.nvim_command("buffer " .. job.buffer)
 	print(string.format("Job %d/%d", index, count))
 end
 
-function Terminal.create()
+function Terminal:create()
 	vim.api.nvim_command("terminal")
 	vim.api.nvim_command("startinsert")
 end
 
-Terminal.next = function()
+function Terminal:next()
 	local jobs_count = Jobs:count()
 
 	if jobs_count < 1 then
 		local create_job = vim.fn.confirm("No running jobs found, do you want to create one?", "&Yes\n&No", 1)
 
 		if create_job == 1 then
-			return Terminal.create()
+			return self:create()
 		end
 
 		return
@@ -201,21 +218,21 @@ Terminal.next = function()
 	local current_buffer_job = Jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
 
 	if not current_buffer_job then
-		return Terminal.show()
+		return self:show()
 	end
 
 	Jobs:next(current_buffer_job.buffer)
-	Terminal.show()
+	self:show()
 end
 
-Terminal.prev = function()
+function Terminal:prev()
 	local jobs_count = Jobs:count()
 
 	if jobs_count < 1 then
 		local create_job = vim.fn.confirm("No running jobs found, do you want to create one?", "&Yes\n&No", 1)
 
 		if create_job == 1 then
-			return Terminal.create()
+			return self:create()
 		end
 
 		return
@@ -224,14 +241,14 @@ Terminal.prev = function()
 	local current_buffer_job = Jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
 
 	if not current_buffer_job then
-		return Terminal.show()
+		return self:show()
 	end
 
 	Jobs:prev(current_buffer_job.buffer)
-	Terminal.show()
+	self:show()
 end
 
-Terminal.jobs_menu = function(options)
+function Terminal:jobs_menu(options)
 	options = options or {}
 	options = vim.tbl_extend("force", {
 		prompt_title = "Running jobs",
@@ -267,13 +284,13 @@ Terminal.jobs_menu = function(options)
 		local selection = modal_menu.state.get_selected_entry()
 		modal_menu.actions.close(modal_menu.buffer)
 		Jobs:current(selection.value.job.buffer)
-		Terminal.show()
+		self:show()
 	end
 
 	require("finder.picker"):menu(menu, options)
 end
 
-Terminal.actions_menu = function(options)
+function Terminal:actions_menu(options)
 	local keymaps = settings.keymaps()
 	local user_options = settings.options()
 
@@ -284,17 +301,17 @@ Terminal.actions_menu = function(options)
 		{
 			"Create a new terminal",
 			keymaps["terminal.create"],
-			handler = Terminal.create,
+			handler = fn.bind(self.create, self),
 		},
 		{
 			"Next terminal",
 			keymaps["terminal.next"],
-			handler = Terminal.next,
+			handler = fn.bind(self.next, self),
 		},
 		{
 			"Previous terminal",
 			keymaps["terminal.prev"],
-			handler = Terminal.prev,
+			handler = fn.bind(self.prev, self),
 		},
 	}
 
@@ -320,14 +337,14 @@ Terminal.actions_menu = function(options)
 	require("finder.picker"):menu(menu, options)
 end
 
-Terminal.menu = function()
+function Terminal:menu()
 	if Jobs:count() < 1 then
-		return Terminal.actions_menu()
+		return self:actions_menu()
 	end
 
 	local pickers = {
-		{ prompt_title = "Running Jobs", find = Terminal.jobs_menu },
-		{ prompt_title = "Terminal", find = Terminal.actions_menu },
+		{ prompt_title = "Running Jobs", find = fn.bind(self.jobs_menu, self) },
+		{ prompt_title = "Terminal", find = fn.bind(self.actions_menu, self) },
 	}
 
 	return require("finder.picker"):Pickers(pickers):find()

@@ -55,6 +55,7 @@ local color_schemes = {
 	end,
 }
 
+---@class Interface.Theme
 local Theme = {}
 
 Theme.plugins = {
@@ -77,13 +78,7 @@ Theme.plugins = {
 	},
 }
 
---[[ local default_settings = {
-	color_scheme = "nightfox",
-	component_separator = "│",
-	section_separator = "",
-} ]]
-
-Theme.setup = function()
+function Theme:setup()
 	local options = settings.options()
 
 	-- TODO: passing options to customise color schemes

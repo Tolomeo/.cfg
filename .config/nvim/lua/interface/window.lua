@@ -4,9 +4,10 @@ local key = require("_shared.key")
 local validator = require("_shared.validator")
 local settings = require("settings")
 
+---@class Window
 local Window = {}
 
-Window._setup_keymaps = function()
+function Window:_setup_keymaps()
 	local keymaps = settings.keymaps()
 
 	key.nmap(
@@ -125,11 +126,11 @@ end
 
 Window.plugins = {}
 
-Window.setup = function()
-	Window._setup_keymaps()
+function Window:setup()
+	self:_setup_keymaps()
 end
 
-Window._get_modal_config = function()
+function Window:_get_modal_config()
 	local width = math.ceil(math.min(vim.o.columns, math.max(80, vim.o.columns - 20)))
 	local height = math.ceil(math.min(vim.o.lines, math.max(20, vim.o.lines - 10)))
 	local col = (math.ceil(vim.o.columns - width) / 2) - 1
@@ -145,21 +146,23 @@ Window._get_modal_config = function()
 	}
 end
 
+---@type fun(self: Window, options: { [number]: number, on_resize: function | nil, on_resized: function | nil })
 Window.modal = validator.f.arguments({
+	validator.f.equal(Window),
 	validator.f.shape({
 		"number",
 		on_resize = validator.f.optional("function"),
 		on_resized = validator.f.optional("function"),
 	}),
-}) .. function(options)
+}) .. function(self, options)
 	local buffer = options[1]
-	local window = vim.api.nvim_open_win(buffer, true, Window._get_modal_config())
+	local window = vim.api.nvim_open_win(buffer, true, self:_get_modal_config())
 	local on_vim_resized = function()
 		if not vim.api.nvim_win_is_valid(window) then
 			return
 		end
 
-		local updatedConfig = Window._get_modal_config()
+		local updatedConfig = self:_get_modal_config()
 
 		if options.on_resize then
 			options.on_resize(updatedConfig)

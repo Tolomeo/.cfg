@@ -1,5 +1,6 @@
 local Module = require("_shared.module")
 
+---@class Editor
 local Editor = {}
 
 Editor.modules = {

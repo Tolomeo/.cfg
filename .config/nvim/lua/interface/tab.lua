@@ -3,8 +3,8 @@ local Module = require("_shared.module")
 
 local Tab = {}
 
-Tab.setup = function()
+--[[ Tab.setup = function()
 	-- key.nmap({ "<C-t>", "<Cmd>tabnew<Cr>" })
-end
+end ]]
 
 return Module:new(Tab)

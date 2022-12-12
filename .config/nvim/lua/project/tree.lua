@@ -4,6 +4,7 @@ local validator = require("_shared.validator")
 local fn = require("_shared.fn")
 local settings = require("settings")
 
+---@class Project.Tree
 local Tree = {}
 
 Tree.plugins = {
@@ -16,7 +17,7 @@ Tree.plugins = {
 	},
 }
 
-Tree.actions = function()
+function Tree:actions()
 	local keymaps = settings.keymaps()
 
 	return {
@@ -158,12 +159,12 @@ Tree.actions = function()
 		{
 			name = "Show actions",
 			keymap = keymaps["project.tree.actions"],
-			handler = require("nvim-tree.utils").inject_node(Tree.tree_actions_menu),
+			handler = require("nvim-tree.utils").inject_node(fn.bind(self.tree_actions_menu, self)),
 		},
 		{
 			name = "Search node contents",
 			keymap = keymaps["project.tree.search.node.content"],
-			handler = require("nvim-tree.utils").inject_node(Tree.search_in_node),
+			handler = require("nvim-tree.utils").inject_node(fn.bind(self.search_in_node, self)),
 		},
 		{
 			name = "Search node",
@@ -173,18 +174,18 @@ Tree.actions = function()
 	}
 end
 
-Tree.setup = function()
-	Tree._setup_keymaps()
-	Tree._setup_plugins()
+function Tree:setup()
+	self:_setup_keymaps()
+	self:_setup_plugins()
 end
 
-Tree._setup_keymaps = function()
+function Tree:_setup_keymaps()
 	local keymaps = settings.keymaps()
 
-	key.nmap({ keymaps["project.tree.toggle"], Tree.toggle })
+	key.nmap({ keymaps["project.tree.toggle"], fn.bind(self.toggle, self) })
 end
 
-Tree._setup_plugins = function()
+function Tree:_setup_plugins()
 	-- NvimTree
 	require("nvim-tree").setup({
 		hijack_netrw = true,
@@ -236,7 +237,7 @@ Tree._setup_plugins = function()
 			preserve_window_proportions = true,
 		},
 		on_attach = function(tree_buffer)
-			local actions = Tree.actions()
+			local actions = self:actions()
 			local mappings = fn.imap(actions, function(action)
 				return { action.keymap, action.handler, buffer = tree_buffer }
 			end)
@@ -246,6 +247,10 @@ Tree._setup_plugins = function()
 		remove_keymaps = true,
 	})
 end
+
+---@alias TreeNode
+--- | {name: string} # Node representing the parent directory
+--- | {absolute_path: string, fs_stat: { type: string } } # Node
 
 local validate_node = validator.f.any_of({
 	-- Directory or file
@@ -261,8 +266,9 @@ local validate_node = validator.f.any_of({
 	}),
 })
 
-Tree.search_in_node = validator.f.arguments({ validate_node })
-	.. function(node)
+---@type fun(self: Project.Tree, node: TreeNode)
+Tree.search_in_node = validator.f.arguments({ validator.f.equal(Tree), validate_node })
+	.. function(_, node)
 		-- when the selected node is the one pointing at the parent director absolute_path will not be present
 		if not node.absolute_path then
 			return require("finder.picker"):text()
@@ -278,11 +284,13 @@ Tree.search_in_node = validator.f.arguments({ validate_node })
 		end
 	end
 
-Tree.tree_actions_menu = validator.f.arguments({ validate_node })
-	.. function(node)
+---@type fun(self: Project.Tree, node: TreeNode)
+Tree.tree_actions_menu = validator.f.arguments({ validator.f.equal(Tree), validate_node })
+	.. function(self, node)
+		local actions = self:actions()
 		local menu = vim.tbl_extend(
 			"error",
-			fn.imap(Tree.actions(), function(action)
+			fn.imap(actions, function(action)
 				return { action.name, action.keymap, handler = action.handler }
 			end),
 			{
@@ -298,7 +306,7 @@ Tree.tree_actions_menu = validator.f.arguments({ validate_node })
 		require("finder.picker"):context_menu(menu, options)
 	end
 
-Tree.toggle = function()
+function Tree:toggle()
 	local tree_view = require("nvim-tree.view")
 
 	if tree_view.is_visible() then

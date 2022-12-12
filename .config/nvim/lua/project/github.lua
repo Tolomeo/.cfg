@@ -2,8 +2,8 @@ local Module = require("_shared.module")
 local key = require("_shared.key")
 local fn = require("_shared.fn")
 local settings = require("settings")
-local au = require("_shared.au")
 
+---@class Project.Github
 local Github = {}
 
 Github.plugins = {
@@ -17,18 +17,18 @@ Github.plugins = {
 	},
 }
 
-Github.setup = function()
-	Github._setup_keymaps()
-	Github._setup_plugins()
+function Github:setup()
+	self:_setup_keymaps()
+	self:_setup_plugins()
 end
 
-Github._setup_keymaps = function()
+function Github:_setup_keymaps()
 	local keymaps = settings.keymaps()
 
-	key.nmap({ keymaps["github.actions"], Github.actions_menu })
+	key.nmap({ keymaps["github.actions"], fn.bind(self.actions_menu, self) })
 end
 
-Github.repository_menu = function(options)
+function Github:repository_menu(options)
 	local menu = {
 		{
 			"Create pull request",
@@ -75,7 +75,7 @@ Github.repository_menu = function(options)
 	require("finder.picker"):menu(menu, options)
 end
 
-Github.pending_review_menu = function(options)
+function Github:pending_review_menu(options)
 	local menu = {
 		{
 			"List pending comments",
@@ -99,7 +99,7 @@ Github.pending_review_menu = function(options)
 	require("finder.picker"):context_menu(menu, options)
 end
 
-Github.reactions_menu = function(options)
+function Github:reactions_menu(options)
 	local keymaps = settings.keymaps()
 	local menu = {
 		{
@@ -152,7 +152,7 @@ Github.reactions_menu = function(options)
 	require("finder.picker"):context_menu(menu, options)
 end
 
-Github.changed_file_diff_menu = function(options)
+function Github:changed_file_diff_menu(options)
 	local keymaps = settings.keymaps()
 	local menu = {
 		{
@@ -215,7 +215,7 @@ Github.changed_file_diff_menu = function(options)
 	require("finder.picker"):context_menu(menu, options)
 end
 
-Github.changed_files_list_menu = function(options)
+function Github:changed_files_list_menu(options)
 	local keymaps = settings.keymaps()
 	local menu = {
 		{
@@ -273,7 +273,7 @@ Github.changed_files_list_menu = function(options)
 	require("finder.picker"):context_menu(menu, options)
 end
 
-Github.pull_request_menu = function(options)
+function Github:pull_request_menu(options)
 	local keymaps = settings.keymaps()
 	local menu = {
 		{
@@ -482,7 +482,7 @@ Github.pull_request_menu = function(options)
 	require("finder.picker"):context_menu(menu, options)
 end
 
-Github.thread_actions_menu = function(options)
+function Github:thread_actions_menu(options)
 	local keymaps = settings.keymaps()
 	local menu = {
 		{
@@ -546,41 +546,50 @@ Github.thread_actions_menu = function(options)
 	require("finder.picker"):context_menu(menu, options)
 end
 
-Github.actions_menu = function()
+function Github:actions_menu()
 	local context_menus = {}
 	local buffer_name = vim.api.nvim_buf_get_name(0)
 
 	-- Pull request buffer
 	if string.match(buffer_name, "^octo://.+/pull/%d+$") then
 		local pr_menu_prompt_title = "Pull request #" .. vim.fn.fnamemodify(buffer_name, ":t")
-		table.insert(context_menus, { prompt_title = pr_menu_prompt_title, find = Github.pull_request_menu })
-		table.insert(context_menus, { prompt_title = "Reactions", find = Github.reactions_menu })
+		table.insert(
+			context_menus,
+			{ prompt_title = pr_menu_prompt_title, find = fn.bind(self.pull_request_menu, self) }
+		)
+		table.insert(context_menus, { prompt_title = "Reactions", find = fn.bind(self.reactions_menu, self) })
 	-- Changed files panel
 	elseif string.match(buffer_name, "^.+/OctoChangedFiles%-%d+$") then
-		table.insert(context_menus, { prompt_title = "Changed files", find = Github.changed_files_list_menu })
-		table.insert(context_menus, { prompt_title = "Pending review", find = Github.pending_review_menu })
+		table.insert(
+			context_menus,
+			{ prompt_title = "Changed files", find = fn.bind(self.changed_files_list_menu, self) }
+		)
+		table.insert(context_menus, { prompt_title = "Pending review", find = fn.bind(self.pending_review_menu, self) })
 	-- Changed file diff panel (either left or right)
 	elseif string.match(buffer_name, "^octo://.+/review/.+/file/.+$") then
 		local prompt_title = vim.fn.fnamemodify(buffer_name, ":t")
-		table.insert(context_menus, { prompt_title = prompt_title, find = Github.changed_file_diff_menu })
-		table.insert(context_menus, { prompt_title = "Pending review", find = Github.pending_review_menu })
+		table.insert(context_menus, { prompt_title = prompt_title, find = fn.bind(self.changed_file_diff_menu, self) })
+		table.insert(context_menus, { prompt_title = "Pending review", find = fn.bind(self.pending_review_menu, self) })
 	-- Comment thread panel
 	elseif string.match(buffer_name, "^octo://.+/review/.+/threads/.+$") then
 		local thread_menu_prompt_title = vim.fn.fnamemodify(buffer_name, ":t")
-		table.insert(context_menus, { prompt_title = thread_menu_prompt_title, find = Github.thread_actions_menu })
-		table.insert(context_menus, { prompt_title = "Reactions", find = Github.reactions_menu })
-		table.insert(context_menus, { prompt_title = "Pending review", find = Github.pending_review_menu })
+		table.insert(
+			context_menus,
+			{ prompt_title = thread_menu_prompt_title, find = fn.bind(self.thread_actions_menu, self) }
+		)
+		table.insert(context_menus, { prompt_title = "Reactions", find = fn.bind(self.reactions_menu, self) })
+		table.insert(context_menus, { prompt_title = "Pending review", find = fn.bind(self.pending_review_menu, self) })
 	end
 
 	if #context_menus > 1 then
-		table.insert(context_menus, { prompt_title = "Repository", find = Github.repository_menu })
+		table.insert(context_menus, { prompt_title = "Repository", find = fn.bind(self.repository_menu, self) })
 		return require("finder.picker"):Pickers(context_menus):find()
 	end
 
-	return Github.repository_menu({ prompt_title = "Repository" })
+	return self:repository_menu({ prompt_title = "Repository" })
 end
 
-Github._setup_plugins = function()
+function Github:_setup_plugins()
 	local options = settings.options()
 	local keymaps = settings.keymaps()
 
