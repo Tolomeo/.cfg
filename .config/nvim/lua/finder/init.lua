@@ -12,12 +12,12 @@ Finder.modules = {
 	"finder.picker",
 }
 
-Finder.setup = function()
-	Finder._setup_keymaps()
-	Finder._setup_plugins()
+function Finder:setup()
+	self:_setup_keymaps()
+	self:_setup_plugins()
 end
 
-Finder._setup_keymaps = function()
+function Finder:_setup_keymaps()
 	key.nmap(
 		-- Keep search results centered
 		{ "n", "nzzzv" },
@@ -25,7 +25,7 @@ Finder._setup_keymaps = function()
 	)
 end
 
-Finder._setup_plugins = function()
+function Finder:_setup_plugins()
 	-- Vim-cool
 	vim.g.CoolTotalMatches = 1
 end

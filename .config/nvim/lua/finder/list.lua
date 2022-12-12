@@ -5,6 +5,7 @@ local validator = require("_shared.validator")
 local key = require("_shared.key")
 local settings = require("settings")
 
+---@class List
 local List = {}
 
 List.plugins = {
@@ -12,15 +13,16 @@ List.plugins = {
 	"https://gitlab.com/yorickpeterse/nvim-pqf.git",
 }
 
-List.setup = function()
-	List._setup_keymaps()
-	List._setup_plugins()
+function List:setup()
+	self:_setup_keymaps()
+	self:_setup_plugins()
 end
 
 List.actions = validator.f.arguments({
+	validator.f.equal(List),
 	validator.f.optional(validator.f.one_of({ "n", "v", "V" })),
 })
-	.. function(mode)
+	.. function(self, mode)
 		local keymaps = settings.keymaps()
 		local open = require("qf_helper").open_split
 		local navigate = require("qf_helper").navigate
@@ -83,7 +85,7 @@ List.actions = validator.f.arguments({
 					name = "Search items",
 					keymap = keymaps["list.search"],
 					handler = function()
-						local is_loclist = List.is_loclist()
+						local is_loclist = self:is_loclist()
 
 						if is_loclist then
 							return require("finder.picker").loclist()
@@ -119,14 +121,14 @@ List.actions = validator.f.arguments({
 		return actions
 	end
 
-List._setup_keymaps = function()
+function List:_setup_keymaps()
 	local keymaps = settings.keymaps()
 
 	key.nmap(
-		{ keymaps["list.open"], List.open },
-		{ keymaps["list.close"], List.close },
-		{ keymaps["list.next"], List.next },
-		{ keymaps["list.prev"], List.prev }
+		{ keymaps["list.open"], fn.bind(self.open, self) },
+		{ keymaps["list.close"], fn.bind(self.close, self) },
+		{ keymaps["list.next"], fn.bind(self.next, self) },
+		{ keymaps["list.prev"], fn.bind(self.prev, self) }
 	)
 
 	au.group({
@@ -139,7 +141,7 @@ List._setup_keymaps = function()
 				-- and automatically set keymaps
 				function(autocmd)
 					local buffer = autocmd.buf
-					local actions = List.actions()
+					local actions = self:actions()
 
 					for mode, mode_actions in fn.kpairs(actions) do
 						local mode_keymaps = fn.imap(mode_actions, function(mode_action)
@@ -149,7 +151,7 @@ List._setup_keymaps = function()
 						table.insert(mode_keymaps, {
 							keymaps["dropdown.open"],
 							function()
-								List.actions_menu()
+								self:actions_menu()
 							end,
 							buffer = buffer,
 						})
@@ -162,7 +164,7 @@ List._setup_keymaps = function()
 	})
 end
 
-List._setup_plugins = function()
+function List:_setup_plugins()
 	require("pqf").setup()
 	require("qf_helper").setup({
 		prefer_loclist = true,
@@ -175,107 +177,114 @@ List._setup_plugins = function()
 	})
 end
 
-List.is_loclist = validator.f.arguments({ validator.f.optional("number") })
-	.. function(window)
+---@type fun(self: List, window: number | nil): boolean
+List.is_loclist = validator.f.arguments({ validator.f.equal(List), validator.f.optional("number") })
+	.. function(_, window)
 		window = window or vim.api.nvim_get_current_win()
 		local window_info = vim.fn.getwininfo(window)[1]
 
 		return window_info.quickfix == 1 and window_info.loclist == 1
 	end
 
-List.is_loclist_open = validator.f.arguments({ validator.f.optional("number") })
-	.. function(window)
+---@type fun(self: List, window: number | nil): boolean
+List.is_loclist_open = validator.f.arguments({ validator.f.equal(List), validator.f.optional("number") })
+	.. function(_, window)
 		window = window or 0
 
 		return vim.fn.getloclist(window, { winid = 0 }).winid ~= 0
 	end
 
-List.get_loclist = validator.f.arguments({ validator.f.optional("number") })
-	.. function(window)
+---@type fun(self: List, window: number | nil): table
+List.get_loclist = validator.f.arguments({ validator.f.equal(List), validator.f.optional("number") })
+	.. function(_, window)
 		window = window or 0
 
 		return vim.fn.getloclist(window)
 	end
 
-List.has_loclist_items = function(window)
-	local loclist = List.get_loclist(window)
+---@param window number | nil
+---@return boolean
+function List:has_loclist_items(window)
+	local loclist = self:get_loclist(window)
 	return #loclist > 1
 end
 
-List.clear_loclist = validator.f.arguments({ validator.f.optional("number") })
-	.. function(window)
+---@type fun(self: List, window: number | nil): table
+List.clear_loclist = validator.f.arguments({ validator.f.equal(List), validator.f.optional("number") })
+	.. function(_, window)
 		window = window or 0
 
 		vim.fn.setloclist(window, {})
 	end
 
-List.is_qflist = validator.f.arguments({ validator.f.optional("number") })
-	.. function(window)
+---@type fun(self: List, window: number | nil): table
+List.is_qflist = validator.f.arguments({ validator.f.equal(List), validator.f.optional("number") })
+	.. function(_, window)
 		window = window or vim.api.nvim_get_current_win()
 		local window_info = vim.fn.getwininfo(window)[1]
 
 		return window_info.quickfix == 1 and window_info.loclist == 0
 	end
 
-function List.is_qflist_open()
+function List:is_qflist_open()
 	return vim.fn.getqflist({ winid = 0 }).winid ~= 0
 end
 
-function List.get_qflist()
+function List:get_qflist()
 	return vim.fn.getqflist()
 end
 
-function List.has_qflist_items()
-	local qflist = List.get_qflist()
+function List:has_qflist_items()
+	local qflist = self:get_qflist()
 
 	return #qflist > 1
 end
 
-function List.clear_qflist()
+function List:clear_qflist()
 	vim.fn.setqflist({})
 end
 
-function List.open()
+function List:open()
 	local qf_helper = require("qf_helper")
 
-	if List.has_loclist_items() then
+	if self:has_loclist_items() then
 		return qf_helper.open("l", { enter = true })
-	elseif List.has_qflist_items() then
+	elseif self:has_qflist_items() then
 		return qf_helper.open("c", { enter = true })
 	end
 end
 
-function List.close()
+function List:close()
 	local qf_helper = require("qf_helper")
 
-	if List.is_loclist_open() then
+	if self:is_loclist_open() then
 		qf_helper.close("l")
-		List.clear_loclist()
+		self:clear_loclist()
 		return
-	elseif List.is_qflist_open() then
+	elseif self:is_qflist_open() then
 		qf_helper.close("c")
-		List.clear_qflist()
+		self:clear_qflist()
 		return
 	end
 end
 
-function List.next()
+function List:next()
 	vim.fn.execute("QNext")
 end
 
-function List.prev()
+function List:prev()
 	vim.fn.execute("QPrev")
 end
 
-function List.actions_menu()
+function List:actions_menu()
 	local mode = vim.api.nvim_get_mode().mode
-	local actions = List.actions(mode)
+	local actions = self:actions(mode)
 
 	if not actions then
 		return
 	end
 
-	local is_loclist = List.is_loclist()
+	local is_loclist = self:is_loclist()
 	local menu = vim.tbl_extend(
 		"error",
 		fn.imap(actions, function(action)

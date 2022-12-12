@@ -3,6 +3,7 @@ local au = require("_shared.au")
 local key = require("_shared.key")
 local settings = require("settings")
 
+---@class Language
 local Language = {}
 
 Language.plugins = {
@@ -21,7 +22,7 @@ Language.plugins = {
 	{ "kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async" },
 }
 
-Language.setup_servers = function()
+function Language:setup_servers()
 	local keymaps = settings.keymaps()
 	local options = settings.options()
 	-- local client_capabilities =
@@ -95,7 +96,7 @@ Language.setup_servers = function()
 	end
 end
 
-Language.setup_parsers = function()
+function Language:setup_parsers()
 	local options = settings.options()
 
 	require("nvim-treesitter.configs").setup({
@@ -163,7 +164,7 @@ Language.setup_parsers = function()
 	})
 end
 
-Language.setup_formatter = function()
+function Language:setup_formatter()
 	local keymaps = settings.keymaps()
 	-- Enable basic formatting when a filetype is not found
 	vim.g.neoformat_basic_format_retab = 1
@@ -175,20 +176,20 @@ Language.setup_formatter = function()
 	key.nmap({ keymaps["language.format"], "<cmd>Neoformat<Cr>" })
 end
 
-Language.setup_annotator = function()
+function Language:setup_annotator()
 	require("neogen").setup({})
 end
 
-Language.setup_folding = function()
+function Language:setup_folding()
 	require("ufo").setup()
 end
 
-Language.setup = function()
-	Language.setup_servers()
-	Language.setup_parsers()
-	Language.setup_formatter()
-	Language.setup_annotator()
-	Language.setup_folding()
+function Language:setup()
+	self:setup_servers()
+	self:setup_parsers()
+	self:setup_formatter()
+	self:setup_annotator()
+	self:setup_folding()
 end
 
 return Module:new(Language)

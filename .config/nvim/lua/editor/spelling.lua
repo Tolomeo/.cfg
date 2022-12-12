@@ -4,7 +4,7 @@ local au = require("_shared.au")
 ---@class Spelling
 local Spelling = {}
 
-Spelling.setup = function()
+function Spelling:setup()
 	au.group({
 		"OnMarkdownBufferOpen",
 		{
