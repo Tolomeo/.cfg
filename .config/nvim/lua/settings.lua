@@ -17,6 +17,7 @@ Settings._globals = {
 	cmdheight = 1,
 	--Make line numbers default
 	number = true,
+	numberwidth = 5,
 	--Do not save when switching buffers (note: this is now a default on master)
 	hidden = true,
 	-- Do not automatically create backup files

@@ -2,7 +2,7 @@ local Module = require("_shared.module")
 local key = require("_shared.key")
 local au = require("_shared.au")
 local settings = require("settings")
-local logger = require("_shared.logger")
+local fn = require("_shared.fn")
 
 local installed = nil
 local install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
@@ -23,7 +23,7 @@ Config.modules = {
 	"terminal",
 }
 
-Config.setup = function()
+function Config:setup()
 	-- setting leader key
 	key.map_leader(settings.keymaps().leader)
 
@@ -39,7 +39,7 @@ Config.setup = function()
 
 	-- Registering plugins to use
 	require("packer").startup(function(use)
-		use(Config:list_plugins())
+		use(self:list_plugins())
 	end)
 
 	-- Downloading plugins
@@ -55,7 +55,7 @@ Config.setup = function()
 			{
 				"BufWritePost",
 				config_files,
-				Config.compile,
+				fn.bind(self.compile, self),
 			},
 		},
 	})
@@ -65,7 +65,7 @@ Config.setup = function()
 		]])
 end
 
-function Config.compile()
+function Config:compile()
 	vim.api.nvim_command("PackerCompile")
 end
 

@@ -1,11 +1,8 @@
 local Module = require("_shared.module")
 local settings = require("settings")
 
+---@class Completion
 local Completion = {}
-
-Completion.default_capabilities = function(capabilities)
-	return require("cmp_nvim_lsp").default_capabilities(capabilities)
-end
 
 Completion.plugins = {
 	"hrsh7th/nvim-cmp",
@@ -20,7 +17,7 @@ local has_words_before = function()
 	return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 end
 
-Completion.setup = function()
+function Completion:setup()
 	local cmp = require("cmp")
 	local luasnip = require("luasnip")
 	local keymaps = settings.keymaps()
@@ -93,6 +90,12 @@ Completion.setup = function()
 			{ name = 'cmdline' }
 		})
 	}) ]]
+end
+
+---@param capabilities table
+---@return table
+function Completion:default_capabilities(capabilities)
+	return require("cmp_nvim_lsp").default_capabilities(capabilities)
 end
 
 return Module:new(Completion)

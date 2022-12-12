@@ -3,7 +3,9 @@ local au = require("_shared.au")
 local key = require("_shared.key")
 local register = require("_shared.register")
 local settings = require("settings")
+local fn = require("_shared.fn")
 
+---@class Buffer
 local Buffer = {}
 
 Buffer.plugins = {
@@ -28,13 +30,13 @@ Buffer.plugins = {
 	"norcalli/nvim-colorizer.lua",
 }
 
-Buffer.setup = function()
-	Buffer._setup_keymaps()
-	Buffer._setup_plugins()
-	Buffer._setup_commands()
+function Buffer:setup()
+	self:_setup_keymaps()
+	self:_setup_plugins()
+	self:_setup_commands()
 end
 
-Buffer._setup_keymaps = function()
+function Buffer:_setup_keymaps()
 	-- Register 0 always contains the last yank.
 	-- Unfortunately selecting register 0 all the time can be quite annoying, so it would be nice if p used "0
 	-- https://stackoverflow.com/a/32488853
@@ -73,7 +75,7 @@ Buffer._setup_keymaps = function()
 		{ keymaps["buffer.line.new.up"], "mm:put! _<CR>`m" },
 		{ keymaps["buffer.line.new.down"], "mm:put _<CR>`m" },
 		{ keymaps["buffer.line.clear"], ":.s/\v^.*$/<Cr>:noh<Cr>" },
-		{ keymaps["buffer.line.comment"], Buffer.comment_line },
+		{ keymaps["buffer.line.comment"], fn.bind(self.comment_line, self) },
 		{ keymaps["buffer.word.substitute"], ":%s/<C-r><C-w>//gI<left><left><left>", silent = false },
 		{ keymaps["buffer.word.substitute.line"], ":s/<C-r><C-w>//gI<left><left><left>", silent = false },
 		{ keymaps["buffer.jump.in"], "<C-i>" },
@@ -119,7 +121,7 @@ Buffer._setup_keymaps = function()
 			"mmy'>p`mgv",
 		},
 		{ keymaps["buffer.line.clear"], "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" },
-		{ keymaps["buffer.line.comment"], Buffer.comment_selection }
+		{ keymaps["buffer.line.comment"], fn.bind(self.comment_selection, self) }
 	)
 
 	key.imap(
@@ -149,7 +151,7 @@ Buffer._setup_keymaps = function()
 	)
 end
 
-Buffer._setup_plugins = function()
+function Buffer:_setup_plugins()
 	-- Autotag
 	require("nvim-ts-autotag").setup()
 
@@ -178,7 +180,7 @@ Buffer._setup_plugins = function()
 	require("range-highlight").setup()
 end
 
-Buffer._setup_commands = function()
+function Buffer:_setup_commands()
 	-- Yanks visual feedback
 	au.group({
 		"OnTextYanked",
@@ -195,17 +197,17 @@ Buffer._setup_commands = function()
 end
 
 -- vim.api.nvim_set_keymap("n", "<leader>/", "<Plug>kommentary_line_default", {})
-function Buffer.comment_line()
+function Buffer:comment_line()
 	key.input("<Plug>kommentary_line_default", "m")
 end
 
 -- vim.api.nvim_set_keymap("x", "<leader>/", "<Plug>kommentary_visual_default", {}
-function Buffer.comment_selection()
+function Buffer:comment_selection()
 	key.input("<Plug>kommentary_visual_default", "m")
 end
 
 -- Returns the current word under the cursor
-function Buffer.cword()
+function Buffer:cword()
 	return vim.call("expand", "<cword>")
 end
 

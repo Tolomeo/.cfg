@@ -25,7 +25,7 @@ Language.setup_servers = function()
 	local keymaps = settings.keymaps()
 	local options = settings.options()
 	-- local client_capabilities =
-	local capabilities = require("editor.completion").default_capabilities(
+	local capabilities = require("editor.completion"):default_capabilities(
 		vim.tbl_extend("force", vim.lsp.protocol.make_client_capabilities(), {
 			dynamicRegistration = false,
 			lineFoldingOnly = true,

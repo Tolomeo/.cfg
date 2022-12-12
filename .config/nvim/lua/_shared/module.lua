@@ -14,7 +14,7 @@ function Modules:set(module_name, module)
 	self[module_name] = module
 end
 
---- Represents a configuration module
+---Represents a configuration module
 ---@class Module
 local Module = {
 	plugins = {},
@@ -32,15 +32,16 @@ Module.setup = function() end
 --- Initializes the module
 ---@type fun(self: Module)
 Module.init = function(self)
-	self.setup()
+	self:setup()
 
 	for _, child_module_name in ipairs(self.modules) do
 		Modules:get(child_module_name):init()
 	end
 end
 
---- Instantiates a new module
----@type fun(self: Module, module: table): Module
+---Instantiates a new module
+---@generic M
+---@type fun(self: Module, module: M):  Module | M
 Module.new = validator.f.arguments({
 	validator.f.equal(Module),
 	validator.f.shape({
@@ -50,8 +51,6 @@ Module.new = validator.f.arguments({
 	}),
 })
 	.. function(self, m)
-		m = m or {}
-
 		setmetatable(m, self)
 		self.__index = self
 
@@ -85,10 +84,22 @@ function Module:list_plugins()
 	local child_modules = self.modules
 
 	for _, child_module_name in ipairs(child_modules) do
-		local child_module_plugins = Modules:get(child_module_name):list_plugins()
+		local child_module = Modules:get(child_module_name)
+
+		if not child_module then
+			logger.error(
+				string.format("Failed to list plugins for '%s' module: the module was not found", child_module_name)
+			)
+			goto continue
+		end
+
+		local child_module_plugins = child_module:list_plugins()
+
 		for _, child_module_plugin in ipairs(child_module_plugins) do
 			table.insert(plugins, child_module_plugin)
 		end
+
+		::continue::
 	end
 
 	return plugins
