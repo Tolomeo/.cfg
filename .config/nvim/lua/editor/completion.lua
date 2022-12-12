@@ -1,7 +1,7 @@
 local Module = require("_shared.module")
 local settings = require("settings")
 
----@class Completion
+---@class Editor.Completion
 local Completion = {}
 
 Completion.plugins = {

@@ -1,6 +1,7 @@
 local Module = require("_shared.module")
 -- local key = require("_shared.key")
 
+---@class Interface.Tab
 local Tab = {}
 
 --[[ Tab.setup = function()

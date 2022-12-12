@@ -4,7 +4,7 @@ local key = require("_shared.key")
 local validator = require("_shared.validator")
 local settings = require("settings")
 
----@class Window
+---@class Interface.Window
 local Window = {}
 
 function Window:_setup_keymaps()

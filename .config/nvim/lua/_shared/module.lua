@@ -43,7 +43,7 @@ end
 
 ---Instantiates a new module
 ---@generic M
----@type fun(self: Module, module: M):  Module | M
+---@type fun(self: Module, module: M): M | Module
 Module.new = validator.f.arguments({
 	validator.f.equal(Module),
 	validator.f.shape({

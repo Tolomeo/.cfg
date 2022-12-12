@@ -4,7 +4,7 @@ local key = require("_shared.key")
 local settings = require("settings")
 local fn = require("_shared.fn")
 
----@class Language
+---@class Editor.Language
 local Language = {}
 
 Language.plugins = {

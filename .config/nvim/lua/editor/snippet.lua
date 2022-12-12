@@ -1,6 +1,6 @@
 local Module = require("_shared.module")
 
----@class Snippet
+---@class Editor.Snippet
 local Snippet = {}
 
 Snippet.plugins = {

@@ -1,7 +1,7 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
 
----@class Spelling
+---@class Editor.Spelling
 local Spelling = {}
 
 function Spelling:setup()

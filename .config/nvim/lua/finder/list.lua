@@ -5,7 +5,7 @@ local validator = require("_shared.validator")
 local key = require("_shared.key")
 local settings = require("settings")
 
----@class List
+---@class Finder.List
 local List = {}
 
 List.plugins = {
@@ -18,6 +18,7 @@ function List:setup()
 	self:_setup_plugins()
 end
 
+---@type fun(self: Finder.List, mode?: "n" | "v" | "V"): table
 List.actions = validator.f.arguments({
 	validator.f.equal(List),
 	validator.f.optional(validator.f.one_of({ "n", "v", "V" })),

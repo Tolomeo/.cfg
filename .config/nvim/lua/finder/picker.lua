@@ -4,10 +4,10 @@ local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 local settings = require("settings")
 
----@class Pickers
+---@class Finder.Pickers
 local Pickers = {}
 
----@type fun(self: Pickers, pickers: table<number, { prompt_title: string, find: function }>): Pickers
+---@type fun(self: Finder.Pickers, pickers: table<number, { prompt_title: string, find: function }>): Finder.Pickers
 Pickers.new = validator.f.arguments({
 	-- This would be cool but it is not possible because builtin pickers are launched directly
 	-- validator.f.list({ validator.f.instance_of(require("telescope.pickers")._Picker) }),
