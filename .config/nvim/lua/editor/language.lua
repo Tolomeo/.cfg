@@ -2,6 +2,7 @@ local Module = require("_shared.module")
 local au = require("_shared.au")
 local key = require("_shared.key")
 local settings = require("settings")
+local fn = require("_shared.fn")
 
 ---@class Language
 local Language = {}
@@ -37,6 +38,8 @@ function Language:setup_servers()
 		client.server_capabilities.documentFormattingProvider = false
 		client.server_capabilities.documentRangeFormattingProvider = false
 
+		local picker = require("finder.picker")
+
 		key.nmap(
 			{ keymaps["language.lsp.hover"], vim.lsp.buf.hover, buffer = buffer },
 			{ keymaps["language.lsp.document_symbol"], vim.lsp.buf.document_symbol, buffer = buffer },
@@ -49,7 +52,7 @@ function Language:setup_servers()
 			{ keymaps["language.lsp.rename"], vim.lsp.buf.rename, buffer = buffer },
 			{ keymaps["language.diagnostic.next"], vim.diagnostic.goto_next, buffer = buffer },
 			{ keymaps["language.diagnostic.prev"], vim.diagnostic.goto_prev, buffer = buffer },
-			{ keymaps["language.diagnostic.list"], require("finder.picker").find_diagnostics, buffer = buffer }
+			{ keymaps["language.diagnostic.list"], fn.bind(picker.find_diagnostics, picker), buffer = buffer }
 		)
 
 		if not client.server_capabilities.documentHighlightProvider then

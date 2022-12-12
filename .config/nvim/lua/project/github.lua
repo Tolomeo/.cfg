@@ -72,7 +72,7 @@ Github.repository_menu = function(options)
 		end,
 	}
 
-	require("finder.picker").menu(menu, options)
+	require("finder.picker"):menu(menu, options)
 end
 
 Github.pending_review_menu = function(options)
@@ -96,7 +96,7 @@ Github.pending_review_menu = function(options)
 		end,
 	}
 
-	require("finder.picker").context_menu(menu, options)
+	require("finder.picker"):context_menu(menu, options)
 end
 
 Github.reactions_menu = function(options)
@@ -149,7 +149,7 @@ Github.reactions_menu = function(options)
 		end,
 	}
 
-	require("finder.picker").context_menu(menu, options)
+	require("finder.picker"):context_menu(menu, options)
 end
 
 Github.changed_file_diff_menu = function(options)
@@ -212,7 +212,7 @@ Github.changed_file_diff_menu = function(options)
 		end,
 	}
 
-	require("finder.picker").context_menu(menu, options)
+	require("finder.picker"):context_menu(menu, options)
 end
 
 Github.changed_files_list_menu = function(options)
@@ -270,7 +270,7 @@ Github.changed_files_list_menu = function(options)
 		end,
 	}
 
-	require("finder.picker").context_menu(menu, options)
+	require("finder.picker"):context_menu(menu, options)
 end
 
 Github.pull_request_menu = function(options)
@@ -479,7 +479,7 @@ Github.pull_request_menu = function(options)
 		end,
 	}
 
-	require("finder.picker").context_menu(menu, options)
+	require("finder.picker"):context_menu(menu, options)
 end
 
 Github.thread_actions_menu = function(options)
@@ -543,7 +543,7 @@ Github.thread_actions_menu = function(options)
 		end,
 	}
 
-	require("finder.picker").context_menu(menu, options)
+	require("finder.picker"):context_menu(menu, options)
 end
 
 Github.actions_menu = function()
@@ -574,7 +574,7 @@ Github.actions_menu = function()
 
 	if #context_menus > 1 then
 		table.insert(context_menus, { prompt_title = "Repository", find = Github.repository_menu })
-		return require("finder.picker").Pickers(context_menus):find()
+		return require("finder.picker"):Pickers(context_menus):find()
 	end
 
 	return Github.repository_menu({ prompt_title = "Repository" })

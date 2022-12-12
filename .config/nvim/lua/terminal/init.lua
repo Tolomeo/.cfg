@@ -270,7 +270,7 @@ Terminal.jobs_menu = function(options)
 		Terminal.show()
 	end
 
-	require("finder.picker").menu(menu, options)
+	require("finder.picker"):menu(menu, options)
 end
 
 Terminal.actions_menu = function(options)
@@ -317,7 +317,7 @@ Terminal.actions_menu = function(options)
 		selection.value.handler()
 	end
 
-	require("finder.picker").menu(menu, options)
+	require("finder.picker"):menu(menu, options)
 end
 
 Terminal.menu = function()
@@ -330,7 +330,7 @@ Terminal.menu = function()
 		{ prompt_title = "Terminal", find = Terminal.actions_menu },
 	}
 
-	return require("finder.picker").Pickers(pickers):find()
+	return require("finder.picker"):Pickers(pickers):find()
 end
 
 return Module:new(Terminal)

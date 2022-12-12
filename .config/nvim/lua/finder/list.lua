@@ -88,10 +88,36 @@ List.actions = validator.f.arguments({
 						local is_loclist = self:is_loclist()
 
 						if is_loclist then
-							return require("finder.picker").loclist()
+							return require("finder.picker"):loclist()
 						end
 
-						require("finder.picker").qflist()
+						require("finder.picker"):qflist()
+					end,
+				},
+				{
+					name = "Load older list",
+					keymap = keymaps["window.cursor.left"],
+					handler = function()
+						local is_loclist = self:is_loclist()
+
+						if is_loclist then
+							return vim.fn.execute("lolder")
+						end
+
+						vim.fn.execute("colder")
+					end,
+				},
+				{
+					name = "Load newer list",
+					keymap = keymaps["window.cursor.right"],
+					handler = function()
+						local is_loclist = self:is_loclist()
+
+						if is_loclist then
+							return vim.fn.execute("lnewer")
+						end
+
+						vim.fn.execute("cnewer")
 					end,
 				},
 			},
@@ -244,6 +270,9 @@ function List:clear_qflist()
 	vim.fn.setqflist({})
 end
 
+--NOTE: since we check whether the lists contains any elements
+--it becomes impossible to open a list with this method with the purpose of reaching for an older list
+--TODO: create a new method catering for the use case
 function List:open()
 	local qf_helper = require("qf_helper")
 
@@ -302,7 +331,7 @@ function List:actions_menu()
 		prompt_title = is_loclist and "Location list" or "Quickfix list",
 	}
 
-	require("finder.picker").context_menu(menu, options)
+	require("finder.picker"):context_menu(menu, options)
 end
 
 return Module:new(List)
