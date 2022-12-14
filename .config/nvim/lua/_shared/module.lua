@@ -7,13 +7,23 @@ local Modules = {}
 ---Returns a registered configuration module
 ---@param module_name string
 ---@return Module | nil
-function Modules:get(module_name)
-	return self[module_name]
+function Modules:require(module_name)
+	local loaded = self[module_name]
+
+	if loaded then
+		return require(module_name)
+	end
+
+	return nil
 end
 
----@type fun(self: Modules, module_name: string, module: Module): nil
-function Modules:set(module_name, module)
-	self[module_name] = module
+---@param module_name string
+---@return boolean, Module | string
+function Modules:load(module_name)
+	local loaded, load_result = pcall(require, module_name)
+	self[module_name] = loaded
+
+	return loaded, load_result
 end
 
 ---Represents a configuration module
@@ -37,7 +47,21 @@ Module.init = function(self)
 	self:setup()
 
 	for _, child_module_name in ipairs(self.modules) do
-		Modules:get(child_module_name):init()
+		local child_module = Modules:require(child_module_name)
+
+		if not child_module then
+			logger.error(
+				string.format(
+					"Cannot initialize module '%s' with the error: the module was not loaded",
+					child_module_name
+				)
+			)
+			goto continue
+		end
+
+		child_module:init()
+
+		::continue::
 	end
 end
 
@@ -58,22 +82,17 @@ Module.new = validator.f.arguments({
 
 		-- Saving submodules in custom register
 		for _, child_module_name in ipairs(m.modules) do
-			local ok, result = pcall(require, child_module_name)
+			local loaded, load_result = Modules:load(child_module_name)
 
-			if not ok then
+			if not loaded then
 				logger.error(
 					string.format(
 						"Failed to load configuration module '%s' with the error: %s",
 						child_module_name,
-						result
+						load_result
 					)
 				)
-				goto continue
 			end
-
-			Modules:set(child_module_name, result)
-
-			::continue::
 		end
 
 		return m
@@ -86,7 +105,7 @@ function Module:list_plugins()
 	local child_modules = self.modules
 
 	for _, child_module_name in ipairs(child_modules) do
-		local child_module = Modules:get(child_module_name)
+		local child_module = Modules:require(child_module_name)
 
 		if not child_module then
 			logger.error(

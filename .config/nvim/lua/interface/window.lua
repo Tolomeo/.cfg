@@ -146,7 +146,7 @@ function Window:_get_modal_config()
 	}
 end
 
----@type fun(self: Window, options: { [number]: number, on_resize: function | nil, on_resized: function | nil })
+---@type fun(self: Interface.Window, options: { [number]: number, on_resize: function | nil, on_resized: function | nil })
 Window.modal = validator.f.arguments({
 	validator.f.equal(Window),
 	validator.f.shape({
