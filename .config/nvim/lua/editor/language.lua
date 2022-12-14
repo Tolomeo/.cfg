@@ -9,7 +9,7 @@ local Language = {}
 
 Language.plugins = {
 	-- Highlight, edit, and code navigation parsing library
-	{ "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" },
+	{ "nvim-treesitter/nvim-treesitter" },
 	-- Syntax aware text-objects based on treesitter
 	{ "nvim-treesitter/nvim-treesitter-textobjects", requires = "nvim-treesitter/nvim-treesitter" },
 	-- lsp

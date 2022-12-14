@@ -65,9 +65,12 @@ Module.init = function(self)
 	end
 end
 
----Instantiates a new module
+function Module:require(module_name)
+	return Modules:require(module_name)
+end
+
 ---@generic M
----@type fun(self: Module, module: M): M | Module
+---@type fun(self: Module, module: M): Module | M
 Module.new = validator.f.arguments({
 	validator.f.equal(Module),
 	validator.f.shape({

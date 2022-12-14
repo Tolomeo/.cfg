@@ -3,6 +3,7 @@ local key = require("_shared.key")
 local au = require("_shared.au")
 local settings = require("settings")
 local fn = require("_shared.fn")
+local logger = require("_shared.logger")
 
 local installed = nil
 local install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
@@ -23,10 +24,7 @@ Config.modules = {
 	"terminal",
 }
 
-function Config:setup()
-	-- setting leader key
-	key.map_leader(settings.keymaps().leader)
-
+function Config:init()
 	-- Checking packer install location
 	installed = vim.fn.empty(vim.fn.glob(install_path)) == 0
 
@@ -34,7 +32,7 @@ function Config:setup()
 	if not installed then
 		print("Installing plugins...")
 		vim.fn.execute("!git clone https://github.com/wbthomason/packer.nvim " .. install_path)
-		vim.cmd("packadd packer.nvim")
+		vim.cmd([[packadd packer.nvim]])
 	end
 
 	-- Registering plugins to use
@@ -45,9 +43,43 @@ function Config:setup()
 	-- Downloading plugins
 	-- returning to avoid plugin require errors
 	if not installed then
-		require("packer").sync()
-		return
+		au.group({
+			"OnPackerSyncComplete",
+			{ {
+				"User",
+				"PackerComplete",
+				fn.bind(self.init, self),
+				once = true,
+			} },
+		})
+
+		return require("packer").sync()
 	end
+
+	self:setup()
+
+	for _, child_module_name in ipairs(self.modules) do
+		local child_module = self:require(child_module_name)
+
+		if not child_module then
+			logger.error(
+				string.format(
+					"Cannot initialize module '%s' with the error: the module was not loaded",
+					child_module_name
+				)
+			)
+			goto continue
+		end
+
+		child_module:init()
+
+		::continue::
+	end
+end
+
+function Config:setup()
+	-- setting leader key
+	key.map_leader(settings.keymaps().leader)
 
 	au.group({
 		"OnConfigChange",
