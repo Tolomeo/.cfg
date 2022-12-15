@@ -8,17 +8,11 @@ local fn = require("_shared.fn")
 local Language = {}
 
 Language.plugins = {
-	-- Highlight, edit, and code navigation parsing library
-	{ "nvim-treesitter/nvim-treesitter" },
-	-- Syntax aware text-objects based on treesitter
-	{ "nvim-treesitter/nvim-treesitter-textobjects", requires = "nvim-treesitter/nvim-treesitter" },
 	-- lsp
 	"neovim/nvim-lspconfig",
 	"williamboman/nvim-lsp-installer",
 	-- formatting
 	"sbdchd/neoformat",
-	-- Code docs
-	{ "danymat/neogen", requires = "nvim-treesitter/nvim-treesitter" },
 	-- folds
 	{ "kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async" },
 }
@@ -55,30 +49,28 @@ function Language:setup_servers()
 			{ keymaps["language.diagnostic.list"], fn.bind(picker.find_diagnostics, picker), buffer = buffer }
 		)
 
-		if not client.server_capabilities.documentHighlightProvider then
-			return
+		if client.server_capabilities.documentHighlightProvider then
+			au.group({
+				"OnCursorHold",
+				{
+					{
+						"CursorHold",
+						buffer,
+						vim.lsp.buf.document_highlight,
+					},
+					{
+						"CursorHoldI",
+						buffer,
+						vim.lsp.buf.document_highlight,
+					},
+					{
+						"CursorMoved",
+						buffer,
+						vim.lsp.buf.clear_references,
+					},
+				},
+			})
 		end
-
-		au.group({
-			"OnCursorHold",
-			{
-				{
-					"CursorHold",
-					buffer,
-					vim.lsp.buf.document_highlight,
-				},
-				{
-					"CursorHoldI",
-					buffer,
-					vim.lsp.buf.document_highlight,
-				},
-				{
-					"CursorMoved",
-					buffer,
-					vim.lsp.buf.clear_references,
-				},
-			},
-		})
 	end
 
 	local server_base_settings = {
@@ -99,74 +91,6 @@ function Language:setup_servers()
 	end
 end
 
-function Language:setup_parsers()
-	local options = settings.options()
-
-	require("nvim-treesitter.configs").setup({
-		ensure_installed = options["language.parsers"],
-		sync_install = true,
-		highlight = {
-			enable = true, -- false will disable the whole extension
-		},
-		incremental_selection = {
-			enable = true,
-			keymaps = {
-				init_selection = "gnn",
-				node_incremental = "grn",
-				scope_incremental = "grc",
-				node_decremental = "grm",
-			},
-		},
-		indent = {
-			enable = true,
-		},
-		textobjects = {
-			select = {
-				enable = true,
-				lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
-				keymaps = {
-					-- You can use the capture groups defined in textobjects.scm
-					["af"] = "@function.outer",
-					["if"] = "@function.inner",
-					["ac"] = "@class.outer",
-					["ic"] = "@class.inner",
-				},
-			},
-			move = {
-				enable = true,
-				set_jumps = true, -- whether to set jumps in the jumplist
-				goto_next_start = {
-					["]m"] = "@function.outer",
-					["]]"] = "@class.outer",
-				},
-				goto_next_end = {
-					["]M"] = "@function.outer",
-					["]["] = "@class.outer",
-				},
-				goto_previous_start = {
-					["[m"] = "@function.outer",
-					["[["] = "@class.outer",
-				},
-				goto_previous_end = {
-					["[M"] = "@function.outer",
-					["[]"] = "@class.outer",
-				},
-			},
-		},
-		lsp_interop = {
-			enable = true,
-			border = "none",
-			peek_definition_code = {
-				["<leader>df"] = "@function.outer",
-				["<leader>dF"] = "@class.outer",
-			},
-		},
-		context_commentstring = {
-			enable = true,
-		},
-	})
-end
-
 function Language:setup_formatter()
 	local keymaps = settings.keymaps()
 	-- Enable basic formatting when a filetype is not found
@@ -179,19 +103,13 @@ function Language:setup_formatter()
 	key.nmap({ keymaps["language.format"], "<cmd>Neoformat<Cr>" })
 end
 
-function Language:setup_annotator()
-	require("neogen").setup({})
-end
-
 function Language:setup_folding()
 	require("ufo").setup()
 end
 
 function Language:setup()
 	self:setup_servers()
-	self:setup_parsers()
 	self:setup_formatter()
-	self:setup_annotator()
 	self:setup_folding()
 end
 

@@ -9,9 +9,9 @@ local fn = require("_shared.fn")
 local Editor = {}
 
 Editor.modules = {
+	"editor.syntax",
 	"editor.language",
 	"editor.completion",
-	"editor.snippet",
 	"editor.spelling",
 }
 
