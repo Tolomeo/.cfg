@@ -121,15 +121,15 @@ Validator.f = {
 			return true
 		end
 	end,
-	--- Generates a validator function which validates a value has and expected metatable
-	---@param expected table the table to look for as a metatable
+	---Generates a validator function which validates a value has and expected metatable
+	---@param parent table the table to look for as a metatable
 	---@param error_message? string error_message returned
 	---@return function
-	instance_of = function(expected, error_message)
+	instance_of = function(parent, error_message)
 		error_message = error_message or "Instance validation error: %s"
 
 		return function(value)
-			expected = tostring(expected)
+			local expected = tostring(parent)
 			local mt = getmetatable(value)
 
 			while true do

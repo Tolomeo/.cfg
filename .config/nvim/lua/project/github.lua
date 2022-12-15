@@ -583,7 +583,7 @@ function Github:actions_menu()
 
 	if #context_menus > 1 then
 		table.insert(context_menus, { prompt_title = "Repository", find = fn.bind(self.repository_menu, self) })
-		return require("finder.picker"):Pickers(context_menus):find()
+		return require("finder.picker"):tabs(context_menus):find()
 	end
 
 	return self:repository_menu({ prompt_title = "Repository" })

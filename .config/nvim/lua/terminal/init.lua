@@ -343,7 +343,7 @@ function Terminal:menu()
 		{ prompt_title = "Terminal", find = fn.bind(self.actions_menu, self) },
 	}
 
-	return require("finder.picker"):Pickers(pickers):find()
+	return require("finder.picker"):tabs(pickers):find()
 end
 
 return Module:new(Terminal)

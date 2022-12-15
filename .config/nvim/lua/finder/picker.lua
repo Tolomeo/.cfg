@@ -4,26 +4,30 @@ local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 local settings = require("settings")
 
----@class Finder.Pickers
-local Pickers = {}
+---@class Finder.Picker.Tab
+---@field prompt_title string
+---@field find function
 
----@type fun(self: Finder.Pickers, pickers: table<number, { prompt_title: string, find: function }>): Finder.Pickers
-Pickers.new = validator.f.arguments({
+---@class Finder.Picker.Tabs
+local Tabs = {}
+
+---@type fun(self: Finder.Picker.Tabs, tabs: Finder.Picker.Tab[]): Finder.Picker.Tabs
+Tabs.new = validator.f.arguments({
 	-- This would be cool but it is not possible because builtin pickers are launched directly
 	-- validator.f.list({ validator.f.instance_of(require("telescope.pickers")._Picker) }),
-	validator.f.equal(Pickers),
+	validator.f.equal(Tabs),
 	validator.f.list({ validator.f.shape({ prompt_title = "string", find = "function" }) }),
 })
-	.. function(self, pickers)
-		pickers._current = 1
+	.. function(self, tabs)
+		tabs._current = 1
 
-		setmetatable(pickers, self)
+		setmetatable(tabs, self)
 		self.__index = self
 
-		return pickers
+		return tabs
 	end
 
-function Pickers:_prompt_title()
+function Tabs:_prompt_title()
 	-- NOTE: this is a lot of code just to calculate a fancy prompt title
 	-- TODO: refactor
 	local globals = settings.globals()
@@ -70,7 +74,9 @@ function Pickers:_prompt_title()
 	return prompt_title
 end
 
-function Pickers:_attach_mappings(buffer)
+---@param buffer number
+---@return boolean
+function Tabs:_attach_mappings(buffer)
 	local keymaps = settings.keymaps()
 
 	key.imap({
@@ -86,14 +92,14 @@ function Pickers:_attach_mappings(buffer)
 	return true
 end
 
-function Pickers:_options()
+function Tabs:_options()
 	return {
 		prompt_title = self:_prompt_title(),
 		attach_mappings = fn.bind(self._attach_mappings, self),
 	}
 end
 
-function Pickers:prev()
+function Tabs:prev()
 	self._current = self._current <= 1 and #self or self._current - 1
 
 	local options = self:_options()
@@ -102,7 +108,7 @@ function Pickers:prev()
 	return picker.find(options)
 end
 
-function Pickers:next()
+function Tabs:next()
 	self._current = self._current >= #self and 1 or self._current + 1
 
 	local options = self:_options()
@@ -111,12 +117,30 @@ function Pickers:next()
 	return picker.find(options)
 end
 
-function Pickers:find()
+function Tabs:find()
 	local options = self:_options()
 	local picker = self[self._current]
 
 	return picker.find(options)
 end
+
+function Tabs:append(picker)
+	table.insert(self, 1, picker)
+
+	if self._current == 1 then
+		self._current = 2
+	end
+end
+
+function Tabs:prepend(picker)
+	table.insert(self, picker)
+
+	if self._current == #self then
+		self._current = self[#self - 1] and #self - 1 or #self
+	end
+end
+
+function Tabs:remove(picker) end
 
 ---@class Picker
 local Picker = {}
@@ -195,8 +219,11 @@ function Picker:_setup_plugins()
 	require("todo-comments").setup({})
 end
 
-function Picker:Pickers(pickers)
-	return Pickers:new(pickers)
+---comment
+---@param pickers any
+---@return Finder.Picker.Tabs
+function Picker:tabs(pickers)
+	return Tabs:new(pickers)
 end
 
 function Picker:files()
@@ -226,7 +253,7 @@ function Picker:buffers()
 end
 
 function Picker:help()
-	return self:Pickers({
+	return self:tabs({
 		{ prompt_title = "Help", find = require("telescope.builtin").help_tags },
 		{ prompt_title = "Commands", find = require("telescope.builtin").commands },
 		{ prompt_title = "Options", find = require("telescope.builtin").vim_options },
