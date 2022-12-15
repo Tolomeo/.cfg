@@ -50,25 +50,18 @@ function Language:setup_servers()
 		)
 
 		if client.server_capabilities.documentHighlightProvider then
-			au.group({
-				"OnCursorHold",
-				{
-					{
-						"CursorHold",
-						buffer,
-						vim.lsp.buf.document_highlight,
-					},
-					{
-						"CursorHoldI",
-						buffer,
-						vim.lsp.buf.document_highlight,
-					},
-					{
-						"CursorMoved",
-						buffer,
-						vim.lsp.buf.clear_references,
-					},
-				},
+			au.group({ "OnCursorHold" }, {
+				"CursorHold",
+				buffer,
+				vim.lsp.buf.document_highlight,
+			}, {
+				"CursorHoldI",
+				buffer,
+				vim.lsp.buf.document_highlight,
+			}, {
+				"CursorMoved",
+				buffer,
+				vim.lsp.buf.clear_references,
 			})
 		end
 	end

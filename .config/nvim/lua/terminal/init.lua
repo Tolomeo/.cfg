@@ -155,33 +155,29 @@ end
 function Terminal:_setup_commands()
 	au.group({
 		"Terminal",
-		{
-			{
-				"TermOpen",
-				"*",
-				function(autocmd)
-					local buffer, file = autocmd.buf, autocmd.file
-					-- No numbers
-					vim.cmd("setlocal nonumber norelativenumber")
-					-- vim.api.nvim_buf_set_option(buffer, "number", false)
-					-- vim.api.nvim_buf_set_option(buffer, "relativenumber", false)
-					-- Unlisting
-					vim.api.nvim_buf_set_option(buffer, "buflisted", false)
-					-- Allow closing a process directly from normal mode
-					key.nmap({ "<C-c>", "i<C-c>", buffer = autocmd.buf })
+	}, {
+		"TermOpen",
+		"*",
+		function(autocmd)
+			local buffer, file = autocmd.buf, autocmd.file
+			-- No numbers
+			vim.cmd("setlocal nonumber norelativenumber")
+			-- vim.api.nvim_buf_set_option(buffer, "number", false)
+			-- vim.api.nvim_buf_set_option(buffer, "relativenumber", false)
+			-- Unlisting
+			vim.api.nvim_buf_set_option(buffer, "buflisted", false)
+			-- Allow closing a process directly from normal mode
+			key.nmap({ "<C-c>", "i<C-c>", buffer = autocmd.buf })
 
-					Jobs:register(Job:new({ buffer = buffer, file = file }))
-				end,
-			},
-			{
-				"TermClose",
-				"*",
-				function(autocmd)
-					local buffer = autocmd.buf
-					Jobs:unregister(buffer)
-				end,
-			},
-		},
+			Jobs:register(Job:new({ buffer = buffer, file = file }))
+		end,
+	}, {
+		"TermClose",
+		"*",
+		function(autocmd)
+			local buffer = autocmd.buf
+			Jobs:unregister(buffer)
+		end,
 	})
 end
 

@@ -45,12 +45,11 @@ function Config:init()
 	if not installed then
 		au.group({
 			"OnPackerSyncComplete",
-			{ {
-				"User",
-				"PackerComplete",
-				fn.bind(self.init, self),
-				once = true,
-			} },
+		}, {
+			"User",
+			"PackerComplete",
+			fn.bind(self.init, self),
+			once = true,
 		})
 
 		return require("packer").sync()
@@ -83,18 +82,13 @@ function Config:setup()
 
 	au.group({
 		"OnConfigChange",
-		{
-			{
-				"BufWritePost",
-				config_files,
-				fn.bind(self.compile, self),
-			},
-		},
+	}, {
+		"BufWritePost",
+		config_files,
+		fn.bind(self.compile, self),
 	})
 
-	vim.cmd([[
-			:command! EditConfig :tabedit ~/.config/nvim
-		]])
+	vim.cmd(":command! EditConfig :tabedit ~/.config/nvim")
 end
 
 function Config:compile()

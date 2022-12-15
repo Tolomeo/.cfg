@@ -7,13 +7,10 @@ local Spelling = {}
 function Spelling:setup()
 	au.group({
 		"OnMarkdownBufferOpen",
-		{
-			{
-				{ "BufRead", "BufNewFile" },
-				"*.md",
-				"setlocal spell",
-			},
-		},
+	}, {
+		{ "BufRead", "BufNewFile" },
+		"*.md",
+		"setlocal spell",
 	})
 end
 

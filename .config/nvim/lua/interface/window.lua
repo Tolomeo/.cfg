@@ -177,13 +177,10 @@ Window.modal = validator.f.arguments({
 
 	au.group({
 		"Interface.Modal",
-		{
-			{
-				"VimResized",
-				buffer,
-				on_vim_resized,
-			},
-		},
+	}, {
+		"VimResized",
+		buffer,
+		on_vim_resized,
 	})
 
 	return window

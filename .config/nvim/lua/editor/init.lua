@@ -191,15 +191,12 @@ function Editor:_setup_commands()
 	-- Yanks visual feedback
 	au.group({
 		"OnTextYanked",
-		{
-			{
-				"TextYankPost",
-				"*",
-				function()
-					vim.highlight.on_yank()
-				end,
-			},
-		},
+	}, {
+		"TextYankPost",
+		"*",
+		function()
+			vim.highlight.on_yank()
+		end,
 	})
 end
 

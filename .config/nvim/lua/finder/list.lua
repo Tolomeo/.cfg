@@ -160,34 +160,29 @@ function List:_setup_keymaps()
 
 	au.group({
 		"OnQFFileType",
-		{
-			{
-				"FileType",
-				"qf",
-				-- TODO: refactor, we could cycle over all actions keys
-				-- and automatically set keymaps
-				function(autocmd)
-					local buffer = autocmd.buf
-					local actions = self:actions()
+	}, {
+		"FileType",
+		"qf",
+		function(autocmd)
+			local buffer = autocmd.buf
+			local actions = self:actions()
 
-					for mode, mode_actions in fn.kpairs(actions) do
-						local mode_keymaps = fn.imap(mode_actions, function(mode_action)
-							return { mode_action.keymap, mode_action.handler, buffer = buffer }
-						end)
+			for mode, mode_actions in fn.kpairs(actions) do
+				local mode_keymaps = fn.imap(mode_actions, function(mode_action)
+					return { mode_action.keymap, mode_action.handler, buffer = buffer }
+				end)
 
-						table.insert(mode_keymaps, {
-							keymaps["dropdown.open"],
-							function()
-								self:actions_menu()
-							end,
-							buffer = buffer,
-						})
+				table.insert(mode_keymaps, {
+					keymaps["dropdown.open"],
+					function()
+						self:actions_menu()
+					end,
+					buffer = buffer,
+				})
 
-						key.map(mode, unpack(mode_keymaps))
-					end
-				end,
-			},
-		},
+				key.map(mode, unpack(mode_keymaps))
+			end
+		end,
 	})
 end
 
