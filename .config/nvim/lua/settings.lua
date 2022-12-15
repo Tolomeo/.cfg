@@ -345,8 +345,8 @@ Settings._keymaps = {
 	-- Terminal
 	["terminal.next"] = "]t",
 	["terminal.prev"] = "[t",
-	["terminal.create"] = "<leader>t",
-	["terminal.jobs"] = "<leader>T",
+	["terminal.toggle"] = "<leader>t",
+	["terminal.create"] = "<leader>T",
 }
 
 Settings.keymaps = validator.f.arguments({

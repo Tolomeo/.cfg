@@ -73,6 +73,21 @@ function Fn.find_index(tbl, func)
 	return nil
 end
 
+--- Returns the first element in the array that satisfies the provided testing function
+---@generic V
+---@param tbl table<number, V> the table to loop against
+---@param func function callback returning true or false
+---@return V | nil
+function Fn.ifind(tbl, func)
+	for index, item in ipairs(tbl) do
+		if func(item, index) then
+			return item
+		end
+	end
+
+	return nil
+end
+
 function Fn.find_last_index(tbl, func)
 	for index = #tbl, 1, -1 do
 		if func(tbl[index], index) then

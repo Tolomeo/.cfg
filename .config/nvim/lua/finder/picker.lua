@@ -128,7 +128,7 @@ function Tabs:append(picker)
 	table.insert(self, 1, picker)
 
 	if self._current == 1 then
-		self._current = 2
+		self._current = self[2] and 2 or 1
 	end
 end
 

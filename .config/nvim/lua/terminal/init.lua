@@ -144,15 +144,17 @@ function Terminal:_setup_keymaps()
 		keymaps["terminal.prev"],
 		fn.bind(self.prev, self),
 	}, {
+		keymaps["terminal.toggle"],
+		fn.bind(self.toggle, self),
+	}, {
 		keymaps["terminal.create"],
 		fn.bind(self.create, self),
-	}, {
-		keymaps["terminal.jobs"],
-		fn.bind(self.menu, self),
 	})
 end
 
 function Terminal:_setup_commands()
+	local keymaps = settings.keymaps()
+
 	au.group({
 		"Terminal",
 	}, {
@@ -166,8 +168,12 @@ function Terminal:_setup_commands()
 			-- vim.api.nvim_buf_set_option(buffer, "relativenumber", false)
 			-- Unlisting
 			vim.api.nvim_buf_set_option(buffer, "buflisted", false)
-			-- Allow closing a process directly from normal mode
-			key.nmap({ "<C-c>", "i<C-c>", buffer = autocmd.buf })
+
+			key.nmap(
+				-- Allows closing a process directly from normal mode
+				{ "<C-c>", "i<C-c>", buffer = autocmd.buf }
+				-- { keymaps["terminal.menu"], fn.bind(self.menu, self) }
+			)
 
 			Jobs:register(Job:new({ buffer = buffer, file = file }))
 		end,
@@ -179,6 +185,31 @@ function Terminal:_setup_commands()
 			Jobs:unregister(buffer)
 		end,
 	})
+end
+
+function Terminal:toggle()
+	local jobs_count = Jobs:count()
+
+	if jobs_count < 1 then
+		return self:menu()
+	end
+
+	local current_buffer_job = Jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
+
+	if current_buffer_job then
+		return self:menu()
+	end
+
+	local windows = vim.fn.getwininfo()
+	local displayed_job_window = fn.ifind(windows, function(window)
+		return Jobs:find_index_by_buffer(window.bufnr)
+	end)
+
+	if displayed_job_window then
+		return vim.api.nvim_set_current_win(displayed_job_window.winid)
+	end
+
+	self:show()
 end
 
 function Terminal:show()
@@ -202,12 +233,6 @@ function Terminal:next()
 	local jobs_count = Jobs:count()
 
 	if jobs_count < 1 then
-		local create_job = vim.fn.confirm("No running jobs found, do you want to create one?", "&Yes\n&No", 1)
-
-		if create_job == 1 then
-			return self:create()
-		end
-
 		return
 	end
 
@@ -225,12 +250,6 @@ function Terminal:prev()
 	local jobs_count = Jobs:count()
 
 	if jobs_count < 1 then
-		local create_job = vim.fn.confirm("No running jobs found, do you want to create one?", "&Yes\n&No", 1)
-
-		if create_job == 1 then
-			return self:create()
-		end
-
 		return
 	end
 
