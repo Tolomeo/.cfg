@@ -20,9 +20,9 @@ Editor.plugins = {
 	"lukas-reineke/indent-blankline.nvim",
 	-- Comments
 	"b3nj5m1n/kommentary",
-	"JoosepAlviste/nvim-ts-context-commentstring",
+	{ "JoosepAlviste/nvim-ts-context-commentstring", requires = "nvim-treesitter/nvim-treesitter" },
 	-- Auto closing tags
-	"windwp/nvim-ts-autotag",
+	{ "windwp/nvim-ts-autotag", requires = "nvim-treesitter/nvim-treesitter" },
 	-- Autoclosing pair of chars
 	"windwp/nvim-autopairs",
 	-- Parentheses, brackets, quotes, XML tags
