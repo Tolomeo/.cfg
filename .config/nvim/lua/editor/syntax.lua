@@ -11,14 +11,15 @@ Syntax.plugins = {
 	{ "nvim-treesitter/nvim-treesitter-textobjects", requires = "nvim-treesitter/nvim-treesitter" },
 	-- Code annotations
 	{ "danymat/neogen", requires = "nvim-treesitter/nvim-treesitter" },
+	-- Setting commentstrings based on treesitter
+	{ "JoosepAlviste/nvim-ts-context-commentstring", requires = "nvim-treesitter/nvim-treesitter" },
+	-- Auto closing tags
+	{ "windwp/nvim-ts-autotag", requires = "nvim-treesitter/nvim-treesitter" },
+	-- Indentation guides
+	{ "lukas-reineke/indent-blankline.nvim" },
 }
 
 function Syntax:setup()
-	self:_setup_parsers()
-	self:_setup_annotator()
-end
-
-function Syntax:_setup_parsers()
 	local options = settings.options()
 
 	require("nvim-treesitter.configs").setup({
@@ -84,9 +85,25 @@ function Syntax:_setup_parsers()
 			enable = true,
 		},
 	})
-end
 
-function Syntax:_setup_annotator()
+	-- Autotag
+	require("nvim-ts-autotag").setup()
+
+	-- Autopairs
+	require("nvim-autopairs").setup({
+		disable_filetype = { "TelescopePrompt", "vim" },
+	})
+
+	--Map blankline
+	require("indent_blankline").setup({
+		space_char_blankline = " ",
+		show_current_context = true,
+		show_current_context_start = true,
+		use_treesitter = true,
+		strict_tabs = true,
+		context_char = "┃",
+	})
+
 	require("neogen").setup({})
 end
 

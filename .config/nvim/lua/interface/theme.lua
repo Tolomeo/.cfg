@@ -76,6 +76,8 @@ Theme.plugins = {
 		"kdheepak/tabline.nvim",
 		requires = { { "hoob3rt/lualine.nvim", opt = true }, { "kyazdani42/nvim-web-devicons", opt = true } },
 	},
+	-- Highlighting color strings
+	"norcalli/nvim-colorizer.lua",
 }
 
 function Theme:setup()
@@ -109,6 +111,9 @@ function Theme:setup()
 			modified_icon = "~ ", -- change the default modified icon
 		},
 	})
+
+	-- Colorizer
+	require("colorizer").setup()
 end
 
 return Module:new(Theme)

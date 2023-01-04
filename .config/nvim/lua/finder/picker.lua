@@ -370,7 +370,7 @@ function Picker:context_menu(menu, options)
 	local theme = require("telescope.themes").get_cursor()
 	options = vim.tbl_extend("force", theme, options or {})
 
-	return Picker:menu(menu, options)
+	return self:menu(menu, options)
 end
 
 return Module:new(Picker)

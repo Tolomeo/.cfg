@@ -16,13 +16,8 @@ Editor.modules = {
 }
 
 Editor.plugins = {
-	-- Indentation guides
-	"lukas-reineke/indent-blankline.nvim",
 	-- Comments
 	"b3nj5m1n/kommentary",
-	{ "JoosepAlviste/nvim-ts-context-commentstring", requires = "nvim-treesitter/nvim-treesitter" },
-	-- Auto closing tags
-	{ "windwp/nvim-ts-autotag", requires = "nvim-treesitter/nvim-treesitter" },
 	-- Autoclosing pair of chars
 	"windwp/nvim-autopairs",
 	-- Parentheses, brackets, quotes, XML tags
@@ -33,8 +28,6 @@ Editor.plugins = {
 	"wellle/targets.vim",
 	-- Highlighting command ranges
 	{ "winston0410/range-highlight.nvim", requires = "winston0410/cmd-parser.nvim" },
-	-- Highlighting color strings
-	"norcalli/nvim-colorizer.lua",
 }
 
 function Editor:setup()
@@ -159,29 +152,8 @@ function Editor:_setup_keymaps()
 end
 
 function Editor:_setup_plugins()
-	-- Autotag
-	require("nvim-ts-autotag").setup()
-
-	-- Autopairs
-	require("nvim-autopairs").setup({
-		disable_filetype = { "TelescopePrompt", "vim" },
-	})
-
-	--Map blankline
-	require("indent_blankline").setup({
-		space_char_blankline = " ",
-		show_current_context = true,
-		show_current_context_start = true,
-		use_treesitter = true,
-		strict_tabs = true,
-		context_char = "┃",
-	})
-
 	-- Kommentary
 	vim.g.kommentary_create_default_mappings = false
-
-	-- Colorizer
-	require("colorizer").setup()
 
 	-- Range highlight
 	require("range-highlight").setup()

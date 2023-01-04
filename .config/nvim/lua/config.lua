@@ -17,9 +17,9 @@ Config.plugins = {
 }
 
 Config.modules = {
+	"editor",
 	"interface",
 	"project",
-	"editor",
 	"finder",
 	"terminal",
 }
@@ -48,7 +48,10 @@ function Config:init()
 		}, {
 			"User",
 			"PackerComplete",
-			fn.bind(self.init, self),
+			function()
+				self:init()
+				vim.cmd("packloadall!")
+			end,
 			once = true,
 		})
 
