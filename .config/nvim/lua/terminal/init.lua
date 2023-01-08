@@ -136,7 +136,7 @@ end
 function Terminal:_setup_keymaps()
 	local keymaps = settings.keymaps()
 	-- Exiting term mode using esc
-	key.tmap({ "<Esc>", "<C-\\><C-n>" })
+	key.tmap({ "<C-Esc>", "<C-\\><C-n>" })
 
 	key.nmap({
 		keymaps["terminal.next"],
@@ -145,17 +145,15 @@ function Terminal:_setup_keymaps()
 		keymaps["terminal.prev"],
 		fn.bind(self.prev, self),
 	}, {
-		keymaps["terminal.toggle"],
+		keymaps["terminal.open"],
 		fn.bind(self.toggle, self),
 	}, {
-		keymaps["terminal.jobs"],
-		fn.bind(self.jobs_menu, self),
+		keymaps["terminal.menu"],
+		fn.bind(self.menu, self),
 	})
 end
 
 function Terminal:_setup_commands()
-	local keymaps = settings.keymaps()
-
 	au.group({
 		"Terminal",
 	}, {
@@ -165,16 +163,11 @@ function Terminal:_setup_commands()
 			local buffer, file = autocmd.buf, autocmd.file
 			-- No numbers
 			vim.cmd("setlocal nonumber norelativenumber")
-			-- vim.api.nvim_buf_set_option(buffer, "number", false)
-			-- vim.api.nvim_buf_set_option(buffer, "relativenumber", false)
 			-- Unlisting
 			vim.api.nvim_buf_set_option(buffer, "buflisted", false)
 
-			key.nmap(
-				-- Allows closing a process directly from normal mode
-				{ "<C-c>", "i<C-c>", buffer = autocmd.buf }
-				-- { keymaps["terminal.menu"], fn.bind(self.menu, self) }
-			)
+			-- Allowing to close a process directly from normal mode
+			key.nmap({ "<C-c>", "i<C-c>", buffer = autocmd.buf })
 
 			Jobs:register(Job:new({ buffer = buffer, file = file }))
 		end,
@@ -192,13 +185,13 @@ function Terminal:toggle()
 	local jobs_count = Jobs:count()
 
 	if jobs_count < 1 then
-		return self:actions_menu()
+		return self:create()
 	end
 
 	local current_buffer_job = Jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
 
 	if current_buffer_job then
-		return self:actions_menu()
+		return self:menu()
 	end
 
 	local windows = vim.fn.getwininfo()
@@ -312,14 +305,23 @@ function Terminal:jobs_menu(options)
 	require("finder.picker"):menu(menu, options)
 end
 
-function Terminal:actions_menu(options)
+function Terminal:menu(options)
 	local keymaps = settings.keymaps()
 	local user_options = settings.options()
-
 	options = options or {}
 	options = vim.tbl_extend("force", { prompt_title = "Terminal actions" }, options)
 
-	local menu = {
+	local menu = {}
+	local jobs_count = Jobs:count()
+
+	if jobs_count > 0 then
+		table.insert(menu, 1, {
+			jobs_count .. " job" .. (jobs_count > 1 and "s" or "") .. " running",
+			handler = fn.bind(self.jobs_menu, self),
+		})
+	end
+
+	menu = vim.tbl_extend("force", menu, {
 		{
 			"Create a new terminal",
 			":term[inal]",
@@ -335,23 +337,26 @@ function Terminal:actions_menu(options)
 			keymaps["terminal.prev"],
 			handler = fn.bind(self.prev, self),
 		},
-	}
+		{
+			"Launch ...",
+			":terminal ...",
+			handler = function()
+				local command = vim.fn.input({ prompt = "> ", cancelreturn = "", completion = "shellcmd" })
 
-	local jobs_count = Jobs:count()
-
-	if jobs_count > 0 then
-		table.insert(menu, 1, {
-			jobs_count .. " job" .. (jobs_count > 1 and "s" or "") .. " running",
-			handler = fn.bind(self.jobs_menu, self),
-		})
-	end
+				vim.api.nvim_command("terminal " .. command)
+				vim.schedule(function()
+					vim.api.nvim_command("startinsert")
+				end)
+			end,
+		},
+	})
 
 	for _, user_job in ipairs(user_options["terminal.jobs"]) do
 		table.insert(menu, {
 			"Launch " .. user_job.command,
-			":e term://" .. user_job.command,
+			":terminal " .. user_job.command,
 			handler = function()
-				vim.api.nvim_command("e term://" .. user_job.command)
+				vim.api.nvim_command("terminal " .. user_job.command)
 				vim.schedule(function()
 					vim.api.nvim_command("startinsert")
 				end)

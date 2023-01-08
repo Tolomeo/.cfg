@@ -131,8 +131,8 @@ end
 Settings._keymaps = {
 	leader = " ",
 	-- Buffers navigation
-	["buffer.next"] = "<A-Tab>",
-	["buffer.prev"] = "<A-S-Tab>",
+	["buffer.next"] = "]<Tab>",
+	["buffer.prev"] = "[<Tab>",
 	-- write only if changed
 	["buffer.save"] = "<leader>w",
 	-- write all and quit
@@ -345,8 +345,8 @@ Settings._keymaps = {
 	-- Terminal
 	["terminal.next"] = "]t",
 	["terminal.prev"] = "[t",
-	["terminal.toggle"] = "<leader>t",
-	["terminal.jobs"] = "<leader>T",
+	["terminal.open"] = "<leader>t",
+	["terminal.menu"] = "<leader>T",
 }
 
 Settings.keymaps = validator.f.arguments({
