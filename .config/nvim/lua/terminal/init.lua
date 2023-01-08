@@ -3,8 +3,8 @@ local au = require("_shared.au")
 local fn = require("_shared.fn")
 local key = require("_shared.key")
 local validator = require("_shared.validator")
-local settings = require("settings")
 local logger = require("_shared.logger")
+local settings = require("settings")
 
 ---@class TerminalJob
 ---@field buffer number
@@ -135,8 +135,9 @@ end
 
 function Terminal:_setup_keymaps()
 	local keymaps = settings.keymaps()
-	-- Exiting term mode using esc
-	key.tmap({ "<C-Esc>", "<C-\\><C-n>" })
+	-- Exiting term mode using double esc
+	-- to avoid interfering with TUIs keymaps
+	key.tmap({ "<Esc><Esc>", "<C-\\><C-n>" })
 
 	key.nmap({
 		keymaps["terminal.next"],
@@ -218,11 +219,16 @@ function Terminal:show()
 	print(string.format("Job %d/%d", index, count))
 end
 
-function Terminal:create()
-	vim.api.nvim_command("terminal")
-	--[[ vim.schedule(function()
+function Terminal:create(command)
+	if command then
+		vim.api.nvim_command("terminal " .. command)
+	else
+		vim.api.nvim_command("terminal")
+	end
+
+	vim.schedule(function()
 		vim.api.nvim_command("startinsert")
-	end) ]]
+	end)
 end
 
 function Terminal:next()
@@ -344,11 +350,7 @@ function Terminal:menu(options)
 		":terminal ...",
 		handler = function()
 			local command = vim.fn.input({ prompt = "> ", cancelreturn = "", completion = "shellcmd" })
-
-			vim.api.nvim_command("terminal " .. command)
-			--[[ vim.schedule(function()
-				vim.api.nvim_command("startinsert")
-			end) ]]
+			self:create(command)
 		end,
 	})
 
@@ -357,10 +359,7 @@ function Terminal:menu(options)
 			"Launch " .. user_job.command,
 			":terminal " .. user_job.command,
 			handler = function()
-				vim.api.nvim_command("terminal " .. user_job.command)
-				--[[ vim.schedule(function()
-					vim.api.nvim_command("startinsert")
-				end) ]]
+				self:create(user_job.command)
 			end,
 		})
 	end
