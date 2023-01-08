@@ -35,7 +35,7 @@ Settings._globals = {
 	--Decrease update time
 	updatetime = 250,
 	-- Always show signcolumn
-	signcolumn = "number",
+	signcolumn = "yes",
 	--Set colorscheme (order is impotant here)
 	termguicolors = true,
 	--Indent size
@@ -346,7 +346,7 @@ Settings._keymaps = {
 	["terminal.next"] = "]t",
 	["terminal.prev"] = "[t",
 	["terminal.toggle"] = "<leader>t",
-	["terminal.create"] = "<leader>T",
+	["terminal.jobs"] = "<leader>T",
 }
 
 Settings.keymaps = validator.f.arguments({

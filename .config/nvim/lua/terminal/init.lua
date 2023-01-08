@@ -4,6 +4,7 @@ local fn = require("_shared.fn")
 local key = require("_shared.key")
 local validator = require("_shared.validator")
 local settings = require("settings")
+local logger = require("_shared.logger")
 
 ---@class TerminalJob
 ---@field buffer number
@@ -147,8 +148,8 @@ function Terminal:_setup_keymaps()
 		keymaps["terminal.toggle"],
 		fn.bind(self.toggle, self),
 	}, {
-		keymaps["terminal.create"],
-		fn.bind(self.create, self),
+		keymaps["terminal.jobs"],
+		fn.bind(self.jobs_menu, self),
 	})
 end
 
@@ -191,13 +192,13 @@ function Terminal:toggle()
 	local jobs_count = Jobs:count()
 
 	if jobs_count < 1 then
-		return self:menu()
+		return self:actions_menu()
 	end
 
 	local current_buffer_job = Jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
 
 	if current_buffer_job then
-		return self:menu()
+		return self:actions_menu()
 	end
 
 	local windows = vim.fn.getwininfo()
@@ -264,6 +265,12 @@ function Terminal:prev()
 end
 
 function Terminal:jobs_menu(options)
+	local jobs_count = Jobs:count()
+
+	if jobs_count < 1 then
+		return logger.info("No jobs running at the minute")
+	end
+
 	options = options or {}
 	options = vim.tbl_extend("force", {
 		prompt_title = "Running jobs",
@@ -315,7 +322,7 @@ function Terminal:actions_menu(options)
 	local menu = {
 		{
 			"Create a new terminal",
-			keymaps["terminal.create"],
+			":term[inal]",
 			handler = fn.bind(self.create, self),
 		},
 		{
@@ -329,6 +336,15 @@ function Terminal:actions_menu(options)
 			handler = fn.bind(self.prev, self),
 		},
 	}
+
+	local jobs_count = Jobs:count()
+
+	if jobs_count > 0 then
+		table.insert(menu, 1, {
+			jobs_count .. " job" .. (jobs_count > 1 and "s" or "") .. " running",
+			handler = fn.bind(self.jobs_menu, self),
+		})
+	end
 
 	for _, user_job in ipairs(user_options["terminal.jobs"]) do
 		table.insert(menu, {
@@ -350,19 +366,6 @@ function Terminal:actions_menu(options)
 	end
 
 	require("finder.picker"):menu(menu, options)
-end
-
-function Terminal:menu()
-	if Jobs:count() < 1 then
-		return self:actions_menu()
-	end
-
-	local pickers = {
-		{ prompt_title = "Running Jobs", find = fn.bind(self.jobs_menu, self) },
-		{ prompt_title = "Terminal", find = fn.bind(self.actions_menu, self) },
-	}
-
-	return require("finder.picker"):tabs(pickers):find()
 end
 
 return Module:new(Terminal)
