@@ -220,7 +220,9 @@ end
 
 function Terminal:create()
 	vim.api.nvim_command("terminal")
-	vim.api.nvim_command("startinsert")
+	--[[ vim.schedule(function()
+		vim.api.nvim_command("startinsert")
+	end) ]]
 end
 
 function Terminal:next()
@@ -315,40 +317,39 @@ function Terminal:menu(options)
 	local jobs_count = Jobs:count()
 
 	if jobs_count > 0 then
-		table.insert(menu, 1, {
+		table.insert(menu, {
 			jobs_count .. " job" .. (jobs_count > 1 and "s" or "") .. " running",
 			handler = fn.bind(self.jobs_menu, self),
 		})
 	end
 
-	menu = vim.tbl_extend("force", menu, {
-		{
-			"Create a new terminal",
-			":term[inal]",
-			handler = fn.bind(self.create, self),
-		},
-		{
-			"Next terminal",
-			keymaps["terminal.next"],
-			handler = fn.bind(self.next, self),
-		},
-		{
-			"Previous terminal",
-			keymaps["terminal.prev"],
-			handler = fn.bind(self.prev, self),
-		},
-		{
-			"Launch ...",
-			":terminal ...",
-			handler = function()
-				local command = vim.fn.input({ prompt = "> ", cancelreturn = "", completion = "shellcmd" })
+	-- TODO: We need a util which makes it possible inserting multiple values in a tbl
+	table.insert(menu, {
+		"Create a new terminal",
+		":term[inal]",
+		handler = fn.bind(self.create, self),
+	})
+	table.insert(menu, {
+		"Next terminal",
+		keymaps["terminal.next"],
+		handler = fn.bind(self.next, self),
+	})
+	table.insert(menu, {
+		"Previous terminal",
+		keymaps["terminal.prev"],
+		handler = fn.bind(self.prev, self),
+	})
+	table.insert(menu, {
+		"Launch ...",
+		":terminal ...",
+		handler = function()
+			local command = vim.fn.input({ prompt = "> ", cancelreturn = "", completion = "shellcmd" })
 
-				vim.api.nvim_command("terminal " .. command)
-				vim.schedule(function()
-					vim.api.nvim_command("startinsert")
-				end)
-			end,
-		},
+			vim.api.nvim_command("terminal " .. command)
+			--[[ vim.schedule(function()
+				vim.api.nvim_command("startinsert")
+			end) ]]
+		end,
 	})
 
 	for _, user_job in ipairs(user_options["terminal.jobs"]) do
@@ -357,9 +358,9 @@ function Terminal:menu(options)
 			":terminal " .. user_job.command,
 			handler = function()
 				vim.api.nvim_command("terminal " .. user_job.command)
-				vim.schedule(function()
+				--[[ vim.schedule(function()
 					vim.api.nvim_command("startinsert")
-				end)
+				end) ]]
 			end,
 		})
 	end
