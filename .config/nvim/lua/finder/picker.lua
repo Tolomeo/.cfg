@@ -79,7 +79,7 @@ end
 function Tabs:_attach_mappings(buffer)
 	local keymaps = settings.keymaps()
 
-	key.imap({
+	key.nmap({
 		keymaps["buffer.next"],
 		fn.bind(self.next, self),
 		buffer = buffer,
@@ -92,17 +92,23 @@ function Tabs:_attach_mappings(buffer)
 	return true
 end
 
-function Tabs:_options()
-	return {
+---@type fun(self: Finder.Picker.Tabs, options?: { initial_mode: "normal" | "insert" })
+Tabs._options = validator.f.arguments({
+	validator.f.instance_of(Tabs),
+	validator.f.optional(validator.f.shape({ initial_mode = validator.f.one_of({ "normal", "insert" }) })),
+}) .. function(self, options)
+	options = options or {}
+
+	return vim.tbl_extend("force", options, {
 		prompt_title = self:_prompt_title(),
 		attach_mappings = fn.bind(self._attach_mappings, self),
-	}
+	})
 end
 
 function Tabs:prev()
 	self._current = self._current <= 1 and #self or self._current - 1
 
-	local options = self:_options()
+	local options = self:_options({ initial_mode = "normal" })
 	local picker = self[self._current]
 
 	return picker.find(options)
@@ -111,14 +117,14 @@ end
 function Tabs:next()
 	self._current = self._current >= #self and 1 or self._current + 1
 
-	local options = self:_options()
+	local options = self:_options({ initial_mode = "normal" })
 	local picker = self[self._current]
 
 	return picker.find(options)
 end
 
 function Tabs:find()
-	local options = self:_options()
+	local options = self:_options({ initial_mode = "normal" })
 	local picker = self[self._current]
 
 	return picker.find(options)
@@ -188,7 +194,6 @@ function Picker:_setup_plugins()
 			color_devicons = true,
 			mappings = {
 				i = {
-					["<esc>"] = require("telescope.actions").close,
 					[keymaps["window.cursor.down"]] = require("telescope.actions").move_selection_next,
 					[keymaps["window.cursor.up"]] = require("telescope.actions").move_selection_previous,
 					[keymaps["window.cursor.left"]] = require("telescope.actions").cycle_history_prev,
