@@ -21,7 +21,7 @@ Config.modules = {
 	"interface",
 	"project",
 	"finder",
-	"terminal",
+	"core",
 }
 
 function Config:init()
