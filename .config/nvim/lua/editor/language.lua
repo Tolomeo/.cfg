@@ -46,6 +46,7 @@ function Language:setup_servers()
 			{ keymaps["language.lsp.rename"], vim.lsp.buf.rename, buffer = buffer },
 			{ keymaps["language.diagnostic.next"], vim.diagnostic.goto_next, buffer = buffer },
 			{ keymaps["language.diagnostic.prev"], vim.diagnostic.goto_prev, buffer = buffer },
+			{ keymaps["language.diagnostic.open"], vim.diagnostic.open_float, buffer = buffer },
 			{ keymaps["language.diagnostic.list"], fn.bind(picker.find_diagnostics, picker), buffer = buffer }
 		)
 

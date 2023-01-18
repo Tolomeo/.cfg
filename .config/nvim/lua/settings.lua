@@ -168,7 +168,7 @@ Settings._keymaps = {
 	["buffer.line.new.up"] = "<leader>O",
 	["buffer.line.new.down"] = "<leader>o",
 	-- Cleaning a line
-	["buffer.line.clear"] = "<leader>d",
+	["buffer.line.clear"] = "dD",
 	-- Commenting lines
 	["buffer.line.comment"] = "<leader><space>",
 	-- Replace word under cursor in buffer
@@ -197,9 +197,10 @@ Settings._keymaps = {
 	["language.lsp.implementation"] = "<leader>gi",
 	["language.lsp.rename"] = "<leader>r",
 	["language.lsp.code_action"] = "<C-Space>",
-	["language.diagnostic.next"] = "<leader>dj",
-	["language.diagnostic.prev"] = "<leader>dk",
-	["language.diagnostic.list"] = "<leader>dl",
+	["language.diagnostic.next"] = "]d",
+	["language.diagnostic.prev"] = "[d",
+	["language.diagnostic.open"] = "<leader>d",
+	["language.diagnostic.list"] = "<leader>D",
 	["language.format"] = "<leader>b",
 	-- finder
 	["find.files"] = "<leader>E",
