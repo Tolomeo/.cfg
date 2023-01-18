@@ -5,6 +5,7 @@ local Core = {}
 
 Core.modules = {
 	"core.terminal",
+	"core.spelling",
 }
 
 return Module:new(Core)

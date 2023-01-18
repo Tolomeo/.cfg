@@ -12,7 +12,6 @@ Editor.modules = {
 	"editor.syntax",
 	"editor.language",
 	"editor.completion",
-	"editor.spelling",
 }
 
 Editor.plugins = {
