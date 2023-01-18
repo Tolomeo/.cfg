@@ -366,6 +366,7 @@ end
 Settings._options = {
 	["language.parsers"] = {},
 	["language.servers"] = {},
+	["language.diagnostics.update_in_insert"] = false,
 	["theme.colorscheme"] = "nightfox",
 	["theme.component_separator"] = "│",
 	["theme.section_separator"] = "█",
@@ -381,6 +382,7 @@ Settings.options = validator.f.arguments({
 				settings = validator.f.optional("function"),
 			}),
 		})),
+		["language.diagnostics.update_in_insert"] = validator.f.optional("boolean"),
 		["theme.colorscheme"] = validator.f.optional(
 			validator.f.one_of({ "edge", "onedark", "nightfox", "ayu", "tokyonight", "rose-pine" })
 		),
