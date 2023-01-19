@@ -34,6 +34,14 @@ function Git:_setup_plugins()
 	-- GitSigns
 	-- see https://github.com/whatsthatsmell/dots/blob/master/public%20dots/vim-nvim/lua/joel/mappings.lua
 	require("gitsigns").setup({
+		signs = {
+			add = { text = "├" },
+			change = { text = "├" },
+			delete = { text = "┤" },
+			topdelete = { text = "┤" },
+			changedelete = { text = "┼" },
+			untracked = { text = "│" },
+		},
 		current_line_blame = true,
 		current_line_blame_opts = {
 			delay = 100,
