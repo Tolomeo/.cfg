@@ -1,4 +1,5 @@
 local Module = require("_shared.module")
+local validator = require("_shared.validator")
 local settings = require("settings")
 
 local color_schemes = {

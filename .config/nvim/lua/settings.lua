@@ -187,6 +187,8 @@ Settings._keymaps = {
 	["dropdown.item.next"] = "<Tab>",
 	["dropdown.item.prev"] = "<S-Tab>",
 	["dropdown.item.confirm"] = "<CR>",
+	["dropdown.scroll.up"] = "<C-u>",
+	["dropdown.scroll.down"] = "<C-f>",
 	-- Language
 	["language.lsp.hover"] = "<leader>k",
 	["language.lsp.document_symbol"] = "<leader>K",
@@ -368,6 +370,7 @@ Settings._options = {
 	["language.parsers"] = {},
 	["language.servers"] = {},
 	["language.diagnostics.update_in_insert"] = false,
+	["language.diagnostics.severity_sort"] = true,
 	["theme.colorscheme"] = "nightfox",
 	["theme.component_separator"] = "│",
 	["theme.section_separator"] = "█",
@@ -384,6 +387,7 @@ Settings.options = validator.f.arguments({
 			}),
 		})),
 		["language.diagnostics.update_in_insert"] = validator.f.optional("boolean"),
+		["language.diagnostics.severity_sort"] = validator.f.optional("boolean"),
 		["theme.colorscheme"] = validator.f.optional(
 			validator.f.one_of({ "edge", "onedark", "nightfox", "ayu", "tokyonight", "rose-pine" })
 		),

@@ -89,7 +89,16 @@ function Language:setup_servers()
 	vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
 		-- delay update diagnostics
 		update_in_insert = options["language.diagnostics.update_in_insert"],
+		severity_sort = options["language.diagnostics.severity_sort"],
 	})
+
+	-- Diagnostic signs
+	require("interface"):sign(
+		{ name = "DiagnosticSignError", text = "■" },
+		{ name = "DiagnosticSignWarn", text = "▲" },
+		{ name = "DiagnosticSignHint", text = "◆" },
+		{ name = "DiagnosticSignInfo", text = "●" }
+	)
 end
 
 function Language:setup_formatter()
