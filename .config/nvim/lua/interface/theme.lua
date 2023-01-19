@@ -1,5 +1,4 @@
 local Module = require("_shared.module")
-local validator = require("_shared.validator")
 local settings = require("settings")
 
 local color_schemes = {
@@ -73,6 +72,7 @@ Theme.plugins = {
 		"nvim-lualine/lualine.nvim",
 		requires = { "kyazdani42/nvim-web-devicons", opt = true },
 	},
+	"arkav/lualine-lsp-progress",
 	{
 		"kdheepak/tabline.nvim",
 		requires = { { "hoob3rt/lualine.nvim", opt = true }, { "kyazdani42/nvim-web-devicons", opt = true } },
@@ -99,6 +99,11 @@ function Theme:setup()
 			section_separators = {
 				left = options["theme.section_separator"],
 				right = options["theme.section_separator"],
+			},
+		},
+		sections = {
+			lualine_c = {
+				"lsp_progress",
 			},
 		},
 	})
