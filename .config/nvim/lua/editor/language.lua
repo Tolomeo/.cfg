@@ -36,7 +36,7 @@ function Language:setup_servers()
 
 		key.nmap(
 			{ keymaps["language.lsp.hover"], vim.lsp.buf.hover, buffer = buffer },
-			{ keymaps["language.lsp.document_symbol"], vim.lsp.buf.document_symbol, buffer = buffer },
+			{ keymaps["language.lsp.signature_help"], vim.lsp.buf.signature_help, buffer = buffer },
 			{ keymaps["language.lsp.references"], vim.lsp.buf.references, buffer = buffer },
 			{ keymaps["language.lsp.definition"], vim.lsp.buf.definition, buffer = buffer },
 			{ keymaps["language.lsp.declaration"], vim.lsp.buf.declaration, buffer = buffer },
@@ -94,10 +94,6 @@ function Language:setup_servers()
 
 	-- Diagnostic signs
 	require("interface"):sign(
-		--[[ { name = "DiagnosticSignError", text = "■" },
-		{ name = "DiagnosticSignWarn", text = "▲" },
-		{ name = "DiagnosticSignHint", text = "◆" },
-		{ name = "DiagnosticSignInfo", text = "●" } ]]
 		{ name = "DiagnosticSignError", text = "┃" },
 		{ name = "DiagnosticSignWarn", text = "┃" },
 		{ name = "DiagnosticSignHint", text = "┃" },

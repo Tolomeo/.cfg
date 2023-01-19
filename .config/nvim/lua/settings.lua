@@ -191,7 +191,7 @@ Settings._keymaps = {
 	["dropdown.scroll.down"] = "<C-f>",
 	-- Language
 	["language.lsp.hover"] = "<leader>k",
-	["language.lsp.document_symbol"] = "<leader>K",
+	["language.lsp.signature_help"] = "<leader>K",
 	["language.lsp.references"] = "<leader>gr",
 	["language.lsp.definition"] = "<leader>gd",
 	["language.lsp.declaration"] = "<leader>gD",
