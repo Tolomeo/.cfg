@@ -67,16 +67,6 @@ Theme.plugins = {
 	"EdenEast/nightfox.nvim",
 	"Shatur/neovim-ayu",
 	"rose-pine/neovim",
-	-- Status line
-	{
-		"nvim-lualine/lualine.nvim",
-		requires = { "kyazdani42/nvim-web-devicons", opt = true },
-	},
-	"arkav/lualine-lsp-progress",
-	{
-		"kdheepak/tabline.nvim",
-		requires = { { "hoob3rt/lualine.nvim", opt = true }, { "kyazdani42/nvim-web-devicons", opt = true } },
-	},
 	-- Highlighting color strings
 	"norcalli/nvim-colorizer.lua",
 }
@@ -86,37 +76,6 @@ function Theme:setup()
 
 	-- TODO: passing options to customise color schemes
 	color_schemes[options["theme.colorscheme"]]()
-
-	-- Statusbar
-	require("lualine").setup({
-		options = {
-			globalstatus = true, -- TODO: derive this from 'laststatus' option
-			theme = options["theme.colorscheme"],
-			component_separators = {
-				left = options["theme.component_separator"],
-				right = options["theme.component_separator"],
-			},
-			section_separators = {
-				left = options["theme.section_separator"],
-				right = options["theme.section_separator"],
-			},
-		},
-		sections = {
-			lualine_c = {
-				"lsp_progress",
-			},
-		},
-	})
-
-	require("tabline").setup({
-		enable = true,
-		options = {
-			component_separators = { options["theme.component_separator"], options["theme.component_separator"] },
-			section_separators = { options["theme.section_separator"], options["theme.section_separator"] },
-			show_tabs_always = true, -- this shows tabs only when there are more than one tab or if the first tab is named
-			modified_icon = "~ ", -- change the default modified icon
-		},
-	})
 
 	-- Colorizer
 	require("colorizer").setup()

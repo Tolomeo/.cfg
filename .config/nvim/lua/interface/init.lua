@@ -8,6 +8,8 @@ Interface.modules = {
 	"interface.window",
 	"interface.tab",
 	"interface.theme",
+	"interface.statusline",
+	"interface.tabline",
 }
 
 Interface.sign = validator.f.arguments({
