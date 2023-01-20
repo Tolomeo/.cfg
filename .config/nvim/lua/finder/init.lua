@@ -9,7 +9,6 @@ Finder.plugins = {
 }
 
 Finder.modules = {
-	"finder.list",
 	"finder.picker",
 }
 

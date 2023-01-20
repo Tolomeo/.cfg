@@ -6,6 +6,7 @@ local Core = {}
 Core.modules = {
 	"core.color",
 	"core.terminal",
+	"core.location",
 	"core.spelling",
 }
 
