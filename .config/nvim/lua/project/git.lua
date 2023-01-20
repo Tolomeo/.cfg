@@ -32,6 +32,7 @@ function Git:setup()
 			col = 1,
 		},
 		on_attach = function(buffer)
+			local keymaps = settings.keymaps()
 			local actions = self:actions()
 			local mappings = fn.imap(actions, function(action)
 				return { action.keymap, action.handler, buffer = buffer }
@@ -39,7 +40,7 @@ function Git:setup()
 
 			key.nmap(unpack(mappings))
 			key.nmap({
-				"<leader>H",
+				keymaps["git.menu"],
 				fn.bind(self.actions_context_menu, self),
 			})
 		end,

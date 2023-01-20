@@ -234,6 +234,7 @@ Settings._keymaps = {
 	["git.hunk.next"] = "]h",
 	["git.hunk.prev"] = "[h",
 	["git.hunk.select"] = "<leader>hv",
+	["git.menu"] = "<leader>H",
 	-- Github
 	["github.actions"] = "<leader>G",
 
