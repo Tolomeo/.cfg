@@ -94,10 +94,10 @@ function Language:setup_servers()
 
 	-- Diagnostic signs
 	require("interface"):sign(
-		{ name = "DiagnosticSignError", text = "┃" },
-		{ name = "DiagnosticSignWarn", text = "┃" },
-		{ name = "DiagnosticSignHint", text = "┃" },
-		{ name = "DiagnosticSignInfo", text = "┃" }
+		{ name = "DiagnosticSignError", text = "▐" },
+		{ name = "DiagnosticSignWarn", text = "▐" },
+		{ name = "DiagnosticSignHint", text = "▐" },
+		{ name = "DiagnosticSignInfo", text = "▐" }
 	)
 
 	vim.diagnostic.config({

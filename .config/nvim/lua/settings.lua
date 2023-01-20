@@ -167,8 +167,6 @@ Settings._keymaps = {
 	-- Adding blank lines with cr
 	["buffer.line.new.up"] = "<leader>O",
 	["buffer.line.new.down"] = "<leader>o",
-	-- Cleaning a line
-	["buffer.line.clear"] = "dD",
 	-- Commenting lines
 	["buffer.line.comment"] = "<leader><space>",
 	-- Replace word under cursor in buffer
@@ -230,13 +228,11 @@ Settings._keymaps = {
 	["list.item.keep"] = "<leader>D",
 	["list.search"] = "<leader>f",
 	-- Git
-	["git.blame"] = "gb",
-	["git.log"] = "gl",
-	["git.diff"] = "gd",
-	["git.merge"] = "gm",
-	["git.hunk"] = "gh",
-	["git.hunk.next"] = "]g",
-	["git.hunk.prev"] = "[g",
+	["git.blame"] = "<leader>hb",
+	["git.diff"] = "<leader>hd",
+	["git.hunk"] = "<leader>h",
+	["git.hunk.next"] = "]h",
+	["git.hunk.prev"] = "[h",
 	-- Github
 	["github.actions"] = "<leader>G",
 

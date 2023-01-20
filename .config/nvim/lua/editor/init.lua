@@ -48,8 +48,11 @@ function Editor:_setup_keymaps()
 	end
 
 	local keymaps = settings.keymaps()
-	-- Editor
+
 	key.nmap(
+		-- Emptying lines
+		{ "dD", ":.s/\v^.*$/<Cr>:noh<Cr>" },
+
 		{ keymaps["buffer.next"], ":bnext<Cr>" },
 		{ keymaps["buffer.prev"], ":bprev<Cr>" },
 		{ keymaps["buffer.save"], "<Cmd>up<Cr>", silent = false },
@@ -73,7 +76,6 @@ function Editor:_setup_keymaps()
 		{ keymaps["buffer.line.duplicate.down"], "mayyp`a" },
 		{ keymaps["buffer.line.new.up"], "mm:put! _<CR>`m" },
 		{ keymaps["buffer.line.new.down"], "mm:put _<CR>`m" },
-		{ keymaps["buffer.line.clear"], ":.s/\v^.*$/<Cr>:noh<Cr>" },
 		{ keymaps["buffer.line.comment"], fn.bind(self.comment_line, self) },
 		{ keymaps["buffer.word.substitute"], ":%s/<C-r><C-w>//gI<left><left><left>", silent = false },
 		{ keymaps["buffer.word.substitute.line"], ":s/<C-r><C-w>//gI<left><left><left>", silent = false },
@@ -84,13 +86,16 @@ function Editor:_setup_keymaps()
 	)
 
 	key.vmap(
-		-- Make visual yanks remain in visual mode
-		{ "y", "ygv" },
 		-- Arrows are disabled
 		{ "<Left>", "<nop>" },
 		{ "<Right>", "<nop>" },
 		{ "<Up>", "<nop>" },
 		{ "<Down>", "<nop>" },
+		-- Make visual yanks remain in visual mode
+		{ "y", "ygv" },
+		-- Emptying lines
+		{ "D", "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" },
+
 		{ keymaps["buffer.cursor.prev"], "b" },
 		{ keymaps["buffer.cursor.prev.big"], "B" },
 		{ keymaps["buffer.cursor.next"], "w" },
@@ -119,7 +124,6 @@ function Editor:_setup_keymaps()
 			keymaps["buffer.line.duplicate.down"],
 			"mmy'>p`mgv",
 		},
-		{ keymaps["buffer.line.clear"], "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" },
 		{ keymaps["buffer.line.comment"], fn.bind(self.comment_selection, self) }
 	)
 
