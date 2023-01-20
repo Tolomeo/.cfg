@@ -11,13 +11,6 @@ Git.plugins = {
 }
 
 function Git:setup()
-	self:_setup_plugins()
-end
-
-function Git:_setup_plugins()
-	local keymaps = settings.keymaps()
-	-- GitSigns
-	-- see https://github.com/whatsthatsmell/dots/blob/master/public%20dots/vim-nvim/lua/joel/mappings.lua
 	require("gitsigns").setup({
 		signs = {
 			add = { text = "├" },
@@ -39,23 +32,77 @@ function Git:_setup_plugins()
 			col = 1,
 		},
 		on_attach = function(buffer)
-			key.nmap(
-				{ keymaps["git.blame"], fn.bind(self.blame, self), buffer = buffer },
-				{ keymaps["git.diff"], fn.bind(self.diff, self), buffer = buffer },
-				{ keymaps["git.hunk"], fn.bind(self.show_hunk_preview, self), buffer = buffer },
-				{
-					keymaps["git.hunk.next"],
-					fn.bind(self.next_hunk_preview, self),
-					buffer = buffer,
-				},
-				{
-					keymaps["git.hunk.prev"],
-					fn.bind(self.prev_hunk_preview, self),
-					buffer = buffer,
-				}
-			)
+			local actions = self:actions()
+			local mappings = fn.imap(actions, function(action)
+				return { action.keymap, action.handler, buffer = buffer }
+			end)
+
+			key.nmap(unpack(mappings))
+			key.nmap({
+				"<leader>H",
+				fn.bind(self.actions_context_menu, self),
+			})
 		end,
 	})
+end
+
+function Git:actions()
+	local keymaps = settings.keymaps()
+
+	return {
+		{
+			name = "Show change",
+			keymap = keymaps["git.hunk"],
+			handler = fn.bind(self.hunk, self),
+		},
+		{
+			name = "Select change",
+			keymap = keymaps["git.hunk.select"],
+			handler = fn.bind(self.select_hunk, self),
+		},
+		{
+			name = "Go to next change",
+			keymap = keymaps["git.hunk.next"],
+			handler = fn.bind(self.next_hunk, self),
+		},
+		{
+			name = "Go to prev change",
+			keymap = keymaps["git.hunk.prev"],
+			handler = fn.bind(self.prev_hunk, self),
+		},
+		{
+			name = "Blame line",
+			keymap = keymaps["git.blame"],
+			handler = fn.bind(self.blame, self),
+		},
+		{
+			name = "Show changes",
+			keymap = keymaps["git.diff"],
+			handler = fn.bind(self.diff, self),
+		},
+	}
+end
+
+function Git:actions_context_menu()
+	local actions = self:actions()
+	local menu = vim.tbl_extend(
+		"error",
+		fn.imap(actions, function(action)
+			return { action.name, action.keymap, handler = action.handler }
+		end),
+		{
+			on_select = function(modal_menu)
+				local selection = modal_menu.state.get_selected_entry()
+				modal_menu.actions.close(modal_menu.buffer)
+				selection.value.handler()
+			end,
+		}
+	)
+	local options = {
+		prompt_title = "Git changes",
+	}
+
+	require("finder.picker"):context_menu(menu, options)
 end
 
 function Git:blame()
@@ -67,18 +114,22 @@ function Git:diff()
 end
 
 --[[ function Git:has_diff()
-	return vim.api.nvim_win_get_option(0, "diff") ~= 0
+	return vim.api.nvim_win_get_option(0, "diff")
 end ]]
 
-function Git:show_hunk_preview()
+function Git:hunk()
 	return require("gitsigns").preview_hunk()
 end
 
-function Git:next_hunk_preview()
+function Git.select_hunk()
+	return require("gitsigns").select_hunk()
+end
+
+function Git:next_hunk()
 	return require("gitsigns.actions").next_hunk()
 end
 
-function Git:prev_hunk_preview()
+function Git:prev_hunk()
 	return require("gitsigns.actions").prev_hunk()
 end
 
