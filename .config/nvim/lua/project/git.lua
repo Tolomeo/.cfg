@@ -7,7 +7,7 @@ local settings = require("settings")
 local Git = {}
 
 Git.plugins = {
-	{ "lewis6991/gitsigns.nvim", requires = { "nvim-lua/plenary.nvim" } },
+	{ "lewis6991/gitsigns.nvim" },
 }
 
 function Git:setup()
