@@ -103,7 +103,7 @@ function Git:actions_context_menu()
 		prompt_title = "Git changes",
 	}
 
-	require("finder.picker"):context_menu(menu, options)
+	require("interface.picker"):context_menu(menu, options)
 end
 
 function Git:blame()

@@ -15,6 +15,7 @@ Editor.modules = {
 }
 
 Editor.plugins = {
+	"romainl/vim-cool",
 	-- Comments
 	"b3nj5m1n/kommentary",
 	-- Autoclosing pair of chars
@@ -30,8 +31,8 @@ Editor.plugins = {
 }
 
 function Editor:setup()
-	self:_setup_keymaps()
 	self:_setup_plugins()
+	self:_setup_keymaps()
 	self:_setup_commands()
 end
 
@@ -52,6 +53,9 @@ function Editor:_setup_keymaps()
 	key.nmap(
 		-- Emptying lines
 		{ "dD", ":.s/\v^.*$/<Cr>:noh<Cr>" },
+		-- Keep search results centered
+		{ "n", "nzzzv" },
+		{ "N", "Nzzzv" },
 
 		{ keymaps["buffer.next"], ":bnext<Cr>" },
 		{ keymaps["buffer.prev"], ":bprev<Cr>" },
@@ -155,6 +159,9 @@ function Editor:_setup_keymaps()
 end
 
 function Editor:_setup_plugins()
+	-- Vim-cool
+	vim.g.CoolTotalMatches = 1
+
 	-- Kommentary
 	vim.g.kommentary_create_default_mappings = false
 

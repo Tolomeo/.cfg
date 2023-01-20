@@ -9,6 +9,7 @@ Interface.modules = {
 	"interface.tab",
 	"interface.statusline",
 	"interface.tabline",
+	"interface.picker",
 }
 
 Interface.sign = validator.f.arguments({

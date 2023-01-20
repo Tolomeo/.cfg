@@ -32,7 +32,7 @@ function Language:setup_servers()
 		client.server_capabilities.documentFormattingProvider = false
 		client.server_capabilities.documentRangeFormattingProvider = false
 
-		local picker = require("finder.picker")
+		local picker = require("interface.picker")
 
 		key.nmap(
 			{ keymaps["language.lsp.hover"], vim.lsp.buf.hover, buffer = buffer },

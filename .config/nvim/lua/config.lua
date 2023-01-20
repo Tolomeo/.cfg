@@ -17,10 +17,9 @@ Config.plugins = {
 }
 
 Config.modules = {
-	"editor",
 	"interface",
+	"editor",
 	"project",
-	"finder",
 	"core",
 }
 

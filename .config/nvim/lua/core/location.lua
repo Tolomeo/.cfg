@@ -88,10 +88,10 @@ Location.actions = validator.f.arguments({
 					local is_loclist = self:is_loclist()
 
 					if is_loclist then
-						return require("finder.picker"):loclist()
+						return require("interface.picker"):loclist()
 					end
 
-					require("finder.picker"):qflist()
+					require("interface.picker"):qflist()
 				end,
 			},
 			{
@@ -326,7 +326,7 @@ function Location:actions_menu()
 		prompt_title = is_loclist and "Location list" or "Quickfix list",
 	}
 
-	require("finder.picker"):context_menu(menu, options)
+	require("interface.picker"):context_menu(menu, options)
 end
 
 return Module:new(Location)
