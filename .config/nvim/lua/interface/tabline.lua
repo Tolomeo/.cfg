@@ -17,8 +17,8 @@ function Theme:setup()
 	require("tabline").setup({
 		enable = true,
 		options = {
-			component_separators = { options["theme.component_separator"], options["theme.component_separator"] },
-			section_separators = { options["theme.section_separator"], options["theme.section_separator"] },
+			component_separators = { options["icon.component.left"], options["icon.component.right"] },
+			section_separators = { options["icon.section.left"], options["icon.section.right"] },
 			show_tabs_always = true, -- this shows tabs only when there are more than one tab or if the first tab is named
 			modified_icon = "~ ", -- change the default modified icon
 		},

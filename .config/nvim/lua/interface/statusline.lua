@@ -21,18 +21,21 @@ function Statusline:setup()
 			globalstatus = globals.laststatus == 3,
 			theme = options["theme.colorscheme"],
 			component_separators = {
-				left = options["theme.component_separator"],
-				right = options["theme.component_separator"],
+				left = options["icon.component.left"],
+				right = options["icon.component.right"],
 			},
 			section_separators = {
-				left = options["theme.section_separator"],
-				right = options["theme.section_separator"],
+				left = options["icon.section.left"],
+				right = options["icon.section.right"],
 			},
 		},
 		sections = {
-			lualine_c = {
-				"lsp_progress",
-			},
+			lualine_a = { "mode", "searchcount" },
+			lualine_b = { "branch", "diff" },
+			lualine_c = { "diagnostics", "lsp_progress" },
+			lualine_x = {},
+			lualine_y = { "encoding", "fileformat", "filetype" },
+			lualine_z = { "location", "progress" },
 		},
 	})
 end

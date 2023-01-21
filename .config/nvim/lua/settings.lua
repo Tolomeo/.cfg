@@ -370,8 +370,10 @@ Settings._options = {
 	["language.diagnostics.update_in_insert"] = false,
 	["language.diagnostics.severity_sort"] = true,
 	["theme.colorscheme"] = "edge",
-	["theme.component_separator"] = "│",
-	["theme.section_separator"] = "█",
+	["icon.section.right"] = " ▟",
+	["icon.section.left"] = "▙ ",
+	["icon.component.right"] = " ",
+	["icon.component.left"] = " ",
 	["terminal.jobs"] = {},
 }
 
@@ -386,11 +388,11 @@ Settings.options = validator.f.arguments({
 		})),
 		["language.diagnostics.update_in_insert"] = validator.f.optional("boolean"),
 		["language.diagnostics.severity_sort"] = validator.f.optional("boolean"),
-		["theme.colorscheme"] = validator.f.optional(
-			validator.f.one_of({ "edge", "onedark", "nightfox", "ayu", "tokyonight", "rose-pine" })
-		),
-		["theme.component_separator"] = validator.f.optional("string"),
-		["theme.section_separator"] = validator.f.optional("string"),
+		["theme.colorscheme"] = validator.f.optional("string"),
+		["icon.section.left"] = validator.f.optional("string"),
+		["icon.section.right"] = validator.f.optional("string"),
+		["icon.component.left"] = validator.f.optional("string"),
+		["icon.component.right"] = validator.f.optional("string"),
 		["terminal.jobs"] = validator.f.optional(validator.f.list({
 			validator.f.shape({
 				command = "string",
