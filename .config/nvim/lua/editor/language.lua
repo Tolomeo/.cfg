@@ -8,97 +8,17 @@ local fn = require("_shared.fn")
 local Language = {}
 
 Language.plugins = {
-	{
-		"VonHeikemen/lsp-zero.nvim",
-		branch = "v1.x",
-		requires = {
-			-- LSP Support
-			{ "neovim/nvim-lspconfig" },
-			{ "williamboman/mason.nvim" },
-			{ "williamboman/mason-lspconfig.nvim" },
-			-- Autocompletion
-			{ "hrsh7th/nvim-cmp" },
-			{ "hrsh7th/cmp-nvim-lsp" },
-			{ "hrsh7th/cmp-buffer" },
-			{ "hrsh7th/cmp-path" },
-			{ "saadparwaiz1/cmp_luasnip" },
-			{ "hrsh7th/cmp-nvim-lua" },
-			-- Snippets
-			{ "L3MON4D3/LuaSnip" },
-			{ "rafamadriz/friendly-snippets" },
-		},
-	},
-	-- Format
+	-- lsp
+	"neovim/nvim-lspconfig",
+	"williamboman/nvim-lsp-installer",
+	-- formatting
 	"sbdchd/neoformat",
-	-- Folds
+	-- folds
 	{ "kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async" },
 }
 
 function Language:setup_servers()
-	local options = settings.options()
 	local keymaps = settings.keymaps()
-
-	local lsp = require("lsp-zero")
-	lsp.preset("manual-setup")
-	lsp.set_preferences({
-		set_lsp_keymaps = false,
-	})
-
-	lsp.ensure_installed(fn.imap(options["language.servers"], function(server_config)
-		return server_config.name
-	end))
-
-	lsp.nvim_workspace()
-	for _, server_config in ipairs(options["language.servers"]) do
-		lsp.configure(server_config.name, { settings = server_config.settings })
-	end
-
-	lsp.on_attach(function(client, buffer)
-		-- avoid using formatting coming from lsp
-		client.server_capabilities.documentFormattingProvider = false
-		client.server_capabilities.documentRangeFormattingProvider = false
-
-		key.nmap(
-			{ keymaps["language.lsp.hover"], vim.lsp.buf.hover, buffer = buffer },
-			{ keymaps["language.lsp.signature_help"], vim.lsp.buf.signature_help, buffer = buffer },
-			{ keymaps["language.lsp.references"], vim.lsp.buf.references, buffer = buffer },
-			{ keymaps["language.lsp.definition"], vim.lsp.buf.definition, buffer = buffer },
-			{ keymaps["language.lsp.declaration"], vim.lsp.buf.declaration, buffer = buffer },
-			{ keymaps["language.lsp.type_definition"], vim.lsp.buf.type_definition, buffer = buffer },
-			{ keymaps["language.lsp.implementation"], vim.lsp.buf.implementation, buffer = buffer },
-			{ keymaps["language.lsp.code_action"], vim.lsp.buf.code_action, buffer = buffer },
-			{ keymaps["language.lsp.rename"], vim.lsp.buf.rename, buffer = buffer },
-			{ keymaps["language.diagnostic.next"], vim.diagnostic.goto_next, buffer = buffer },
-			{ keymaps["language.diagnostic.prev"], vim.diagnostic.goto_prev, buffer = buffer },
-			{ keymaps["language.diagnostic.open"], vim.diagnostic.open_float, buffer = buffer },
-			{
-				keymaps["language.diagnostic.list"],
-				function()
-					require("interface.picker"):find_diagnostics()
-				end,
-				buffer = buffer,
-			}
-		)
-
-		if client.server_capabilities.documentHighlightProvider then
-			au.group({ "OnCursorHold" }, {
-				"CursorHold",
-				buffer,
-				vim.lsp.buf.document_highlight,
-			}, {
-				"CursorHoldI",
-				buffer,
-				vim.lsp.buf.document_highlight,
-			}, {
-				"CursorMoved",
-				buffer,
-				vim.lsp.buf.clear_references,
-			})
-		end
-	end)
-
-	lsp.setup()
-	--[[ local keymaps = settings.keymaps()
 	local options = settings.options()
 	-- local client_capabilities =
 	local capabilities = require("editor.completion"):default_capabilities(
@@ -184,7 +104,7 @@ function Language:setup_servers()
 		virtual_text = {
 			prefix = "▉",
 		},
-	}) ]]
+	})
 end
 
 function Language:setup_formatter()

@@ -30,12 +30,12 @@ function Statusline:setup()
 			},
 		},
 		sections = {
-			lualine_a = { "mode" },
+			lualine_a = { "mode", "searchcount" },
 			lualine_b = { "branch", "diff" },
 			lualine_c = { "diagnostics", "lsp_progress" },
 			lualine_x = {},
 			lualine_y = { "encoding", "fileformat", "filetype" },
-			lualine_z = { "searchcount", "location", "progress" },
+			lualine_z = { "location", "progress" },
 		},
 	})
 end

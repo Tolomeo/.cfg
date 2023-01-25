@@ -383,7 +383,7 @@ Settings.options = validator.f.arguments({
 		["language.servers"] = validator.f.optional(validator.f.list({
 			validator.f.shape({
 				name = "string",
-				settings = validator.f.optional("table"),
+				settings = validator.f.optional("function"),
 			}),
 		})),
 		["language.diagnostics.update_in_insert"] = validator.f.optional("boolean"),

@@ -11,8 +11,7 @@ local Editor = {}
 Editor.modules = {
 	"editor.syntax",
 	"editor.language",
-	--[[ "editor.language",
-	"editor.completion", ]]
+	"editor.completion",
 }
 
 Editor.plugins = {
