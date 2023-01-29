@@ -1,7 +1,7 @@
 local Module = require("_shared.module")
 local settings = require("settings")
 
----@class Editor.Syntax
+---@class Cfg.Editor.Syntax
 local Syntax = {}
 
 Syntax.plugins = {
@@ -15,8 +15,6 @@ Syntax.plugins = {
 	{ "JoosepAlviste/nvim-ts-context-commentstring", requires = "nvim-treesitter/nvim-treesitter" },
 	-- Auto closing tags
 	{ "windwp/nvim-ts-autotag", requires = "nvim-treesitter/nvim-treesitter" },
-	-- Indentation guides
-	{ "lukas-reineke/indent-blankline.nvim" },
 }
 
 function Syntax:setup()
@@ -92,16 +90,6 @@ function Syntax:setup()
 	-- Autopairs
 	require("nvim-autopairs").setup({
 		disable_filetype = { "TelescopePrompt", "vim" },
-	})
-
-	--Map blankline
-	require("indent_blankline").setup({
-		space_char_blankline = " ",
-		show_current_context = true,
-		show_current_context_start = true,
-		use_treesitter = true,
-		strict_tabs = true,
-		context_char = "┃",
 	})
 
 	require("neogen").setup({})
