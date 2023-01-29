@@ -114,14 +114,6 @@ function Language:setup_servers()
 		require("lspconfig")[server.name].setup(server_config)
 	end
 
-	-- Delay diagnostics in insert mode
-	-- https://github.com/neovim/nvim-lspconfig/issues/127
-	vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-		-- delay update diagnostics
-		update_in_insert = options["language.diagnostics.update_in_insert"],
-		severity_sort = options["language.diagnostics.severity_sort"],
-	})
-
 	-- Diagnostic signs
 	require("interface"):sign(
 		{ name = "DiagnosticSignError", text = "▐" },
@@ -134,7 +126,38 @@ function Language:setup_servers()
 		virtual_text = {
 			prefix = "▌",
 		},
+		signs = true,
+		update_in_insert = options["language.diagnostics.update_in_insert"],
+		underline = true,
+		severity_sort = options["language.diagnostics.severity_sort"],
+		--[[ float = {
+			focusable = false,
+			style = "minimal",
+			border = "rounded",
+			source = "always",
+			header = "",
+			prefix = "",
+		}, ]]
 	})
+
+	-- vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover)
+	vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help)
+
+	vim.api.nvim_create_user_command(
+		"LspWorkspaceAdd",
+		vim.lsp.buf.add_workspace_folder,
+		{ desc = "Add folder to workspace" }
+	)
+
+	vim.api.nvim_create_user_command("LspWorkspaceList", function()
+		vim.notify(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+	end, { desc = "List workspace folders" })
+
+	vim.api.nvim_create_user_command(
+		"LspWorkspaceRemove",
+		vim.lsp.buf.remove_workspace_folder,
+		{ desc = "Remove folder from workspace" }
+	)
 end
 
 function Language:setup_formatter()
