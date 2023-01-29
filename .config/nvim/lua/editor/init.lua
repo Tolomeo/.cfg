@@ -5,13 +5,13 @@ local register = require("_shared.register")
 local settings = require("settings")
 local fn = require("_shared.fn")
 
----@class Editor
+---@class Cfg.Editor
 local Editor = {}
 
 Editor.modules = {
 	"editor.syntax",
 	"editor.language",
-	"editor.completion",
+	"editor.format",
 }
 
 Editor.plugins = {

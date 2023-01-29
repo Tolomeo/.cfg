@@ -1,20 +1,25 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
 local key = require("_shared.key")
-local settings = require("settings")
 local fn = require("_shared.fn")
+local settings = require("settings")
 
----@class Editor.Language
+---@class Cfg.Editor.Language
 local Language = {}
 
 Language.plugins = {
-	-- lsp
+	-- Lsp
 	"neovim/nvim-lspconfig",
 	"williamboman/nvim-lsp-installer",
-	-- formatting
-	"sbdchd/neoformat",
-	-- folds
-	{ "kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async" },
+	-- Completion
+	"hrsh7th/nvim-cmp",
+	"hrsh7th/cmp-nvim-lsp",
+	"hrsh7th/cmp-buffer",
+	"hrsh7th/cmp-path",
+	"hrsh7th/cmp-cmdline",
+	"L3MON4D3/LuaSnip",
+	"saadparwaiz1/cmp_luasnip",
+	"rafamadriz/friendly-snippets",
 }
 
 function Language:on_server_attach(client, buffer)
@@ -89,7 +94,7 @@ end
 
 function Language:default_server_config()
 	return {
-		capabilities = require("editor.completion"):default_capabilities({}),
+		capabilities = require("cmp_nvim_lsp").default_capabilities(),
 		on_attach = fn.bind(self.on_server_attach, self),
 	}
 end
@@ -160,26 +165,96 @@ function Language:setup_servers()
 	)
 end
 
-function Language:setup_formatter()
-	local keymaps = settings.keymaps()
-	-- Enable basic formatting when a filetype is not found
-	vim.g.neoformat_basic_format_retab = 1
-	vim.g.neoformat_basic_format_align = 1
-	vim.g.neoformat_basic_format_trim = 1
-	-- Have Neoformat look for a formatter executable in the node_modules/.bin directory in the current working directory or one of its parents
-	vim.g.neoformat_try_node_exe = 1
-	-- Mappings
-	key.nmap({ keymaps["language.format"], "<cmd>Neoformat<Cr>" })
+function Language:setup_snippets()
+	local luasnip = require("luasnip")
+
+	luasnip.config.set_config({
+		region_check_events = "InsertEnter",
+		delete_check_events = "InsertLeave",
+	})
+
+	require("luasnip.loaders.from_vscode").lazy_load()
 end
 
-function Language:setup_folding()
-	require("ufo").setup()
+function Language:setup_completion()
+	local keymaps = settings.keymaps()
+	local cmp = require("cmp")
+	local luasnip = require("luasnip")
+
+	cmp.setup({
+		snippet = {
+			expand = function(args)
+				luasnip.lsp_expand(args.body)
+			end,
+		},
+		mapping = cmp.mapping.preset.insert({
+			[keymaps["dropdown.item.next"]] = cmp.mapping(function(fallback)
+				if cmp.visible() then
+					cmp.select_next_item()
+				elseif luasnip.expand_or_jumpable() then
+					luasnip.expand_or_jump()
+				else
+					fallback()
+				end
+			end, { "i", "s" }),
+
+			[keymaps["dropdown.item.prev"]] = cmp.mapping(function(fallback)
+				if cmp.visible() then
+					cmp.select_prev_item()
+				elseif luasnip.jumpable(-1) then
+					luasnip.jump(-1)
+				else
+					fallback()
+				end
+			end, { "i", "s" }),
+
+			[keymaps["dropdown.scroll.up"]] = cmp.mapping.scroll_docs(-4),
+
+			[keymaps["dropdown.scroll.down"]] = cmp.mapping.scroll_docs(4),
+
+			[keymaps["dropdown.open"]] = cmp.mapping(function(fallback)
+				if cmp.visible() then
+					cmp.abort()
+					fallback()
+				else
+					cmp.complete()
+				end
+			end),
+
+			-- ['<C-e>'] = cmp.mapping.abort(),
+
+			[keymaps["dropdown.item.confirm"]] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+		}),
+		sources = cmp.config.sources({
+			{ name = "path" },
+			{ name = "nvim_lsp", keyword_length = 3 },
+			{ name = "luasnip", keyword_length = 3 },
+			{ name = "buffer", keyword_length = 2 },
+		}),
+	})
+
+	-- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+	cmp.setup.cmdline({ "/", "?" }, {
+		mapping = cmp.mapping.preset.cmdline(),
+		sources = {
+			{ name = "buffer" },
+		},
+	})
+
+	-- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+	cmp.setup.cmdline(":", {
+		mapping = cmp.mapping.preset.cmdline(),
+		sources = cmp.config.sources({
+			{ name = "path" },
+			{ name = "cmdline" },
+		}),
+	})
 end
 
 function Language:setup()
 	self:setup_servers()
-	self:setup_formatter()
-	self:setup_folding()
+	self:setup_snippets()
+	self:setup_completion()
 end
 
 return Module:new(Language)
