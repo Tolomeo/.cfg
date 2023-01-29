@@ -20,122 +20,63 @@ local options = {
 			name = "bashls",
 		},
 		{
-			name = "sumneko_lua",
-			settings = function(base_settings)
-				local runtime_path = vim.split(package.path, ";")
-				table.insert(runtime_path, "lua/?.lua")
-				table.insert(runtime_path, "lua/?/init.lua")
-
-				return vim.tbl_extend("force", base_settings, {
-					settings = {
-						Lua = {
-							runtime = {
-								-- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-								version = "LuaJIT",
-								-- Setup your lua path
-								path = runtime_path,
-							},
-							diagnostics = {
-								-- Get the language server to recognize the `vim` global
-								globals = { "vim" },
-							},
-							workspace = {
-								-- Make the server aware of Neovim runtime files
-								library = vim.api.nvim_get_runtime_file("", true),
-							},
-							-- Do not send telemetry data containing a randomized but unique identifier
-							telemetry = {
-								enable = false,
-							},
-						},
-					},
-				})
-			end,
-		},
-		{
 			name = "html",
-			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#html
-			settings = function(base_settings)
-				base_settings.capabilities.textDocument.completion.completionItem.snippetSupport = true
-				return base_settings
-			end,
 		},
 		{
 			name = "cssls",
-			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#cssls
-			settings = function(base_settings)
-				base_settings.capabilities.textDocument.completion.completionItem.snippetSupport = true
-				return base_settings
-			end,
 		},
 		{
 			name = "emmet_ls",
 		},
 		{
 			name = "dockerls",
-			settings = function(base_settings)
-				return base_settings
-			end,
 		},
 		{
 			name = "jsonls",
-			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#jsonls
-			settings = function(base_settings)
-				base_settings.capabilities.textDocument.completion.completionItem.snippetSupport = true
-
-				-- see https://github.com/neovim/nvim-lspconfig/issues/229
-				return vim.tbl_extend("force", base_settings, {
-					settings = {
-						json = {
-							schemas = {
-								{
-									description = "Node project's package file",
-									fileMatch = { "package.json" },
-									url = "https://json.schemastore.org/package.json",
-								},
-								{
-									description = "TypeScript compiler configuration file",
-									fileMatch = { "tsconfig.json", "tsconfig.*.json" },
-									url = "http://json.schemastore.org/tsconfig",
-								},
-								{
-									description = "Lerna config",
-									fileMatch = { "lerna.json" },
-									url = "http://json.schemastore.org/lerna",
-								},
-								{
-									description = "Babel configuration",
-									fileMatch = { ".babelrc.json", ".babelrc", "babel.config.json" },
-									url = "http://json.schemastore.org/lerna",
-								},
-								{
-									description = "ESLint config",
-									fileMatch = { ".eslintrc.json", ".eslintrc" },
-									url = "http://json.schemastore.org/eslintrc",
-								},
-								{
-									description = "Prettier config",
-									fileMatch = { ".prettierrc", ".prettierrc.json", "prettier.config.json" },
-									url = "http://json.schemastore.org/prettierrc",
-								},
-							},
+			settings = {
+				json = {
+					schemas = {
+						{
+							description = "Node project's package file",
+							fileMatch = { "package.json" },
+							url = "https://json.schemastore.org/package.json",
+						},
+						{
+							description = "TypeScript compiler configuration file",
+							fileMatch = { "tsconfig.json", "tsconfig.*.json" },
+							url = "http://json.schemastore.org/tsconfig",
+						},
+						{
+							description = "Lerna config",
+							fileMatch = { "lerna.json" },
+							url = "http://json.schemastore.org/lerna",
+						},
+						{
+							description = "Babel configuration",
+							fileMatch = { ".babelrc.json", ".babelrc", "babel.config.json" },
+							url = "http://json.schemastore.org/lerna",
+						},
+						{
+							description = "ESLint config",
+							fileMatch = { ".eslintrc.json", ".eslintrc" },
+							url = "http://json.schemastore.org/eslintrc",
+						},
+						{
+							description = "Prettier config",
+							fileMatch = { ".prettierrc", ".prettierrc.json", "prettier.config.json" },
+							url = "http://json.schemastore.org/prettierrc",
 						},
 					},
-				})
-			end,
+				},
+			},
 		},
 		{
 			name = "yamlls",
-			-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#yamlls
-			settings = function(base_settings)
-				return vim.tbl_extend("force", base_settings, {
-					settings = {
-						schemas = {
-							["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
-						},
-					},
-				})
-			end,
+			settings = {
+				schemas = {
+					["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+				},
+			},
 		},
 		{
 			name = "tsserver",

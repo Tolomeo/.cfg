@@ -17,71 +17,101 @@ Language.plugins = {
 	{ "kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async" },
 }
 
-function Language:setup_servers()
+function Language:on_server_attach(client, buffer)
 	local keymaps = settings.keymaps()
-	local options = settings.options()
-	-- local client_capabilities =
-	local capabilities = require("editor.completion"):default_capabilities(
-		vim.tbl_extend("force", vim.lsp.protocol.make_client_capabilities(), {
-			dynamicRegistration = false,
-			lineFoldingOnly = true,
-		})
+	local picker = require("interface.picker")
+
+	key.nmap(
+		{ keymaps["language.lsp.hover"], vim.lsp.buf.hover, buffer = buffer },
+		{ keymaps["language.lsp.signature_help"], vim.lsp.buf.signature_help, buffer = buffer },
+		{ keymaps["language.lsp.references"], vim.lsp.buf.references, buffer = buffer },
+		{ keymaps["language.lsp.definition"], vim.lsp.buf.definition, buffer = buffer },
+		{ keymaps["language.lsp.declaration"], vim.lsp.buf.declaration, buffer = buffer },
+		{ keymaps["language.lsp.type_definition"], vim.lsp.buf.type_definition, buffer = buffer },
+		{ keymaps["language.lsp.implementation"], vim.lsp.buf.implementation, buffer = buffer },
+		{ keymaps["language.lsp.code_action"], vim.lsp.buf.code_action, buffer = buffer },
+		{ keymaps["language.lsp.rename"], vim.lsp.buf.rename, buffer = buffer },
+		{ keymaps["language.diagnostic.next"], vim.diagnostic.goto_next, buffer = buffer },
+		{ keymaps["language.diagnostic.prev"], vim.diagnostic.goto_prev, buffer = buffer },
+		{ keymaps["language.diagnostic.open"], vim.diagnostic.open_float, buffer = buffer },
+		{ keymaps["language.diagnostic.list"], fn.bind(picker.find_diagnostics, picker), buffer = buffer }
 	)
-	local on_attach = function(client, buffer)
-		-- avoid using formatting coming from lsp
-		client.server_capabilities.documentFormattingProvider = false
-		client.server_capabilities.documentRangeFormattingProvider = false
 
-		local picker = require("interface.picker")
-
-		key.nmap(
-			{ keymaps["language.lsp.hover"], vim.lsp.buf.hover, buffer = buffer },
-			{ keymaps["language.lsp.signature_help"], vim.lsp.buf.signature_help, buffer = buffer },
-			{ keymaps["language.lsp.references"], vim.lsp.buf.references, buffer = buffer },
-			{ keymaps["language.lsp.definition"], vim.lsp.buf.definition, buffer = buffer },
-			{ keymaps["language.lsp.declaration"], vim.lsp.buf.declaration, buffer = buffer },
-			{ keymaps["language.lsp.type_definition"], vim.lsp.buf.type_definition, buffer = buffer },
-			{ keymaps["language.lsp.implementation"], vim.lsp.buf.implementation, buffer = buffer },
-			{ keymaps["language.lsp.code_action"], vim.lsp.buf.code_action, buffer = buffer },
-			{ keymaps["language.lsp.rename"], vim.lsp.buf.rename, buffer = buffer },
-			{ keymaps["language.diagnostic.next"], vim.diagnostic.goto_next, buffer = buffer },
-			{ keymaps["language.diagnostic.prev"], vim.diagnostic.goto_prev, buffer = buffer },
-			{ keymaps["language.diagnostic.open"], vim.diagnostic.open_float, buffer = buffer },
-			{ keymaps["language.diagnostic.list"], fn.bind(picker.find_diagnostics, picker), buffer = buffer }
-		)
-
-		if client.server_capabilities.documentHighlightProvider then
-			au.group({ "OnCursorHold" }, {
-				"CursorHold",
-				buffer,
-				vim.lsp.buf.document_highlight,
-			}, {
-				"CursorHoldI",
-				buffer,
-				vim.lsp.buf.document_highlight,
-			}, {
-				"CursorMoved",
-				buffer,
-				vim.lsp.buf.clear_references,
-			})
-		end
+	if client.server_capabilities.documentHighlightProvider then
+		au.group({ "OnCursorHold" }, {
+			"CursorHold",
+			buffer,
+			vim.lsp.buf.document_highlight,
+		}, {
+			"CursorHoldI",
+			buffer,
+			vim.lsp.buf.document_highlight,
+		}, {
+			"CursorMoved",
+			buffer,
+			vim.lsp.buf.clear_references,
+		})
 	end
+end
 
-	local server_base_settings = {
-		capabilities = capabilities,
-		on_attach = on_attach,
+function Language:default_servers()
+	local runtime_path = vim.split(package.path, ";")
+	table.insert(runtime_path, "lua/?.lua")
+	table.insert(runtime_path, "lua/?/init.lua")
+
+	return {
+		{
+			name = "sumneko_lua",
+			settings = {
+				Lua = {
+					runtime = {
+						-- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+						version = "LuaJIT",
+						-- Setup your lua path
+						path = runtime_path,
+					},
+					diagnostics = {
+						-- Get the language server to recognize the `vim` global
+						globals = { "vim" },
+					},
+					workspace = {
+						library = vim.api.nvim_get_runtime_file("", true),
+					},
+					-- Do not send telemetry data containing a randomized but unique identifier
+					telemetry = {
+						enable = false,
+					},
+				},
+			},
+		},
 	}
+end
+
+function Language:default_server_config()
+	return {
+		capabilities = require("editor.completion"):default_capabilities({}),
+		on_attach = fn.bind(self.on_server_attach, self),
+	}
+end
+
+function Language:setup_servers()
+	local options = settings.options()
+	local default_servers = Language:default_servers()
+	local default_server_config = Language:default_server_config()
+	local servers = fn.push(default_servers, unpack(options["language.servers"]))
 
 	require("nvim-lsp-installer").setup({
 		automatic_installation = true,
 	})
 
-	for _, server in ipairs(options["language.servers"]) do
-		local setup_server = require("lspconfig")[server.name].setup
-		local server_settings = type(server.settings) == "function" and server.settings(server_base_settings)
-			or server_base_settings
+	for _, server in ipairs(servers) do
+		local server_config = {
+			settings = server.settings,
+			capabilities = default_server_config.capabilities,
+			on_attach = default_server_config.on_attach,
+		}
 
-		setup_server(server_settings)
+		require("lspconfig")[server.name].setup(server_config)
 	end
 
 	-- Delay diagnostics in insert mode
@@ -102,7 +132,7 @@ function Language:setup_servers()
 
 	vim.diagnostic.config({
 		virtual_text = {
-			prefix = "▉",
+			prefix = "▌",
 		},
 	})
 end

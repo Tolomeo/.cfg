@@ -6,7 +6,6 @@ local Fn = {}
 --- will work with this function.
 ---@param t table  the table to iterate over
 ---@return string
----@return any
 function Fn.kpairs(t)
 	local index
 	return function()
@@ -107,16 +106,12 @@ function Fn.slice(tbl, startIndex, endIndex)
 	return sliced
 end
 
-function Fn.concat(...)
-	local concatenated = {}
-
-	for _, tbl in ipairs({ ... }) do
-		for _, value in ipairs(tbl) do
-			table.insert(concatenated, value)
-		end
+function Fn.push(tbl, ...)
+	for _, value in ipairs({ ... }) do
+		table.insert(tbl, value)
 	end
 
-	return concatenated
+	return tbl
 end
 
 --- Creates a new table populated with the results of calling a provided functions
