@@ -22,6 +22,7 @@ Language.plugins = {
 	"rafamadriz/friendly-snippets",
 }
 
+---@private
 function Language:on_server_attach(client, buffer)
 	local keymaps = settings.keymaps()
 	local picker = require("interface.picker")
@@ -59,6 +60,7 @@ function Language:on_server_attach(client, buffer)
 	end
 end
 
+---@private
 function Language:default_servers()
 	local runtime_path = vim.split(package.path, ";")
 	table.insert(runtime_path, "lua/?.lua")
@@ -227,9 +229,9 @@ function Language:setup_completion()
 		}),
 		sources = cmp.config.sources({
 			{ name = "path" },
-			{ name = "nvim_lsp", keyword_length = 3 },
+			{ name = "nvim_lsp", keyword_length = 2 },
 			{ name = "luasnip", keyword_length = 3 },
-			{ name = "buffer", keyword_length = 2 },
+			{ name = "buffer", keyword_length = 1 },
 		}),
 	})
 

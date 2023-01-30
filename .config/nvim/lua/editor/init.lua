@@ -33,6 +33,7 @@ function Editor:setup()
 	self:setup_keymaps()
 	self:setup_highlights()
 	self:setup_indent_lines()
+	self:setup_pairs()
 end
 
 function Editor:setup_keymaps()
@@ -182,6 +183,13 @@ function Editor.setup_indent_lines()
 		use_treesitter = true,
 		strict_tabs = true,
 		context_char = "┃",
+	})
+end
+
+function Editor.setup_pairs()
+	-- Autopairs
+	require("nvim-autopairs").setup({
+		disable_filetype = { "TelescopePrompt", "vim" },
 	})
 end
 

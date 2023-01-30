@@ -87,11 +87,6 @@ function Syntax:setup()
 	-- Autotag
 	require("nvim-ts-autotag").setup()
 
-	-- Autopairs
-	require("nvim-autopairs").setup({
-		disable_filetype = { "TelescopePrompt", "vim" },
-	})
-
 	require("neogen").setup({})
 end
 
