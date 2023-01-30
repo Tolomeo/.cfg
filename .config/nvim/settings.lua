@@ -80,6 +80,14 @@ local options = {
 		},
 		{
 			name = "yamlls",
+			capabilities = {
+				textDocument = {
+					foldingRange = {
+						dynamicRegistration = false,
+						lineFoldingOnly = true,
+					},
+				},
+			},
 			settings = {
 				schemas = {
 					["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",

@@ -114,7 +114,7 @@ function Language:setup_servers()
 	for _, server in ipairs(servers) do
 		local server_config = {
 			settings = server.settings,
-			capabilities = default_server_config.capabilities,
+			capabilities = fn.merge_deep(default_server_config.capabilities, server.capabilities),
 			on_attach = default_server_config.on_attach,
 		}
 

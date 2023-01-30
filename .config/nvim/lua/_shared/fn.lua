@@ -161,4 +161,16 @@ function Fn.bind(func, ...)
 	end
 end
 
+function Fn.merge(...)
+	return Fn.reduce({ ... }, function(target, source)
+		return vim.tbl_extend("force", target, source)
+	end, {})
+end
+
+function Fn.merge_deep(...)
+	return Fn.reduce({ ... }, function(target, source)
+		return vim.tbl_deep_extend("force", target, source)
+	end, {})
+end
+
 return Fn
