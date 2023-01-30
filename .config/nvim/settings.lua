@@ -35,7 +35,15 @@ local options = {
 			name = "jsonls",
 			settings = {
 				json = {
+					validate = {
+						enable = true,
+					},
 					schemas = {
+						{
+							name = "Sumneko Lua Settings",
+							url = "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
+							fileMatch = { ".luarc.json", ".luarc.jsonc" },
+						},
 						{
 							description = "Node project's package file",
 							fileMatch = { "package.json" },
