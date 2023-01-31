@@ -230,7 +230,7 @@ Settings._keymaps = {
 	-- Git
 	["git.blame"] = "<leader>hb",
 	["git.diff"] = "<leader>hd",
-	["git.hunk"] = "<leader>h",
+	["git.hunk.preview"] = "<leader>h",
 	["git.hunk.next"] = "]h",
 	["git.hunk.prev"] = "[h",
 	["git.hunk.select"] = "<leader>hv",

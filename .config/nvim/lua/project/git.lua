@@ -11,6 +11,8 @@ Git.plugins = {
 }
 
 function Git:setup()
+	local preview_config = require("interface.window"):float_config()
+
 	require("gitsigns").setup({
 		signs = {
 			add = { text = "├" },
@@ -24,13 +26,7 @@ function Git:setup()
 		current_line_blame_opts = {
 			delay = 100,
 		},
-		preview_config = {
-			border = "solid",
-			style = "minimal",
-			relative = "cursor",
-			row = 0,
-			col = 1,
-		},
+		preview_config = preview_config,
 		on_attach = function(buffer)
 			local keymaps = settings.keymaps()
 			local actions = self:actions()
@@ -53,8 +49,8 @@ function Git:actions()
 	return {
 		{
 			name = "Show change",
-			keymap = keymaps["git.hunk"],
-			handler = fn.bind(self.hunk, self),
+			keymap = keymaps["git.hunk.preview"],
+			handler = fn.bind(self.preview_hunk, self),
 		},
 		{
 			name = "Select change",
@@ -118,7 +114,7 @@ end
 	return vim.api.nvim_win_get_option(0, "diff")
 end ]]
 
-function Git:hunk()
+function Git:preview_hunk()
 	return require("gitsigns").preview_hunk()
 end
 
@@ -127,11 +123,11 @@ function Git.select_hunk()
 end
 
 function Git:next_hunk()
-	return require("gitsigns.actions").next_hunk()
+	require("gitsigns.actions").next_hunk({ preview = true })
 end
 
 function Git:prev_hunk()
-	return require("gitsigns.actions").prev_hunk()
+	require("gitsigns.actions").prev_hunk({ preview = true })
 end
 
 return Module:new(Git)

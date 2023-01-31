@@ -3,6 +3,7 @@ local au = require("_shared.au")
 local key = require("_shared.key")
 local validator = require("_shared.validator")
 local settings = require("settings")
+local fn = require("_shared.fn")
 
 ---@class Interface.Window
 local Window = {}
@@ -130,20 +131,29 @@ function Window:setup()
 	self:_setup_keymaps()
 end
 
-function Window:_get_modal_config()
+function Window:float_config()
+	return {
+		focusable = true,
+		border = "solid",
+		style = "minimal",
+		relative = "cursor",
+	}
+end
+
+function Window:modal_config()
 	local width = math.ceil(math.min(vim.o.columns, math.max(80, vim.o.columns - 20)))
 	local height = math.ceil(math.min(vim.o.lines, math.max(20, vim.o.lines - 10)))
 	local col = (math.ceil(vim.o.columns - width) / 2) - 1
 	local row = (math.ceil(vim.o.lines - height) / 2) - 1
-	return {
+	local config = fn.merge(self:float_config(), {
 		col = col,
 		row = row,
 		width = width,
 		height = height,
-		border = "solid",
-		style = "minimal",
 		relative = "editor",
-	}
+	})
+
+	return config
 end
 
 ---@type fun(self: Interface.Window, options: { [number]: number, on_resize: function | nil, on_resized: function | nil })
@@ -156,13 +166,13 @@ Window.modal = validator.f.arguments({
 	}),
 }) .. function(self, options)
 	local buffer = options[1]
-	local window = vim.api.nvim_open_win(buffer, true, self:_get_modal_config())
+	local window = vim.api.nvim_open_win(buffer, true, self:modal_config())
 	local on_vim_resized = function()
 		if not vim.api.nvim_win_is_valid(window) then
 			return
 		end
 
-		local updatedConfig = self:_get_modal_config()
+		local updatedConfig = self:modal_config()
 
 		if options.on_resize then
 			options.on_resize(updatedConfig)

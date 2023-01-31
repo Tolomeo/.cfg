@@ -103,6 +103,7 @@ end
 
 function Language:setup_servers()
 	local options = settings.options()
+	local float_win_config = require("interface.window"):float_config()
 	local default_servers = Language:default_servers()
 	local default_server_config = Language:default_server_config()
 	local servers = fn.push(default_servers, unpack(options["language.servers"]))
@@ -137,18 +138,12 @@ function Language:setup_servers()
 		update_in_insert = options["language.diagnostics.update_in_insert"],
 		underline = true,
 		severity_sort = options["language.diagnostics.severity_sort"],
-		--[[ float = {
-			focusable = false,
-			style = "minimal",
-			border = "rounded",
-			source = "always",
-			header = "",
-			prefix = "",
-		}, ]]
+		float = float_win_config,
 	})
 
-	-- vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover)
-	vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help)
+	vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, float_win_config)
+
+	vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, float_win_config)
 
 	vim.api.nvim_create_user_command(
 		"LspWorkspaceAdd",

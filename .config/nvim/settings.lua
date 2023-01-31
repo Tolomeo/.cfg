@@ -80,6 +80,7 @@ local options = {
 		},
 		{
 			name = "yamlls",
+			-- https://github.com/kevinhwang91/nvim-ufo/issues/72
 			capabilities = {
 				textDocument = {
 					foldingRange = {
