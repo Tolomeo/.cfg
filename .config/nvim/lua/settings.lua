@@ -1,5 +1,6 @@
 local validator = require("_shared.validator")
--- see https://github.com/NvChad/NvChad/blob/main/lua/core/options.lua
+
+---@class Cfg.Settings
 local Settings = {}
 
 Settings._globals = {

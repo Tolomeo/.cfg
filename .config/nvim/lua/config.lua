@@ -1,7 +1,5 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
-local au = require("_shared.au")
-local fn = require("_shared.fn")
 local settings = require("settings")
 local logger = require("_shared.logger")
 
@@ -26,7 +24,7 @@ function Config:init()
 	-- Checking packer install location
 	installed = vim.loop.fs_stat(install_path)
 
-	-- Cloning packer in place if it is not found
+	-- Cloning plugin manager in place if it is not found
 	if not installed then
 		vim.fn.system({
 			"git",
@@ -43,18 +41,8 @@ function Config:init()
 	require("lazy").setup(self:list_plugins())
 
 	-- Downloading plugins
-	-- returning to avoid plugin require errors
 	if not installed then
-		au.group({
-			"OnSyncComplete",
-		}, {
-			"User",
-			"LazySync",
-			fn.bind(self.init, self),
-			once = true,
-		})
-
-		return require("lazy").sync()
+		require("lazy").sync({ wait = true })
 	end
 
 	self:setup()
