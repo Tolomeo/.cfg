@@ -3,7 +3,7 @@ local key = require("_shared.key")
 local fn = require("_shared.fn")
 local settings = require("settings")
 
----@class Project.Git
+---@class Cfg.Project.Git
 local Git = {}
 
 Git.plugins = {

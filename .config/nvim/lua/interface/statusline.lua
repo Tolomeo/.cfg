@@ -7,7 +7,7 @@ local Statusline = {}
 Statusline.plugins = {
 	{
 		"nvim-lualine/lualine.nvim",
-		requires = { "kyazdani42/nvim-web-devicons", opt = true },
+		dependencies = { "kyazdani42/nvim-web-devicons", lazy = true },
 	},
 	"arkav/lualine-lsp-progress",
 }

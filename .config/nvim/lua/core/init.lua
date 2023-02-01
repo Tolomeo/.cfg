@@ -4,7 +4,6 @@ local Module = require("_shared.module")
 local Core = {}
 
 Core.modules = {
-	"core.color",
 	"core.terminal",
 	"core.location",
 	"core.spelling",

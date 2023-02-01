@@ -24,7 +24,7 @@ Editor.plugins = {
 	-- additional operator targets
 	"wellle/targets.vim",
 	-- Highlighting command ranges
-	{ "winston0410/range-highlight.nvim", requires = "winston0410/cmd-parser.nvim" },
+	{ "winston0410/range-highlight.nvim", dependencies = "winston0410/cmd-parser.nvim" },
 	-- Indentation
 	{ "lukas-reineke/indent-blankline.nvim" },
 }

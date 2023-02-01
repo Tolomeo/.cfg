@@ -1,15 +1,15 @@
 local Module = require("_shared.module")
 local settings = require("settings")
 
----@class Core.Color
+---@class Cfg.Interface.Color
 local Color = {}
 
 Color.plugins = {
 	-- Color themes
-	"shaunsingh/nord.nvim",
-	"EdenEast/nightfox.nvim",
-	"sainnhe/edge",
-	"rebelot/kanagawa.nvim",
+	{ "shaunsingh/nord.nvim", lazy = false, priority = 1000 },
+	{ "EdenEast/nightfox.nvim", lazy = false, priority = 1000 },
+	{ "sainnhe/edge", lazy = false, priority = 1000 },
+	{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
 	-- Highlighting color strings
 	"norcalli/nvim-colorizer.lua",
 }

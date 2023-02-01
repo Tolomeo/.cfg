@@ -152,11 +152,11 @@ function Tabs:remove(picker) end
 local Picker = {}
 
 Picker.plugins = {
-	{ "nvim-telescope/telescope.nvim", requires = { "nvim-lua/plenary.nvim" } },
-	{ "nvim-telescope/telescope-project.nvim", requires = { "nvim-telescope/telescope.nvim" } },
+	{ "nvim-telescope/telescope.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
+	{ "nvim-telescope/telescope-project.nvim", dependencies = { "nvim-telescope/telescope.nvim" } },
 	{
 		"folke/todo-comments.nvim",
-		requires = "nvim-lua/plenary.nvim",
+		dependencies = "nvim-lua/plenary.nvim",
 	},
 }
 

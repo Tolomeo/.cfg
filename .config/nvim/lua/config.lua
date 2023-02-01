@@ -1,18 +1,17 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
 local au = require("_shared.au")
-local settings = require("settings")
 local fn = require("_shared.fn")
+local settings = require("settings")
 local logger = require("_shared.logger")
 
 local installed = nil
-local install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
-local config_files = vim.fn.expand("~", false) .. "/.config/nvim/**/*"
+local install_path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
 local Config = {}
 
 Config.plugins = {
-	"wbthomason/packer.nvim",
+	"folke/lazy.nvim",
 	"kyazdani42/nvim-web-devicons",
 }
 
@@ -25,36 +24,37 @@ Config.modules = {
 
 function Config:init()
 	-- Checking packer install location
-	installed = vim.fn.empty(vim.fn.glob(install_path)) == 0
+	installed = vim.loop.fs_stat(install_path)
 
 	-- Cloning packer in place if it is not found
 	if not installed then
-		print("Installing plugins...")
-		vim.fn.execute("!git clone https://github.com/wbthomason/packer.nvim " .. install_path)
-		vim.cmd([[packadd packer.nvim]])
+		vim.fn.system({
+			"git",
+			"clone",
+			"--filter=blob:none",
+			"https://github.com/folke/lazy.nvim.git",
+			"--branch=stable", -- latest stable release
+			install_path,
+		})
 	end
 
-	-- Registering plugins to use
-	require("packer").startup(function(use)
-		use(self:list_plugins())
-	end)
+	vim.opt.runtimepath:append(install_path)
+
+	require("lazy").setup(self:list_plugins())
 
 	-- Downloading plugins
 	-- returning to avoid plugin require errors
 	if not installed then
 		au.group({
-			"OnPackerSyncComplete",
+			"OnSyncComplete",
 		}, {
 			"User",
-			"PackerComplete",
-			function()
-				self:init()
-				vim.cmd("packloadall!")
-			end,
+			"LazySync",
+			fn.bind(self.init, self),
 			once = true,
 		})
 
-		return require("packer").sync()
+		return require("lazy").sync()
 	end
 
 	self:setup()
@@ -81,20 +81,6 @@ end
 function Config:setup()
 	-- setting leader key
 	key.map_leader(settings.keymaps().leader)
-
-	au.group({
-		"OnConfigChange",
-	}, {
-		"BufWritePost",
-		config_files,
-		fn.bind(self.compile, self),
-	})
-
-	vim.cmd(":command! EditConfig :tabedit ~/.config/nvim")
-end
-
-function Config:compile()
-	vim.api.nvim_command("PackerCompile")
 end
 
 return Module:new(Config)

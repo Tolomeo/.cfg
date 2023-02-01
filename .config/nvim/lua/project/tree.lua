@@ -11,7 +11,7 @@ Tree.plugins = {
 	-- File tree
 	{
 		"kyazdani42/nvim-tree.lua",
-		requires = {
+		dependencies = {
 			"kyazdani42/nvim-web-devicons", -- optional, for file icon
 		},
 	},

@@ -110,6 +110,9 @@ function Language:setup_servers()
 
 	require("nvim-lsp-installer").setup({
 		automatic_installation = true,
+		ensure_installed = fn.imap(servers, function(server)
+			return server.name
+		end),
 	})
 
 	for _, server in ipairs(servers) do

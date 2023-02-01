@@ -1,14 +1,15 @@
 local Module = require("_shared.module")
 local validator = require("_shared.validator")
 
----@class Interface
+---@class Cfg.Interface
 local Interface = {}
 
 Interface.modules = {
-	"interface.window",
+	"interface.color",
 	"interface.tab",
 	"interface.statusline",
 	"interface.tabline",
+	"interface.window",
 	"interface.picker",
 }
 

@@ -7,7 +7,7 @@ local Theme = {}
 Theme.plugins = {
 	{
 		"kdheepak/tabline.nvim",
-		requires = { { "hoob3rt/lualine.nvim", opt = true }, { "kyazdani42/nvim-web-devicons", opt = true } },
+		dependencies = { { "nvim-lualine/lualine.nvim", lazy = true }, { "kyazdani42/nvim-web-devicons", lazy = true } },
 	},
 }
 

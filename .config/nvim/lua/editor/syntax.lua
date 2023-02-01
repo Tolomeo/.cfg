@@ -8,13 +8,22 @@ Syntax.plugins = {
 	-- Highlight, edit, and code navigation parsing library
 	{ "nvim-treesitter/nvim-treesitter" },
 	-- Syntax aware text-objects based on treesitter
-	{ "nvim-treesitter/nvim-treesitter-textobjects", requires = "nvim-treesitter/nvim-treesitter" },
-	-- Code annotations
-	{ "danymat/neogen", requires = "nvim-treesitter/nvim-treesitter" },
+	{
+		"nvim-treesitter/nvim-treesitter-textobjects",
+		dependencies = "nvim-treesitter/nvim-treesitter",
+	},
 	-- Setting commentstrings based on treesitter
-	{ "JoosepAlviste/nvim-ts-context-commentstring", requires = "nvim-treesitter/nvim-treesitter" },
+	{
+		"JoosepAlviste/nvim-ts-context-commentstring",
+		dependencies = "nvim-treesitter/nvim-treesitter",
+	},
 	-- Auto closing tags
-	{ "windwp/nvim-ts-autotag", requires = "nvim-treesitter/nvim-treesitter" },
+	{
+		"windwp/nvim-ts-autotag",
+		dependencies = "nvim-treesitter/nvim-treesitter",
+	},
+	-- Code annotations
+	{ "danymat/neogen", dependencies = "nvim-treesitter/nvim-treesitter" },
 }
 
 function Syntax:setup()
