@@ -9,8 +9,9 @@ local install_path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 local Config = {}
 
 Config.plugins = {
-	"folke/lazy.nvim",
-	"kyazdani42/nvim-web-devicons",
+	{ "folke/lazy.nvim", lazy = false },
+	{ "williamboman/mason.nvim", lazy = false },
+	{ "kyazdani42/nvim-web-devicons" },
 }
 
 Config.modules = {
@@ -69,6 +70,8 @@ end
 function Config:setup()
 	-- setting leader key
 	key.map_leader(settings.keymaps().leader)
+
+	require("mason").setup()
 end
 
 return Module:new(Config)

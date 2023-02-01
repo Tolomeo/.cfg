@@ -14,15 +14,15 @@ Editor.modules = {
 }
 
 Editor.plugins = {
-	"romainl/vim-cool",
+	{ "romainl/vim-cool" },
 	-- Autoclosing pair of chars
-	"windwp/nvim-autopairs",
+	{ "windwp/nvim-autopairs" },
 	-- Parentheses, brackets, quotes, XML tags
-	"tpope/vim-surround",
+	{ "tpope/vim-surround" },
 	-- Change case and handles variants of a word
-	"tpope/vim-abolish",
+	{ "tpope/vim-abolish" },
 	-- additional operator targets
-	"wellle/targets.vim",
+	{ "wellle/targets.vim" },
 	-- Highlighting command ranges
 	{ "winston0410/range-highlight.nvim", dependencies = "winston0410/cmd-parser.nvim" },
 	-- Indentation

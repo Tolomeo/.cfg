@@ -14,6 +14,7 @@ local options = {
 		"typescript",
 		"tsx",
 		"graphql",
+		"markdown",
 	},
 	["language.servers"] = {
 		{

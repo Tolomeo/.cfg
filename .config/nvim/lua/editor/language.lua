@@ -9,17 +9,17 @@ local Language = {}
 
 Language.plugins = {
 	-- Lsp
-	"neovim/nvim-lspconfig",
-	"williamboman/nvim-lsp-installer",
+	{ "neovim/nvim-lspconfig" },
+	{ "williamboman/mason-lspconfig.nvim", lazy = false },
 	-- Completion
-	"hrsh7th/nvim-cmp",
-	"hrsh7th/cmp-nvim-lsp",
-	"hrsh7th/cmp-buffer",
-	"hrsh7th/cmp-path",
-	"hrsh7th/cmp-cmdline",
-	"L3MON4D3/LuaSnip",
-	"saadparwaiz1/cmp_luasnip",
-	"rafamadriz/friendly-snippets",
+	{ "hrsh7th/nvim-cmp" },
+	{ "hrsh7th/cmp-nvim-lsp" },
+	{ "hrsh7th/cmp-buffer" },
+	{ "hrsh7th/cmp-path" },
+	{ "hrsh7th/cmp-cmdline" },
+	{ "L3MON4D3/LuaSnip" },
+	{ "saadparwaiz1/cmp_luasnip" },
+	{ "rafamadriz/friendly-snippets" },
 }
 
 ---@private
@@ -108,11 +108,8 @@ function Language:setup_servers()
 	local default_server_config = Language:default_server_config()
 	local servers = fn.push(default_servers, unpack(options["language.servers"]))
 
-	require("nvim-lsp-installer").setup({
+	require("mason-lspconfig").setup({
 		automatic_installation = true,
-		ensure_installed = fn.imap(servers, function(server)
-			return server.name
-		end),
 	})
 
 	for _, server in ipairs(servers) do

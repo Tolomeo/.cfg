@@ -10,20 +10,20 @@ Syntax.plugins = {
 	-- Syntax aware text-objects based on treesitter
 	{
 		"nvim-treesitter/nvim-treesitter-textobjects",
-		dependencies = "nvim-treesitter/nvim-treesitter",
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
 	},
 	-- Setting commentstrings based on treesitter
 	{
 		"JoosepAlviste/nvim-ts-context-commentstring",
-		dependencies = "nvim-treesitter/nvim-treesitter",
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
 	},
 	-- Auto closing tags
 	{
 		"windwp/nvim-ts-autotag",
-		dependencies = "nvim-treesitter/nvim-treesitter",
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
 	},
 	-- Code annotations
-	{ "danymat/neogen", dependencies = "nvim-treesitter/nvim-treesitter" },
+	{ "danymat/neogen", dependencies = { "nvim-treesitter/nvim-treesitter" } },
 }
 
 function Syntax:setup()

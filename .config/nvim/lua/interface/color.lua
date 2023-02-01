@@ -11,7 +11,7 @@ Color.plugins = {
 	{ "sainnhe/edge", lazy = false, priority = 1000 },
 	{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
 	-- Highlighting color strings
-	"norcalli/nvim-colorizer.lua",
+	{ "norcalli/nvim-colorizer.lua" },
 }
 
 function Color:setup()

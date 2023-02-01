@@ -12,7 +12,7 @@ Tree.plugins = {
 	{
 		"kyazdani42/nvim-tree.lua",
 		dependencies = {
-			"kyazdani42/nvim-web-devicons", -- optional, for file icon
+			{ "kyazdani42/nvim-web-devicons" }, -- optional, for file icon
 		},
 	},
 }

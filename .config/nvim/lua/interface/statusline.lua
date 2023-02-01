@@ -9,7 +9,7 @@ Statusline.plugins = {
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "kyazdani42/nvim-web-devicons", lazy = true },
 	},
-	"arkav/lualine-lsp-progress",
+	{ "arkav/lualine-lsp-progress" },
 }
 
 function Statusline:setup()

@@ -9,8 +9,8 @@ local settings = require("settings")
 local Location = {}
 
 Location.plugins = {
-	"stevearc/qf_helper.nvim",
-	"https://gitlab.com/yorickpeterse/nvim-pqf.git",
+	{ "stevearc/qf_helper.nvim" },
+	{ "https://gitlab.com/yorickpeterse/nvim-pqf.git" },
 }
 
 function Location:setup()
