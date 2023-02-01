@@ -1,18 +1,41 @@
 local Module = require("_shared.module")
 local settings = require("settings")
 
----@class Interface.Statusline
-local Statusline = {}
+---@class Interface.Line
+local Line = {}
 
-Statusline.plugins = {
+Line.plugins = {
 	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "kyazdani42/nvim-web-devicons", lazy = true },
 	},
 	{ "arkav/lualine-lsp-progress" },
+	{
+		"kdheepak/tabline.nvim",
+		dependencies = { { "nvim-lualine/lualine.nvim", lazy = true }, { "kyazdani42/nvim-web-devicons", lazy = true } },
+	},
 }
 
-function Statusline:setup()
+function Line:setup()
+	self:setup_status()
+	self:setup_tab()
+end
+
+function Line:setup_tab()
+	local options = settings.options()
+
+	require("tabline").setup({
+		enable = true,
+		options = {
+			component_separators = { options["icon.component.left"], options["icon.component.right"] },
+			section_separators = { options["icon.section.left"], options["icon.section.right"] },
+			show_tabs_always = true, -- this shows tabs only when there are more than one tab or if the first tab is named
+			modified_icon = "~ ", -- change the default modified icon
+		},
+	})
+end
+
+function Line:setup_status()
 	local globals = settings.globals()
 	local options = settings.options()
 
@@ -40,4 +63,4 @@ function Statusline:setup()
 	})
 end
 
-return Module:new(Statusline)
+return Module:new(Line)

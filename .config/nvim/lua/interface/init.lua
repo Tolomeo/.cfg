@@ -6,9 +6,8 @@ local Interface = {}
 
 Interface.modules = {
 	"interface.color",
+	"interface.line",
 	"interface.tab",
-	"interface.statusline",
-	"interface.tabline",
 	"interface.window",
 	"interface.picker",
 }
