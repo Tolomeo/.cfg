@@ -37,16 +37,10 @@ function Editor:setup()
 end
 
 function Editor:setup_keymaps()
-	-- Register 0 always contains the last yank.
-	-- Unfortunately selecting register 0 all the time can be quite annoying, so it would be nice if p used "0
+	-- Yanking and pasting from/to system clipboard by default
 	-- https://stackoverflow.com/a/32488853
-	key.nmap({ "p", '"0p' })
-	key.nmap({ "P", '"0P' })
-	for _, register_name in ipairs(register.names) do
-		local paste = string.format('"%sp', register_name)
-		local Paste = string.format('"%sP', register_name)
-		key.nmap({ paste, paste, remap = true }, { Paste, Paste, remap = true })
-	end
+	key.nmap({ "y", '"*y' }, { "Y", '"*Y' }, { "p", '"*p' }, { "P", '"*P' })
+	key.vmap({ "y", '"*y' }, { "Y", '"*Y' }, { "p", '"*p' }, { "P", '"*P' })
 
 	local keymaps = settings.keymaps()
 

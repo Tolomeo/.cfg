@@ -50,7 +50,7 @@ Settings._globals = {
 	spell = false,
 	spelllang = "en_gb",
 	-- Using system clipbard as default register
-	clipboard = "unnamedplus",
+	clipboard = "",
 	-- Invisible chars render
 	list = true,
 	listchars = { eol = "↲", tab = "▸ ", trail = "·", space = "·", extends = "…", precedes = "…" },
