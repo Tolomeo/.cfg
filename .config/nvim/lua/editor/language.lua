@@ -83,6 +83,7 @@ function Language:default_servers()
 					},
 					workspace = {
 						library = vim.api.nvim_get_runtime_file("", true),
+						checkThirdParty = false,
 					},
 					-- Do not send telemetry data containing a randomized but unique identifier
 					telemetry = {
@@ -96,7 +97,7 @@ end
 
 function Language:default_server_config()
 	return {
-		capabilities = require("cmp_nvim_lsp").default_capabilities(),
+		capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities()),
 		on_attach = fn.bind(self.on_server_attach, self),
 	}
 end

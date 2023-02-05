@@ -27,7 +27,7 @@ local validate_command = validator.f.shape({
 
 ---Creates an augroup
 ---If autocmds are specified, they are created associating them with the created augroup
----@type fun(group: Au.Group, ...?: Au.Command[]): integer, integer[]
+---@type fun(group: Au.Group, ...?: Au.Command): integer, integer[]
 M.group = validator.f.arguments({
 	validate_group,
 	validator.f.optional(validate_command),
