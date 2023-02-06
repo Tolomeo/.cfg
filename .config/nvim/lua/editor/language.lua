@@ -25,7 +25,7 @@ Language.plugins = {
 ---@private
 function Language:on_server_attach(client, buffer)
 	local keymaps = settings.keymaps()
-	local picker = require("interface.picker")
+	local picker = require("integration.picker")
 
 	key.nmap(
 		{ keymaps["language.lsp.hover"], vim.lsp.buf.hover, buffer = buffer },

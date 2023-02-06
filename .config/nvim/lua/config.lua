@@ -18,7 +18,7 @@ Config.modules = {
 	"interface",
 	"editor",
 	"project",
-	"core",
+	"integration",
 }
 
 function Config:init()

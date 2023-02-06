@@ -72,7 +72,7 @@ function Github:repository_menu(options)
 		end,
 	}
 
-	require("interface.picker"):menu(menu, options)
+	require("integration.picker"):menu(menu, options)
 end
 
 function Github:pending_review_menu(options)
@@ -96,7 +96,7 @@ function Github:pending_review_menu(options)
 		end,
 	}
 
-	require("interface.picker"):context_menu(menu, options)
+	require("integration.picker"):context_menu(menu, options)
 end
 
 function Github:reactions_menu(options)
@@ -149,7 +149,7 @@ function Github:reactions_menu(options)
 		end,
 	}
 
-	require("interface.picker"):context_menu(menu, options)
+	require("integration.picker"):context_menu(menu, options)
 end
 
 function Github:changed_file_diff_menu(options)
@@ -212,7 +212,7 @@ function Github:changed_file_diff_menu(options)
 		end,
 	}
 
-	require("interface.picker"):context_menu(menu, options)
+	require("integration.picker"):context_menu(menu, options)
 end
 
 function Github:changed_files_list_menu(options)
@@ -270,7 +270,7 @@ function Github:changed_files_list_menu(options)
 		end,
 	}
 
-	require("interface.picker"):context_menu(menu, options)
+	require("integration.picker"):context_menu(menu, options)
 end
 
 function Github:pull_request_menu(options)
@@ -479,7 +479,7 @@ function Github:pull_request_menu(options)
 		end,
 	}
 
-	require("interface.picker"):context_menu(menu, options)
+	require("integration.picker"):context_menu(menu, options)
 end
 
 function Github:thread_actions_menu(options)
@@ -543,7 +543,7 @@ function Github:thread_actions_menu(options)
 		end,
 	}
 
-	require("interface.picker"):context_menu(menu, options)
+	require("integration.picker"):context_menu(menu, options)
 end
 
 function Github:actions_menu()
@@ -583,7 +583,7 @@ function Github:actions_menu()
 
 	if #context_menus > 1 then
 		table.insert(context_menus, { prompt_title = "Repository", find = fn.bind(self.repository_menu, self) })
-		return require("interface.picker"):tabs(context_menus):find()
+		return require("integration.picker"):tabs(context_menus):find()
 	end
 
 	return self:repository_menu({ prompt_title = "Repository" })

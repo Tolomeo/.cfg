@@ -310,7 +310,7 @@ function Terminal:jobs_menu(options)
 		self:show()
 	end
 
-	require("interface.picker"):menu(menu, options)
+	require("integration.picker"):menu(menu, options)
 end
 
 function Terminal:menu(options)
@@ -370,7 +370,7 @@ function Terminal:menu(options)
 		selection.value.handler()
 	end
 
-	require("interface.picker"):menu(menu, options)
+	require("integration.picker"):menu(menu, options)
 end
 
 return Module:new(Terminal)
