@@ -83,8 +83,10 @@ Settings._globals = {
 		["h"] = true, -- h
 		["l"] = true, -- l
 	},
-	--
+	-- Completion window behaviours
 	completeopt = { "menu", "menuone", "noselect" },
+	-- Winbar displaying current file path
+	winbar = "%=%f",
 }
 
 -- see https://github.com/NvChad/NvChad/blob/main/lua/core/options.lua

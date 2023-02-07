@@ -10,7 +10,7 @@ local Language = {}
 Language.plugins = {
 	-- Lsp
 	{ "neovim/nvim-lspconfig" },
-	{ "williamboman/mason-lspconfig.nvim", lazy = false },
+	{ "williamboman/mason-lspconfig.nvim" },
 	-- Completion
 	{ "hrsh7th/nvim-cmp" },
 	{ "hrsh7th/cmp-nvim-lsp" },
@@ -20,6 +20,14 @@ Language.plugins = {
 	{ "L3MON4D3/LuaSnip" },
 	{ "saadparwaiz1/cmp_luasnip" },
 	{ "rafamadriz/friendly-snippets" },
+	-- Winbar
+	{
+		"SmiteshP/nvim-navic",
+		requires = "neovim/nvim-lspconfig",
+		--[[ config = function()
+			vim.o.winbar = "%{%v:lua.require('nvim-navic').get_location()%}"
+		end, ]]
+	},
 }
 
 ---@private
@@ -57,6 +65,20 @@ function Language:on_server_attach(client, buffer)
 			buffer,
 			vim.lsp.buf.clear_references,
 		})
+	end
+
+	-- extending global winbar to display information coming from lsp server
+	if client.server_capabilities.documentSymbolProvider then
+		local buffer_win = fn.ifind(vim.fn.getwininfo(), function(win)
+			return win.bufnr == buffer
+		end)
+
+		if buffer_win then
+			vim.wo[buffer_win.winid].winbar =
+				string.format("%s > %s", vim.o.winbar, "%{%v:lua.require('nvim-navic').get_location()%}")
+
+			require("nvim-navic").attach(client, buffer)
+		end
 	end
 end
 

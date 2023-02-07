@@ -1,7 +1,6 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
 local key = require("_shared.key")
-local register = require("_shared.register")
 local settings = require("settings")
 
 ---@class Cfg.Editor
@@ -70,6 +69,7 @@ function Editor:setup_keymaps()
 		{ keymaps["buffer.line.join"], "mjJ`j" },
 		{ keymaps["buffer.line.bubble.up"], ":m .+1<CR>==" },
 		{ keymaps["buffer.line.bubble.down"], ":m .-2<CR>==" },
+		-- TODO: avoid saving bubbling lines in registry
 		{ keymaps["buffer.line.duplicate.up"], "mayyP`a" },
 		{ keymaps["buffer.line.duplicate.down"], "mayyp`a" },
 		{ keymaps["buffer.line.new.up"], "mm:put! _<CR>`m" },

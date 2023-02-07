@@ -10,3 +10,4 @@ Integration.modules = {
 }
 
 return Module:new(Integration)
+
