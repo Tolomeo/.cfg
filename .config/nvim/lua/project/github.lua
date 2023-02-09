@@ -590,12 +590,12 @@ function Github:actions_menu()
 end
 
 function Github:_setup_plugins()
-	local options = settings.options()
+	local config = settings.config
 	local keymaps = settings.keymaps()
 
 	require("octo").setup({
-		right_bubble_delimiter = options["theme.section_separator"],
-		left_bubble_delimiter = options["theme.section_separator"],
+		right_bubble_delimiter = config["theme.section_separator"],
+		left_bubble_delimiter = config["theme.section_separator"],
 		mappings = {
 			issue = {
 				--[[ close_issue = { lhs = "<space>ic", desc = "close issue" },

@@ -131,11 +131,11 @@ function Language:default_server_config()
 end
 
 function Language:setup_servers()
-	local options = settings.options()
+	local config = settings.config
 	local float_win_config = require("interface.window"):float_config()
 	local default_servers = Language:default_servers()
 	local default_server_config = Language:default_server_config()
-	local servers = fn.push(default_servers, unpack(options["language.servers"]))
+	local servers = fn.push(default_servers, unpack(config["language.servers"]))
 
 	require("mason-lspconfig").setup({
 		automatic_installation = true,
@@ -164,9 +164,9 @@ function Language:setup_servers()
 			prefix = "▌",
 		},
 		signs = true,
-		update_in_insert = options["language.diagnostics.update_in_insert"],
+		update_in_insert = config["language.diagnostics.update_in_insert"],
 		underline = true,
-		severity_sort = options["language.diagnostics.severity_sort"],
+		severity_sort = config["language.diagnostics.severity_sort"],
 		float = float_win_config,
 	})
 

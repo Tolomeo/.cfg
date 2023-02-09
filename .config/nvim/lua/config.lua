@@ -24,8 +24,6 @@ Config.modules = {
 function Config:init()
 	settings:init()
 
-	vim.pretty_print(settings)
-
 	-- Checking packer install location
 	installed = vim.loop.fs_stat(install_path)
 

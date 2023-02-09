@@ -315,7 +315,7 @@ end
 
 function Terminal:menu(options)
 	local keymaps = settings.keymaps()
-	local user_options = settings.options()
+	local config = settings.config
 	options = options or {}
 	options = vim.tbl_extend("force", { prompt_title = "Terminal actions" }, options)
 
@@ -354,7 +354,7 @@ function Terminal:menu(options)
 		end,
 	})
 
-	for _, user_job in ipairs(user_options["terminal.jobs"]) do
+	for _, user_job in ipairs(config["terminal.jobs"]) do
 		table.insert(menu, {
 			"Launch " .. user_job.command,
 			":terminal " .. user_job.command,

@@ -15,8 +15,8 @@ Color.plugins = {
 }
 
 function Color:setup()
-	local options = settings.options()
-	local colorscheme_name = options["theme.colorscheme"]
+	local config = settings.config
+	local colorscheme_name = config["theme.colorscheme"]
 	local setup_colorscheme = ({
 		nord = function()
 			vim.g.nord_borders = false

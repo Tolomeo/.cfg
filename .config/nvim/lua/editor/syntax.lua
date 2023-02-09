@@ -27,10 +27,10 @@ Syntax.plugins = {
 }
 
 function Syntax:setup()
-	local options = settings.options()
+	local config = settings.config
 
 	require("nvim-treesitter.configs").setup({
-		ensure_installed = options["language.parsers"],
+		ensure_installed = config["language.parsers"],
 		sync_install = true,
 		highlight = {
 			enable = true, -- false will disable the whole extension
