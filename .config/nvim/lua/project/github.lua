@@ -23,9 +23,9 @@ function Github:setup()
 end
 
 function Github:_setup_keymaps()
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 
-	key.nmap({ keymaps["github.actions"], fn.bind(self.actions_menu, self) })
+	key.nmap({ keymap["github.actions"], fn.bind(self.actions_menu, self) })
 end
 
 function Github:repository_menu(options)
@@ -100,46 +100,46 @@ function Github:pending_review_menu(options)
 end
 
 function Github:reactions_menu(options)
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 	local menu = {
 		{
 			"Add/remove 🎉 reaction",
-			keymaps["github.react.tada"],
+			keymap["github.react.tada"],
 			handler = require("octo.mappings").react_hooray,
 		},
 		{
 			"Add/remove ❤️ reaction",
-			keymaps["github.react.heart"],
+			keymap["github.react.heart"],
 			handler = require("octo.mappings").react_heart,
 		},
 		{
 			"Add/remove 👀 reaction",
-			keymaps["github.react.eyes"],
+			keymap["github.react.eyes"],
 			handler = require("octo.mappings").react_eyes,
 		},
 		{
 			"Add/remove 👍 reaction",
-			keymaps["github.react.thumbs_up"],
+			keymap["github.react.thumbs_up"],
 			handler = require("octo.mappings").react_thumbs_up,
 		},
 		{
 			"Add/remove 👎 reaction",
-			keymaps["github.react.thumbs_down"],
+			keymap["github.react.thumbs_down"],
 			handler = require("octo.mappings").react_thumbs_down,
 		},
 		{
 			"Add/remove 🚀 reaction",
-			keymaps["github.react.rocket"],
+			keymap["github.react.rocket"],
 			handler = require("octo.mappings").react_rocket,
 		},
 		{
 			"Add/remove 😄 reaction",
-			keymaps["github.react.laugh"],
+			keymap["github.react.laugh"],
 			handler = require("octo.mappings").react_laugh,
 		},
 		{
 			"Add/remove 😕 reaction",
-			keymaps["github.react.confused"],
+			keymap["github.react.confused"],
 			handler = require("octo.mappings").react_confused,
 		},
 		on_select = function(modal_menu)
@@ -153,56 +153,56 @@ function Github:reactions_menu(options)
 end
 
 function Github:changed_file_diff_menu(options)
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 	local menu = {
 		{
 			"Add comment",
-			keymaps["github.comment.add"],
+			keymap["github.comment.add"],
 			handler = require("octo.mappings").add_review_comment,
 		},
 		{
 			"Add suggestion",
-			keymaps["github.suggestion.add"],
+			keymap["github.suggestion.add"],
 			handler = require("octo.mappings").add_review_suggestion,
 		},
 		{
 			"Move to next comment thread",
-			keymaps["github.review.thread.next"],
+			keymap["github.review.thread.next"],
 			handler = require("octo.mappings").next_thread,
 		},
 		{
 			"Move to previous comment thread",
-			keymaps["github.review.thread.previous"],
+			keymap["github.review.thread.previous"],
 			handler = require("octo.mappings").prev_thread,
 		},
 		{
 			"Move to changed files",
-			keymaps["github.review.files.focus"],
+			keymap["github.review.files.focus"],
 			handler = require("octo.mappings").focus_files,
 		},
 		{
 			"Select next changed file",
-			keymaps["github.review.files.next.select"],
+			keymap["github.review.files.next.select"],
 			handler = require("octo.mappings").select_next_entry,
 		},
 		{
 			"Select previous changed file",
-			keymaps["github.review.files.previous.select"],
+			keymap["github.review.files.previous.select"],
 			handler = require("octo.mappings").select_prev_entry,
 		},
 		{
 			"Mark/Unmark file as viewed",
-			keymaps["github.review.files.viewed.toggle"],
+			keymap["github.review.files.viewed.toggle"],
 			handler = require("octo.mappings").toggle_viewed,
 		},
 		{
 			"Open/Close changed files list",
-			keymaps["github.review.files.toggle"],
+			keymap["github.review.files.toggle"],
 			handler = require("octo.mappings").toggle_files,
 		},
 		{
 			"Close review tab",
-			keymaps["github.review.close"],
+			keymap["github.review.close"],
 			handler = require("octo.mappings").close_review_tab,
 		},
 		on_select = function(modal_menu)
@@ -216,51 +216,51 @@ function Github:changed_file_diff_menu(options)
 end
 
 function Github:changed_files_list_menu(options)
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 	local menu = {
 		{
 			"Next changed file",
-			keymaps["github.review.files.next"],
+			keymap["github.review.files.next"],
 			handler = require("octo.mappings").next_entry,
 		},
 		{
 			"Previous changed file",
-			keymaps["github.review.files.previous"],
+			keymap["github.review.files.previous"],
 			handler = require("octo.mappings").prev_entry,
 		},
 		{
 			"Select changed file",
-			keymaps["github.review.files.select"],
+			keymap["github.review.files.select"],
 			handler = require("octo.mappings").select_entry,
 		},
 		{
 			"Select next changed file",
-			keymaps["github.review.files.next.select"],
+			keymap["github.review.files.next.select"],
 			handler = require("octo.mappings").select_next_entry,
 		},
 		{
 			"Select previous changed file",
-			keymaps["github.review.files.previous.select"],
+			keymap["github.review.files.previous.select"],
 			handler = require("octo.mappings").select_prev_entry,
 		},
 		{
 			"Mark/Unmark file as viewed",
-			keymaps["github.review.files.viewed.toggle"],
+			keymap["github.review.files.viewed.toggle"],
 			handler = require("octo.mappings").toggle_viewed,
 		},
 		{
 			"Refresh changed files",
-			keymaps["github.review.files.refresh"],
+			keymap["github.review.files.refresh"],
 			handler = require("octo.mappings").refresh_files,
 		},
 		{
 			"Open/Close changed files list",
-			keymaps["github.review.files.toggle"],
+			keymap["github.review.files.toggle"],
 			handler = require("octo.mappings").toggle_files,
 		},
 		{
 			"Close review tab",
-			keymaps["github.review.close"],
+			keymap["github.review.close"],
 			handler = require("octo.mappings").close_review_tab,
 		},
 		on_select = function(modal_menu)
@@ -274,31 +274,31 @@ function Github:changed_files_list_menu(options)
 end
 
 function Github:pull_request_menu(options)
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 	local menu = {
 		{
 			"Checkout pull request",
-			keymaps["github.pull.checkout"],
+			keymap["github.pull.checkout"],
 			handler = require("octo.mappings").checkout_pr,
 		},
 		{
 			"Add comment",
-			keymaps["github.comment.add"],
+			keymap["github.comment.add"],
 			handler = require("octo.mappings").add_comment,
 		},
 		{
 			"Delete comment",
-			keymaps["github.comment.delete"],
+			keymap["github.comment.delete"],
 			handler = require("octo.mappings").delete_comment,
 		},
 		{
 			"Go to next comment",
-			keymaps["github.comment.next"],
+			keymap["github.comment.next"],
 			handler = require("octo.mappings").next_comment,
 		},
 		{
 			"Go to previous comment",
-			keymaps["github.comment.previous"],
+			keymap["github.comment.previous"],
 			handler = require("octo.mappings").prev_comment,
 		},
 		{
@@ -315,22 +315,22 @@ function Github:pull_request_menu(options)
 		},
 		{
 			"List pull request changes",
-			keymaps["github.pull.changes.list"],
+			keymap["github.pull.changes.list"],
 			handler = require("octo.mappings").list_changed_files,
 		},
 		{
 			"Show pull request diff",
-			keymaps["github.pull.diff"],
+			keymap["github.pull.diff"],
 			handler = require("octo.mappings").show_pr_diff,
 		},
 		{
 			"List pull request commits",
-			keymaps["github.pull.commits.diff"],
+			keymap["github.pull.commits.diff"],
 			handler = require("octo.mappings").list_commits,
 		},
 		{
 			"Add comment",
-			keymaps["github.comment.add"],
+			keymap["github.comment.add"],
 			handler = require("octo.mappings").add_comment,
 		},
 		{
@@ -381,12 +381,12 @@ function Github:pull_request_menu(options)
 		}, ]]
 		{
 			"Add pull request reviewer",
-			keymaps["github.pull.reviewer.add"],
+			keymap["github.pull.reviewer.add"],
 			handler = require("octo.mappings").add_reviewer,
 		},
 		{
 			"Remove pull request reviewer",
-			keymaps["github.pull.reviewer.remove"],
+			keymap["github.pull.reviewer.remove"],
 			handler = require("octo.mappings").remove_reviewer,
 		},
 		{
@@ -399,77 +399,77 @@ function Github:pull_request_menu(options)
 		},
 		{
 			"Close pull request",
-			keymaps["github.pull.close"],
+			keymap["github.pull.close"],
 			handler = require("octo.mappings").close_issue,
 		},
 		{
 			"Reopen pull request",
-			keymaps["github.pull.reopen"],
+			keymap["github.pull.reopen"],
 			handler = require("octo.mappings").reopen_issue,
 		},
 		{
 			"Reload pull request",
-			keymaps["github.pull.refresh"],
+			keymap["github.pull.refresh"],
 			handler = require("octo.mappings").reload,
 		},
 		{
 			"Open pull request in browser",
-			keymaps["github.pull.open.browser"],
+			keymap["github.pull.open.browser"],
 			handler = require("octo.mappings").open_in_browser,
 		},
 		{
 			"Copy pull request url",
-			keymaps["github.pull.copy.url"],
+			keymap["github.pull.copy.url"],
 			handler = require("octo.mappings").copy_url,
 		},
 		{
 			"Go to commented file",
-			keymaps["github.pull.open.file"],
+			keymap["github.pull.open.file"],
 			handler = require("octo.mappings").goto_file,
 		},
 		{
 			"Add pull request assignee",
-			keymaps["github.pull.assignee.add"],
+			keymap["github.pull.assignee.add"],
 			handler = require("octo.mappings").add_assignee,
 		},
 		{
 			"Remove pull request assignee",
-			keymaps["github.pull.assignee.remove"],
+			keymap["github.pull.assignee.remove"],
 			handler = require("octo.mappings").remove_assignee,
 		},
 		{
 			"Create label",
-			keymaps["github.pull.label.create"],
+			keymap["github.pull.label.create"],
 			handler = require("octo.mappings").create_label,
 		},
 		{
 			"Add pull request label",
-			keymaps["github.pull.label.add"],
+			keymap["github.pull.label.add"],
 			handler = require("octo.mappings").add_label,
 		},
 		{
 			"Remove pull request label",
-			keymaps["github.pull.label.remove"],
+			keymap["github.pull.label.remove"],
 			handler = require("octo.mappings").remove_label,
 		},
 		{
 			"Add pull request comment",
-			keymaps["github.comment.add"],
+			keymap["github.comment.add"],
 			handler = require("octo.mappings").add_comment,
 		},
 		{
 			"Remove pull request comment",
-			keymaps["github.comment.delete"],
+			keymap["github.comment.delete"],
 			handler = require("octo.mappings").delete_comment,
 		},
 		{
 			"Go to next comment",
-			keymaps["github.comment.next"],
+			keymap["github.comment.next"],
 			handler = require("octo.mappings").next_comment,
 		},
 		{
 			"Go to previous comment",
-			keymaps["github.comment.previous"],
+			keymap["github.comment.previous"],
 			handler = require("octo.mappings").prev_comment,
 		},
 		on_select = function(modal_menu)
@@ -483,11 +483,11 @@ function Github:pull_request_menu(options)
 end
 
 function Github:thread_actions_menu(options)
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 	local menu = {
 		{
 			"Add comment",
-			keymaps["github.comment.add"],
+			keymap["github.comment.add"],
 			handler = require("octo.mappings").add_comment,
 		},
 		-- NOTE: this seems not to be working in threads
@@ -498,42 +498,42 @@ function Github:thread_actions_menu(options)
 		}, ]]
 		{
 			"Delete comment",
-			keymaps["github.comment.delete"],
+			keymap["github.comment.delete"],
 			handler = require("octo.mappings").delete_comment,
 		},
 		{
 			"Go to next comment",
-			keymaps["github.comment.next"],
+			keymap["github.comment.next"],
 			handler = require("octo.mappings").next_comment,
 		},
 		{
 			"Go to previous comment",
-			keymaps["github.comment.previous"],
+			keymap["github.comment.previous"],
 			handler = require("octo.mappings").prev_comment,
 		},
 		{
 			"Move to changed files list",
-			keymaps["github.review.files.focus"],
+			keymap["github.review.files.focus"],
 			handler = require("octo.mappings").focus_files,
 		},
 		{
 			"Select next changed file",
-			keymaps["github.review.files.next.select"],
+			keymap["github.review.files.next.select"],
 			handler = require("octo.mappings").select_next_entry,
 		},
 		{
 			"Select previous changed file",
-			keymaps["github.review.files.previous.select"],
+			keymap["github.review.files.previous.select"],
 			handler = require("octo.mappings").select_prev_entry,
 		},
 		{
 			"Open/Close changed files list",
-			keymaps["github.review.files.toggle"],
+			keymap["github.review.files.toggle"],
 			handler = require("octo.mappings").toggle_files,
 		},
 		{
 			"Close review tab",
-			keymaps["github.review.close"],
+			keymap["github.review.close"],
 			handler = require("octo.mappings").close_review_tab,
 		},
 		on_select = function(modal_menu)
@@ -591,7 +591,7 @@ end
 
 function Github:_setup_plugins()
 	local config = settings.config
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 
 	require("octo").setup({
 		right_bubble_delimiter = config["theme.section_separator"],
@@ -610,133 +610,133 @@ function Github:_setup_plugins()
 				add_label = { lhs = "<space>la", desc = "add label" },
 				remove_label = { lhs = "<space>ld", desc = "remove label" },
 				goto_issue = { lhs = "<space>gi", desc = "navigate to a local repo issue" }, ]]
-				add_comment = { lhs = keymaps["github.comment.add"], desc = "add comment" },
-				delete_comment = { lhs = keymaps["github.comment.delete"], desc = "delete comment" },
-				next_comment = { lhs = keymaps["github.comment.next"], desc = "go to next comment" },
-				prev_comment = { lhs = keymaps["github.comment.previous"], desc = "go to previous comment" },
-				react_hooray = { lhs = keymaps["github.react.tada"], desc = "add/remove 🎉 reaction" },
-				react_heart = { lhs = keymaps["github.react.heart"], desc = "add/remove ❤️ reaction" },
-				react_eyes = { lhs = keymaps["github.react.eyes"], desc = "add/remove 👀 reaction" },
-				react_thumbs_up = { lhs = keymaps["github.react.thumbs_up"], desc = "add/remove 👍 reaction" },
-				react_thumbs_down = { lhs = keymaps["github.react.thumbs_down"], desc = "add/remove 👎 reaction" },
-				react_rocket = { lhs = keymaps["github.react.rocket"], desc = "add/remove 🚀 reaction" },
-				react_laugh = { lhs = keymaps["github.react.laugh"], desc = "add/remove 😄 reaction" },
-				react_confused = { lhs = keymaps["github.react.confused"], desc = "add/remove 😕 reaction" },
+				add_comment = { lhs = keymap["github.comment.add"], desc = "add comment" },
+				delete_comment = { lhs = keymap["github.comment.delete"], desc = "delete comment" },
+				next_comment = { lhs = keymap["github.comment.next"], desc = "go to next comment" },
+				prev_comment = { lhs = keymap["github.comment.previous"], desc = "go to previous comment" },
+				react_hooray = { lhs = keymap["github.react.tada"], desc = "add/remove 🎉 reaction" },
+				react_heart = { lhs = keymap["github.react.heart"], desc = "add/remove ❤️ reaction" },
+				react_eyes = { lhs = keymap["github.react.eyes"], desc = "add/remove 👀 reaction" },
+				react_thumbs_up = { lhs = keymap["github.react.thumbs_up"], desc = "add/remove 👍 reaction" },
+				react_thumbs_down = { lhs = keymap["github.react.thumbs_down"], desc = "add/remove 👎 reaction" },
+				react_rocket = { lhs = keymap["github.react.rocket"], desc = "add/remove 🚀 reaction" },
+				react_laugh = { lhs = keymap["github.react.laugh"], desc = "add/remove 😄 reaction" },
+				react_confused = { lhs = keymap["github.react.confused"], desc = "add/remove 😕 reaction" },
 			},
 			pull_request = {
-				checkout_pr = { lhs = keymaps["github.pull.checkout"], desc = "checkout PR" },
+				checkout_pr = { lhs = keymap["github.pull.checkout"], desc = "checkout PR" },
 				-- merge_pr = { lhs = "<space>pm", desc = "merge commit PR" },
 				-- squash_and_merge_pr = { lhs = "<space>psm", desc = "squash and merge PR" },
-				list_commits = { lhs = keymaps["github.pull.commits.diff"], desc = "list PR commits" },
-				list_changed_files = { lhs = keymaps["github.pull.changes.list"], desc = "list PR changed files" },
-				show_pr_diff = { lhs = keymaps["github.pull.diff"], desc = "show PR diff" },
-				add_reviewer = { lhs = keymaps["github.pull.reviewer.add"], desc = "add reviewer" },
-				remove_reviewer = { lhs = keymaps["github.pull.reviewer.remove"], desc = "remove reviewer request" },
+				list_commits = { lhs = keymap["github.pull.commits.diff"], desc = "list PR commits" },
+				list_changed_files = { lhs = keymap["github.pull.changes.list"], desc = "list PR changed files" },
+				show_pr_diff = { lhs = keymap["github.pull.diff"], desc = "show PR diff" },
+				add_reviewer = { lhs = keymap["github.pull.reviewer.add"], desc = "add reviewer" },
+				remove_reviewer = { lhs = keymap["github.pull.reviewer.remove"], desc = "remove reviewer request" },
 				close_issue = { lhs = "<space>ic", desc = "close PR" },
-				reopen_issue = { lhs = keymaps["github.pull.close"], desc = "reopen PR" },
+				reopen_issue = { lhs = keymap["github.pull.close"], desc = "reopen PR" },
 				-- list_issues = { lhs = "<space>il", desc = "list open issues on same repo" },
-				reload = { lhs = keymaps["github.pull.refresh"], desc = "reload PR" },
-				open_in_browser = { lhs = keymaps["github.pull.open.browser"], desc = "open PR in browser" },
-				copy_url = { lhs = keymaps["github.pull.copy.url"], desc = "copy url to system clipboard" },
-				goto_file = { lhs = keymaps["github.pull.open.file"], desc = "go to file" },
-				add_assignee = { lhs = keymaps["github.pull.assignee.add"], desc = "add assignee" },
-				remove_assignee = { lhs = keymaps["github.pull.assignee.remove"], desc = "remove assignee" },
-				create_label = { lhs = keymaps["github.pull.label.create"], desc = "create label" },
-				add_label = { lhs = keymaps["github.pull.label.add"], desc = "add label" },
-				remove_label = { lhs = keymaps["github.pull.label.remove"], desc = "remove label" },
+				reload = { lhs = keymap["github.pull.refresh"], desc = "reload PR" },
+				open_in_browser = { lhs = keymap["github.pull.open.browser"], desc = "open PR in browser" },
+				copy_url = { lhs = keymap["github.pull.copy.url"], desc = "copy url to system clipboard" },
+				goto_file = { lhs = keymap["github.pull.open.file"], desc = "go to file" },
+				add_assignee = { lhs = keymap["github.pull.assignee.add"], desc = "add assignee" },
+				remove_assignee = { lhs = keymap["github.pull.assignee.remove"], desc = "remove assignee" },
+				create_label = { lhs = keymap["github.pull.label.create"], desc = "create label" },
+				add_label = { lhs = keymap["github.pull.label.add"], desc = "add label" },
+				remove_label = { lhs = keymap["github.pull.label.remove"], desc = "remove label" },
 				-- goto_issue = { lhs = "<space>gi", desc = "navigate to a local repo issue" },
-				add_comment = { lhs = keymaps["github.comment.add"], desc = "add comment" },
-				delete_comment = { lhs = keymaps["github.comment.delete"], desc = "delete comment" },
-				next_comment = { lhs = keymaps["github.comment.next"], desc = "go to next comment" },
-				prev_comment = { lhs = keymaps["github.comment.previous"], desc = "go to previous comment" },
-				react_hooray = { lhs = keymaps["github.react.tada"], desc = "add/remove 🎉 reaction" },
-				react_heart = { lhs = keymaps["github.react.heart"], desc = "add/remove ❤️ reaction" },
-				react_eyes = { lhs = keymaps["github.react.eyes"], desc = "add/remove 👀 reaction" },
-				react_thumbs_up = { lhs = keymaps["github.react.thumbs_up"], desc = "add/remove 👍 reaction" },
-				react_thumbs_down = { lhs = keymaps["github.react.thumbs_down"], desc = "add/remove 👎 reaction" },
-				react_rocket = { lhs = keymaps["github.react.rocket"], desc = "add/remove 🚀 reaction" },
-				react_laugh = { lhs = keymaps["github.react.laugh"], desc = "add/remove 😄 reaction" },
-				react_confused = { lhs = keymaps["github.react.confused"], desc = "add/remove 😕 reaction" },
+				add_comment = { lhs = keymap["github.comment.add"], desc = "add comment" },
+				delete_comment = { lhs = keymap["github.comment.delete"], desc = "delete comment" },
+				next_comment = { lhs = keymap["github.comment.next"], desc = "go to next comment" },
+				prev_comment = { lhs = keymap["github.comment.previous"], desc = "go to previous comment" },
+				react_hooray = { lhs = keymap["github.react.tada"], desc = "add/remove 🎉 reaction" },
+				react_heart = { lhs = keymap["github.react.heart"], desc = "add/remove ❤️ reaction" },
+				react_eyes = { lhs = keymap["github.react.eyes"], desc = "add/remove 👀 reaction" },
+				react_thumbs_up = { lhs = keymap["github.react.thumbs_up"], desc = "add/remove 👍 reaction" },
+				react_thumbs_down = { lhs = keymap["github.react.thumbs_down"], desc = "add/remove 👎 reaction" },
+				react_rocket = { lhs = keymap["github.react.rocket"], desc = "add/remove 🚀 reaction" },
+				react_laugh = { lhs = keymap["github.react.laugh"], desc = "add/remove 😄 reaction" },
+				react_confused = { lhs = keymap["github.react.confused"], desc = "add/remove 😕 reaction" },
 			},
 			review_thread = {
 				-- goto_issue = { lhs = "<space>gi", desc = "navigate to a local repo issue" },
-				add_comment = { lhs = keymaps["github.comment.add"], desc = "add review comment" },
-				delete_comment = { lhs = keymaps["github.comment.delete"], desc = "delete review comment" },
-				next_comment = { lhs = keymaps["github.comment.next"], desc = "go to next review comment" },
-				prev_comment = { lhs = keymaps["github.comment.previous"], desc = "go to review previous comment" },
-				add_suggestion = { lhs = keymaps["github.suggestion.add"], desc = "add review suggestion" },
+				add_comment = { lhs = keymap["github.comment.add"], desc = "add review comment" },
+				delete_comment = { lhs = keymap["github.comment.delete"], desc = "delete review comment" },
+				next_comment = { lhs = keymap["github.comment.next"], desc = "go to next review comment" },
+				prev_comment = { lhs = keymap["github.comment.previous"], desc = "go to review previous comment" },
+				add_suggestion = { lhs = keymap["github.suggestion.add"], desc = "add review suggestion" },
 				select_next_entry = {
-					lhs = keymaps["github.review.files.next.select"],
+					lhs = keymap["github.review.files.next.select"],
 					desc = "move to previous changed file",
 				},
 				select_prev_entry = {
-					lhs = keymaps["github.review.files.previous.select"],
+					lhs = keymap["github.review.files.previous.select"],
 					desc = "move to next changed file",
 				},
-				close_review_tab = { lhs = keymaps["github.review.close"], desc = "close review tab" },
-				react_hooray = { lhs = keymaps["github.react.tada"], desc = "add/remove 🎉 reaction" },
-				react_heart = { lhs = keymaps["github.react.heart"], desc = "add/remove ❤️ reaction" },
-				react_eyes = { lhs = keymaps["github.react.eyes"], desc = "add/remove 👀 reaction" },
-				react_thumbs_up = { lhs = keymaps["github.react.thumbs_up"], desc = "add/remove 👍 reaction" },
-				react_thumbs_down = { lhs = keymaps["github.react.thumbs_down"], desc = "add/remove 👎 reaction" },
-				react_rocket = { lhs = keymaps["github.react.rocket"], desc = "add/remove 🚀 reaction" },
-				react_laugh = { lhs = keymaps["github.react.laugh"], desc = "add/remove 😄 reaction" },
-				react_confused = { lhs = keymaps["github.react.confused"], desc = "add/remove 😕 reaction" },
+				close_review_tab = { lhs = keymap["github.review.close"], desc = "close review tab" },
+				react_hooray = { lhs = keymap["github.react.tada"], desc = "add/remove 🎉 reaction" },
+				react_heart = { lhs = keymap["github.react.heart"], desc = "add/remove ❤️ reaction" },
+				react_eyes = { lhs = keymap["github.react.eyes"], desc = "add/remove 👀 reaction" },
+				react_thumbs_up = { lhs = keymap["github.react.thumbs_up"], desc = "add/remove 👍 reaction" },
+				react_thumbs_down = { lhs = keymap["github.react.thumbs_down"], desc = "add/remove 👎 reaction" },
+				react_rocket = { lhs = keymap["github.react.rocket"], desc = "add/remove 🚀 reaction" },
+				react_laugh = { lhs = keymap["github.react.laugh"], desc = "add/remove 😄 reaction" },
+				react_confused = { lhs = keymap["github.react.confused"], desc = "add/remove 😕 reaction" },
 			},
 			submit_win = {
-				approve_review = { lhs = keymaps["github.review.submit.approve"], desc = "approve review" },
-				comment_review = { lhs = keymaps["github.review.submit.comment"], desc = "comment review" },
+				approve_review = { lhs = keymap["github.review.submit.approve"], desc = "approve review" },
+				comment_review = { lhs = keymap["github.review.submit.comment"], desc = "comment review" },
 				request_changes = {
-					lhs = keymaps["github.review.submit.request_changes"],
+					lhs = keymap["github.review.submit.request_changes"],
 					desc = "request changes review",
 				},
-				close_review_tab = { lhs = keymaps["github.review.close"], desc = "close review tab" },
+				close_review_tab = { lhs = keymap["github.review.close"], desc = "close review tab" },
 			},
 			review_diff = {
-				add_review_comment = { lhs = keymaps["github.comment.add"], desc = "add a new review comment" },
+				add_review_comment = { lhs = keymap["github.comment.add"], desc = "add a new review comment" },
 				add_review_suggestion = {
-					lhs = keymaps["github.suggestion.add"],
+					lhs = keymap["github.suggestion.add"],
 					desc = "add a new review suggestion",
 				},
-				focus_files = { lhs = keymaps["github.review.files.focus"], desc = "move focus to changed file panel" },
-				toggle_files = { lhs = keymaps["github.review.files.toggle"], desc = "hide/show changed files panel" },
-				next_thread = { lhs = keymaps["github.review.thread.next"], desc = "move to next thread" },
-				prev_thread = { lhs = keymaps["github.review.thread.previous"], desc = "move to previous thread" },
+				focus_files = { lhs = keymap["github.review.files.focus"], desc = "move focus to changed file panel" },
+				toggle_files = { lhs = keymap["github.review.files.toggle"], desc = "hide/show changed files panel" },
+				next_thread = { lhs = keymap["github.review.thread.next"], desc = "move to next thread" },
+				prev_thread = { lhs = keymap["github.review.thread.previous"], desc = "move to previous thread" },
 				select_next_entry = {
-					lhs = keymaps["github.review.files.next.select"],
+					lhs = keymap["github.review.files.next.select"],
 					desc = "move to previous changed file",
 				},
 				select_prev_entry = {
-					lhs = keymaps["github.review.files.previous.select"],
+					lhs = keymap["github.review.files.previous.select"],
 					desc = "move to next changed file",
 				},
-				close_review_tab = { lhs = keymaps["github.review.close"], desc = "close review tab" },
+				close_review_tab = { lhs = keymap["github.review.close"], desc = "close review tab" },
 				toggle_viewed = {
-					lhs = keymaps["github.review.files.viewed.toggle"],
+					lhs = keymap["github.review.files.viewed.toggle"],
 					desc = "toggle viewer viewed state",
 				},
 			},
 			file_panel = {
-				next_entry = { lhs = keymaps["github.review.files.next"], desc = "move to next changed file" },
-				prev_entry = { lhs = keymaps["github.review.files.previous"], desc = "move to previous changed file" },
+				next_entry = { lhs = keymap["github.review.files.next"], desc = "move to next changed file" },
+				prev_entry = { lhs = keymap["github.review.files.previous"], desc = "move to previous changed file" },
 				select_entry = {
-					lhs = keymaps["github.review.files.select"],
+					lhs = keymap["github.review.files.select"],
 					desc = "show selected changed file diffs",
 				},
-				refresh_files = { lhs = keymaps["github.review.files.refresh"], desc = "refresh changed files panel" },
-				focus_files = { lhs = keymaps["github.review.files.focus"], desc = "move focus to changed file panel" },
-				toggle_files = { lhs = keymaps["github.review.files.toggle"], desc = "hide/show changed files panel" },
+				refresh_files = { lhs = keymap["github.review.files.refresh"], desc = "refresh changed files panel" },
+				focus_files = { lhs = keymap["github.review.files.focus"], desc = "move focus to changed file panel" },
+				toggle_files = { lhs = keymap["github.review.files.toggle"], desc = "hide/show changed files panel" },
 				select_next_entry = {
-					lhs = keymaps["github.review.files.next.select"],
+					lhs = keymap["github.review.files.next.select"],
 					desc = "move to previous changed file",
 				},
 				select_prev_entry = {
-					lhs = keymaps["github.review.files.previous.select"],
+					lhs = keymap["github.review.files.previous.select"],
 					desc = "move to next changed file",
 				},
-				close_review_tab = { lhs = keymaps["github.review.close"], desc = "close review tab" },
+				close_review_tab = { lhs = keymap["github.review.close"], desc = "close review tab" },
 				toggle_viewed = {
-					lhs = keymaps["github.review.files.viewed.toggle"],
+					lhs = keymap["github.review.files.viewed.toggle"],
 					desc = "toggle viewer viewed state",
 				},
 			},

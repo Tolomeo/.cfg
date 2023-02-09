@@ -30,7 +30,7 @@ Tabs.new = validator.f.arguments({
 function Tabs:_prompt_title()
 	-- NOTE: this is a lot of code just to calculate a fancy prompt title
 	-- TODO: refactor
-	local globals = settings.globals()
+	local opt = settings.opt
 	local current_picker_title = "[ " .. self[self._current].prompt_title .. " ]"
 
 	-- Creating a table containing all titles making up for the left half of the title
@@ -63,13 +63,13 @@ function Tabs:_prompt_title()
 
 	-- Merging left and right, capping at 40 chars length
 	local prompt_title_left = string.reverse(
-		string.sub(string.reverse(table.concat(prev_picker_titles, " ")), 1, (20 - #globals.listchars.precedes))
+		string.sub(string.reverse(table.concat(prev_picker_titles, " ")), 1, (20 - #opt.listchars.precedes))
 	)
-	local prompt_title_right = string.sub(table.concat(next_picker_titles, " "), 1, (20 - #globals.listchars.extends))
-	local prompt_title = globals.listchars.precedes
+	local prompt_title_right = string.sub(table.concat(next_picker_titles, " "), 1, (20 - #opt.listchars.extends))
+	local prompt_title = opt.listchars.precedes
 		.. prompt_title_left
 		.. prompt_title_right
-		.. globals.listchars.extends
+		.. opt.listchars.extends
 
 	return prompt_title
 end
@@ -77,14 +77,14 @@ end
 ---@param buffer number
 ---@return boolean
 function Tabs:_attach_mappings(buffer)
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 
 	key.nmap({
-		keymaps["buffer.next"],
+		keymap["buffer.next"],
 		fn.bind(self.next, self),
 		buffer = buffer,
 	}, {
-		keymaps["buffer.prev"],
+		keymap["buffer.prev"],
 		fn.bind(self.prev, self),
 		buffer = buffer,
 	})
@@ -146,7 +146,7 @@ function Tabs:prepend(picker)
 	end
 end
 
-function Tabs:remove(picker) end
+-- function Tabs:remove(picker) end
 
 ---@class Picker
 local Picker = {}
@@ -166,22 +166,22 @@ function Picker:setup()
 end
 
 function Picker:_setup_keymaps()
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 
 	key.nmap(
-		{ keymaps["find.files"], fn.bind(self.files, self) },
-		{ keymaps["find.projects"], fn.bind(self.projects, self) },
-		{ keymaps["find.search.buffer"], fn.bind(self.buffer_text, self) },
-		{ keymaps["find.search.directory"], fn.bind(self.text, self) },
-		{ keymaps["find.help"], fn.bind(self.help, self) },
-		{ keymaps["find.spelling"], fn.bind(self.spelling, self) },
-		{ keymaps["find.buffers"], fn.bind(self.buffers, self) },
-		{ keymaps["find.todos"], fn.bind(self.todos, self) }
+		{ keymap["find.files"], fn.bind(self.files, self) },
+		{ keymap["find.projects"], fn.bind(self.projects, self) },
+		{ keymap["find.search.buffer"], fn.bind(self.buffer_text, self) },
+		{ keymap["find.search.directory"], fn.bind(self.text, self) },
+		{ keymap["find.help"], fn.bind(self.help, self) },
+		{ keymap["find.spelling"], fn.bind(self.spelling, self) },
+		{ keymap["find.buffers"], fn.bind(self.buffers, self) },
+		{ keymap["find.todos"], fn.bind(self.todos, self) }
 	)
 end
 
 function Picker:_setup_plugins()
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 
 	require("telescope").setup({
 		defaults = {
@@ -194,10 +194,10 @@ function Picker:_setup_plugins()
 			color_devicons = true,
 			mappings = {
 				i = {
-					[keymaps["window.cursor.down"]] = require("telescope.actions").move_selection_next,
-					[keymaps["window.cursor.up"]] = require("telescope.actions").move_selection_previous,
-					[keymaps["window.cursor.left"]] = require("telescope.actions").cycle_history_prev,
-					[keymaps["window.cursor.right"]] = require("telescope.actions").cycle_history_next,
+					[keymap["window.cursor.down"]] = require("telescope.actions").move_selection_next,
+					[keymap["window.cursor.up"]] = require("telescope.actions").move_selection_previous,
+					[keymap["window.cursor.left"]] = require("telescope.actions").cycle_history_prev,
+					[keymap["window.cursor.right"]] = require("telescope.actions").cycle_history_next,
 				},
 				n = {},
 			},

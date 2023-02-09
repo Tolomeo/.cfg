@@ -22,7 +22,7 @@ function Format:setup()
 end
 
 function Format.setup_formatter()
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 	-- Enable basic formatting when a filetype is not found
 	vim.g.neoformat_basic_format_retab = 1
 	vim.g.neoformat_basic_format_align = 1
@@ -30,7 +30,7 @@ function Format.setup_formatter()
 	-- Have Neoformat look for a formatter executable in the node_modules/.bin directory in the current working directory or one of its parents
 	vim.g.neoformat_try_node_exe = 1
 	-- Mappings
-	key.nmap({ keymaps["language.format"], "<cmd>Neoformat<Cr>" })
+	key.nmap({ keymap["language.format"], "<cmd>Neoformat<Cr>" })
 end
 
 function Format:setup_folds()
@@ -38,12 +38,12 @@ function Format:setup_folds()
 end
 
 function Format:setup_comments()
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 
 	vim.g.kommentary_create_default_mappings = false
 
-	key.nmap({ keymaps["buffer.line.comment"], fn.bind(self.comment_line, self) })
-	key.vmap({ keymaps["buffer.line.comment"], fn.bind(self.comment_selection, self) })
+	key.nmap({ keymap["buffer.line.comment"], fn.bind(self.comment_line, self) })
+	key.vmap({ keymap["buffer.line.comment"], fn.bind(self.comment_selection, self) })
 end
 
 function Format:comment_line()

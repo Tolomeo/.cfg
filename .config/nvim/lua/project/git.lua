@@ -28,7 +28,7 @@ function Git:setup()
 		},
 		preview_config = preview_config,
 		on_attach = function(buffer)
-			local keymaps = settings.keymaps()
+			local keymap = settings.keymap
 			local actions = self:actions()
 			local mappings = fn.imap(actions, function(action)
 				return { action.keymap, action.handler, buffer = buffer }
@@ -36,7 +36,7 @@ function Git:setup()
 
 			key.nmap(unpack(mappings))
 			key.nmap({
-				keymaps["git.menu"],
+				keymap["git.menu"],
 				fn.bind(self.actions_context_menu, self),
 			})
 		end,
@@ -44,37 +44,37 @@ function Git:setup()
 end
 
 function Git:actions()
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 
 	return {
 		{
 			name = "Show change",
-			keymap = keymaps["git.hunk.preview"],
+			keymap = keymap["git.hunk.preview"],
 			handler = fn.bind(self.preview_hunk, self),
 		},
 		{
 			name = "Select change",
-			keymap = keymaps["git.hunk.select"],
+			keymap = keymap["git.hunk.select"],
 			handler = fn.bind(self.select_hunk, self),
 		},
 		{
 			name = "Go to next change",
-			keymap = keymaps["git.hunk.next"],
+			keymap = keymap["git.hunk.next"],
 			handler = fn.bind(self.next_hunk, self),
 		},
 		{
 			name = "Go to prev change",
-			keymap = keymaps["git.hunk.prev"],
+			keymap = keymap["git.hunk.prev"],
 			handler = fn.bind(self.prev_hunk, self),
 		},
 		{
 			name = "Blame line",
-			keymap = keymaps["git.blame"],
+			keymap = keymap["git.blame"],
 			handler = fn.bind(self.blame, self),
 		},
 		{
 			name = "Show changes",
-			keymap = keymaps["git.diff"],
+			keymap = keymap["git.diff"],
 			handler = fn.bind(self.diff, self),
 		},
 	}

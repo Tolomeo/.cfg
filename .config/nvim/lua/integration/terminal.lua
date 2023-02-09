@@ -134,22 +134,22 @@ function Terminal:setup()
 end
 
 function Terminal:_setup_keymaps()
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 	-- Exiting term mode using double esc
 	-- to avoid interfering with TUIs keymaps
 	key.tmap({ "<Esc><Esc>", "<C-\\><C-n>" })
 
 	key.nmap({
-		keymaps["terminal.next"],
+		keymap["terminal.next"],
 		fn.bind(self.next, self),
 	}, {
-		keymaps["terminal.prev"],
+		keymap["terminal.prev"],
 		fn.bind(self.prev, self),
 	}, {
-		keymaps["terminal.open"],
+		keymap["terminal.open"],
 		fn.bind(self.toggle, self),
 	}, {
-		keymaps["terminal.menu"],
+		keymap["terminal.menu"],
 		fn.bind(self.menu, self),
 	})
 end
@@ -314,7 +314,7 @@ function Terminal:jobs_menu(options)
 end
 
 function Terminal:menu(options)
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 	local config = settings.config
 	options = options or {}
 	options = vim.tbl_extend("force", { prompt_title = "Terminal actions" }, options)
@@ -337,12 +337,12 @@ function Terminal:menu(options)
 	})
 	table.insert(menu, {
 		"Next terminal",
-		keymaps["terminal.next"],
+		keymap["terminal.next"],
 		handler = fn.bind(self.next, self),
 	})
 	table.insert(menu, {
 		"Previous terminal",
-		keymaps["terminal.prev"],
+		keymap["terminal.prev"],
 		handler = fn.bind(self.prev, self),
 	})
 	table.insert(menu, {

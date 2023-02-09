@@ -25,12 +25,12 @@ Language.plugins = {
 		"SmiteshP/nvim-navic",
 		requires = { "neovim/nvim-lspconfig" },
 		config = function()
-			local globals = settings.globals()
+			local opt = settings.opt
 
 			require("nvim-navic").setup({
 				highlight = true,
 				separator = " > ",
-				depth_limit_indicator = globals.listchars.extend,
+				depth_limit_indicator = opt.listchars.extend,
 			})
 		end,
 	},
@@ -38,23 +38,23 @@ Language.plugins = {
 
 ---@private
 function Language:on_server_attach(client, buffer)
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 	local picker = require("integration.picker")
 
 	key.nmap(
-		{ keymaps["language.lsp.hover"], vim.lsp.buf.hover, buffer = buffer },
-		{ keymaps["language.lsp.signature_help"], vim.lsp.buf.signature_help, buffer = buffer },
-		{ keymaps["language.lsp.references"], vim.lsp.buf.references, buffer = buffer },
-		{ keymaps["language.lsp.definition"], vim.lsp.buf.definition, buffer = buffer },
-		{ keymaps["language.lsp.declaration"], vim.lsp.buf.declaration, buffer = buffer },
-		{ keymaps["language.lsp.type_definition"], vim.lsp.buf.type_definition, buffer = buffer },
-		{ keymaps["language.lsp.implementation"], vim.lsp.buf.implementation, buffer = buffer },
-		{ keymaps["language.lsp.code_action"], vim.lsp.buf.code_action, buffer = buffer },
-		{ keymaps["language.lsp.rename"], vim.lsp.buf.rename, buffer = buffer },
-		{ keymaps["language.diagnostic.next"], vim.diagnostic.goto_next, buffer = buffer },
-		{ keymaps["language.diagnostic.prev"], vim.diagnostic.goto_prev, buffer = buffer },
-		{ keymaps["language.diagnostic.open"], vim.diagnostic.open_float, buffer = buffer },
-		{ keymaps["language.diagnostic.list"], fn.bind(picker.find_diagnostics, picker), buffer = buffer }
+		{ keymap["language.lsp.hover"], vim.lsp.buf.hover, buffer = buffer },
+		{ keymap["language.lsp.signature_help"], vim.lsp.buf.signature_help, buffer = buffer },
+		{ keymap["language.lsp.references"], vim.lsp.buf.references, buffer = buffer },
+		{ keymap["language.lsp.definition"], vim.lsp.buf.definition, buffer = buffer },
+		{ keymap["language.lsp.declaration"], vim.lsp.buf.declaration, buffer = buffer },
+		{ keymap["language.lsp.type_definition"], vim.lsp.buf.type_definition, buffer = buffer },
+		{ keymap["language.lsp.implementation"], vim.lsp.buf.implementation, buffer = buffer },
+		{ keymap["language.lsp.code_action"], vim.lsp.buf.code_action, buffer = buffer },
+		{ keymap["language.lsp.rename"], vim.lsp.buf.rename, buffer = buffer },
+		{ keymap["language.diagnostic.next"], vim.diagnostic.goto_next, buffer = buffer },
+		{ keymap["language.diagnostic.prev"], vim.diagnostic.goto_prev, buffer = buffer },
+		{ keymap["language.diagnostic.open"], vim.diagnostic.open_float, buffer = buffer },
+		{ keymap["language.diagnostic.list"], fn.bind(picker.find_diagnostics, picker), buffer = buffer }
 	)
 
 	if client.server_capabilities.documentHighlightProvider then
@@ -203,7 +203,7 @@ function Language:setup_snippets()
 end
 
 function Language:setup_completion()
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 	local cmp = require("cmp")
 	local luasnip = require("luasnip")
 
@@ -214,7 +214,7 @@ function Language:setup_completion()
 			end,
 		},
 		mapping = cmp.mapping.preset.insert({
-			[keymaps["dropdown.item.next"]] = cmp.mapping(function(fallback)
+			[keymap["dropdown.item.next"]] = cmp.mapping(function(fallback)
 				if cmp.visible() then
 					cmp.select_next_item()
 				elseif luasnip.expand_or_jumpable() then
@@ -224,7 +224,7 @@ function Language:setup_completion()
 				end
 			end, { "i", "s" }),
 
-			[keymaps["dropdown.item.prev"]] = cmp.mapping(function(fallback)
+			[keymap["dropdown.item.prev"]] = cmp.mapping(function(fallback)
 				if cmp.visible() then
 					cmp.select_prev_item()
 				elseif luasnip.jumpable(-1) then
@@ -234,11 +234,11 @@ function Language:setup_completion()
 				end
 			end, { "i", "s" }),
 
-			[keymaps["dropdown.scroll.up"]] = cmp.mapping.scroll_docs(-4),
+			[keymap["dropdown.scroll.up"]] = cmp.mapping.scroll_docs(-4),
 
-			[keymaps["dropdown.scroll.down"]] = cmp.mapping.scroll_docs(4),
+			[keymap["dropdown.scroll.down"]] = cmp.mapping.scroll_docs(4),
 
-			[keymaps["dropdown.open"]] = cmp.mapping(function(fallback)
+			[keymap["dropdown.open"]] = cmp.mapping(function(fallback)
 				if cmp.visible() then
 					cmp.abort()
 					fallback()
@@ -249,7 +249,7 @@ function Language:setup_completion()
 
 			-- ['<C-e>'] = cmp.mapping.abort(),
 
-			[keymaps["dropdown.item.confirm"]] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+			[keymap["dropdown.item.confirm"]] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
 		}),
 		sources = cmp.config.sources({
 			{ name = "path" },

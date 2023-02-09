@@ -9,119 +9,119 @@ local fn = require("_shared.fn")
 local Window = {}
 
 function Window:_setup_keymaps()
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 
 	key.nmap(
 		-- Windows navigation
-		{ keymaps["window.cursor.left"], "<C-w>h" },
-		{ keymaps["window.cursor.down"], "<C-w>j" },
-		{ keymaps["window.cursor.up"], "<C-w>k" },
-		{ keymaps["window.cursor.right"], "<C-w>l" },
-		{ keymaps["window.cursor.next"], "<C-w>w" },
-		{ keymaps["window.cursor.prev"], "<C-w>W" },
+		{ keymap["window.cursor.left"], "<C-w>h" },
+		{ keymap["window.cursor.down"], "<C-w>j" },
+		{ keymap["window.cursor.up"], "<C-w>k" },
+		{ keymap["window.cursor.right"], "<C-w>l" },
+		{ keymap["window.cursor.next"], "<C-w>w" },
+		{ keymap["window.cursor.prev"], "<C-w>W" },
 		-- Exchange current window with the next one
-		{ keymaps["window.swap.next"], "<C-w>x" },
+		{ keymap["window.swap.next"], "<C-w>x" },
 		-- Resizing the current window
-		{ keymaps["window.shrink.horizontal"], "<Cmd>resize -3<Cr>" },
-		{ keymaps["window.shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
-		{ keymaps["window.expand.vertical"], "<Cmd>vertical resize +3<Cr>" },
-		{ keymaps["window.expand.horizontal"], "<Cmd>resize +3<Cr>" },
+		{ keymap["window.shrink.horizontal"], "<Cmd>resize -3<Cr>" },
+		{ keymap["window.shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
+		{ keymap["window.expand.vertical"], "<Cmd>vertical resize +3<Cr>" },
+		{ keymap["window.expand.horizontal"], "<Cmd>resize +3<Cr>" },
 		-- moving windows
-		{ keymaps["window.fullwidth.bottom"], "<C-w>J" },
-		{ keymaps["window.fullheight.left"], "<C-w>H" },
-		{ keymaps["window.fullheight.right"], "<C-w>L" },
-		{ keymaps["window.fullwidth.top"], "<C-w>K" },
+		{ keymap["window.fullwidth.bottom"], "<C-w>J" },
+		{ keymap["window.fullheight.left"], "<C-w>H" },
+		{ keymap["window.fullheight.right"], "<C-w>L" },
+		{ keymap["window.fullwidth.top"], "<C-w>K" },
 		-- Resetting windows size
-		{ keymaps["window.equalize"], "<C-w>=" },
+		{ keymap["window.equalize"], "<C-w>=" },
 		-- Maximising current window size
-		{ keymaps["window.maximize"], "<C-w>_<C-w>|" },
+		{ keymap["window.maximize"], "<C-w>_<C-w>|" },
 		-- Splits
-		{ keymaps["window.split.horizontal"], "<Cmd>split<Cr>" },
-		{ keymaps["window.split.vertical"], "<Cmd>vsplit<Cr>" }
+		{ keymap["window.split.horizontal"], "<Cmd>split<Cr>" },
+		{ keymap["window.split.vertical"], "<Cmd>vsplit<Cr>" }
 	)
 	key.vmap(
 		-- Windows Navigation
-		{ keymaps["window.cursor.left"], "<Esc><C-w>h" },
-		{ keymaps["window.cursor.down"], "<Esc><C-w>j" },
-		{ keymaps["window.cursor.up"], "<Esc><C-w>k" },
-		{ keymaps["window.cursor.right"], "<Esc><C-w>l" },
-		{ keymaps["window.cursor.next"], "<Esc><C-w>w" },
-		{ keymaps["window.cursor.prev"], "<Esc><C-w>W" },
+		{ keymap["window.cursor.left"], "<Esc><C-w>h" },
+		{ keymap["window.cursor.down"], "<Esc><C-w>j" },
+		{ keymap["window.cursor.up"], "<Esc><C-w>k" },
+		{ keymap["window.cursor.right"], "<Esc><C-w>l" },
+		{ keymap["window.cursor.next"], "<Esc><C-w>w" },
+		{ keymap["window.cursor.prev"], "<Esc><C-w>W" },
 		-- Exchange current window with the next one
-		{ keymaps["window.swap.next"], "<Esc><C-w>x" },
+		{ keymap["window.swap.next"], "<Esc><C-w>x" },
 		-- Resizing the current window
-		{ keymaps["window.shrink.horizontal"], "<Cmd>resize -3<Cr>" },
-		{ keymaps["window.shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
-		{ keymaps["window.expand.vertical"], "<Cmd>vertical resize +3<Cr>" },
-		{ keymaps["window.expand.horizontal"], "<Cmd>resize +3<Cr>" },
+		{ keymap["window.shrink.horizontal"], "<Cmd>resize -3<Cr>" },
+		{ keymap["window.shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
+		{ keymap["window.expand.vertical"], "<Cmd>vertical resize +3<Cr>" },
+		{ keymap["window.expand.horizontal"], "<Cmd>resize +3<Cr>" },
 		-- moving windows
-		{ keymaps["window.fullwidth.bottom"], "<Esc><C-w>J" },
-		{ keymaps["window.fullheight.left"], "<Esc><C-w>H" },
-		{ keymaps["window.fullheight.right"], "<Esc><C-w>L" },
-		{ keymaps["window.fullwidth.top"], "<Esc><C-w>K" },
+		{ keymap["window.fullwidth.bottom"], "<Esc><C-w>J" },
+		{ keymap["window.fullheight.left"], "<Esc><C-w>H" },
+		{ keymap["window.fullheight.right"], "<Esc><C-w>L" },
+		{ keymap["window.fullwidth.top"], "<Esc><C-w>K" },
 		-- Resetting windows size
-		{ keymaps["window.equalize"], "<Esc><C-w>=" },
+		{ keymap["window.equalize"], "<Esc><C-w>=" },
 		-- Maximising current window size
-		{ keymaps["window.maximize"], "<Esc><C-w>_<C-w>|" },
+		{ keymap["window.maximize"], "<Esc><C-w>_<C-w>|" },
 		-- Splits
-		{ keymaps["window.split.horizontal"], "<Cmd>split<Cr>" },
-		{ keymaps["window.split.vertical"], "<Cmd>vsplit<Cr>" }
+		{ keymap["window.split.horizontal"], "<Cmd>split<Cr>" },
+		{ keymap["window.split.vertical"], "<Cmd>vsplit<Cr>" }
 	)
 	key.imap(
 		-- Windows Navigation
-		{ keymaps["window.cursor.left"], "<Esc><C-w>h" },
-		{ keymaps["window.cursor.down"], "<Esc><C-w>j" },
-		{ keymaps["window.cursor.up"], "<Esc><C-w>k" },
-		{ keymaps["window.cursor.right"], "<Esc><C-w>l" },
-		{ keymaps["window.cursor.next"], "<Esc><C-w>w" },
-		{ keymaps["window.cursor.prev"], "<Esc><C-w>W" },
+		{ keymap["window.cursor.left"], "<Esc><C-w>h" },
+		{ keymap["window.cursor.down"], "<Esc><C-w>j" },
+		{ keymap["window.cursor.up"], "<Esc><C-w>k" },
+		{ keymap["window.cursor.right"], "<Esc><C-w>l" },
+		{ keymap["window.cursor.next"], "<Esc><C-w>w" },
+		{ keymap["window.cursor.prev"], "<Esc><C-w>W" },
 		-- Exchange current window with the next one
-		{ keymaps["window.swap.next"], "<Esc><C-w>x" },
+		{ keymap["window.swap.next"], "<Esc><C-w>x" },
 		-- Resizing the current window
-		{ keymaps["window.shrink.horizontal"], "<Cmd>resize -3<Cr>" },
-		{ keymaps["window.shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
-		{ keymaps["window.expand.vertical"], "<Cmd>vertical resize +3<Cr>" },
-		{ keymaps["window.expand.horizontal"], "<Cmd>resize +3<Cr>" },
+		{ keymap["window.shrink.horizontal"], "<Cmd>resize -3<Cr>" },
+		{ keymap["window.shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
+		{ keymap["window.expand.vertical"], "<Cmd>vertical resize +3<Cr>" },
+		{ keymap["window.expand.horizontal"], "<Cmd>resize +3<Cr>" },
 		-- moving windows
-		{ keymaps["window.fullwidth.bottom"], "<Esc><C-w>J" },
-		{ keymaps["window.fullheight.left"], "<Esc><C-w>H" },
-		{ keymaps["window.fullheight.right"], "<Esc><C-w>L" },
-		{ keymaps["window.fullwidth.top"], "<Esc><C-w>K" },
+		{ keymap["window.fullwidth.bottom"], "<Esc><C-w>J" },
+		{ keymap["window.fullheight.left"], "<Esc><C-w>H" },
+		{ keymap["window.fullheight.right"], "<Esc><C-w>L" },
+		{ keymap["window.fullwidth.top"], "<Esc><C-w>K" },
 		-- Resetting windows size
-		{ keymaps["window.equalize"], "<Esc><C-w>=" },
+		{ keymap["window.equalize"], "<Esc><C-w>=" },
 		-- Maximising current window size
-		{ keymaps["window.maximize"], "<Esc><C-w>_<C-w>|" },
+		{ keymap["window.maximize"], "<Esc><C-w>_<C-w>|" },
 		-- Splits
-		{ keymaps["window.split.horizontal"], "<Cmd>split<Cr>" },
-		{ keymaps["window.split.vertical"], "<Cmd>vsplit<Cr>" }
+		{ keymap["window.split.horizontal"], "<Cmd>split<Cr>" },
+		{ keymap["window.split.vertical"], "<Cmd>vsplit<Cr>" }
 	)
 	key.tmap(
 		-- Windows navigation
-		{ keymaps["window.cursor.left"], "<C-\\><C-n><C-w>h" },
-		{ keymaps["window.cursor.down"], "<C-\\><C-n><C-w>j" },
-		{ keymaps["window.cursor.up"], "<C-\\><C-n><C-w>k" },
-		{ keymaps["window.cursor.right"], "<C-\\><C-n><C-w>l" },
-		{ keymaps["window.cursor.next"], "<C-\\><C-n><C-w>w" },
-		{ keymaps["window.cursor.prev"], "<C-\\><C-n><C-w>W" },
+		{ keymap["window.cursor.left"], "<C-\\><C-n><C-w>h" },
+		{ keymap["window.cursor.down"], "<C-\\><C-n><C-w>j" },
+		{ keymap["window.cursor.up"], "<C-\\><C-n><C-w>k" },
+		{ keymap["window.cursor.right"], "<C-\\><C-n><C-w>l" },
+		{ keymap["window.cursor.next"], "<C-\\><C-n><C-w>w" },
+		{ keymap["window.cursor.prev"], "<C-\\><C-n><C-w>W" },
 		-- Exchange current window with the next one
-		{ keymaps["window.swap.next"], "<C-\\><C-n><C-w>x" },
+		{ keymap["window.swap.next"], "<C-\\><C-n><C-w>x" },
 		-- Resizing the current window
-		{ keymaps["window.shrink.horizontal"], "<Cmd>resize -3<Cr>" },
-		{ keymaps["window.shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
-		{ keymaps["window.expand.vertical"], "<Cmd>vertical resize +3<Cr>" },
-		{ keymaps["window.expand.horizontal"], "<Cmd>resize +3<Cr>" },
+		{ keymap["window.shrink.horizontal"], "<Cmd>resize -3<Cr>" },
+		{ keymap["window.shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
+		{ keymap["window.expand.vertical"], "<Cmd>vertical resize +3<Cr>" },
+		{ keymap["window.expand.horizontal"], "<Cmd>resize +3<Cr>" },
 		-- moving windows
-		{ keymaps["window.fullwidth.bottom"], "<C-\\><C-n><C-w>J" },
-		{ keymaps["window.fullheight.left"], "<C-\\><C-n><C-w>H" },
-		{ keymaps["window.fullheight.right"], "<C-\\><C-n><C-w>L" },
-		{ keymaps["window.fullwidth.top"], "<C-\\><C-n><C-w>K" },
+		{ keymap["window.fullwidth.bottom"], "<C-\\><C-n><C-w>J" },
+		{ keymap["window.fullheight.left"], "<C-\\><C-n><C-w>H" },
+		{ keymap["window.fullheight.right"], "<C-\\><C-n><C-w>L" },
+		{ keymap["window.fullwidth.top"], "<C-\\><C-n><C-w>K" },
 		-- Resetting windows size
-		{ keymaps["window.equalize"], "<C-\\><C-n><C-w>=" },
+		{ keymap["window.equalize"], "<C-\\><C-n><C-w>=" },
 		-- Maximising current window size
-		{ keymaps["window.maximize"], "<C-\\><C-n><C-w>_<C-w>|" },
+		{ keymap["window.maximize"], "<C-\\><C-n><C-w>_<C-w>|" },
 		-- Splits
-		{ keymaps["window.split.horizontal"], "<Cmd>split<Cr>" },
-		{ keymaps["window.split.vertical"], "<Cmd>vsplit<Cr>" }
+		{ keymap["window.split.horizontal"], "<Cmd>split<Cr>" },
+		{ keymap["window.split.vertical"], "<Cmd>vsplit<Cr>" }
 	)
 end
 

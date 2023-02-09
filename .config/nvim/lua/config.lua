@@ -71,7 +71,7 @@ end
 
 function Config:setup()
 	-- setting leader key
-	key.map_leader(settings.keymaps().leader)
+	key.map_leader(settings.keymap.leader)
 
 	require("mason").setup()
 end

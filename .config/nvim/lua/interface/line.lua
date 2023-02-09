@@ -36,12 +36,12 @@ function Line:setup_tab()
 end
 
 function Line:setup_status()
-	local globals = settings.globals()
+	local opt = settings.opt
 	local config = settings.config
 
 	require("lualine").setup({
 		options = {
-			globalstatus = globals.laststatus == 3,
+			globalstatus = opt.laststatus == 3,
 			theme = config["theme.colorscheme"],
 			component_separators = {
 				left = config["icon.component.left"],

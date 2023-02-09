@@ -41,7 +41,7 @@ function Editor:setup_keymaps()
 	--[[ key.nmap({ "y", '"*y' }, { "Y", '"*Y' }, { "p", '"*p' }, { "P", '"*P' })
 	key.vmap({ "y", '"*y' }, { "Y", '"*Y' }, { "p", '"*p' }, { "P", '"*P' }) ]]
 
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 
 	key.nmap(
 		-- Emptying lines
@@ -50,36 +50,36 @@ function Editor:setup_keymaps()
 		{ "n", "nzzzv" },
 		{ "N", "Nzzzv" },
 
-		{ keymaps["buffer.next"], ":bnext<Cr>" },
-		{ keymaps["buffer.prev"], ":bprev<Cr>" },
-		{ keymaps["buffer.save"], "<Cmd>up<Cr>", silent = false },
-		{ keymaps["buffer.save.all"], "<Cmd>wa<Cr>", silent = false },
-		{ keymaps["buffer.close"], "<Cmd>q<Cr>" },
-		{ keymaps["buffer.close.delete"], "<Cmd>bdelete<Cr>" },
-		{ keymaps["buffer.cursor.prev"], "b" },
-		{ keymaps["buffer.cursor.prev.big"], "B" },
-		{ keymaps["buffer.cursor.next"], "w" },
-		{ keymaps["buffer.cursor.next.big"], "W" },
-		{ keymaps["buffer.cursor.above"], "9k" },
-		{ keymaps["buffer.cursor.above.big"], "18k" },
-		{ keymaps["buffer.cursor.below"], "9j" },
-		{ keymaps["buffer.cursor.below.big"], "18j" },
-		{ keymaps["buffer.line.indent"], ">>" },
-		{ keymaps["buffer.line.outdent"], "<<" },
-		{ keymaps["buffer.line.join"], "mjJ`j" },
-		{ keymaps["buffer.line.bubble.up"], ":m .+1<CR>==" },
-		{ keymaps["buffer.line.bubble.down"], ":m .-2<CR>==" },
+		{ keymap["buffer.next"], ":bnext<Cr>" },
+		{ keymap["buffer.prev"], ":bprev<Cr>" },
+		{ keymap["buffer.save"], "<Cmd>up<Cr>", silent = false },
+		{ keymap["buffer.save.all"], "<Cmd>wa<Cr>", silent = false },
+		{ keymap["buffer.close"], "<Cmd>q<Cr>" },
+		{ keymap["buffer.close.delete"], "<Cmd>bdelete<Cr>" },
+		{ keymap["buffer.cursor.prev"], "b" },
+		{ keymap["buffer.cursor.prev.big"], "B" },
+		{ keymap["buffer.cursor.next"], "w" },
+		{ keymap["buffer.cursor.next.big"], "W" },
+		{ keymap["buffer.cursor.above"], "9k" },
+		{ keymap["buffer.cursor.above.big"], "18k" },
+		{ keymap["buffer.cursor.below"], "9j" },
+		{ keymap["buffer.cursor.below.big"], "18j" },
+		{ keymap["buffer.line.indent"], ">>" },
+		{ keymap["buffer.line.outdent"], "<<" },
+		{ keymap["buffer.line.join"], "mjJ`j" },
+		{ keymap["buffer.line.bubble.up"], ":m .+1<CR>==" },
+		{ keymap["buffer.line.bubble.down"], ":m .-2<CR>==" },
 		-- TODO: avoid saving bubbling lines in registry
-		{ keymaps["buffer.line.duplicate.up"], "mayyP`a" },
-		{ keymaps["buffer.line.duplicate.down"], "mayyp`a" },
-		{ keymaps["buffer.line.new.up"], "mm:put! _<CR>`m" },
-		{ keymaps["buffer.line.new.down"], "mm:put _<CR>`m" },
-		{ keymaps["buffer.word.substitute"], ":%s/<C-r><C-w>//gI<left><left><left>", silent = false },
-		{ keymaps["buffer.word.substitute.line"], ":s/<C-r><C-w>//gI<left><left><left>", silent = false },
-		{ keymaps["buffer.jump.in"], "<C-i>" },
-		{ keymaps["buffer.jump.out"], "<C-o>" },
-		{ keymaps["buffer.macro.repeat.last"], "@@" },
-		{ keymaps["buffer.select.all"], "ggVG<c-$>" }
+		{ keymap["buffer.line.duplicate.up"], "mayyP`a" },
+		{ keymap["buffer.line.duplicate.down"], "mayyp`a" },
+		{ keymap["buffer.line.new.up"], "mm:put! _<CR>`m" },
+		{ keymap["buffer.line.new.down"], "mm:put _<CR>`m" },
+		{ keymap["buffer.word.substitute"], ":%s/<C-r><C-w>//gI<left><left><left>", silent = false },
+		{ keymap["buffer.word.substitute.line"], ":s/<C-r><C-w>//gI<left><left><left>", silent = false },
+		{ keymap["buffer.jump.in"], "<C-i>" },
+		{ keymap["buffer.jump.out"], "<C-o>" },
+		{ keymap["buffer.macro.repeat.last"], "@@" },
+		{ keymap["buffer.select.all"], "ggVG<c-$>" }
 	)
 
 	key.vmap(
@@ -93,32 +93,32 @@ function Editor:setup_keymaps()
 		-- Emptying lines
 		{ "D", "mm<Esc>:'<,'>s/\v^.*$/<Cr>:noh<Cr>`mgv" },
 
-		{ keymaps["buffer.cursor.prev"], "b" },
-		{ keymaps["buffer.cursor.prev.big"], "B" },
-		{ keymaps["buffer.cursor.next"], "w" },
-		{ keymaps["buffer.cursor.next.big"], "W" },
-		{ keymaps["buffer.cursor.above"], "9k" },
-		{ keymaps["buffer.cursor.above.big"], "18k" },
-		{ keymaps["buffer.cursor.below"], "9j" },
-		{ keymaps["buffer.line.indent"], ">gv" },
-		{ keymaps["buffer.cursor.below.big"], "18j" },
-		{ keymaps["buffer.line.outdent"], "<gv" },
+		{ keymap["buffer.cursor.prev"], "b" },
+		{ keymap["buffer.cursor.prev.big"], "B" },
+		{ keymap["buffer.cursor.next"], "w" },
+		{ keymap["buffer.cursor.next.big"], "W" },
+		{ keymap["buffer.cursor.above"], "9k" },
+		{ keymap["buffer.cursor.above.big"], "18k" },
+		{ keymap["buffer.cursor.below"], "9j" },
+		{ keymap["buffer.line.indent"], ">gv" },
+		{ keymap["buffer.cursor.below.big"], "18j" },
+		{ keymap["buffer.line.outdent"], "<gv" },
 		{
-			keymaps["buffer.line.new.down"],
+			keymap["buffer.line.new.down"],
 			"mm<Esc>:'>put _<CR>`mgv",
 		},
 		{
-			keymaps["buffer.line.new.up"],
+			keymap["buffer.line.new.up"],
 			"mm<Esc>:'<put! _<CR>`mgv",
 		},
-		{ keymaps["buffer.line.bubble.up"], ":m '>+1<CR>gv=gv" },
-		{ keymaps["buffer.line.bubble.down"], ":m '<-2<CR>gv=gv" },
+		{ keymap["buffer.line.bubble.up"], ":m '>+1<CR>gv=gv" },
+		{ keymap["buffer.line.bubble.down"], ":m '<-2<CR>gv=gv" },
 		{
-			keymaps["buffer.line.duplicate.up"],
+			keymap["buffer.line.duplicate.up"],
 			"mmy'<P`mgv",
 		},
 		{
-			keymaps["buffer.line.duplicate.down"],
+			keymap["buffer.line.duplicate.down"],
 			"mmy'>p`mgv",
 		}
 	)
@@ -135,8 +135,8 @@ function Editor:setup_keymaps()
 		{ "<A-k>", "<Up>" },
 		{ "<A-j>", "<Down>" },
 		-- Indentation
-		{ keymaps["buffer.line.indent"], "<C-t>" },
-		{ keymaps["buffer.line.outdent"], "<C-d>" }
+		{ keymap["buffer.line.indent"], "<C-t>" },
+		{ keymap["buffer.line.outdent"], "<C-d>" }
 	)
 
 	key.cmap({ "<A-h>", "<Left>" }, { "<A-l>", "<Right>" }, { "<A-k>", "<Up>" }, { "<A-j>", "<Down>" })

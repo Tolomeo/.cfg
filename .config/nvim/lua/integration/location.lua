@@ -23,7 +23,7 @@ Location.actions = validator.f.arguments({
 	validator.f.equal(Location),
 	validator.f.optional(validator.f.one_of({ "n", "v", "V" })),
 }) .. function(self, mode)
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 	local open = require("qf_helper").open_split
 	local navigate = require("qf_helper").navigate
 
@@ -31,59 +31,59 @@ Location.actions = validator.f.arguments({
 		n = {
 			{
 				name = "Open item in new tab",
-				keymap = keymaps["list.item.open.tab"],
+				keymap = keymap["list.item.open.tab"],
 				handler = fn.bind(key.input, "<C-W><CR><C-W>T"),
 			},
 			{
 				name = "Open item in vertical split",
-				keymap = keymaps["list.item.open.vertical"],
+				keymap = keymap["list.item.open.vertical"],
 				handler = fn.bind(open, "vsplit"),
 			},
 			{
 				name = "Open entry in horizontal split",
-				keymap = keymaps["list.item.open.horizontal"],
+				keymap = keymap["list.item.open.horizontal"],
 				handler = fn.bind(open, "split"),
 			},
 			{
 				name = "Open item preview",
-				keymap = keymaps["list.item.open.preview"],
+				keymap = keymap["list.item.open.preview"],
 				handler = fn.bind(key.input, "<CR><C-W>p"),
 			},
 			{
 				name = "Open previous item preview",
-				keymap = keymaps["list.item.prev.open.preview"],
+				keymap = keymap["list.item.prev.open.preview"],
 				handler = fn.bind(key.input, "k<CR><C-W>p"),
 			},
 			{
 				name = "Open next item preview",
-				keymap = keymaps["list.item.next.open.preview"],
+				keymap = keymap["list.item.next.open.preview"],
 				handler = fn.bind(key.input, "j<CR><C-W>p"),
 			},
 			-- NOTE: Navigate methods don't work properly
 			-- TODO: Debug
 			{
 				name = "Navigate to first entry",
-				keymap = keymaps["list.navigate.first"],
+				keymap = keymap["list.navigate.first"],
 				handler = fn.bind(navigate, -1, { by_file = true }),
 			},
 			{
 				name = "Navigate to last entry",
-				keymap = keymaps["list.navigate.last"],
+				keymap = keymap["list.navigate.last"],
 				handler = fn.bind(navigate, 1, { by_file = true }),
 			},
 			{
 				name = "Remove item",
-				keymap = keymaps["list.item.remove"],
+				keymap = keymap["list.item.remove"],
 				handler = fn.bind(vim.fn.execute, "Reject"),
 			},
 			{
 				name = "Keep item",
-				keymap = keymaps["list.item.keep"],
+				keymap = keymap["list.item.keep"],
 				handler = fn.bind(vim.fn.execute, "Keep"),
 			},
 			{
 				name = "Search items",
-				keymap = keymaps["list.search"],
+				keymap = keymap["list.search"],
 				handler = function()
 					local is_loclist = self:is_loclist()
 
@@ -96,7 +96,7 @@ Location.actions = validator.f.arguments({
 			},
 			{
 				name = "Load older list",
-				keymap = keymaps["window.cursor.left"],
+				keymap = keymap["window.cursor.left"],
 				handler = function()
 					local is_loclist = self:is_loclist()
 
@@ -109,7 +109,7 @@ Location.actions = validator.f.arguments({
 			},
 			{
 				name = "Load newer list",
-				keymap = keymaps["window.cursor.right"],
+				keymap = keymap["window.cursor.right"],
 				handler = function()
 					local is_loclist = self:is_loclist()
 
@@ -126,12 +126,12 @@ Location.actions = validator.f.arguments({
 		v = {
 			{
 				name = "Remove items selection",
-				keymap = keymaps["list.item.remove"],
+				keymap = keymap["list.item.remove"],
 				handler = fn.bind(key.input, ":Reject<Cr>"),
 			},
 			{
 				name = "Keep items selection",
-				keymap = keymaps["list.item.keep"],
+				keymap = keymap["list.item.keep"],
 				handler = fn.bind(key.input, ":Keep<Cr>"),
 			},
 		},
@@ -148,13 +148,13 @@ Location.actions = validator.f.arguments({
 end
 
 function Location:_setup_keymaps()
-	local keymaps = settings.keymaps()
+	local keymap = settings.keymap
 
 	key.nmap(
-		{ keymaps["list.open"], fn.bind(self.open, self) },
-		{ keymaps["list.close"], fn.bind(self.close, self) },
-		{ keymaps["list.next"], fn.bind(self.next, self) },
-		{ keymaps["list.prev"], fn.bind(self.prev, self) }
+		{ keymap["list.open"], fn.bind(self.open, self) },
+		{ keymap["list.close"], fn.bind(self.close, self) },
+		{ keymap["list.next"], fn.bind(self.next, self) },
+		{ keymap["list.prev"], fn.bind(self.prev, self) }
 	)
 
 	au.group({
@@ -172,7 +172,7 @@ function Location:_setup_keymaps()
 				end)
 
 				table.insert(mode_keymaps, {
-					keymaps["dropdown.open"],
+					keymap["dropdown.open"],
 					function()
 						self:actions_menu()
 					end,
