@@ -23,10 +23,16 @@ Language.plugins = {
 	-- Winbar
 	{
 		"SmiteshP/nvim-navic",
-		requires = "neovim/nvim-lspconfig",
-		--[[ config = function()
-			vim.o.winbar = "%{%v:lua.require('nvim-navic').get_location()%}"
-		end, ]]
+		requires = { "neovim/nvim-lspconfig" },
+		config = function()
+			local globals = settings.globals()
+
+			require("nvim-navic").setup({
+				highlight = true,
+				separator = " > ",
+				depth_limit_indicator = globals.listchars.extend,
+			})
+		end,
 	},
 }
 
@@ -75,7 +81,7 @@ function Language:on_server_attach(client, buffer)
 
 		if buffer_win then
 			vim.wo[buffer_win.winid].winbar =
-				string.format("%s > %s", vim.o.winbar, "%{%v:lua.require('nvim-navic').get_location()%}")
+				string.format("%s > %s", fn.trim(vim.o.winbar), "%{%v:lua.require('nvim-navic').get_location()%}")
 
 			require("nvim-navic").attach(client, buffer)
 		end

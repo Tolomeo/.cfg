@@ -38,8 +38,8 @@ end
 function Editor:setup_keymaps()
 	-- Yanking and pasting from/to system clipboard by default
 	-- https://stackoverflow.com/a/32488853
-	key.nmap({ "y", '"*y' }, { "Y", '"*Y' }, { "p", '"*p' }, { "P", '"*P' })
-	key.vmap({ "y", '"*y' }, { "Y", '"*Y' }, { "p", '"*p' }, { "P", '"*P' })
+	--[[ key.nmap({ "y", '"*y' }, { "Y", '"*Y' }, { "p", '"*p' }, { "P", '"*P' })
+	key.vmap({ "y", '"*y' }, { "Y", '"*Y' }, { "p", '"*p' }, { "P", '"*P' }) ]]
 
 	local keymaps = settings.keymaps()
 

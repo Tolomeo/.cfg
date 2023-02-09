@@ -173,4 +173,8 @@ function Fn.merge_deep(...)
 	end, {})
 end
 
+function Fn.trim(str)
+	return (string.gsub(str, "^%s*(.-)%s*$", "%1"))
+end
+
 return Fn
