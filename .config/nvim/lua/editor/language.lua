@@ -8,6 +8,8 @@ local settings = require("settings")
 local Language = {}
 
 Language.plugins = {
+	-- Nvim config development
+	{ "folke/neodev.nvim" },
 	-- Lsp
 	{ "neovim/nvim-lspconfig" },
 	{ "williamboman/mason-lspconfig.nvim" },
@@ -90,35 +92,9 @@ end
 
 ---@private
 function Language:default_servers()
-	local runtime_path = vim.split(package.path, ";")
-	table.insert(runtime_path, "lua/?.lua")
-	table.insert(runtime_path, "lua/?/init.lua")
-
 	return {
 		{
 			name = "sumneko_lua",
-			settings = {
-				Lua = {
-					runtime = {
-						-- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-						version = "LuaJIT",
-						-- Setup your lua path
-						path = runtime_path,
-					},
-					diagnostics = {
-						-- Get the language server to recognize the `vim` global
-						globals = { "vim" },
-					},
-					workspace = {
-						library = vim.api.nvim_get_runtime_file("", true),
-						checkThirdParty = false,
-					},
-					-- Do not send telemetry data containing a randomized but unique identifier
-					telemetry = {
-						enable = false,
-					},
-				},
-			},
 		},
 	}
 end
@@ -140,6 +116,8 @@ function Language:setup_servers()
 	require("mason-lspconfig").setup({
 		automatic_installation = true,
 	})
+
+	require("neodev").setup()
 
 	for _, server in ipairs(servers) do
 		local server_config = {
