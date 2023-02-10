@@ -344,7 +344,7 @@ local defaults = {
 ---@class Cfg.Settings
 local Settings = {}
 
-Settings._directory = vim.fn.stdpath("data") .. "/cfg"
+Settings._directory = vim.fn.stdpath("config") .. "/cfg"
 
 Settings._file = Settings._directory .. "/settings.json"
 
@@ -392,7 +392,7 @@ function Settings:get_user_settings()
 	user_settings_exists = fs.existsSync(self._file)
 
 	if not user_settings_exists then
-		user_settings_exists, user_settings_error = fs.writeFileSync(self._file)
+		user_settings_exists, user_settings_error = fs.writeFileSync(self._file, "{}")
 	end
 
 	if user_settings_error then

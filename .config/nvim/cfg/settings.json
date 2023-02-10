@@ -1,5 +1,5 @@
 {
-    "options": {
+    "config": {
         "terminal.jobs": [
             {
                 "command": "lazygit"
@@ -12,6 +12,9 @@
             },
             {
                 "command": "glow"
+            },
+            {
+                "command": "brew"
             }
         ],
         "language.parsers": [
