@@ -66,10 +66,7 @@ function Tabs:_prompt_title()
 		string.sub(string.reverse(table.concat(prev_picker_titles, " ")), 1, (20 - #opt.listchars.precedes))
 	)
 	local prompt_title_right = string.sub(table.concat(next_picker_titles, " "), 1, (20 - #opt.listchars.extends))
-	local prompt_title = opt.listchars.precedes
-		.. prompt_title_left
-		.. prompt_title_right
-		.. opt.listchars.extends
+	local prompt_title = opt.listchars.precedes .. prompt_title_left .. prompt_title_right .. opt.listchars.extends
 
 	return prompt_title
 end
@@ -148,17 +145,16 @@ end
 
 -- function Tabs:remove(picker) end
 
----@class Picker
-local Picker = {}
-
-Picker.plugins = {
-	{ "nvim-telescope/telescope.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
-	{ "nvim-telescope/telescope-project.nvim", dependencies = { "nvim-telescope/telescope.nvim" } },
-	{
-		"folke/todo-comments.nvim",
-		dependencies = "nvim-lua/plenary.nvim",
+local Picker = Module:extend({
+	plugins = {
+		{ "nvim-telescope/telescope.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
+		{ "nvim-telescope/telescope-project.nvim", dependencies = { "nvim-telescope/telescope.nvim" } },
+		{
+			"folke/todo-comments.nvim",
+			dependencies = "nvim-lua/plenary.nvim",
+		},
 	},
-}
+})
 
 function Picker:setup()
 	self:_setup_keymaps()
@@ -236,7 +232,7 @@ function Picker:files()
 end
 
 ---@type fun(self: Picker, directory: string | nil)
-Picker.text = validator.f.arguments({ validator.f.equal(Picker), validator.f.optional("string") })
+Picker.text = validator.f.arguments({ validator.f.instance_of(Picker), validator.f.optional("string") })
 	.. function(_, directory)
 		local root = vim.loop.cwd()
 		local searchDirectory = directory or root
@@ -299,7 +295,7 @@ end
 
 ---@type fun(self: Picker, menu: { [number]: string, on_select: function }, options: { prompt_title: string } | nil)
 Picker.menu = validator.f.arguments({
-	validator.f.equal(Picker),
+	validator.f.instance_of(Picker),
 	validator.f.shape({
 		validator.f.list({ "string", validator.f.optional("string") }),
 		on_select = "function",
@@ -307,68 +303,67 @@ Picker.menu = validator.f.arguments({
 	validator.f.optional(validator.f.shape({
 		prompt_title = "string",
 	})),
-})
-	.. function(_, menu, options)
-		options = options or {}
+}) .. function(_, menu, options)
+	options = options or {}
 
-		local entry_display = require("telescope.pickers.entry_display")
-		local displayer = entry_display.create({
-			separator = " ",
-			items = {
-				-- calculating the max with needed for the column
-				fn.ireduce(menu, function(item, result)
-					item.width = math.max(item.width, #result[1])
-					return item
-				end, { width = 10 }),
-				{ remaining = true },
-			},
+	local entry_display = require("telescope.pickers.entry_display")
+	local displayer = entry_display.create({
+		separator = " ",
+		items = {
+			-- calculating the max with needed for the column
+			fn.ireduce(menu, function(item, result)
+				item.width = math.max(item.width, #result[1])
+				return item
+			end, { width = 10 }),
+			{ remaining = true },
+		},
+	})
+	local make_display = function(entry)
+		return displayer({
+			entry.value[1],
+			{ entry.value[2] or "", "Comment" },
 		})
-		local make_display = function(entry)
-			return displayer({
-				entry.value[1],
-				{ entry.value[2] or "", "Comment" },
-			})
-		end
-		local entry_maker = function(menu_item)
-			return {
-				value = menu_item,
-				ordinal = menu_item[1],
-				display = make_display,
-			}
-		end
-
-		local finder = require("telescope.finders").new_table({
-			results = fn.imap(menu, function(menu_item)
-				return menu_item
-			end),
-			entry_maker = entry_maker,
-		})
-		local sorter = require("telescope.sorters").get_generic_fuzzy_sorter()
-		local default_options = {
-			finder = finder,
-			sorter = sorter,
-			attach_mappings = function(prompt_buffer_number)
-				local actions = require("telescope.actions")
-				local state = require("telescope.actions.state")
-				-- On select item
-				actions.select_default:replace(function()
-					menu.on_select({ buffer = prompt_buffer_number, state = state, actions = actions })
-				end)
-				-- Disabling any kind of multiple selection
-				actions.add_selection:replace(function() end)
-				actions.remove_selection:replace(function() end)
-				actions.toggle_selection:replace(function() end)
-				actions.select_all:replace(function() end)
-
-				actions.drop_all:replace(function() end)
-				actions.toggle_all:replace(function() end)
-
-				return true
-			end,
-		}
-
-		require("telescope.pickers").new(options, default_options):find()
 	end
+	local entry_maker = function(menu_item)
+		return {
+			value = menu_item,
+			ordinal = menu_item[1],
+			display = make_display,
+		}
+	end
+
+	local finder = require("telescope.finders").new_table({
+		results = fn.imap(menu, function(menu_item)
+			return menu_item
+		end),
+		entry_maker = entry_maker,
+	})
+	local sorter = require("telescope.sorters").get_generic_fuzzy_sorter()
+	local default_options = {
+		finder = finder,
+		sorter = sorter,
+		attach_mappings = function(prompt_buffer_number)
+			local actions = require("telescope.actions")
+			local state = require("telescope.actions.state")
+			-- On select item
+			actions.select_default:replace(function()
+				menu.on_select({ buffer = prompt_buffer_number, state = state, actions = actions })
+			end)
+			-- Disabling any kind of multiple selection
+			actions.add_selection:replace(function() end)
+			actions.remove_selection:replace(function() end)
+			actions.toggle_selection:replace(function() end)
+			actions.select_all:replace(function() end)
+
+			actions.drop_all:replace(function() end)
+			actions.toggle_all:replace(function() end)
+
+			return true
+		end,
+	}
+
+	require("telescope.pickers").new(options, default_options):find()
+end
 
 ---@type fun(self: Picker, menu: { [number]: string, on_select: function }, options: { prompt_title: string } | nil)
 function Picker:context_menu(menu, options)
@@ -378,4 +373,4 @@ function Picker:context_menu(menu, options)
 	return self:menu(menu, options)
 end
 
-return Module:new(Picker)
+return Picker:new()

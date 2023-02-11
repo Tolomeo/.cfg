@@ -6,21 +6,21 @@ local logger = require("_shared.logger")
 local installed = nil
 local install_path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
-local Config = {}
+local Config = Module:extend({
+	plugins = {
+		{ "folke/lazy.nvim", lazy = false },
+		{ "williamboman/mason.nvim", lazy = false },
+		{ "kyazdani42/nvim-web-devicons" },
+	},
+	modules = {
+		"interface",
+		"editor",
+		"project",
+		"integration",
+	},
+})
 
-Config.plugins = {
-	{ "folke/lazy.nvim", lazy = false },
-	{ "williamboman/mason.nvim", lazy = false },
-	{ "kyazdani42/nvim-web-devicons" },
-}
-
-Config.modules = {
-	"interface",
-	"editor",
-	"project",
-	"integration",
-}
-
+---@diagnostic disable-next-line
 function Config:init()
 	settings:init()
 
@@ -76,4 +76,4 @@ function Config:setup()
 	require("mason").setup()
 end
 
-return Module:new(Config)
+return Config:new()

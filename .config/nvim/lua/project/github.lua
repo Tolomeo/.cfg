@@ -3,19 +3,18 @@ local key = require("_shared.key")
 local fn = require("_shared.fn")
 local settings = require("settings")
 
----@class Project.Github
-local Github = {}
-
-Github.plugins = {
-	{
-		"pwntester/octo.nvim",
-		dependencies = {
-			{ "nvim-lua/plenary.nvim" },
-			{ "nvim-telescope/telescope.nvim" },
-			{ "kyazdani42/nvim-web-devicons" },
+local Github = Module:extend({
+	plugins = {
+		{
+			"pwntester/octo.nvim",
+			dependencies = {
+				{ "nvim-lua/plenary.nvim" },
+				{ "nvim-telescope/telescope.nvim" },
+				{ "kyazdani42/nvim-web-devicons" },
+			},
 		},
 	},
-}
+})
 
 function Github:setup()
 	self:_setup_keymaps()
@@ -744,4 +743,4 @@ function Github:_setup_plugins()
 	})
 end
 
-return Module:new(Github)
+return Github:new()

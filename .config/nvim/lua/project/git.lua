@@ -3,12 +3,11 @@ local key = require("_shared.key")
 local fn = require("_shared.fn")
 local settings = require("settings")
 
----@class Cfg.Project.Git
-local Git = {}
-
-Git.plugins = {
-	{ "lewis6991/gitsigns.nvim" },
-}
+local Git = Module:extend({
+	plugins = {
+		{ "lewis6991/gitsigns.nvim" },
+	},
+})
 
 function Git:setup()
 	local preview_config = require("interface.window"):float_config()
@@ -130,4 +129,4 @@ function Git:prev_hunk()
 	require("gitsigns.actions").prev_hunk({ preview = true })
 end
 
-return Module:new(Git)
+return Git:new()

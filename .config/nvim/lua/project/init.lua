@@ -1,12 +1,11 @@
 local Module = require("_shared.module")
 
----@class Project
-local Project = {}
+local Project = Module:extend({
+	modules = {
+		"project.tree",
+		"project.git",
+		"project.github",
+	},
+})
 
-Project.modules = {
-	"project.tree",
-	"project.git",
-	"project.github",
-}
-
-return Module:new(Project)
+return Project:new()

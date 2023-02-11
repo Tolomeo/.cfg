@@ -5,22 +5,20 @@ local validator = require("_shared.validator")
 local key = require("_shared.key")
 local settings = require("settings")
 
----@class Core.Location
-local Location = {}
-
-Location.plugins = {
-	{ "stevearc/qf_helper.nvim" },
-	{ "https://gitlab.com/yorickpeterse/nvim-pqf.git" },
-}
+local Location = Module:extend({
+	plugins = {
+		{ "stevearc/qf_helper.nvim" },
+		{ "https://gitlab.com/yorickpeterse/nvim-pqf.git" },
+	},
+})
 
 function Location:setup()
 	self:_setup_keymaps()
 	self:_setup_plugins()
 end
 
----@type fun(self: Core.Location, mode?: "n" | "v" | "V"): table
 Location.actions = validator.f.arguments({
-	validator.f.equal(Location),
+	validator.f.instance_of(Location),
 	validator.f.optional(validator.f.one_of({ "n", "v", "V" })),
 }) .. function(self, mode)
 	local keymap = settings.keymap
@@ -199,7 +197,7 @@ function Location:_setup_plugins()
 end
 
 ---@type fun(self: List, window: number | nil): boolean
-Location.is_loclist = validator.f.arguments({ validator.f.equal(Location), validator.f.optional("number") })
+Location.is_loclist = validator.f.arguments({ validator.f.instance_of(Location), validator.f.optional("number") })
 	.. function(_, window)
 		window = window or vim.api.nvim_get_current_win()
 		local window_info = vim.fn.getwininfo(window)[1]
@@ -208,7 +206,7 @@ Location.is_loclist = validator.f.arguments({ validator.f.equal(Location), valid
 	end
 
 ---@type fun(self: List, window: number | nil): boolean
-Location.is_loclist_open = validator.f.arguments({ validator.f.equal(Location), validator.f.optional("number") })
+Location.is_loclist_open = validator.f.arguments({ validator.f.instance_of(Location), validator.f.optional("number") })
 	.. function(_, window)
 		window = window or 0
 
@@ -216,7 +214,7 @@ Location.is_loclist_open = validator.f.arguments({ validator.f.equal(Location), 
 	end
 
 ---@type fun(self: List, window: number | nil): table
-Location.get_loclist = validator.f.arguments({ validator.f.equal(Location), validator.f.optional("number") })
+Location.get_loclist = validator.f.arguments({ validator.f.instance_of(Location), validator.f.optional("number") })
 	.. function(_, window)
 		window = window or 0
 
@@ -231,7 +229,7 @@ function Location:has_loclist_items(window)
 end
 
 ---@type fun(self: List, window: number | nil): table
-Location.clear_loclist = validator.f.arguments({ validator.f.equal(Location), validator.f.optional("number") })
+Location.clear_loclist = validator.f.arguments({ validator.f.instance_of(Location), validator.f.optional("number") })
 	.. function(_, window)
 		window = window or 0
 
@@ -239,7 +237,7 @@ Location.clear_loclist = validator.f.arguments({ validator.f.equal(Location), va
 	end
 
 ---@type fun(self: List, window: number | nil): table
-Location.is_qflist = validator.f.arguments({ validator.f.equal(Location), validator.f.optional("number") })
+Location.is_qflist = validator.f.arguments({ validator.f.instance_of(Location), validator.f.optional("number") })
 	.. function(_, window)
 		window = window or vim.api.nvim_get_current_win()
 		local window_info = vim.fn.getwininfo(window)[1]
@@ -329,4 +327,4 @@ function Location:actions_menu()
 	require("integration.picker"):context_menu(menu, options)
 end
 
-return Module:new(Location)
+return Location:new()

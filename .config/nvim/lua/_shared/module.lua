@@ -1,12 +1,9 @@
-local validator = require("_shared.validator")
+local Object = require("_shared.object")
 local logger = require("_shared.logger")
 
 ---@class Modules
 local Modules = {}
 
----Returns a registered configuration module
----@param module_name string
----@return Module | nil
 function Modules:require(module_name)
 	local loaded = self[module_name]
 
@@ -18,7 +15,6 @@ function Modules:require(module_name)
 end
 
 ---@param module_name string
----@return boolean, Module | string
 function Modules:load(module_name)
 	local loaded, load_result = pcall(require, module_name)
 	self[module_name] = loaded
@@ -27,23 +23,31 @@ function Modules:load(module_name)
 end
 
 ---Represents a configuration module
----@class Module
-local Module = {
+local Module = Object:extend({
 	plugins = {},
 	modules = {},
-}
+	setup = function() end,
+})
 
-Module.plugins = {}
+---@diagnostic disable-next-line
+function Module:constructor()
+	for _, child_module_name in ipairs(self.modules) do
+		local loaded, load_result = Modules:load(child_module_name)
 
-Module.modules = {}
-
---- Setups module specific configurations, like plugins scaffolding
----@type fun()
-Module.setup = function() end
+		if not loaded then
+			logger.error(
+				string.format(
+					"Failed to load configuration module '%s' with the error: %s",
+					child_module_name,
+					load_result
+				)
+			)
+		end
+	end
+end
 
 --- Initializes the module
----@type fun(self: Module)
-Module.init = function(self)
+function Module:init()
 	self:setup()
 
 	for _, child_module_name in ipairs(self.modules) do
@@ -59,6 +63,7 @@ Module.init = function(self)
 			goto continue
 		end
 
+		---@diagnostic disable-next-line
 		child_module:init()
 
 		::continue::
@@ -68,38 +73,6 @@ end
 function Module:require(module_name)
 	return Modules:require(module_name)
 end
-
----@generic M
----@type fun(self: Module, module: M): Module | M
-Module.new = validator.f.arguments({
-	validator.f.equal(Module),
-	validator.f.shape({
-		plugins = validator.f.optional("table"),
-		modules = validator.f.optional("table"),
-		setup = validator.f.optional("function"),
-	}),
-})
-	.. function(self, m)
-		setmetatable(m, self)
-		self.__index = self
-
-		-- Saving submodules in custom register
-		for _, child_module_name in ipairs(m.modules) do
-			local loaded, load_result = Modules:load(child_module_name)
-
-			if not loaded then
-				logger.error(
-					string.format(
-						"Failed to load configuration module '%s' with the error: %s",
-						child_module_name,
-						load_result
-					)
-				)
-			end
-		end
-
-		return m
-	end
 
 --- Returns a list of all the plugins used by the module and by its children
 ---@return table
@@ -117,6 +90,7 @@ function Module:list_plugins()
 			goto continue
 		end
 
+		---@diagnostic disable-next-line
 		local child_module_plugins = child_module:list_plugins()
 
 		for _, child_module_plugin in ipairs(child_module_plugins) do

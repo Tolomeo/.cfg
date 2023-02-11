@@ -4,39 +4,39 @@ local key = require("_shared.key")
 local fn = require("_shared.fn")
 local settings = require("settings")
 
----@class Cfg.Editor.Language
-local Language = {}
+local Language = Module:extend({
+	plugins = {
+		{ "nvim-telescope/telescope.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
+		-- Nvim config development
+		{ "folke/neodev.nvim" },
+		-- Lsp
+		{ "neovim/nvim-lspconfig" },
+		{ "williamboman/mason-lspconfig.nvim" },
+		-- Completion
+		{ "hrsh7th/nvim-cmp" },
+		{ "hrsh7th/cmp-nvim-lsp" },
+		{ "hrsh7th/cmp-buffer" },
+		{ "hrsh7th/cmp-path" },
+		{ "hrsh7th/cmp-cmdline" },
+		{ "L3MON4D3/LuaSnip" },
+		{ "saadparwaiz1/cmp_luasnip" },
+		{ "rafamadriz/friendly-snippets" },
+		-- Winbar
+		{
+			"SmiteshP/nvim-navic",
+			requires = { "neovim/nvim-lspconfig" },
+			config = function()
+				local opt = settings.opt
 
-Language.plugins = {
-	-- Nvim config development
-	{ "folke/neodev.nvim" },
-	-- Lsp
-	{ "neovim/nvim-lspconfig" },
-	{ "williamboman/mason-lspconfig.nvim" },
-	-- Completion
-	{ "hrsh7th/nvim-cmp" },
-	{ "hrsh7th/cmp-nvim-lsp" },
-	{ "hrsh7th/cmp-buffer" },
-	{ "hrsh7th/cmp-path" },
-	{ "hrsh7th/cmp-cmdline" },
-	{ "L3MON4D3/LuaSnip" },
-	{ "saadparwaiz1/cmp_luasnip" },
-	{ "rafamadriz/friendly-snippets" },
-	-- Winbar
-	{
-		"SmiteshP/nvim-navic",
-		requires = { "neovim/nvim-lspconfig" },
-		config = function()
-			local opt = settings.opt
-
-			require("nvim-navic").setup({
-				highlight = true,
-				separator = " > ",
-				depth_limit_indicator = opt.listchars.extend,
-			})
-		end,
+				require("nvim-navic").setup({
+					highlight = true,
+					separator = " > ",
+					depth_limit_indicator = opt.listchars.extend,
+				})
+			end,
+		},
 	},
-}
+})
 
 ---@private
 function Language:on_server_attach(client, buffer)
@@ -83,7 +83,7 @@ function Language:on_server_attach(client, buffer)
 
 		if buffer_win then
 			vim.wo[buffer_win.winid].winbar =
-				string.format("%s > %s", fn.trim(vim.o.winbar), "%{%v:lua.require('nvim-navic').get_location()%}")
+				string.format("%s ❘ %s", fn.trim(vim.o.winbar), "%{%v:lua.require('nvim-navic').get_location()%}")
 
 			require("nvim-navic").attach(client, buffer)
 		end
@@ -261,4 +261,4 @@ function Language:setup()
 	self:setup_completion()
 end
 
-return Module:new(Language)
+return Language:new()

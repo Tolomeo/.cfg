@@ -1,18 +1,17 @@
 local Module = require("_shared.module")
 local settings = require("settings")
 
----@class Cfg.Interface.Color
-local Color = {}
-
-Color.plugins = {
-	-- Color themes
-	{ "shaunsingh/nord.nvim", lazy = false, priority = 1000 },
-	{ "EdenEast/nightfox.nvim", lazy = false, priority = 1000 },
-	{ "sainnhe/edge", lazy = false, priority = 1000 },
-	{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
-	-- Highlighting color strings
-	{ "norcalli/nvim-colorizer.lua" },
-}
+local Color = Module:extend({
+	plugins = {
+		-- Color themes
+		{ "shaunsingh/nord.nvim", lazy = false, priority = 1000 },
+		{ "EdenEast/nightfox.nvim", lazy = false, priority = 1000 },
+		{ "sainnhe/edge", lazy = false, priority = 1000 },
+		{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
+		-- Highlighting color strings
+		{ "norcalli/nvim-colorizer.lua" },
+	},
+})
 
 function Color:setup()
 	local config = settings.config
@@ -65,4 +64,4 @@ function Color:setup()
 	require("colorizer").setup()
 end
 
-return Module:new(Color)
+return Color:new()

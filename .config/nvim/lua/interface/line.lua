@@ -1,20 +1,22 @@
 local Module = require("_shared.module")
 local settings = require("settings")
 
----@class Interface.Line
-local Line = {}
-
-Line.plugins = {
-	{
-		"nvim-lualine/lualine.nvim",
-		dependencies = { "kyazdani42/nvim-web-devicons", lazy = true },
+local Line = Module:extend({
+	plugins = {
+		{
+			"nvim-lualine/lualine.nvim",
+			dependencies = { "kyazdani42/nvim-web-devicons", lazy = true },
+		},
+		{ "arkav/lualine-lsp-progress" },
+		{
+			"kdheepak/tabline.nvim",
+			dependencies = {
+				{ "nvim-lualine/lualine.nvim", lazy = true },
+				{ "kyazdani42/nvim-web-devicons", lazy = true },
+			},
+		},
 	},
-	{ "arkav/lualine-lsp-progress" },
-	{
-		"kdheepak/tabline.nvim",
-		dependencies = { { "nvim-lualine/lualine.nvim", lazy = true }, { "kyazdani42/nvim-web-devicons", lazy = true } },
-	},
-}
+})
 
 function Line:setup()
 	self:setup_status()
@@ -63,4 +65,4 @@ function Line:setup_status()
 	})
 end
 
-return Module:new(Line)
+return Line:new()

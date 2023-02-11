@@ -5,8 +5,7 @@ local validator = require("_shared.validator")
 local settings = require("settings")
 local fn = require("_shared.fn")
 
----@class Interface.Window
-local Window = {}
+local Window = Module:extend({})
 
 function Window:_setup_keymaps()
 	local keymap = settings.keymap
@@ -156,9 +155,8 @@ function Window:modal_config()
 	return config
 end
 
----@type fun(self: Interface.Window, options: { [number]: number, on_resize: function | nil, on_resized: function | nil })
 Window.modal = validator.f.arguments({
-	validator.f.equal(Window),
+	validator.f.instance_of(Window),
 	validator.f.shape({
 		"number",
 		on_resize = validator.f.optional("function"),
@@ -196,4 +194,4 @@ Window.modal = validator.f.arguments({
 	return window
 end
 
-return Module:new(Window)
+return Window:new()

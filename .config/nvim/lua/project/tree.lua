@@ -4,18 +4,17 @@ local validator = require("_shared.validator")
 local fn = require("_shared.fn")
 local settings = require("settings")
 
----@class Project.Tree
-local Tree = {}
-
-Tree.plugins = {
-	-- File tree
-	{
-		"kyazdani42/nvim-tree.lua",
-		dependencies = {
-			{ "kyazdani42/nvim-web-devicons" }, -- optional, for file icon
+local Tree = Module:extend({
+	plugins = {
+		-- File tree
+		{
+			"kyazdani42/nvim-tree.lua",
+			dependencies = {
+				{ "kyazdani42/nvim-web-devicons" }, -- optional, for file icon
+			},
 		},
 	},
-}
+})
 
 function Tree:actions()
 	local keymap = settings.keymap
@@ -266,8 +265,7 @@ local validate_node = validator.f.any_of({
 	}),
 })
 
----@type fun(self: Project.Tree, node: TreeNode)
-Tree.search_in_node = validator.f.arguments({ validator.f.equal(Tree), validate_node })
+Tree.search_in_node = validator.f.arguments({ validator.f.instance_of(Tree), validate_node })
 	.. function(_, node)
 		-- when the selected node is the one pointing at the parent director absolute_path will not be present
 		if not node.absolute_path then
@@ -284,8 +282,7 @@ Tree.search_in_node = validator.f.arguments({ validator.f.equal(Tree), validate_
 		end
 	end
 
----@type fun(self: Project.Tree, node: TreeNode)
-Tree.tree_actions_menu = validator.f.arguments({ validator.f.equal(Tree), validate_node })
+Tree.tree_actions_menu = validator.f.arguments({ validator.f.instance_of(Tree), validate_node })
 	.. function(self, node)
 		local actions = self:actions()
 		local menu = vim.tbl_extend(
@@ -334,4 +331,4 @@ function Tree:toggle()
 	find_tree_file(bufname)
 end
 
-return Module:new(Tree)
+return Tree:new()

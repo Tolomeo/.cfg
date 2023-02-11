@@ -125,8 +125,7 @@ Jobs.prev = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optiona
 		return self:current()
 	end
 
----@class Terminal
-local Terminal = {}
+local Terminal = Module:extend({})
 
 function Terminal:setup()
 	self:_setup_keymaps()
@@ -373,4 +372,4 @@ function Terminal:menu(options)
 	require("integration.picker"):menu(menu, options)
 end
 
-return Module:new(Terminal)
+return Terminal:new()

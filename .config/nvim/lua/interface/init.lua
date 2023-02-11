@@ -1,18 +1,16 @@
 local Module = require("_shared.module")
 local validator = require("_shared.validator")
 
----@class Cfg.Interface
-local Interface = {}
-
-Interface.modules = {
-	"interface.color",
-	"interface.line",
-	"interface.tab",
-	"interface.window",
-}
+local Interface = Module:extend({
+	modules = {
+		"interface.color",
+		"interface.line",
+		"interface.window",
+	},
+})
 
 Interface.sign = validator.f.arguments({
-	validator.f.equal(Interface),
+	validator.f.instance_of(Interface),
 	validator.f.shape({ name = "string", text = "string" }),
 }) .. function(_, ...)
 	local signs = { ... }
@@ -26,4 +24,4 @@ Interface.sign = validator.f.arguments({
 	end
 end
 
-return Module:new(Interface)
+return Interface:new()

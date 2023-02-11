@@ -3,17 +3,16 @@ local key = require("_shared.key")
 local fn = require("_shared.fn")
 local settings = require("settings")
 
----@class Cfg.Editor.Format
-local Format = {}
-
-Format.plugins = {
-	-- Formatter
-	{ "sbdchd/neoformat" },
-	-- Folds
-	{ "kevinhwang91/nvim-ufo", dependencies = "kevinhwang91/promise-async" },
-	-- Comments
-	{ "b3nj5m1n/kommentary" },
-}
+local Format = Module:extend({
+	plugins = {
+		-- Formatter
+		{ "sbdchd/neoformat" },
+		-- Folds
+		{ "kevinhwang91/nvim-ufo", dependencies = "kevinhwang91/promise-async" },
+		-- Comments
+		{ "b3nj5m1n/kommentary" },
+	},
+})
 
 function Format:setup()
 	self:setup_formatter()
@@ -55,4 +54,4 @@ function Format:comment_selection()
 	key.input("<Plug>kommentary_visual_default", "m")
 end
 
-return Module:new(Format)
+return Format:new()

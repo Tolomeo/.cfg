@@ -1,13 +1,11 @@
 local Module = require("_shared.module")
 
----@class Cfg.Integration
-local Integration = {}
+local Integration = Module:extend({
+	modules = {
+		"integration.terminal",
+		"integration.location",
+		"integration.picker",
+	},
+})
 
-Integration.modules = {
-	"integration.terminal",
-	"integration.location",
-	"integration.picker",
-}
-
-return Module:new(Integration)
-
+return Integration:new()

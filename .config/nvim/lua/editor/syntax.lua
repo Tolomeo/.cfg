@@ -1,30 +1,29 @@
 local Module = require("_shared.module")
 local settings = require("settings")
 
----@class Cfg.Editor.Syntax
-local Syntax = {}
-
-Syntax.plugins = {
-	-- Highlight, edit, and code navigation parsing library
-	{ "nvim-treesitter/nvim-treesitter" },
-	-- Syntax aware text-objects based on treesitter
-	{
-		"nvim-treesitter/nvim-treesitter-textobjects",
-		dependencies = { "nvim-treesitter/nvim-treesitter" },
+local Syntax = Module:extend({
+	plugins = {
+		-- Highlight, edit, and code navigation parsing library
+		{ "nvim-treesitter/nvim-treesitter" },
+		-- Syntax aware text-objects based on treesitter
+		{
+			"nvim-treesitter/nvim-treesitter-textobjects",
+			dependencies = { "nvim-treesitter/nvim-treesitter" },
+		},
+		-- Setting commentstrings based on treesitter
+		{
+			"JoosepAlviste/nvim-ts-context-commentstring",
+			dependencies = { "nvim-treesitter/nvim-treesitter" },
+		},
+		-- Auto closing tags
+		{
+			"windwp/nvim-ts-autotag",
+			dependencies = { "nvim-treesitter/nvim-treesitter" },
+		},
+		-- Code annotations
+		{ "danymat/neogen", dependencies = { "nvim-treesitter/nvim-treesitter" } },
 	},
-	-- Setting commentstrings based on treesitter
-	{
-		"JoosepAlviste/nvim-ts-context-commentstring",
-		dependencies = { "nvim-treesitter/nvim-treesitter" },
-	},
-	-- Auto closing tags
-	{
-		"windwp/nvim-ts-autotag",
-		dependencies = { "nvim-treesitter/nvim-treesitter" },
-	},
-	-- Code annotations
-	{ "danymat/neogen", dependencies = { "nvim-treesitter/nvim-treesitter" } },
-}
+})
 
 function Syntax:setup()
 	local config = settings.config
@@ -99,4 +98,4 @@ function Syntax:setup()
 	require("neogen").setup({})
 end
 
-return Module:new(Syntax)
+return Syntax:new()

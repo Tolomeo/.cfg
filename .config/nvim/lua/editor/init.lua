@@ -3,30 +3,28 @@ local au = require("_shared.au")
 local key = require("_shared.key")
 local settings = require("settings")
 
----@class Cfg.Editor
-local Editor = {}
-
-Editor.modules = {
-	"editor.syntax",
-	"editor.language",
-	"editor.format",
-}
-
-Editor.plugins = {
-	{ "romainl/vim-cool" },
-	-- Autoclosing pair of chars
-	{ "windwp/nvim-autopairs" },
-	-- Parentheses, brackets, quotes, XML tags
-	{ "tpope/vim-surround" },
-	-- Change case and handles variants of a word
-	{ "tpope/vim-abolish" },
-	-- additional operator targets
-	{ "wellle/targets.vim" },
-	-- Highlighting command ranges
-	{ "winston0410/range-highlight.nvim", dependencies = "winston0410/cmd-parser.nvim" },
-	-- Indentation
-	{ "lukas-reineke/indent-blankline.nvim" },
-}
+local Editor = Module:extend({
+	modules = {
+		"editor.syntax",
+		"editor.language",
+		"editor.format",
+	},
+	plugins = {
+		{ "romainl/vim-cool" },
+		-- Autoclosing pair of chars
+		{ "windwp/nvim-autopairs" },
+		-- Parentheses, brackets, quotes, XML tags
+		{ "tpope/vim-surround" },
+		-- Change case and handles variants of a word
+		{ "tpope/vim-abolish" },
+		-- additional operator targets
+		{ "wellle/targets.vim" },
+		-- Highlighting command ranges
+		{ "winston0410/range-highlight.nvim", dependencies = "winston0410/cmd-parser.nvim" },
+		-- Indentation
+		{ "lukas-reineke/indent-blankline.nvim" },
+	},
+})
 
 function Editor:setup()
 	self:setup_keymaps()
@@ -189,7 +187,7 @@ end
 
 -- Returns the current word under the cursor
 function Editor:cword()
-	return vim.call("expand", "<cword>")
+	return vim.fn.expand("<cword>")
 end
 
-return Module:new(Editor)
+return Editor:new()
