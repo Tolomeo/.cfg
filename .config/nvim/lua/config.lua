@@ -1,7 +1,6 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
 local settings = require("settings")
-local logger = require("_shared.logger")
 
 local installed = nil
 local install_path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -9,8 +8,7 @@ local install_path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 local Config = Module:extend({
 	plugins = {
 		{ "folke/lazy.nvim", lazy = false },
-		{ "williamboman/mason.nvim", lazy = false },
-		{ "kyazdani42/nvim-web-devicons" },
+		{ "williamboman/mason.nvim" },
 	},
 	modules = {
 		"interface",
@@ -20,9 +18,11 @@ local Config = Module:extend({
 	},
 })
 
----@diagnostic disable-next-line
-function Config:init()
+function Config:setup()
 	settings:init()
+
+	-- setting leader key
+	key.map_leader(settings.keymap.leader)
 
 	-- Checking packer install location
 	installed = vim.loop.fs_stat(install_path)
@@ -39,39 +39,9 @@ function Config:init()
 		})
 	end
 
-	vim.opt.runtimepath:append(install_path)
+	vim.opt.runtimepath:prepend(install_path)
 
 	require("lazy").setup(self:list_plugins())
-
-	-- Downloading plugins
-	if not installed then
-		require("lazy").sync({ wait = true })
-	end
-
-	self:setup()
-
-	for _, child_module_name in ipairs(self.modules) do
-		local child_module = self:require(child_module_name)
-
-		if not child_module then
-			logger.error(
-				string.format(
-					"Cannot initialize module '%s' with the error: the module was not loaded",
-					child_module_name
-				)
-			)
-			goto continue
-		end
-
-		child_module:init()
-
-		::continue::
-	end
-end
-
-function Config:setup()
-	-- setting leader key
-	key.map_leader(settings.keymap.leader)
 
 	require("mason").setup()
 end

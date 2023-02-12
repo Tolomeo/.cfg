@@ -50,6 +50,9 @@ function Color:setup()
 				variablebuiltinStyle = { italic = false },
 				transparent = true,
 				globalStatus = true,
+				overrides = {
+					TelescopeBorder = { link = "Normal" },
+				},
 			})
 		end,
 	})[colorscheme_name]

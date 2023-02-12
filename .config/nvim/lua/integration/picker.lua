@@ -181,6 +181,7 @@ function Picker:_setup_plugins()
 
 	require("telescope").setup({
 		defaults = {
+			borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
 			layout_strategy = "flex",
 			layout_config = {
 				prompt_position = "top",

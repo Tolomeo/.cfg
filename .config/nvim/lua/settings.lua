@@ -344,7 +344,7 @@ local defaults = {
 ---@class Cfg.Settings
 local Settings = {}
 
-Settings._directory = vim.fn.stdpath("config") .. "/cfg"
+Settings._directory = vim.fn.stdpath("config") .. "/.cfg"
 
 Settings._file = Settings._directory .. "/settings.json"
 
