@@ -141,11 +141,11 @@ Validator.f = {
 						)
 				end
 
-				if tostring(mt) == expected then
+				if tostring(mt.__index) == expected then
 					return true
 				end
 
-				mt = getmetatable(mt)
+				mt = getmetatable(mt.__index)
 			end
 		end
 	end,
