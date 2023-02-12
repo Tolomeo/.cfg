@@ -10,7 +10,7 @@ Pictures/
 Projects/
 Public/
 Sync/
-.cfg/
+/.cfg/
 .vscode/
 .cache/
 .zsh_sessions/
