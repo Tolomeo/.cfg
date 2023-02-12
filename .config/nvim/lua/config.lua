@@ -1,4 +1,5 @@
 local Module = require("_shared.module")
+local fs = require("_shared.fs")
 local key = require("_shared.key")
 local settings = require("settings")
 
@@ -25,7 +26,7 @@ function Config:setup()
 	key.map_leader(settings.keymap.leader)
 
 	-- Checking packer install location
-	installed = vim.loop.fs_stat(install_path)
+	installed = fs.existsSync(install_path)
 
 	-- Cloning plugin manager in place if it is not found
 	if not installed then

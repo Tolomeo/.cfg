@@ -80,12 +80,8 @@ function Language:on_server_attach(client, buffer)
 		end)
 
 		if buffer_win then
-			vim.wo[buffer_win.winid].winbar = string.format(
-				"%s%s%s",
-				fn.trim(vim.o.winbar),
-				settings.config["icon.component.right"],
-				"%{%v:lua.require('nvim-navic').get_location()%}"
-			)
+			vim.wo[buffer_win.winid].winbar =
+				string.format("%s >> %s", fn.trim(vim.o.winbar), "%{%v:lua.require('nvim-navic').get_location()%}")
 
 			require("nvim-navic").attach(client, buffer)
 		end

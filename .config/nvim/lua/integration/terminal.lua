@@ -125,7 +125,11 @@ Jobs.prev = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optiona
 		return self:current()
 	end
 
-local Terminal = Module:extend({})
+local Terminal = Module:extend({
+	plugins = {
+		{ "samjwill/nvim-unception" },
+	},
+})
 
 function Terminal:setup()
 	self:_setup_keymaps()
