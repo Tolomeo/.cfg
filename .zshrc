@@ -14,6 +14,9 @@ else
   load-nvm
 fi
 
+export VISUAL=nvim
+export EDITOR=nvim
+
 # propmpt customisation, see ~/.zsh/pure directory
 fpath+=$HOME/.zsh/pure
 autoload -U promptinit; promptinit
