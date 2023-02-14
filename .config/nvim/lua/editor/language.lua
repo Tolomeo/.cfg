@@ -88,15 +88,6 @@ function Language:on_server_attach(client, buffer)
 	end
 end
 
----@private
-function Language:default_servers()
-	return {
-		{
-			name = "sumneko_lua",
-		},
-	}
-end
-
 function Language:default_server_config()
 	return {
 		capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities()),
@@ -107,9 +98,8 @@ end
 function Language:setup_servers()
 	local config = settings.config
 	local float_win_config = require("interface.window"):float_config()
-	local default_servers = Language:default_servers()
-	local default_server_config = Language:default_server_config()
-	local servers = fn.push(default_servers, unpack(config["language.servers"]))
+	local servers = config["language.servers"]
+	local default_server_config = self:default_server_config()
 
 	require("mason-lspconfig").setup({
 		automatic_installation = true,

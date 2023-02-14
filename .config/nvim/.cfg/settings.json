@@ -1,6 +1,6 @@
 {
     "config": {
-				"theme.colorscheme": "kanagawa",
+        "theme.colorscheme": "kanagawa",
         "terminal.jobs": [
             {
                 "command": "lazygit"
@@ -36,6 +36,9 @@
             "markdown"
         ],
         "language.servers": [
+            {
+                "name": "lua_ls"
+            },
             {
                 "name": "bashls"
             },
