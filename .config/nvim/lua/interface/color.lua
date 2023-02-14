@@ -4,9 +4,8 @@ local settings = require("settings")
 local Color = Module:extend({
 	plugins = {
 		-- Color themes
-		{ "shaunsingh/nord.nvim", lazy = false, priority = 1000 },
-		{ "EdenEast/nightfox.nvim", lazy = false, priority = 1000 },
 		{ "sainnhe/edge", lazy = false, priority = 1000 },
+		{ "sainnhe/everforest", lazy = false, priority = 1000 },
 		{ "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
 		-- Highlighting color strings
 		{ "norcalli/nvim-colorizer.lua" },
@@ -17,20 +16,6 @@ function Color:setup()
 	local config = settings.config
 	local colorscheme_name = config["theme.colorscheme"]
 	local setup_colorscheme = ({
-		nord = function()
-			vim.g.nord_borders = false
-			vim.g.nord_disable_background = true
-			vim.g.nord_italic = false
-			vim.g.nord_uniform_diff_background = true
-			vim.g.nord_bold = false
-		end,
-		nordfox = function()
-			require("nightfox").setup({
-				options = {
-					transparent = true,
-				},
-			})
-		end,
 		edge = function()
 			vim.g.edge_style = "neon"
 			vim.g.edge_disable_italic_comment = 1
@@ -39,7 +24,14 @@ function Color:setup()
 			vim.g.edge_current_word = "grey background"
 			vim.g.edge_diagnostic_virtual_text = "colored"
 			vim.g.edge_diagnostic_line_highlight = 1
-			vim.g.edge_style = "neon"
+		end,
+		everforest = function()
+			vim.g.everforest_disable_italic_comment = 1
+			vim.g.everforest_transparent_background = 1
+			vim.g.everforest_better_performance = true
+			vim.g.everforest_current_word = "grey background"
+			vim.g.everforest_diagnostic_virtual_text = "colored"
+			vim.g.everforest_diagnostic_line_highlight = 1
 		end,
 		kanagawa = function()
 			require("kanagawa").setup({
@@ -51,7 +43,7 @@ function Color:setup()
 				transparent = true,
 				globalStatus = true,
 				overrides = {
-					TelescopeBorder = { link = "Normal" },
+					TelescopeBorder = { link = "TelescopeNormal" },
 				},
 			})
 		end,
@@ -59,9 +51,6 @@ function Color:setup()
 
 	setup_colorscheme()
 	vim.cmd(string.format("colorscheme %s", colorscheme_name))
-
-	-- TODO: borderless telescope
-	-- see https://github.com/nvim-telescope/telescope.nvim/wiki/Gallery#borderless
 
 	-- Colorizer
 	require("colorizer").setup()

@@ -54,7 +54,7 @@ local defaults = {
 		list = true,
 		listchars = { eol = "↲", tab = "▸ ", trail = "·", space = "·", extends = "…", precedes = "…" },
 		-- 	Characters to fill the statuslines, vertical separators and special lines in the window
-		fillchars = "foldopen:▼,foldclose:►,eob: ",
+		fillchars = "foldopen:▼,foldclose:►,eob:·",
 		-- The minimal number of screen columns to keep to the left and to the right of the cursor
 		-- set to 1 to allow seeing EOL listchar without truncating the text
 		sidescrolloff = 1,

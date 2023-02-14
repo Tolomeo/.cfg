@@ -181,14 +181,20 @@ function Picker:_setup_plugins()
 
 	require("telescope").setup({
 		defaults = {
-			borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
+			sorting_strategy = "ascending",
+			dynamic_preview_title = true,
 			layout_strategy = "flex",
 			layout_config = {
 				prompt_position = "top",
 			},
-			sorting_strategy = "ascending",
-			dynamic_preview_title = true,
 			color_devicons = true,
+			results_title = "",
+			borderchars = {
+				{ "─", "│", "─", "│", "┌", "┐", "┘", "└" },
+				prompt = { "─", "│", "─", "│", "┌", "┐", "┤", "├" },
+				results = { " ", "│", "─", "│", "│", "│", "┘", "└" },
+				preview = { "─", "│", "─", " ", "─", "┐", "┘", "─" },
+			},
 			mappings = {
 				i = {
 					[keymap["window.cursor.down"]] = require("telescope.actions").move_selection_next,
