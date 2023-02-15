@@ -149,7 +149,7 @@ local pickers = setmetatable({
 	projects = function()
 		require("telescope").extensions.project.project({ display_type = "full" })
 	end,
-	live_grep = validator.f.arguments({ validator.f.optional("string") }) .. function(_, directory)
+	live_grep = validator.f.arguments({ validator.f.optional("string") }) .. function(directory)
 		local root = vim.loop.cwd()
 		local searchDirectory = directory or root
 		local rootRelativeCwd = root == searchDirectory and "/" or string.gsub(searchDirectory, root, "")
