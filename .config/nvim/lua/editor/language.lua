@@ -39,7 +39,9 @@ local Language = Module:extend({
 ---@private
 function Language:on_server_attach(client, buffer)
 	local keymap = settings.keymap
-	local picker = require("integration.picker")
+	local find_diagnostics = function()
+		return require("integration.picker"):find("diagnostics")
+	end
 
 	key.nmap(
 		{ keymap["language.lsp.hover"], vim.lsp.buf.hover, buffer = buffer },
@@ -54,7 +56,7 @@ function Language:on_server_attach(client, buffer)
 		{ keymap["language.diagnostic.next"], vim.diagnostic.goto_next, buffer = buffer },
 		{ keymap["language.diagnostic.prev"], vim.diagnostic.goto_prev, buffer = buffer },
 		{ keymap["language.diagnostic.open"], vim.diagnostic.open_float, buffer = buffer },
-		{ keymap["language.diagnostic.list"], fn.bind(picker.find_diagnostics, picker), buffer = buffer }
+		{ keymap["language.diagnostic.list"], find_diagnostics, buffer = buffer }
 	)
 
 	if client.server_capabilities.documentHighlightProvider then

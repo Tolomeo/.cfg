@@ -145,6 +145,47 @@ end
 
 -- function Tabs:remove(picker) end
 
+local pickers = setmetatable({
+	projects = function()
+		require("telescope").extensions.project.project({ display_type = "full" })
+	end,
+	live_grep = validator.f.arguments({ validator.f.optional("string") }) .. function(_, directory)
+		local root = vim.loop.cwd()
+		local searchDirectory = directory or root
+		local rootRelativeCwd = root == searchDirectory and "/" or string.gsub(searchDirectory, root, "")
+		local options = {
+			cwd = searchDirectory,
+			prompt_title = "Search in " .. rootRelativeCwd,
+		}
+
+		require("telescope.builtin").live_grep(options)
+	end,
+	todos = function()
+		key.input(":TodoTelescope<CR>")
+	end,
+	help = function()
+		return Tabs:new({
+			{ prompt_title = "Help", find = require("telescope.builtin").help_tags },
+			{ prompt_title = "Commands", find = require("telescope.builtin").commands },
+			{ prompt_title = "Options", find = require("telescope.builtin").vim_options },
+			{ prompt_title = "Autocommands", find = require("telescope.builtin").autocommands },
+			{ prompt_title = "Keymaps", find = require("telescope.builtin").keymaps },
+			{ prompt_title = "Filetypes", find = require("telescope.builtin").filetypes },
+			{ prompt_title = "Highlights", find = require("telescope.builtin").highlights },
+		}):find()
+	end,
+}, {
+	__index = function(_, picker_name)
+		local picker = require("telescope.builtin")[picker_name]
+
+		if not picker then
+			error(string.format("'%s' picker not found", vim.inspect(picker_name)))
+		end
+
+		return picker
+	end,
+})
+
 local Picker = Module:extend({
 	plugins = {
 		{ "nvim-telescope/telescope.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
@@ -157,44 +198,10 @@ local Picker = Module:extend({
 })
 
 function Picker:setup()
-	self:_setup_keymaps()
-	self:_setup_plugins()
-end
-
-function Picker:_setup_keymaps()
-	local keymap = settings.keymap
-
-	key.nmap(
-		{ keymap["find.files"], fn.bind(self.files, self) },
-		{ keymap["find.projects"], fn.bind(self.projects, self) },
-		{ keymap["find.search.buffer"], fn.bind(self.buffer_text, self) },
-		{ keymap["find.search.directory"], fn.bind(self.text, self) },
-		{ keymap["find.help"], fn.bind(self.help, self) },
-		{ keymap["find.spelling"], fn.bind(self.spelling, self) },
-		{ keymap["find.buffers"], fn.bind(self.buffers, self) },
-		{ keymap["find.todos"], fn.bind(self.todos, self) }
-	)
-end
-
-function Picker:_setup_plugins()
 	local keymap = settings.keymap
 
 	require("telescope").setup({
-		defaults = {
-			sorting_strategy = "ascending",
-			dynamic_preview_title = true,
-			layout_strategy = "flex",
-			layout_config = {
-				prompt_position = "top",
-			},
-			color_devicons = true,
-			results_title = "",
-			borderchars = {
-				{ "─", "│", "─", "│", "┌", "┐", "┘", "└" },
-				prompt = { "─", "│", "─", "│", "┌", "┐", "┤", "├" },
-				results = { " ", "│", "─", "│", "│", "│", "┘", "└" },
-				preview = { "─", "│", "─", " ", "─", "┐", "┘", "─" },
-			},
+		defaults = fn.merge(self:get_default_theme(), {
 			mappings = {
 				i = {
 					[keymap["window.cursor.down"]] = require("telescope.actions").move_selection_next,
@@ -204,9 +211,8 @@ function Picker:_setup_plugins()
 				},
 				n = {},
 			},
-		},
+		}),
 		pickers = {
-			find_files = {},
 			current_buffer_fuzzy_find = {
 				-- ordering results by line number
 				tiebreak = function(current_entry, existing_entry)
@@ -217,87 +223,67 @@ function Picker:_setup_plugins()
 			buffers = {
 				sort_lastused = true,
 			},
-			commands = {},
-			spell_suggest = {},
-			help_tags = {},
 		},
 	})
 
 	-- Todo comments
 	require("todo-comments").setup({})
+
+	key.nmap(
+		{ keymap["find.files"], fn.bind(self.find, self, "find_files") },
+		{ keymap["find.projects"], fn.bind(self.find, self, "projects") },
+		{ keymap["find.search.buffer"], fn.bind(self.find, self, "current_buffer_fuzzy_find") },
+		{ keymap["find.search.directory"], fn.bind(self.find, self, "live_grep") },
+		{ keymap["find.help"], fn.bind(self.find, self, "help") },
+		{ keymap["find.spelling"], fn.bind(self.find, self, "spell_suggest") },
+		{ keymap["find.buffers"], fn.bind(self.find, self, "buffers") },
+		{ keymap["find.todos"], fn.bind(self.find, self, "todos") }
+	)
 end
 
----comment
----@param pickers any
----@return Finder.Picker.Tabs
-function Picker:tabs(pickers)
-	return Tabs:new(pickers)
+---@private
+function Picker:get_default_theme()
+	return {
+		sorting_strategy = "ascending",
+		dynamic_preview_title = true,
+		layout_strategy = "flex",
+		layout_config = {
+			prompt_position = "top",
+		},
+		color_devicons = true,
+		results_title = "",
+		borderchars = {
+			{ "─", "│", "─", "│", "┌", "┐", "┘", "└" },
+			prompt = { "─", "│", "─", "│", "┌", "┐", "┤", "├" },
+			results = { " ", "│", "─", "│", "│", "│", "┘", "└" },
+			preview = { "─", "│", "─", " ", "─", "┐", "┘", "─" },
+		},
+	}
 end
 
-function Picker:files()
-	require("telescope.builtin").find_files()
+---@private
+function Picker:get_cursor_theme()
+	return require("telescope.themes").get_cursor({
+		borderchars = {
+			prompt = { "─", "│", " ", "│", "┌", "┐", "│", "│" },
+			results = { "─", "│", "─", "│", "├", "┤", "┘", "└" },
+			preview = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
+		},
+	})
 end
 
----@type fun(self: Picker, directory: string | nil)
-Picker.text = validator.f.arguments({ validator.f.instance_of(Picker), validator.f.optional("string") })
-	.. function(_, directory)
-		local root = vim.loop.cwd()
-		local searchDirectory = directory or root
-		local rootRelativeCwd = root == searchDirectory and "/" or string.gsub(searchDirectory, root, "")
-		local options = {
-			cwd = searchDirectory,
-			prompt_title = "Search in " .. rootRelativeCwd,
-		}
-
-		require("telescope.builtin").live_grep(options)
-	end
-
-function Picker:buffer_text()
-	require("telescope.builtin").current_buffer_fuzzy_find()
+---@param picker_name string
+---@return fun(...: unknown)
+function Picker:get(picker_name)
+	return pickers[picker_name]
 end
 
-function Picker:buffers()
-	require("telescope.builtin").buffers()
+function Picker:find(picker_name, ...)
+	return self:get(picker_name)(...)
 end
 
-function Picker:help()
-	return self:tabs({
-		{ prompt_title = "Help", find = require("telescope.builtin").help_tags },
-		{ prompt_title = "Commands", find = require("telescope.builtin").commands },
-		{ prompt_title = "Options", find = require("telescope.builtin").vim_options },
-		{ prompt_title = "Autocommands", find = require("telescope.builtin").autocommands },
-		{ prompt_title = "Keymaps", find = require("telescope.builtin").keymaps },
-		{ prompt_title = "Filetypes", find = require("telescope.builtin").filetypes },
-		{ prompt_title = "Highlights", find = require("telescope.builtin").highlights },
-	}):find()
-end
-
-function Picker:projects()
-	require("telescope").extensions.project.project({ display_type = "full" })
-end
-
-function Picker:todos()
-	key.input(":TodoTelescope<CR>")
-end
-
-function Picker:qflist()
-	require("telescope.builtin").quickfix()
-end
-
-function Picker:loclist()
-	require("telescope.builtin").loclist()
-end
-
-function Picker:commands()
-	require("telescope.builtin").commands()
-end
-
-function Picker:find_diagnostics()
-	require("telescope.builtin").diagnostics()
-end
-
-function Picker:spelling()
-	require("telescope.builtin").spell_suggest()
+function Picker:tabs(tabs)
+	return Tabs:new(tabs)
 end
 
 ---@type fun(self: Picker, menu: { [number]: string, on_select: function }, options: { prompt_title: string } | nil)
@@ -374,10 +360,9 @@ end
 
 ---@type fun(self: Picker, menu: { [number]: string, on_select: function }, options: { prompt_title: string } | nil)
 function Picker:context_menu(menu, options)
-	local theme = require("telescope.themes").get_cursor()
-	options = vim.tbl_extend("force", theme, options or {})
+	options = options or {}
 
-	return self:menu(menu, options)
+	return self:menu(menu, fn.merge(self:get_cursor_theme(), options))
 end
 
 return Picker:new()

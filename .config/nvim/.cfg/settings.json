@@ -16,6 +16,9 @@
             },
             {
                 "command": "brew"
+            },
+            {
+                "command": "ranger"
             }
         ],
         "language.parsers": [

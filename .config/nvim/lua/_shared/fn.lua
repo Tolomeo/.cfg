@@ -20,6 +20,21 @@ function Fn.kpairs(t)
 	end
 end
 
+---Acts like unpack, but accepts multiple arguments
+---@generic T
+---@param ... T[]
+---@return ...T
+---@see http://lua-users.org/lists/lua-l/2004-08/msg00354.html
+function Fn.unpack(...)
+	local ret = {}
+	for _, tbl in ipairs({ ... }) do
+		for _, rec in ipairs(tbl) do
+			table.insert(ret, rec)
+		end
+	end
+	return unpack(ret)
+end
+
 --- Executes a user-supplied "reducer" callback function on each element of the table indexed with a numeric key, in order, passing in the return value from the calculation on the preceding element
 ---@param tbl table the table to loop against
 ---@param func function the reducer callback
@@ -157,7 +172,9 @@ function Fn.bind(func, ...)
 	local boundArgs = { ... }
 
 	return function(...)
-		return func(unpack(boundArgs), ...)
+		local callArgs = { ... }
+
+		return func(Fn.unpack(boundArgs, callArgs))
 	end
 end
 

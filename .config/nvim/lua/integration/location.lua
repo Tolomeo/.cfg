@@ -86,10 +86,10 @@ Location.actions = validator.f.arguments({
 					local is_loclist = self:is_loclist()
 
 					if is_loclist then
-						return require("integration.picker"):loclist()
+						return require("integration.picker"):find("loclist")
 					end
 
-					require("integration.picker"):qflist()
+					require("integration.picker"):find("quickfix")
 				end,
 			},
 			{
