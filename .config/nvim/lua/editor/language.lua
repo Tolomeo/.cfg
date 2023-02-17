@@ -40,7 +40,7 @@ local Language = Module:extend({
 function Language:on_server_attach(client, buffer)
 	local keymap = settings.keymap
 	local find_diagnostics = function()
-		return require("integration.picker"):find("diagnostics")
+		return require("integration.finder"):find("diagnostics")
 	end
 
 	key.nmap(
@@ -83,7 +83,7 @@ function Language:on_server_attach(client, buffer)
 
 		if buffer_win then
 			vim.wo[buffer_win.winid].winbar =
-				string.format("%s >> %s", fn.trim(vim.o.winbar), "%{%v:lua.require('nvim-navic').get_location()%}")
+				string.format("%s%s%s", "%{%v:lua.require('nvim-navic').get_location()%}", "%=", vim.o.winbar)
 
 			require("nvim-navic").attach(client, buffer)
 		end

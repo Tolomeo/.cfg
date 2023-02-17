@@ -4,7 +4,7 @@ local Integration = Module:extend({
 	modules = {
 		"integration.terminal",
 		"integration.location",
-		"integration.picker",
+		"integration.finder",
 	},
 })
 

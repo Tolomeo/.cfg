@@ -3,147 +3,7 @@ local key = require("_shared.key")
 local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 local settings = require("settings")
-
----@class Finder.Picker.Tab
----@field prompt_title string
----@field find function
-
----@class Finder.Picker.Tabs
-local Tabs = {}
-
----@type fun(self: Finder.Picker.Tabs, tabs: Finder.Picker.Tab[]): Finder.Picker.Tabs
-Tabs.new = validator.f.arguments({
-	-- This would be cool but it is not possible because builtin pickers are launched directly
-	-- validator.f.list({ validator.f.instance_of(require("telescope.pickers")._Picker) }),
-	validator.f.equal(Tabs),
-	validator.f.list({ validator.f.shape({ prompt_title = "string", find = "function" }) }),
-})
-	.. function(self, tabs)
-		tabs._current = 1
-
-		setmetatable(tabs, self)
-		self.__index = self
-
-		return tabs
-	end
-
-function Tabs:_prompt_title()
-	-- NOTE: this is a lot of code just to calculate a fancy prompt title
-	-- TODO: refactor
-	local opt = settings.opt
-	local current_picker_title = "[ " .. self[self._current].prompt_title .. " ]"
-
-	-- Creating a table containing all titles making up for the left half of the title
-	-- starting from the left half of the current picker title and looping backward
-	local i_left = self._current - 1
-	local prev_picker_titles = { string.sub(current_picker_title, 1, math.floor(#current_picker_title / 2)) }
-	repeat
-		if i_left < 1 then
-			i_left = #self
-		else
-			table.insert(prev_picker_titles, 1, self[i_left].prompt_title)
-			i_left = i_left - 1
-		end
-	until i_left == self._current
-
-	-- Creating a table containing all titles making up for the right half of the title
-	-- starting from the right half of the current picker title and looping onward
-	local i_right = self._current + 1
-	local next_picker_titles = {
-		string.sub(current_picker_title, (math.floor(#current_picker_title / 2)) + 1, #current_picker_title),
-	}
-	repeat
-		if i_right > #self then
-			i_right = 1
-		else
-			table.insert(next_picker_titles, self[i_right].prompt_title)
-			i_right = i_right + 1
-		end
-	until i_right == self._current
-
-	-- Merging left and right, capping at 40 chars length
-	local prompt_title_left = string.reverse(
-		string.sub(string.reverse(table.concat(prev_picker_titles, " ")), 1, (20 - #opt.listchars.precedes))
-	)
-	local prompt_title_right = string.sub(table.concat(next_picker_titles, " "), 1, (20 - #opt.listchars.extends))
-	local prompt_title = opt.listchars.precedes .. prompt_title_left .. prompt_title_right .. opt.listchars.extends
-
-	return prompt_title
-end
-
----@param buffer number
----@return boolean
-function Tabs:_attach_mappings(buffer)
-	local keymap = settings.keymap
-
-	key.nmap({
-		keymap["buffer.next"],
-		fn.bind(self.next, self),
-		buffer = buffer,
-	}, {
-		keymap["buffer.prev"],
-		fn.bind(self.prev, self),
-		buffer = buffer,
-	})
-
-	return true
-end
-
----@type fun(self: Finder.Picker.Tabs, options?: { initial_mode: "normal" | "insert" })
-Tabs._options = validator.f.arguments({
-	validator.f.instance_of(Tabs),
-	validator.f.optional(validator.f.shape({ initial_mode = validator.f.one_of({ "normal", "insert" }) })),
-}) .. function(self, options)
-	options = options or {}
-
-	return vim.tbl_extend("force", options, {
-		prompt_title = self:_prompt_title(),
-		attach_mappings = fn.bind(self._attach_mappings, self),
-	})
-end
-
-function Tabs:prev()
-	self._current = self._current <= 1 and #self or self._current - 1
-
-	local options = self:_options({ initial_mode = "normal" })
-	local picker = self[self._current]
-
-	return picker.find(options)
-end
-
-function Tabs:next()
-	self._current = self._current >= #self and 1 or self._current + 1
-
-	local options = self:_options({ initial_mode = "normal" })
-	local picker = self[self._current]
-
-	return picker.find(options)
-end
-
-function Tabs:find()
-	local options = self:_options({ initial_mode = "normal" })
-	local picker = self[self._current]
-
-	return picker.find(options)
-end
-
-function Tabs:append(picker)
-	table.insert(self, 1, picker)
-
-	if self._current == 1 then
-		self._current = self[2] and 2 or 1
-	end
-end
-
-function Tabs:prepend(picker)
-	table.insert(self, picker)
-
-	if self._current == #self then
-		self._current = self[#self - 1] and #self - 1 or #self
-	end
-end
-
--- function Tabs:remove(picker) end
+local Tabs = require("integration.finder.picker")
 
 local pickers = setmetatable({
 	projects = function()
@@ -186,7 +46,7 @@ local pickers = setmetatable({
 	end,
 })
 
-local Picker = Module:extend({
+local Finder = Module:extend({
 	plugins = {
 		{ "nvim-telescope/telescope.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
 		{ "nvim-telescope/telescope-project.nvim", dependencies = { "nvim-telescope/telescope.nvim" } },
@@ -197,7 +57,7 @@ local Picker = Module:extend({
 	},
 })
 
-function Picker:setup()
+function Finder:setup()
 	local keymap = settings.keymap
 
 	require("telescope").setup({
@@ -242,7 +102,7 @@ function Picker:setup()
 end
 
 ---@private
-function Picker:get_default_theme()
+function Finder:get_default_theme()
 	return {
 		sorting_strategy = "ascending",
 		dynamic_preview_title = true,
@@ -262,7 +122,7 @@ function Picker:get_default_theme()
 end
 
 ---@private
-function Picker:get_cursor_theme()
+function Finder:get_cursor_theme()
 	return require("telescope.themes").get_cursor({
 		borderchars = {
 			prompt = { "─", "│", " ", "│", "┌", "┐", "│", "│" },
@@ -274,21 +134,21 @@ end
 
 ---@param picker_name string
 ---@return fun(...: unknown)
-function Picker:get(picker_name)
+function Finder:get(picker_name)
 	return pickers[picker_name]
 end
 
-function Picker:find(picker_name, ...)
+function Finder:find(picker_name, ...)
 	return self:get(picker_name)(...)
 end
 
-function Picker:tabs(tabs)
+function Finder:tabs(tabs)
 	return Tabs:new(tabs)
 end
 
 ---@type fun(self: Picker, menu: { [number]: string, on_select: function }, options: { prompt_title: string } | nil)
-Picker.menu = validator.f.arguments({
-	validator.f.instance_of(Picker),
+Finder.menu = validator.f.arguments({
+	validator.f.instance_of(Finder),
 	validator.f.shape({
 		validator.f.list({ "string", validator.f.optional("string") }),
 		on_select = "function",
@@ -359,10 +219,10 @@ Picker.menu = validator.f.arguments({
 end
 
 ---@type fun(self: Picker, menu: { [number]: string, on_select: function }, options: { prompt_title: string } | nil)
-function Picker:context_menu(menu, options)
+function Finder:context_menu(menu, options)
 	options = options or {}
 
 	return self:menu(menu, fn.merge(self:get_cursor_theme(), options))
 end
 
-return Picker:new()
+return Finder:new()
