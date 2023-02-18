@@ -3,48 +3,7 @@ local key = require("_shared.key")
 local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 local settings = require("settings")
-local Tabs = require("integration.finder.picker")
-
-local pickers = setmetatable({
-	projects = function()
-		require("telescope").extensions.project.project({ display_type = "full" })
-	end,
-	live_grep = validator.f.arguments({ validator.f.optional("string") }) .. function(directory)
-		local root = vim.loop.cwd()
-		local searchDirectory = directory or root
-		local rootRelativeCwd = root == searchDirectory and "/" or string.gsub(searchDirectory, root, "")
-		local options = {
-			cwd = searchDirectory,
-			prompt_title = "Search in " .. rootRelativeCwd,
-		}
-
-		require("telescope.builtin").live_grep(options)
-	end,
-	todos = function()
-		key.input(":TodoTelescope<CR>")
-	end,
-	help = function()
-		return Tabs:new({
-			{ prompt_title = "Help", find = require("telescope.builtin").help_tags },
-			{ prompt_title = "Commands", find = require("telescope.builtin").commands },
-			{ prompt_title = "Options", find = require("telescope.builtin").vim_options },
-			{ prompt_title = "Autocommands", find = require("telescope.builtin").autocommands },
-			{ prompt_title = "Keymaps", find = require("telescope.builtin").keymaps },
-			{ prompt_title = "Filetypes", find = require("telescope.builtin").filetypes },
-			{ prompt_title = "Highlights", find = require("telescope.builtin").highlights },
-		}):find()
-	end,
-}, {
-	__index = function(_, picker_name)
-		local picker = require("telescope.builtin")[picker_name]
-
-		if not picker then
-			error(string.format("'%s' picker not found", vim.inspect(picker_name)))
-		end
-
-		return picker
-	end,
-})
+local TabbedPicker = require("integration.finder._tabbed_picker")
 
 local Finder = Module:extend({
 	plugins = {
@@ -90,16 +49,72 @@ function Finder:setup()
 	require("todo-comments").setup({})
 
 	key.nmap(
-		{ keymap["find.files"], fn.bind(self.find, self, "find_files") },
+		{ keymap["find.files"], fn.bind(self.find, self, "files") },
 		{ keymap["find.projects"], fn.bind(self.find, self, "projects") },
-		{ keymap["find.search.buffer"], fn.bind(self.find, self, "current_buffer_fuzzy_find") },
-		{ keymap["find.search.directory"], fn.bind(self.find, self, "live_grep") },
-		{ keymap["find.help"], fn.bind(self.find, self, "help") },
-		{ keymap["find.spelling"], fn.bind(self.find, self, "spell_suggest") },
+		{ keymap["find.text_in_buffer"], fn.bind(self.find, self, "text_in_buffer") },
+		{ keymap["find.text_in_directory"], fn.bind(self.find, self, "text_in_directory") },
+		{ keymap["find.about_vim"], fn.bind(self.find, self, "about_vim") },
+		{ keymap["find.spelling_suggestions"], fn.bind(self.find, self, "spelling_suggestions") },
 		{ keymap["find.buffers"], fn.bind(self.find, self, "buffers") },
 		{ keymap["find.todos"], fn.bind(self.find, self, "todos") }
 	)
 end
+
+Finder.pickers = setmetatable({
+	text_in_buffer = function(...)
+		return require("telescope.builtin").current_buffer_fuzzy_find(...)
+	end,
+	text_in_directory = validator.f.arguments({ validator.f.optional("string") }) .. function(directory)
+		local root = vim.loop.cwd()
+		local searchDirectory = directory or root
+		local rootRelativeCwd = root == searchDirectory and "/" or string.gsub(searchDirectory, root, "")
+		local options = {
+			cwd = searchDirectory,
+			prompt_title = "Search in " .. rootRelativeCwd,
+		}
+
+		require("telescope.builtin").live_grep(options)
+	end,
+	files = function(...)
+		return require("telescope.builtin").find_files(...)
+	end,
+	quickfix_items = function(...)
+		return require("telescope.builtin").quickfix(...)
+	end,
+	loclist_items = function(...)
+		return require("telescope.builtin").loclist(...)
+	end,
+	spelling_suggestions = function(...)
+		return require("telescope.builtin").spell_suggest(...)
+	end,
+	projects = function()
+		require("telescope").extensions.project.project({ display_type = "full" })
+	end,
+	todos = function()
+		key.input(":TodoTelescope<CR>")
+	end,
+	about_vim = function()
+		return TabbedPicker:new({
+			{ prompt_title = "Docs", find = require("telescope.builtin").help_tags },
+			{ prompt_title = "Commands", find = require("telescope.builtin").commands },
+			{ prompt_title = "Options", find = require("telescope.builtin").vim_options },
+			{ prompt_title = "Autocommands", find = require("telescope.builtin").autocommands },
+			{ prompt_title = "Keymaps", find = require("telescope.builtin").keymaps },
+			{ prompt_title = "Filetypes", find = require("telescope.builtin").filetypes },
+			{ prompt_title = "Highlights", find = require("telescope.builtin").highlights },
+		}):find()
+	end,
+}, {
+	__index = function(_, picker_name)
+		local picker = require("telescope.builtin")[picker_name]
+
+		if not picker then
+			error(string.format("'%s' picker not found", vim.inspect(picker_name)))
+		end
+
+		return picker
+	end,
+})
 
 ---@private
 function Finder:get_default_theme()
@@ -135,19 +150,19 @@ end
 ---@param picker_name string
 ---@return fun(...: unknown)
 function Finder:get(picker_name)
-	return pickers[picker_name]
+	return self.pickers[picker_name]
 end
 
 function Finder:find(picker_name, ...)
 	return self:get(picker_name)(...)
 end
 
-function Finder:tabs(tabs)
-	return Tabs:new(tabs)
+function Finder:create_tabs(tabs)
+	return TabbedPicker:new(tabs)
 end
 
 ---@type fun(self: Picker, menu: { [number]: string, on_select: function }, options: { prompt_title: string } | nil)
-Finder.menu = validator.f.arguments({
+Finder.create_menu = validator.f.arguments({
 	validator.f.instance_of(Finder),
 	validator.f.shape({
 		validator.f.list({ "string", validator.f.optional("string") }),
@@ -219,10 +234,10 @@ Finder.menu = validator.f.arguments({
 end
 
 ---@type fun(self: Picker, menu: { [number]: string, on_select: function }, options: { prompt_title: string } | nil)
-function Finder:context_menu(menu, options)
+function Finder:create_context_menu(menu, options)
 	options = options or {}
 
-	return self:menu(menu, fn.merge(self:get_cursor_theme(), options))
+	return self:create_menu(menu, fn.merge(self:get_cursor_theme(), options))
 end
 
 return Finder:new()

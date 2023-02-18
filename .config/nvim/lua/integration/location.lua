@@ -86,10 +86,10 @@ Location.actions = validator.f.arguments({
 					local is_loclist = self:is_loclist()
 
 					if is_loclist then
-						return require("integration.finder"):find("loclist")
+						return require("integration.finder"):find("loclist_items")
 					end
 
-					require("integration.finder"):find("quickfix")
+					require("integration.finder"):find("quickfix_items")
 				end,
 			},
 			{
@@ -324,7 +324,7 @@ function Location:actions_menu()
 		prompt_title = is_loclist and "Location list" or "Quickfix list",
 	}
 
-	require("integration.finder"):context_menu(menu, options)
+	require("integration.finder"):create_context_menu(menu, options)
 end
 
 return Location:new()

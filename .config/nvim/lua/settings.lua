@@ -184,10 +184,10 @@ local defaults = {
 		-- finder
 		["find.files"] = "<leader>E",
 		["find.projects"] = "<C-S-e>",
-		["find.search.buffer"] = "<leader>f",
-		["find.search.directory"] = "<leader>F",
-		["find.help"] = "<leader>?",
-		["find.spelling"] = "<C-z>",
+		["find.text_in_buffer"] = "<leader>f",
+		["find.text_in_directory"] = "<leader>F",
+		["find.about_vim"] = "<leader>?",
+		["find.spelling_suggestions"] = "<C-z>",
 		["find.buffers"] = "<C-b>",
 		["find.todos"] = "<leader>/",
 		-- lists

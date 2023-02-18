@@ -8,6 +8,7 @@ local Object = {}
 function Object:extend(subtype)
 	return setmetatable(subtype, {
 		__index = self,
+		super = self,
 	})
 end
 

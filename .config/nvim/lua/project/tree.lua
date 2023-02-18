@@ -269,16 +269,16 @@ Tree.search_in_node = validator.f.arguments({ validator.f.instance_of(Tree), val
 	.. function(_, node)
 		-- when the selected node is the one pointing at the parent director absolute_path will not be present
 		if not node.absolute_path then
-			return require("integration.finder"):find("live_grep")
+			return require("integration.finder"):find("text_in_directory")
 		end
 
 		if node.fs_stat.type == "directory" then
-			return require("integration.finder"):find("live_grep", node.absolute_path)
+			return require("integration.finder"):find("text_in_directory", node.absolute_path)
 		end
 
 		if node.fs_stat.type == "file" then
 			require("nvim-tree.actions.node.open-file").fn("edit_in_place", node.absolute_path)
-			return require("integration.finder"):find("current_buffer_fuzzy_find")
+			return require("integration.finder"):find("text_in_buffer")
 		end
 	end
 
@@ -300,7 +300,7 @@ Tree.tree_actions_menu = validator.f.arguments({ validator.f.instance_of(Tree), 
 		)
 		local options = { prompt_title = node.name }
 
-		require("integration.finder"):context_menu(menu, options)
+		require("integration.finder"):create_context_menu(menu, options)
 	end
 
 function Tree:toggle()

@@ -98,7 +98,7 @@ function Git:actions_context_menu()
 		prompt_title = "Git changes",
 	}
 
-	require("integration.finder"):context_menu(menu, options)
+	require("integration.finder"):create_context_menu(menu, options)
 end
 
 function Git:blame()

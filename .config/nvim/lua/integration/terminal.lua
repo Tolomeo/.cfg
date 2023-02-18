@@ -313,7 +313,7 @@ function Terminal:jobs_menu(options)
 		self:show()
 	end
 
-	require("integration.finder"):menu(menu, options)
+	require("integration.finder"):create_menu(menu, options)
 end
 
 function Terminal:menu(options)
@@ -373,7 +373,7 @@ function Terminal:menu(options)
 		selection.value.handler()
 	end
 
-	require("integration.finder"):menu(menu, options)
+	require("integration.finder"):create_menu(menu, options)
 end
 
 return Terminal:new()
