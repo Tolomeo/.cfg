@@ -2,128 +2,9 @@ local Module = require("_shared.module")
 local au = require("_shared.au")
 local fn = require("_shared.fn")
 local key = require("_shared.key")
-local validator = require("_shared.validator")
 local logger = require("_shared.logger")
 local settings = require("settings")
-
----@class TerminalJob
----@field buffer number
----@field file string
-local Job = {}
-
----@type fun(self: TerminalJob, job: { file: string, buffer: number }): TerminalJob
-Job.new = validator.f.arguments({
-	validator.f.equal(Job),
-	validator.f.shape({
-		file = "string",
-		buffer = "number",
-	}),
-}) .. function(self, job)
-	setmetatable(job, self)
-	self.__index = self
-
-	return job
-end
-
----@class TerminalJobs
-local Jobs = {
-	_current = 0,
-}
-
----@type fun(self: TerminalJobs, job_buffer: number): TerminalJob | nil
-Jobs.find_index_by_buffer = validator.f.arguments({
-	validator.f.equal(Jobs),
-	"number",
-}) .. function(self, job_buffer)
-	local job_index = fn.find_index(self, function(job)
-		return job.buffer == job_buffer
-	end)
-
-	if not job_index then
-		return nil
-	end
-
-	return self[job_index]
-end
-
----@type fun(self: TerminalJobs, window: number): TerminalJob | nil
-Jobs.find_index_by_window = validator.f.arguments({
-	validator.f.equal(Jobs),
-	"number",
-}) .. function(self, window)
-	return self:find_index_by_buffer(vim.api.nvim_win_get_buf(window))
-end
-
----@type fun(self: TerminalJobs, job: TerminalJob)
-Jobs.register = validator.f.arguments({
-	validator.f.equal(Jobs),
-	validator.f.instance_of(Job),
-}) .. function(self, job)
-	table.insert(self, job)
-	self._current = #self
-end
-
----@type fun(self: TerminalJobs, job_buffer: number)
-Jobs.unregister = validator.f.arguments({
-	validator.f.equal(Jobs),
-	"number",
-}) .. function(self, job_buffer)
-	local job_index = fn.find_index(self, function(job)
-		return job.buffer == job_buffer
-	end)
-
-	if not job_index then
-		return
-	end
-
-	table.remove(self, job_index)
-
-	if not self[self._current] then
-		self._current = self[1] and 1 or 0
-	end
-end
-
-function Jobs:count()
-	return #self
-end
-
----@type fun(self: TerminalJobs, job_buffer: number | nil): TerminalJob | nil, number
-Jobs.current = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
-	.. function(self, job_buffer)
-		if not job_buffer then
-			return self[self._current], self._current
-		end
-
-		self._current = fn.find_index(self, function(job)
-			return job.buffer == job_buffer
-		end) or self._current
-
-		return self[self._current], self._current
-	end
-
----@type fun(self: TerminalJobs, job_buffer: number | nil): TerminalJob | nil, number
-Jobs.next = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
-	.. function(self, job_buffer)
-		local index = job_buffer and fn.find_index(self, function(job)
-			return job.buffer == job_buffer
-		end) or self._current
-		local next_index = self[index + 1] and index + 1 or 1
-
-		self._current = next_index
-		return self:current()
-	end
-
----@type fun(self: TerminalJobs, job_buffer: number | nil): TerminalJob | nil, number
-Jobs.prev = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
-	.. function(self, job_buffer)
-		local index = job_buffer and fn.find_index(self, function(job)
-			return job.buffer == job_buffer
-		end) or self._current
-		local next_index = self[index - 1] and index - 1 or #self
-
-		self._current = next_index
-		return self:current()
-	end
+local Jobs = require("integration.terminal._job")
 
 local Terminal = Module:extend({
 	plugins = {
@@ -173,7 +54,7 @@ function Terminal:_setup_commands()
 			-- Allowing to close a process directly from normal mode
 			key.nmap({ "<C-c>", "i<C-c>", buffer = autocmd.buf })
 
-			Jobs:register(Job:new({ buffer = buffer, file = file }))
+			Jobs:register({ buffer = buffer, file = file })
 		end,
 	}, {
 		"TermClose",
