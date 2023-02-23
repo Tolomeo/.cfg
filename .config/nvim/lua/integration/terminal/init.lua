@@ -4,7 +4,7 @@ local fn = require("_shared.fn")
 local key = require("_shared.key")
 local logger = require("_shared.logger")
 local settings = require("settings")
-local Jobs = require("integration.terminal._job")
+local jobs = require("integration.terminal._jobs")
 
 local Terminal = Module:extend({
 	plugins = {
@@ -13,12 +13,9 @@ local Terminal = Module:extend({
 })
 
 function Terminal:setup()
-	self:_setup_keymaps()
-	self:_setup_commands()
-end
-
-function Terminal:_setup_keymaps()
 	local keymap = settings.keymap
+	local config = settings.config
+
 	-- Exiting term mode using double esc
 	-- to avoid interfering with TUIs keymaps
 	key.tmap({ "<Esc><Esc>", "<C-\\><C-n>" })
@@ -36,9 +33,20 @@ function Terminal:_setup_keymaps()
 		keymap["terminal.menu"],
 		fn.bind(self.menu, self),
 	})
-end
 
-function Terminal:_setup_commands()
+	for _, user_job in ipairs(config["terminal.jobs"]) do
+		if not user_job.keymap then
+			goto continue
+		end
+
+		key.nmap({
+			user_job.keymap,
+			fn.bind(self.toggle_command, self, user_job.command),
+		})
+
+		::continue::
+	end
+
 	au.group({
 		"Terminal",
 	}, {
@@ -54,103 +62,192 @@ function Terminal:_setup_commands()
 			-- Allowing to close a process directly from normal mode
 			key.nmap({ "<C-c>", "i<C-c>", buffer = autocmd.buf })
 
-			Jobs:register({ buffer = buffer, file = file })
+			jobs:register({ buffer = buffer, file = file })
 		end,
 	}, {
 		"TermClose",
 		"*",
 		function(autocmd)
 			local buffer = autocmd.buf
-			Jobs:unregister(buffer)
+			jobs:unregister(buffer)
 		end,
 	})
 end
 
+function Terminal:toggle_command(cmd)
+	local job, job_index = jobs:find_by_cmd(cmd)
+
+	if not job then
+		return self:create(cmd)
+	end
+
+	local windows = vim.fn.getwininfo()
+	local displayed_job = fn.ifind(windows, function(window)
+		return window.bufnr == job.buffer
+	end)
+
+	if displayed_job then
+		return vim.api.nvim_set_current_win(displayed_job.winid)
+	end
+
+	return self:show(job_index)
+end
+
 function Terminal:toggle()
-	local jobs_count = Jobs:count()
+	local jobs_count = jobs:count()
 
 	if jobs_count < 1 then
 		return self:create()
 	end
 
-	local current_buffer_job = Jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
+	local current_buffer_job = jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
 
 	if current_buffer_job then
 		return self:menu()
 	end
 
 	local windows = vim.fn.getwininfo()
-	local displayed_job_window = fn.ifind(windows, function(window)
-		return Jobs:find_index_by_buffer(window.bufnr)
+	local job_window = fn.ifind(windows, function(window)
+		return jobs:find_index_by_buffer(window.bufnr)
 	end)
 
-	if displayed_job_window then
-		return vim.api.nvim_set_current_win(displayed_job_window.winid)
+	if job_window then
+		return vim.api.nvim_set_current_win(job_window.winid)
 	end
 
 	self:show()
 end
 
-function Terminal:show()
-	local job, index = Jobs:current()
-	local count = Jobs:count()
+function Terminal:show(job_index)
+	local current_job, current_job_index = jobs:current(job_index)
+	local count = jobs:count()
 
-	if not job then
+	if not current_job then
 		return
 	end
 
-	vim.api.nvim_command("buffer " .. job.buffer)
-	print(string.format("Job %d/%d", index, count))
+	vim.api.nvim_command("buffer " .. current_job.buffer)
+	print(string.format("Job %d/%d", current_job_index, count))
 end
 
 function Terminal:create(command)
 	if command then
-		vim.api.nvim_command("terminal " .. command)
-	else
-		vim.api.nvim_command("terminal")
+		return vim.api.nvim_command("terminal " .. command)
 	end
 
-	vim.schedule(function()
-		vim.api.nvim_command("startinsert")
-	end)
+	return vim.api.nvim_command("terminal")
 end
 
 function Terminal:next()
-	local jobs_count = Jobs:count()
+	local jobs_count = jobs:count()
 
 	if jobs_count < 1 then
 		return
 	end
 
-	local current_buffer_job = Jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
+	local current_buffer_job_index = jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
 
-	if not current_buffer_job then
+	if not current_buffer_job_index then
 		return self:show()
 	end
 
-	Jobs:next(current_buffer_job.buffer)
+	jobs:next(current_buffer_job_index)
 	self:show()
 end
 
 function Terminal:prev()
-	local jobs_count = Jobs:count()
+	local jobs_count = jobs:count()
 
 	if jobs_count < 1 then
 		return
 	end
 
-	local current_buffer_job = Jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
+	local current_buffer_job_index = jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
 
-	if not current_buffer_job then
+	if not current_buffer_job_index then
 		return self:show()
 	end
 
-	Jobs:prev(current_buffer_job.buffer)
+	jobs:prev(current_buffer_job_index)
 	self:show()
 end
 
+function Terminal:get_actions()
+	local keymap = settings.keymap
+	local config = settings.config
+
+	return {
+		{
+			name = "Create a new terminal",
+			command = ":term[inal]",
+			handler = fn.bind(self.create, self),
+		},
+		{
+			name = "Next terminal",
+			keymap = keymap["terminal.next"],
+			handler = fn.bind(self.next, self),
+		},
+		{
+			name = "Previous terminal",
+			keymap = keymap["terminal.prev"],
+			handler = fn.bind(self.prev, self),
+		},
+		{
+			name = "Launch ...",
+			command = ":terminal ...",
+			handler = function()
+				local command = vim.fn.input({ prompt = "> ", cancelreturn = "", completion = "shellcmd" })
+				self:create(command)
+			end,
+		},
+		unpack(fn.imap(config["terminal.jobs"], function(user_job)
+			return {
+				name = "Launch " .. user_job.command,
+				command = ":terminal " .. user_job.command,
+				keymap = user_job.keymap,
+				handler = fn.bind(self.toggle_command, self, user_job.command),
+			}
+		end)),
+	}
+end
+
+function Terminal:menu(options)
+	options = options or {}
+	options = vim.tbl_extend("force", { prompt_title = "Terminal actions" }, options)
+
+	local menu = {}
+	local jobs_count = jobs:count()
+
+	if jobs_count > 0 then
+		fn.push(menu, {
+			jobs_count .. " job" .. (jobs_count > 1 and "s" or "") .. " running",
+			handler = fn.bind(self.jobs_menu, self),
+		})
+	end
+
+	local actions = self:get_actions()
+	fn.push(
+		menu,
+		unpack(fn.imap(actions, function(action)
+			return {
+				action.name,
+				fn.trim(table.concat({ action.keymap or "", action.command or "" }, " ")),
+				handler = action.handler,
+			}
+		end))
+	)
+
+	menu.on_select = function(modal_menu)
+		local selection = modal_menu.state.get_selected_entry()
+		modal_menu.actions.close(modal_menu.buffer)
+		selection.value.handler()
+	end
+
+	require("integration.finder"):create_menu(menu, options)
+end
+
 function Terminal:jobs_menu(options)
-	local jobs_count = Jobs:count()
+	local jobs_count = jobs:count()
 
 	if jobs_count < 1 then
 		return logger.info("No jobs running at the minute")
@@ -181,77 +278,18 @@ function Terminal:jobs_menu(options)
 		}),
 	}, options)
 
-	local menu = fn.imap(Jobs, function(job)
+	local menu = fn.imap(jobs, function(registerd_job, registerd_job_index)
 		return {
-			job.file,
-			job = job,
+			registerd_job.file,
+			job = registerd_job,
+			job_index = registerd_job_index,
 		}
 	end)
 	menu.on_select = function(modal_menu)
 		local selection = modal_menu.state.get_selected_entry()
 		modal_menu.actions.close(modal_menu.buffer)
-		Jobs:current(selection.value.job.buffer)
+		jobs:current(selection.value.job_index)
 		self:show()
-	end
-
-	require("integration.finder"):create_menu(menu, options)
-end
-
-function Terminal:menu(options)
-	local keymap = settings.keymap
-	local config = settings.config
-	options = options or {}
-	options = vim.tbl_extend("force", { prompt_title = "Terminal actions" }, options)
-
-	local menu = {}
-	local jobs_count = Jobs:count()
-
-	if jobs_count > 0 then
-		table.insert(menu, {
-			jobs_count .. " job" .. (jobs_count > 1 and "s" or "") .. " running",
-			handler = fn.bind(self.jobs_menu, self),
-		})
-	end
-
-	-- TODO: We need a util which makes it possible inserting multiple values in a tbl
-	table.insert(menu, {
-		"Create a new terminal",
-		":term[inal]",
-		handler = fn.bind(self.create, self),
-	})
-	table.insert(menu, {
-		"Next terminal",
-		keymap["terminal.next"],
-		handler = fn.bind(self.next, self),
-	})
-	table.insert(menu, {
-		"Previous terminal",
-		keymap["terminal.prev"],
-		handler = fn.bind(self.prev, self),
-	})
-	table.insert(menu, {
-		"Launch ...",
-		":terminal ...",
-		handler = function()
-			local command = vim.fn.input({ prompt = "> ", cancelreturn = "", completion = "shellcmd" })
-			self:create(command)
-		end,
-	})
-
-	for _, user_job in ipairs(config["terminal.jobs"]) do
-		table.insert(menu, {
-			"Launch " .. user_job.command,
-			":terminal " .. user_job.command,
-			handler = function()
-				self:create(user_job.command)
-			end,
-		})
-	end
-
-	menu.on_select = function(modal_menu)
-		local selection = modal_menu.state.get_selected_entry()
-		modal_menu.actions.close(modal_menu.buffer)
-		selection.value.handler()
 	end
 
 	require("integration.finder"):create_menu(menu, options)

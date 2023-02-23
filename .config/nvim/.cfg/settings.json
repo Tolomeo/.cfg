@@ -18,7 +18,8 @@
                 "command": "brew"
             },
             {
-                "command": "ranger"
+                "command": "ranger",
+								"keymap": "<leader>e"
             }
         ],
         "language.parsers": [

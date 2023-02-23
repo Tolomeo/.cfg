@@ -194,4 +194,14 @@ function Fn.trim(str)
 	return (string.gsub(str, "^%s*(.-)%s*$", "%1"))
 end
 
+function Fn.ifilter(tbl, func)
+	return Fn.ireduce(tbl, function(a, v, i)
+		if func(v, i) then
+			table.insert(a, v)
+		end
+
+		return a
+	end, {})
+end
+
 return Fn
