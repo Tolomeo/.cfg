@@ -77,16 +77,7 @@ function Language:on_server_attach(client, buffer)
 
 	-- extending global winbar to display information coming from lsp server
 	if client.server_capabilities.documentSymbolProvider then
-		local buffer_win = fn.ifind(vim.fn.getwininfo(), function(win)
-			return win.bufnr == buffer
-		end)
-
-		if buffer_win then
-			vim.wo[buffer_win.winid].winbar =
-				string.format("%s%s%s", "%{%v:lua.require('nvim-navic').get_location()%}", "%=", vim.o.winbar)
-
-			require("nvim-navic").attach(client, buffer)
-		end
+		require("nvim-navic").attach(client, buffer)
 	end
 end
 
@@ -98,6 +89,8 @@ function Language:default_server_config()
 end
 
 function Language:setup_servers()
+	vim.o.winbar = string.format("%s%s%s", "%{%v:lua.require('nvim-navic').get_location()%}", "%=", vim.o.winbar)
+
 	local config = settings.config
 	local float_win_config = require("interface.window"):float_config()
 	local servers = config["language.servers"]
