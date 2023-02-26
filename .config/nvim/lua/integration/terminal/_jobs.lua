@@ -1,17 +1,69 @@
+local Object = require("_shared.Object")
 local fn = require("_shared.fn")
 local validator = require("_shared.validator")
+local key = require("_shared.key")
+local au = require("_shared.au")
 
 ---@class TerminalJob
 ---@field buffer number
 
----@class TerminalJobs
-local Jobs = {
+local Jobs = Object:extend({
 	_current = 0,
-}
+})
 
----@type fun(self: TerminalJobs, job_buffer: number): number | nil
+function Jobs:constructor()
+	au.group({
+		"Jobs",
+	}, {
+		"TermOpen",
+		"term://*",
+		fn.bind(self.on_job_start, self),
+	}, {
+		"BufEnter",
+		"term://*",
+		fn.bind(self.on_job_buffer_enter, self),
+	}, {
+		"BufLeave",
+		"term://*",
+		fn.bind(self.on_job_buffer_leave, self),
+	}, {
+		"TermClose",
+		"term://*",
+		fn.bind(self.on_job_end, self),
+	})
+end
+
+function Jobs:on_job_start(autocmd)
+	local buffer, file = autocmd.buf, autocmd.file
+
+	vim.cmd("setlocal nonumber norelativenumber foldcolumn=0 signcolumn=no")
+	vim.api.nvim_buf_set_option(buffer, "buflisted", false)
+	vim.api.nvim_buf_set_var(buffer, "_term_ins_mode", "i")
+
+	-- Allowing to close a process directly from normal mode
+	key.nmap({ "<C-c>", "i<C-c>", buffer = autocmd.buf })
+
+	self:register({ buffer = buffer, file = file })
+
+	vim.schedule(vim.cmd.startinsert)
+end
+
+function Jobs:on_job_buffer_enter()
+	vim.schedule(vim.cmd.startinsert)
+end
+
+function Jobs:on_job_buffer_leave()
+	vim.cmd.stopinsert()
+end
+
+function Jobs:on_job_end(autocmd)
+	local buffer = autocmd.buf
+	self:unregister(buffer)
+end
+
+---@type fun(self: `Jobs`, job_buffer: number): number | nil
 Jobs.find_index_by_buffer = validator.f.arguments({
-	validator.f.equal(Jobs),
+	validator.f.instance_of(Jobs),
 	"number",
 }) .. function(self, job_buffer)
 	local job_index = fn.find_index(self, function(job)
@@ -26,17 +78,17 @@ Jobs.find_index_by_buffer = validator.f.arguments({
 end
 
 Jobs.find_by_buffer = validator.f.arguments({
-	validator.f.equal(Jobs),
+	validator.f.instance_of(Jobs),
 	"number",
 }) .. function(self, job_buffer)
 	local job_index = self:find_index_by_buffer(job_buffer)
 
-	return job_index and self[job_index] or nil
+	return job_index and self[job_index] or nil, job_index
 end
 
 ---This logic relies on terminal buffer names being defined as term://{cwd}//{pid}:{cmd}
 Jobs.find_index_by_cmd = validator.f.arguments({
-	validator.f.equal(Jobs),
+	validator.f.instance_of(Jobs),
 	"string",
 }) .. function(self, cmd)
 	local job_index = fn.find_index(self, function(job)
@@ -51,24 +103,24 @@ Jobs.find_index_by_cmd = validator.f.arguments({
 end
 
 Jobs.find_by_cmd = validator.f.arguments({
-	validator.f.equal(Jobs),
+	validator.f.instance_of(Jobs),
 	"string",
 }) .. function(self, cmd)
 	local job_index = self:find_index_by_cmd(cmd)
 
-	return job_index and self[job_index] or nil
+	return job_index and self[job_index] or nil, job_index
 end
 
----@type fun(self: TerminalJobs, window: number): TerminalJob | nil
+---@type fun(self: `Jobs`, window: number): TerminalJob | nil
 Jobs.find_index_by_window = validator.f.arguments({
-	validator.f.equal(Jobs),
+	validator.f.instance_of(Jobs),
 	"number",
 }) .. function(self, window)
 	return self:find_index_by_buffer(vim.api.nvim_win_get_buf(window))
 end
 
 Jobs.find_by_window = validator.f.arguments({
-	validator.f.equal(Jobs),
+	validator.f.instance_of(Jobs),
 	"number",
 }) .. function(self, window)
 	local job_index = self:find_index_by_window(window)
@@ -76,18 +128,18 @@ Jobs.find_by_window = validator.f.arguments({
 	return job_index and self[job_index] or nil
 end
 
----@type fun(self: TerminalJobs, job: TerminalJob)
+---@type fun(self: `Jobs`, job: TerminalJob)
 Jobs.register = validator.f.arguments({
-	validator.f.equal(Jobs),
+	validator.f.instance_of(Jobs),
 	validator.f.shape({ buffer = "number", file = "string" }),
 }) .. function(self, job)
 	table.insert(self, job)
 	self._current = #self
 end
 
----@type fun(self: TerminalJobs, job_buffer: number)
+---@type fun(self: `Jobs`, job_buffer: number)
 Jobs.unregister = validator.f.arguments({
-	validator.f.equal(Jobs),
+	validator.f.instance_of(Jobs),
 	"number",
 }) .. function(self, job_buffer)
 	local job_index = self:find_index_by_buffer(job_buffer)
@@ -107,8 +159,8 @@ function Jobs:count()
 	return #self
 end
 
----@type fun(self: TerminalJobs, job_buffer: number | nil): TerminalJob | nil, number
-Jobs.current = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
+---@type fun(self: `Jobs`, job_buffer: number | nil): TerminalJob | nil, number
+Jobs.current = validator.f.arguments({ validator.f.instance_of(Jobs), validator.f.optional("number") })
 	.. function(self, job_index)
 		if not job_index then
 			return self[self._current], self._current
@@ -119,8 +171,8 @@ Jobs.current = validator.f.arguments({ validator.f.equal(Jobs), validator.f.opti
 		return self[self._current], self._current
 	end
 
----@type fun(self: TerminalJobs, job_buffer: number | nil): TerminalJob | nil, number
-Jobs.next = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
+---@type fun(self: `Jobs`, job_buffer: number | nil): TerminalJob | nil, number
+Jobs.next = validator.f.arguments({ validator.f.instance_of(Jobs), validator.f.optional("number") })
 	.. function(self, job_index)
 		local index = job_index and job_index or self._current
 		local next_index = self[index + 1] and index + 1 or 1
@@ -129,8 +181,8 @@ Jobs.next = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optiona
 		return self:current()
 	end
 
----@type fun(self: TerminalJobs, job_buffer: number | nil): TerminalJob | nil, number
-Jobs.prev = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optional("number") })
+---@type fun(self: `Jobs`, job_buffer: number | nil): TerminalJob | nil, number
+Jobs.prev = validator.f.arguments({ validator.f.instance_of(Jobs), validator.f.optional("number") })
 	.. function(self, job_index)
 		local index = job_index and job_index or self._current
 		local next_index = self[index - 1] and index - 1 or #self
@@ -139,4 +191,4 @@ Jobs.prev = validator.f.arguments({ validator.f.equal(Jobs), validator.f.optiona
 		return self:current()
 	end
 
-return Jobs
+return Jobs:new()

@@ -46,46 +46,6 @@ function Terminal:setup()
 
 		::continue::
 	end
-
-	au.group({
-		"Terminal",
-	}, {
-		"TermOpen",
-		"term://*",
-		function(autocmd)
-			local buffer, file = autocmd.buf, autocmd.file
-
-			vim.cmd("setlocal nonumber norelativenumber foldcolumn=0 signcolumn=no")
-			vim.api.nvim_buf_set_option(buffer, "buflisted", false)
-			vim.api.nvim_buf_set_var(buffer, "_term_ins_mode", "i")
-
-			-- Allowing to close a process directly from normal mode
-			key.nmap({ "<C-c>", "i<C-c>", buffer = autocmd.buf })
-
-			jobs:register({ buffer = buffer, file = file })
-
-			vim.schedule(vim.cmd.startinsert)
-		end,
-	}, {
-		"BufEnter",
-		"term://*",
-		function()
-			vim.schedule(vim.cmd.startinsert)
-		end,
-	}, {
-		"BufLeave",
-		"term://*",
-		function()
-			vim.cmd.stopinsert()
-		end,
-	}, {
-		"TermClose",
-		"term://*",
-		function(autocmd)
-			local buffer = autocmd.buf
-			jobs:unregister(buffer)
-		end,
-	})
 end
 
 function Terminal:toggle_command(cmd)
