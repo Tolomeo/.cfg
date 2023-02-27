@@ -1,7 +1,6 @@
 local Object = require("_shared.Object")
 local fn = require("_shared.fn")
 local validator = require("_shared.validator")
-local key = require("_shared.key")
 local au = require("_shared.au")
 
 ---@class TerminalJob
@@ -9,6 +8,7 @@ local au = require("_shared.au")
 
 local Jobs = Object:extend({
 	_current = 0,
+	_mode = "t",
 })
 
 function Jobs:constructor()
@@ -18,6 +18,18 @@ function Jobs:constructor()
 		"TermOpen",
 		"term://*",
 		fn.bind(self.on_job_start, self),
+	}, {
+		"TermEnter",
+		"term://*",
+		function()
+			self._mode = "t"
+		end,
+	}, {
+		"TermLeave",
+		"term://*",
+		function()
+			self._mode = "n"
+		end,
 	}, {
 		"BufEnter",
 		"term://*",
@@ -36,24 +48,22 @@ end
 function Jobs:on_job_start(autocmd)
 	local buffer, file = autocmd.buf, autocmd.file
 
-	vim.cmd("setlocal nonumber norelativenumber foldcolumn=0 signcolumn=no")
-	vim.api.nvim_buf_set_option(buffer, "buflisted", false)
-	vim.api.nvim_buf_set_var(buffer, "_term_ins_mode", "i")
-
-	-- Allowing to close a process directly from normal mode
-	key.nmap({ "<C-c>", "i<C-c>", buffer = autocmd.buf })
+	vim.cmd("setlocal nobuflisted nonumber norelativenumber foldcolumn=0 signcolumn=no")
 
 	self:register({ buffer = buffer, file = file })
 
-	vim.schedule(vim.cmd.startinsert)
+	if self._mode == "t" then
+		vim.schedule(vim.cmd.startinsert)
+	end
 end
 
 function Jobs:on_job_buffer_enter()
-	vim.schedule(vim.cmd.startinsert)
+	if self._mode == "t" then
+		vim.schedule(vim.cmd.startinsert)
+	end
 end
 
 function Jobs:on_job_buffer_leave()
-	vim.cmd.stopinsert()
 end
 
 function Jobs:on_job_end(autocmd)

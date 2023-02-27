@@ -1,5 +1,4 @@
 local Module = require("_shared.module")
-local au = require("_shared.au")
 local fn = require("_shared.fn")
 local key = require("_shared.key")
 local logger = require("_shared.logger")

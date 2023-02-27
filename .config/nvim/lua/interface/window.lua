@@ -7,19 +7,19 @@ local fn = require("_shared.fn")
 
 local Window = Module:extend({})
 
-function Window:_setup_keymaps()
+function Window:setup()
 	local keymap = settings.keymap
 
 	key.nmap(
 		-- Windows navigation
-		{ keymap["window.cursor.left"], "<C-w>h" },
-		{ keymap["window.cursor.down"], "<C-w>j" },
-		{ keymap["window.cursor.up"], "<C-w>k" },
-		{ keymap["window.cursor.right"], "<C-w>l" },
-		{ keymap["window.cursor.next"], "<C-w>w" },
-		{ keymap["window.cursor.prev"], "<C-w>W" },
+		{ keymap["window.cursor.left"], fn.bind(self.goto_left, self) },
+		{ keymap["window.cursor.down"], fn.bind(self.goto_down, self) },
+		{ keymap["window.cursor.up"], fn.bind(self.goto_up, self) },
+		{ keymap["window.cursor.right"], fn.bind(self.goto_right, self) },
+		{ keymap["window.cursor.next"], fn.bind(self.goto_next, self) },
+		{ keymap["window.cursor.prev"], fn.bind(self.goto_prev, self) },
 		-- Exchange current window with the next one
-		{ keymap["window.swap.next"], "<C-w>x" },
+		{ keymap["window.swap.next"], fn.bind(self.swapwith_next, self) },
 		-- Resizing the current window
 		{ keymap["window.shrink.horizontal"], "<Cmd>resize -3<Cr>" },
 		{ keymap["window.shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
@@ -39,15 +39,15 @@ function Window:_setup_keymaps()
 		{ keymap["window.split.vertical"], "<Cmd>vsplit<Cr>" }
 	)
 	key.vmap(
-		-- Windows Navigation
-		{ keymap["window.cursor.left"], "<Esc><C-w>h" },
-		{ keymap["window.cursor.down"], "<Esc><C-w>j" },
-		{ keymap["window.cursor.up"], "<Esc><C-w>k" },
-		{ keymap["window.cursor.right"], "<Esc><C-w>l" },
-		{ keymap["window.cursor.next"], "<Esc><C-w>w" },
-		{ keymap["window.cursor.prev"], "<Esc><C-w>W" },
+		-- Windows navigation
+		{ keymap["window.cursor.left"], fn.bind(self.goto_left, self) },
+		{ keymap["window.cursor.down"], fn.bind(self.goto_down, self) },
+		{ keymap["window.cursor.up"], fn.bind(self.goto_up, self) },
+		{ keymap["window.cursor.right"], fn.bind(self.goto_right, self) },
+		{ keymap["window.cursor.next"], fn.bind(self.goto_next, self) },
+		{ keymap["window.cursor.prev"], fn.bind(self.goto_prev, self) },
 		-- Exchange current window with the next one
-		{ keymap["window.swap.next"], "<Esc><C-w>x" },
+		{ keymap["window.swap.next"], fn.bind(self.swapwith_next, self) },
 		-- Resizing the current window
 		{ keymap["window.shrink.horizontal"], "<Cmd>resize -3<Cr>" },
 		{ keymap["window.shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
@@ -67,15 +67,15 @@ function Window:_setup_keymaps()
 		{ keymap["window.split.vertical"], "<Cmd>vsplit<Cr>" }
 	)
 	key.imap(
-		-- Windows Navigation
-		{ keymap["window.cursor.left"], "<Esc><C-w>h" },
-		{ keymap["window.cursor.down"], "<Esc><C-w>j" },
-		{ keymap["window.cursor.up"], "<Esc><C-w>k" },
-		{ keymap["window.cursor.right"], "<Esc><C-w>l" },
-		{ keymap["window.cursor.next"], "<Esc><C-w>w" },
-		{ keymap["window.cursor.prev"], "<Esc><C-w>W" },
+		-- Windows navigation
+		{ keymap["window.cursor.left"], fn.bind(self.goto_left, self) },
+		{ keymap["window.cursor.down"], fn.bind(self.goto_down, self) },
+		{ keymap["window.cursor.up"], fn.bind(self.goto_up, self) },
+		{ keymap["window.cursor.right"], fn.bind(self.goto_right, self) },
+		{ keymap["window.cursor.next"], fn.bind(self.goto_next, self) },
+		{ keymap["window.cursor.prev"], fn.bind(self.goto_prev, self) },
 		-- Exchange current window with the next one
-		{ keymap["window.swap.next"], "<Esc><C-w>x" },
+		{ keymap["window.swap.next"], fn.bind(self.swapwith_next, self) },
 		-- Resizing the current window
 		{ keymap["window.shrink.horizontal"], "<Cmd>resize -3<Cr>" },
 		{ keymap["window.shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
@@ -96,14 +96,14 @@ function Window:_setup_keymaps()
 	)
 	key.tmap(
 		-- Windows navigation
-		{ keymap["window.cursor.left"], "<C-\\><C-n><C-w>h" },
-		{ keymap["window.cursor.down"], "<C-\\><C-n><C-w>j" },
-		{ keymap["window.cursor.up"], "<C-\\><C-n><C-w>k" },
-		{ keymap["window.cursor.right"], "<C-\\><C-n><C-w>l" },
-		{ keymap["window.cursor.next"], "<C-\\><C-n><C-w>w" },
-		{ keymap["window.cursor.prev"], "<C-\\><C-n><C-w>W" },
+		{ keymap["window.cursor.left"], fn.bind(self.goto_left, self) },
+		{ keymap["window.cursor.down"], fn.bind(self.goto_down, self) },
+		{ keymap["window.cursor.up"], fn.bind(self.goto_up, self) },
+		{ keymap["window.cursor.right"], fn.bind(self.goto_right, self) },
+		{ keymap["window.cursor.next"], fn.bind(self.goto_next, self) },
+		{ keymap["window.cursor.prev"], fn.bind(self.goto_prev, self) },
 		-- Exchange current window with the next one
-		{ keymap["window.swap.next"], "<C-\\><C-n><C-w>x" },
+		{ keymap["window.swap.next"], fn.bind(self.swapwith_next, self) },
 		-- Resizing the current window
 		{ keymap["window.shrink.horizontal"], "<Cmd>resize -3<Cr>" },
 		{ keymap["window.shrink.vertical"], "<Cmd>vertical resize -3<Cr>" },
@@ -124,10 +124,32 @@ function Window:_setup_keymaps()
 	)
 end
 
-Window.plugins = {}
+function Window:goto_left()
+	return vim.fn.execute("wincmd h", "")
+end
 
-function Window:setup()
-	self:_setup_keymaps()
+function Window:goto_down()
+	return vim.fn.execute("wincmd j", "")
+end
+
+function Window:goto_up()
+	return vim.fn.execute("wincmd k", "")
+end
+
+function Window:goto_right()
+	return vim.fn.execute("wincmd l", "")
+end
+
+function Window:goto_prev()
+	return vim.fn.execute("wincmd w", "")
+end
+
+function Window:goto_next()
+	return vim.fn.execute("wincmd W", "")
+end
+
+function Window:swapwith_next()
+	return vim.fn.execute("wincmd x", "")
 end
 
 function Window:float_config()

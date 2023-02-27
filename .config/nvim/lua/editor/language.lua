@@ -45,7 +45,7 @@ function Language:on_server_attach(client, buffer)
 
 	key.nmap(
 		{ keymap["language.lsp.hover"], vim.lsp.buf.hover, buffer = buffer },
-		{ keymap["language.lsp.signature_help"], vim.lsp.buf.signature_help, buffer = buffer },
+		-- { keymap["language.lsp.signature_help"], vim.lsp.buf.signature_help, buffer = buffer },
 		{ keymap["language.lsp.references"], vim.lsp.buf.references, buffer = buffer },
 		{ keymap["language.lsp.definition"], vim.lsp.buf.definition, buffer = buffer },
 		{ keymap["language.lsp.declaration"], vim.lsp.buf.declaration, buffer = buffer },
