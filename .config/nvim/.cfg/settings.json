@@ -15,9 +15,6 @@
                 "command": "glow"
             },
             {
-                "command": "brew"
-            },
-            {
                 "command": "ranger",
 								"keymap": "<leader>e"
             }

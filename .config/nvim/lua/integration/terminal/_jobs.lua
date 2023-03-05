@@ -19,21 +19,17 @@ function Jobs:constructor()
 		"term://*",
 		fn.bind(self.on_job_start, self),
 	}, {
-		"TermEnter",
-		"term://*",
-		function()
-			self._mode = "t"
-		end,
-	}, {
-		"TermLeave",
-		"term://*",
-		function()
-			self._mode = "n"
-		end,
-	}, {
 		"BufEnter",
 		"term://*",
 		fn.bind(self.on_job_buffer_enter, self),
+	}, {
+		"TermEnter",
+		"term://*",
+		fn.bind(self.on_terminal_mode_enter, self),
+	}, {
+		"TermLeave",
+		"term://*",
+		fn.bind(self.on_terminal_mode_leave, self),
 	}, {
 		"BufLeave",
 		"term://*",
@@ -63,12 +59,39 @@ function Jobs:on_job_buffer_enter()
 	end
 end
 
-function Jobs:on_job_buffer_leave()
+function Jobs:on_terminal_mode_enter()
+	self._mode = "t"
 end
+
+function Jobs:on_terminal_mode_leave()
+	self._mode = "n"
+end
+
+function Jobs:on_job_buffer_leave() end
 
 function Jobs:on_job_end(autocmd)
 	local buffer = autocmd.buf
 	self:unregister(buffer)
+end
+
+function Jobs:startinsert()
+	self._mode = "t"
+
+	local current_buffer = vim.api.nvim_get_current_buf()
+	local current_buffer_type = vim.api.nvim_buf_get_option(current_buffer, "buftype")
+	if current_buffer_type == "terminal" then
+		vim.schedule(vim.cmd.startinsert)
+	end
+end
+
+function Jobs:stopinsert()
+	self._mode = "t"
+
+	local current_buffer = vim.api.nvim_get_current_buf()
+	local current_buffer_type = vim.api.nvim_buf_get_option(current_buffer, "buftype")
+	if current_buffer_type == "terminal" then
+		vim.schedule(vim.cmd.stopinsert)
+	end
 end
 
 ---@type fun(self: `Jobs`, job_buffer: number): number | nil

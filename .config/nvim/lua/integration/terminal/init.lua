@@ -40,7 +40,10 @@ function Terminal:setup()
 
 		key.nmap({
 			user_job.keymap,
-			fn.bind(self.toggle_command, self, user_job.command),
+			function ()
+				self:toggle_command(user_job.command)
+				jobs:startinsert()
+			end
 		})
 
 		::continue::
@@ -153,7 +156,10 @@ function Terminal:get_actions()
 		{
 			name = "Create a new terminal",
 			command = ":term[inal]",
-			handler = fn.bind(self.create, self),
+			handler = function ()
+				self:create()
+				jobs:startinsert()
+			end
 		},
 		{
 			name = "Next terminal",
@@ -171,6 +177,7 @@ function Terminal:get_actions()
 			handler = function()
 				local command = vim.fn.input({ prompt = "> ", cancelreturn = "", completion = "shellcmd" })
 				self:create(command)
+				jobs:startinsert()
 			end,
 		},
 		unpack(fn.imap(config["terminal.jobs"], function(user_job)
@@ -178,7 +185,10 @@ function Terminal:get_actions()
 				name = "Launch " .. user_job.command,
 				command = ":terminal " .. user_job.command,
 				keymap = user_job.keymap,
-				handler = fn.bind(self.toggle_command, self, user_job.command),
+				handler = function ()
+					self:toggle_command(user_job.command)
+					jobs:startinsert()
+				end
 			}
 		end)),
 	}
@@ -263,6 +273,7 @@ function Terminal:jobs_menu(options)
 		modal_menu.actions.close(modal_menu.buffer)
 		jobs:current(selection.value.job_index)
 		self:show()
+		jobs:startinsert()
 	end
 
 	require("integration.finder"):create_menu(menu, options)
