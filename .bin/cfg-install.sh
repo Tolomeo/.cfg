@@ -44,10 +44,16 @@ echo "3. Installing Homebrew"
 # https://brew.sh
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
+# adding homebrew to PATH
+(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> $HOME/.zprofile
+
+# adding homebrew to PATH for the current session
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 echo "4. Installing Homebrew formulae"
 
 brew bundle --file=$HOME/.Brewfile
 
 echo "5. Installing Node"
 
-nvm install node
+nvm install --lts
