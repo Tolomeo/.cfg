@@ -49,7 +49,7 @@ local defaults = {
 		spell = false,
 		spelllang = "en_gb",
 		-- Using system clipbard as default register
-		clipboard = "",
+		clipboard = "unnamedplus",
 		-- Invisible chars render
 		list = true,
 		listchars = { eol = "↲", tab = "▸ ", trail = "·", space = "·", extends = "…", precedes = "…" },
