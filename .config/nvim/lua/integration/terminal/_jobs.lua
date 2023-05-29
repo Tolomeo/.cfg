@@ -211,6 +211,22 @@ function Jobs:count()
 	return #self
 end
 
+function Jobs:commands_count()
+	return #self._commands
+end
+
+function Jobs:get()
+	return fn.imap(self, function(job)
+		return job
+	end)
+end
+
+function Jobs:get_commands()
+	return fn.imap(self._commands, function(command)
+		return command
+	end)
+end
+
 ---@type fun(self: `Jobs`, job_buffer: number | nil): TerminalJob | nil, number
 Jobs.current = validator.f.arguments({ validator.f.instance_of(Jobs), validator.f.optional("number") })
 	.. function(self, job_index)

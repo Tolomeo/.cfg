@@ -40,10 +40,10 @@ function Terminal:setup()
 
 		key.nmap({
 			user_job.keymap,
-			function ()
+			function()
 				self:toggle_command(user_job.command)
 				jobs:startinsert()
-			end
+			end,
 		})
 
 		::continue::
@@ -160,10 +160,10 @@ function Terminal:get_actions()
 		{
 			name = "Create a new terminal",
 			command = ":term[inal]",
-			handler = function ()
+			handler = function()
 				self:create()
 				jobs:startinsert()
-			end
+			end,
 		},
 		{
 			name = "Next terminal",
@@ -189,10 +189,10 @@ function Terminal:get_actions()
 				name = "Launch " .. user_job.command,
 				command = ":terminal " .. user_job.command,
 				keymap = user_job.keymap,
-				handler = function ()
+				handler = function()
 					self:toggle_command(user_job.command)
 					jobs:startinsert()
-				end
+				end,
 			}
 		end)),
 	}
@@ -209,6 +209,15 @@ function Terminal:menu(options)
 		fn.push(menu, {
 			jobs_count .. " job" .. (jobs_count > 1 and "s" or "") .. " running",
 			handler = fn.bind(self.jobs_menu, self),
+		})
+	end
+
+	local commands_count = jobs:commands_count()
+
+	if commands_count > 0 then
+		fn.push(menu, {
+			commands_count .. " command" .. (commands_count > 1 and "s" or "") .. " running",
+			handler = fn.bind(self.commands_menu, self),
 		})
 	end
 
@@ -265,7 +274,7 @@ function Terminal:jobs_menu(options)
 		}),
 	}, options)
 
-	local menu = fn.imap(jobs, function(registerd_job, registerd_job_index)
+	local menu = fn.imap(jobs:get(), function(registerd_job, registerd_job_index)
 		return {
 			registerd_job.file,
 			job = registerd_job,
@@ -277,6 +286,55 @@ function Terminal:jobs_menu(options)
 		modal_menu.actions.close(modal_menu.buffer)
 		jobs:current(selection.value.job_index)
 		self:show()
+		jobs:startinsert()
+	end
+
+	require("integration.finder"):create_menu(menu, options)
+end
+
+function Terminal:commands_menu(options)
+	local commands_count = jobs:commands_count()
+
+	if commands_count < 1 then
+		return logger.info("No commands running at the minute")
+	end
+
+	options = options or {}
+	options = vim.tbl_extend("force", {
+		prompt_title = "Running jobs",
+		previewer = require("telescope.previewers").new_buffer_previewer({
+			define_preview = function(previewer, entry)
+				local job_buffer = entry.value.job.buffer
+				local job_lines = vim.api.nvim_buf_get_lines(job_buffer, 0, -1, false)
+				local preview_lines = fn.slice(
+					job_lines,
+					1,
+					fn.find_last_index(job_lines, function(line)
+						return line ~= ""
+					end)
+				)
+				local preview_buffer = previewer.state.bufnr
+				local preview_window = previewer.state.winid
+
+				vim.api.nvim_buf_set_lines(preview_buffer, 0, 0, false, preview_lines)
+				vim.schedule(function()
+					vim.api.nvim_win_set_cursor(preview_window, { #preview_lines, 0 })
+				end)
+			end,
+		}),
+	}, options)
+
+	local menu = fn.imap(jobs:get_commands(), function(registerd_command, registerd_command_index)
+		return {
+			registerd_command.file,
+			command = registerd_command,
+			command_index = registerd_command_index,
+		}
+	end)
+	menu.on_select = function(modal_menu)
+		local selection = modal_menu.state.get_selected_entry()
+		modal_menu.actions.close(modal_menu.buffer)
+		self:show_command(selection.value.command)
 		jobs:startinsert()
 	end
 
