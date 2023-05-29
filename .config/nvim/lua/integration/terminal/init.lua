@@ -51,22 +51,22 @@ function Terminal:setup()
 end
 
 function Terminal:toggle_command(cmd)
-	local job, job_index = jobs:find_by_cmd(cmd)
+	local command, command_index = jobs:find_command_by_cmd(cmd)
 
-	if not job then
+	if not command then
 		return self:create(cmd)
 	end
 
 	local windows = vim.fn.getwininfo()
 	local displayed_job = fn.ifind(windows, function(window)
-		return window.bufnr == job.buffer
+		return window.bufnr == command.buffer
 	end)
 
 	if displayed_job then
 		return vim.api.nvim_set_current_win(displayed_job.winid)
 	end
 
-	return self:show(job_index)
+	return self:show_command(command)
 end
 
 function Terminal:toggle()
@@ -104,6 +104,10 @@ function Terminal:show(job_index)
 
 	vim.api.nvim_command("buffer " .. current_job.buffer)
 	print(string.format("Job %d/%d", current_job_index, count))
+end
+
+function Terminal:show_command(command)
+	vim.api.nvim_command("buffer " .. command.buffer)
 end
 
 function Terminal:create(command)

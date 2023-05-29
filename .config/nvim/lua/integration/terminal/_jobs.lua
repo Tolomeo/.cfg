@@ -5,10 +5,13 @@ local au = require("_shared.au")
 
 ---@class TerminalJob
 ---@field buffer number
+---@field file string
+---@field cmd string
 
 local Jobs = Object:extend({
 	_current = 0,
 	_mode = "t",
+	_commands = {},
 })
 
 function Jobs:constructor()
@@ -43,10 +46,11 @@ end
 
 function Jobs:on_job_start(autocmd)
 	local buffer, file = autocmd.buf, autocmd.file
+	local cmd = string.match(file, "term://.+//%d+:(.+)$")
 
-	vim.cmd("setlocal nobuflisted nonumber norelativenumber foldcolumn=0 signcolumn=no")
+	vim.cmd("setlocal nonumber norelativenumber foldcolumn=0 signcolumn=no")
 
-	self:register({ buffer = buffer, file = file })
+	self:register({ buffer = buffer, file = file, cmd = cmd })
 
 	if self._mode == "t" then
 		vim.schedule(vim.cmd.startinsert)
@@ -95,6 +99,33 @@ function Jobs:stopinsert()
 end
 
 ---@type fun(self: `Jobs`, job_buffer: number): number | nil
+Jobs.find_command_index_by_buffer = validator.f.arguments({
+	validator.f.instance_of(Jobs),
+	"number",
+}) .. function(self, job_buffer)
+	local job_index = fn.find_index(self._commands, function(job)
+		return job.buffer == job_buffer
+	end)
+
+	if not job_index then
+		return nil
+	end
+
+	return job_index
+end
+
+Jobs.find_command_by_cmd = validator.f.arguments({
+	validator.f.instance_of(Jobs),
+	"string",
+}) .. function(self, cmd)
+	local job_index = fn.find_index(self._commands, function(job)
+		return job.cmd == cmd
+	end)
+
+	return job_index and self._commands[job_index] or nil, job_index
+end
+
+---@type fun(self: `Jobs`, job_buffer: number): number | nil
 Jobs.find_index_by_buffer = validator.f.arguments({
 	validator.f.instance_of(Jobs),
 	"number",
@@ -119,31 +150,6 @@ Jobs.find_by_buffer = validator.f.arguments({
 	return job_index and self[job_index] or nil, job_index
 end
 
----This logic relies on terminal buffer names being defined as term://{cwd}//{pid}:{cmd}
-Jobs.find_index_by_cmd = validator.f.arguments({
-	validator.f.instance_of(Jobs),
-	"string",
-}) .. function(self, cmd)
-	local job_index = fn.find_index(self, function(job)
-		return string.match(job.file, "term://.+//%d+:" .. cmd)
-	end)
-
-	if not job_index then
-		return nil
-	end
-
-	return job_index
-end
-
-Jobs.find_by_cmd = validator.f.arguments({
-	validator.f.instance_of(Jobs),
-	"string",
-}) .. function(self, cmd)
-	local job_index = self:find_index_by_cmd(cmd)
-
-	return job_index and self[job_index] or nil, job_index
-end
-
 ---@type fun(self: `Jobs`, window: number): TerminalJob | nil
 Jobs.find_index_by_window = validator.f.arguments({
 	validator.f.instance_of(Jobs),
@@ -164,8 +170,14 @@ end
 ---@type fun(self: `Jobs`, job: TerminalJob)
 Jobs.register = validator.f.arguments({
 	validator.f.instance_of(Jobs),
-	validator.f.shape({ buffer = "number", file = "string" }),
+	validator.f.shape({ buffer = "number", file = "string", cmd = "string" }),
 }) .. function(self, job)
+	-- TODO: move to a shared os module
+	if job.cmd ~= vim.loop.os_getenv("SHELL") then
+		table.insert(self._commands, job)
+		return
+	end
+
 	table.insert(self, job)
 	self._current = #self
 end
@@ -175,6 +187,13 @@ Jobs.unregister = validator.f.arguments({
 	validator.f.instance_of(Jobs),
 	"number",
 }) .. function(self, job_buffer)
+	local command_index = self:find_command_index_by_buffer(job_buffer)
+
+	if command_index then
+		table.remove(self._commands, command_index)
+		return
+	end
+
 	local job_index = self:find_index_by_buffer(job_buffer)
 
 	if not job_index then
