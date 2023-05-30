@@ -51,10 +51,17 @@ function Terminal:setup()
 end
 
 function Terminal:toggle_command(cmd)
-	local command, command_index = jobs:find_command_by_cmd(cmd)
+	local command = jobs:find_command_by_cmd(cmd)
 
 	if not command then
 		return self:create(cmd)
+	end
+
+	local current_buffer_command = jobs:find_command_index_by_buffer(vim.api.nvim_get_current_buf())
+
+	if current_buffer_command then
+		jobs:startinsert()
+		return
 	end
 
 	local windows = vim.fn.getwininfo()
@@ -63,7 +70,9 @@ function Terminal:toggle_command(cmd)
 	end)
 
 	if displayed_job then
-		return vim.api.nvim_set_current_win(displayed_job.winid)
+		vim.api.nvim_set_current_win(displayed_job.winid)
+		jobs:startinsert()
+		return
 	end
 
 	return self:show_command(command)
@@ -73,13 +82,15 @@ function Terminal:toggle()
 	local jobs_count = jobs:count()
 
 	if jobs_count < 1 then
-		return self:create()
+		self:create()
+		return
 	end
 
 	local current_buffer_job = jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
 
 	if current_buffer_job then
-		return self:menu()
+		jobs:startinsert()
+		return
 	end
 
 	local windows = vim.fn.getwininfo()
@@ -88,7 +99,9 @@ function Terminal:toggle()
 	end)
 
 	if job_window then
-		return vim.api.nvim_set_current_win(job_window.winid)
+		vim.api.nvim_set_current_win(job_window.winid)
+		jobs:startinsert()
+		return
 	end
 
 	self:show()
@@ -203,23 +216,18 @@ function Terminal:menu(options)
 	options = vim.tbl_extend("force", { prompt_title = "Terminal actions" }, options)
 
 	local menu = {}
-	local jobs_count = jobs:count()
 
-	if jobs_count > 0 then
-		fn.push(menu, {
-			jobs_count .. " job" .. (jobs_count > 1 and "s" or "") .. " running",
-			handler = fn.bind(self.jobs_menu, self),
-		})
-	end
+	local jobs_count = jobs:count()
+	fn.push(menu, {
+		string.format("%d job%s running", jobs_count, (jobs_count ~= 1 and "s" or "")),
+		handler = fn.bind(self.jobs_menu, self),
+	})
 
 	local commands_count = jobs:commands_count()
-
-	if commands_count > 0 then
-		fn.push(menu, {
-			commands_count .. " command" .. (commands_count > 1 and "s" or "") .. " running",
-			handler = fn.bind(self.commands_menu, self),
-		})
-	end
+	fn.push(menu, {
+		string.format("%d commands%s running", commands_count, (commands_count ~= 1 and "s" or "")),
+		handler = fn.bind(self.commands_menu, self),
+	})
 
 	local actions = self:get_actions()
 	fn.push(
@@ -304,12 +312,12 @@ function Terminal:commands_menu(options)
 		prompt_title = "Running jobs",
 		previewer = require("telescope.previewers").new_buffer_previewer({
 			define_preview = function(previewer, entry)
-				local job_buffer = entry.value.job.buffer
-				local job_lines = vim.api.nvim_buf_get_lines(job_buffer, 0, -1, false)
+				local buffer = entry.value.command.buffer
+				local lines = vim.api.nvim_buf_get_lines(buffer, 0, -1, false)
 				local preview_lines = fn.slice(
-					job_lines,
+					lines,
 					1,
-					fn.find_last_index(job_lines, function(line)
+					fn.find_last_index(lines, function(line)
 						return line ~= ""
 					end)
 				)

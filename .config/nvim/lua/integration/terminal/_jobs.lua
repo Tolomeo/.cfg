@@ -125,6 +125,21 @@ Jobs.find_command_by_cmd = validator.f.arguments({
 	return job_index and self._commands[job_index] or nil, job_index
 end
 
+Jobs.find_command_index_by_buffer = validator.f.arguments({
+	validator.f.instance_of(Jobs),
+	"number",
+}) .. function(self, buffer)
+	local command_index = fn.find_index(self._commands, function(command)
+		return command.buffer == buffer
+	end)
+
+	if not command_index then
+		return nil
+	end
+
+	return command_index
+end
+
 ---@type fun(self: `Jobs`, job_buffer: number): number | nil
 Jobs.find_index_by_buffer = validator.f.arguments({
 	validator.f.instance_of(Jobs),
