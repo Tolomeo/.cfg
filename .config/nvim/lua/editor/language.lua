@@ -81,7 +81,7 @@ function Language:on_server_attach(client, buffer)
 	end
 end
 
-function Language:default_server_config()
+function Language:get_language_server_default_setup()
 	return {
 		capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities()),
 		on_attach = fn.bind(self.on_server_attach, self),
@@ -92,9 +92,9 @@ function Language:setup_servers()
 	vim.o.winbar = string.format("%s%s%s", "%{%v:lua.require('nvim-navic').get_location()%}", "%=", vim.o.winbar)
 
 	local config = settings.config
+	local language_configs = config.language
+	local language_server_default_setup = self:get_language_server_default_setup()
 	local float_win_config = require("interface.window"):float_config()
-	local servers = config["language.servers"]
-	local default_server_config = self:default_server_config()
 
 	require("mason-lspconfig").setup({
 		automatic_installation = true,
@@ -102,14 +102,26 @@ function Language:setup_servers()
 
 	require("neodev").setup()
 
-	for _, server in ipairs(servers) do
-		local server_config = {
-			settings = server.settings,
-			capabilities = fn.merge_deep(default_server_config.capabilities, server.capabilities),
-			on_attach = default_server_config.on_attach,
-		}
+	for filetypes, language_config in fn.kpairs(language_configs) do
+		local language_servers = language_config.server
 
-		require("lspconfig")[server.name].setup(server_config)
+		if not language_servers then
+			goto continue
+		end
+
+		for _, language_server in ipairs(language_servers) do
+			local language_server_setup = fn.merge(language_server_default_setup, {
+				filetypes = fn.split(filetypes, ","),
+			})
+
+			if type(language_server) == "string" then
+				require("lspconfig")[language_server].setup(language_server_setup)
+			elseif type(language_server) == "table" then
+				require("lspconfig")[language_server.name].setup(fn.merge_deep(language_server_setup, language_server))
+			end
+		end
+
+		::continue::
 	end
 
 	-- Diagnostic signs

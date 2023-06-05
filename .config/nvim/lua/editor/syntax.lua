@@ -1,4 +1,5 @@
 local Module = require("_shared.module")
+local fn = require("_shared.fn")
 local settings = require("settings")
 
 local Syntax = Module:extend({
@@ -27,9 +28,24 @@ local Syntax = Module:extend({
 
 function Syntax:setup()
 	local config = settings.config
+	local install_syntaxes = fn.keys(fn.ireduce(fn.values(config.language), function(_syntaxes, language_config)
+		local language_syntaxes = language_config.syntax
+
+		if not language_syntaxes then
+			return _syntaxes
+		end
+
+		for _, language_syntax in ipairs(language_syntaxes) do
+			if not _syntaxes[language_syntax] then
+				_syntaxes[language_syntax] = true
+			end
+		end
+
+		return _syntaxes
+	end, {}))
 
 	require("nvim-treesitter.configs").setup({
-		ensure_installed = config["language.parsers"],
+		ensure_installed = install_syntaxes,
 		sync_install = true,
 		highlight = {
 			enable = true, -- false will disable the whole extension

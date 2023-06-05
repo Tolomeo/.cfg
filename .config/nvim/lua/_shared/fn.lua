@@ -152,6 +152,14 @@ function Fn.keys(tbl)
 	return keys
 end
 
+function Fn.values(tbl)
+	local values = {}
+	for _, value in Fn.kpairs(tbl) do
+		table.insert(values, value)
+	end
+	return values
+end
+
 function Fn.entries(tbl)
 	local entries = {}
 	for key, value in Fn.kpairs(tbl) do

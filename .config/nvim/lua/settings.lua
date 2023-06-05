@@ -329,9 +329,7 @@ local defaults = {
 		["terminal.menu"] = "<leader>T",
 	},
 	config = {
-		["language.parsers"] = {},
 		["language"] = {},
-		["language.servers"] = {},
 		["language.diagnostics.update_in_insert"] = false,
 		["language.diagnostics.severity_sort"] = true,
 		["theme.colorscheme"] = "edge",
