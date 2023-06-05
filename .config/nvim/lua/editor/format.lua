@@ -20,31 +20,51 @@ function Format:setup()
 	self:setup_comments()
 end
 
-function Format.setup_formatter()
+function Format.get_defaults()
+	local util = require("formatter.util")
+	local prettier_defaults = require("formatter.defaults.prettier")
+
+	return setmetatable({
+		less = {
+			prettier = util.withl(prettier_defaults, "less"),
+		},
+		scss = {
+			prettier = util.withl(prettier_defaults, "scss"),
+		},
+	}, {
+		__index = function(_, filetype)
+			return require(string.format("formatter.filetypes.%s", filetype))
+		end,
+	})
+end
+
+function Format:setup_formatter()
 	local keymap = settings.keymap
-	local formatters = settings.config["language.formatters"]
+	local language_configs = settings.config["language"]
+	local formatter_defaults = self:get_defaults()
+
+	local language_formatters = fn.kreduce(language_configs, function(_language_formatters, filetypes_config, filetypes)
+		if filetypes_config.format == nil then
+			return _language_formatters
+		end
+
+		for _, filetype in ipairs(fn.split(filetypes, ",")) do
+			filetype = fn.trim(filetype)
+
+			_language_formatters[filetype] = fn.imap(filetypes_config.format, function(formatter_name)
+				return formatter_defaults[filetype][formatter_name]
+			end)
+		end
+
+		return _language_formatters
+	end, {
+		["*"] = {
+			require("formatter.filetypes.any").remove_trailing_whitespace,
+		},
+	})
 
 	require("formatter").setup({
-		filetype = fn.ireduce(fn.entries(formatters), function(_formatter_setup_filetype, entry)
-			local formatter_name, filetypes = entry[1], entry[2]
-
-			for _, filetype in ipairs(filetypes) do
-				if not _formatter_setup_filetype[filetype] then
-					_formatter_setup_filetype[filetype] = {}
-				end
-
-				table.insert(
-					_formatter_setup_filetype[filetype],
-					require("formatter.filetypes." .. filetype)[formatter_name]
-				)
-			end
-
-			return _formatter_setup_filetype
-		end, {
-			["*"] = {
-				require("formatter.filetypes.any").remove_trailing_whitespace,
-			},
-		}),
+		filetype = language_formatters,
 	})
 
 	-- Mappings

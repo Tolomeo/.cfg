@@ -212,4 +212,15 @@ function Fn.ifilter(tbl, func)
 	end, {})
 end
 
+function Fn.split(str, delimiter)
+	local result = {}
+	local pattern = string.format("([^%s]+)", delimiter)
+
+	for word in string.gmatch(str, pattern) do
+		table.insert(result, word)
+	end
+
+	return result
+end
+
 return Fn

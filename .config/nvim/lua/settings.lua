@@ -330,7 +330,7 @@ local defaults = {
 	},
 	config = {
 		["language.parsers"] = {},
-		["language.formatters"] = {},
+		["language"] = {},
 		["language.servers"] = {},
 		["language.diagnostics.update_in_insert"] = false,
 		["language.diagnostics.severity_sort"] = true,

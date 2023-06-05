@@ -1,164 +1,249 @@
 {
-    "config": {
-        "theme.colorscheme": "kanagawa",
-        "terminal.jobs": [
-            {
-                "command": "lazygit"
-            },
-            {
-                "command": "htop"
-            },
-            {
-                "command": "node"
-            },
-            {
-                "command": "glow"
-            },
-            {
-                "command": "ranger",
-								"keymap": "<leader>e"
-            }
-        ],
-        "language.parsers": [
-            "bash",
-            "lua",
-            "html",
-            "css",
-            "scss",
-            "dockerfile",
-            "dot",
-            "json",
-            "jsdoc",
-            "yaml",
-            "javascript",
-            "typescript",
-            "tsx",
-            "graphql",
-            "markdown",
-						"pug"
-        ],
-				"language.formatters": {
-					"stylua": ["lua"],
-					"prettier": ["javascript", "typescript", "typescriptreact"]
-				},
-        "language.servers": [
-            {
-                "name": "lua_ls"
-            },
-            {
-                "name": "bashls"
-            },
-            {
-                "name": "html"
-            },
-            {
-                "name": "cssls"
-            },
-            {
-                "name": "emmet_ls"
-            },
-            {
-                "name": "dockerls"
-            },
-            {
-                "name": "jsonls",
-                "settings": {
-                    "json": {
-                        "schemas": [
-                            {
-                                "url": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
-                                "name": "Sumneko Lua Settings",
-                                "fileMatch": [
-                                    ".luarc.json",
-                                    ".luarc.jsonc"
-                                ]
-                            },
-                            {
-                                "url": "https://json.schemastore.org/package.json",
-                                "description": "Node project's package file",
-                                "fileMatch": [
-                                    "package.json"
-                                ]
-                            },
-                            {
-                                "url": "http://json.schemastore.org/tsconfig",
-                                "description": "TypeScript compiler configuration file",
-                                "fileMatch": [
-                                    "tsconfig.json",
-                                    "tsconfig.*.json"
-                                ]
-                            },
-                            {
-                                "url": "http://json.schemastore.org/lerna",
-                                "description": "Lerna config",
-                                "fileMatch": [
-                                    "lerna.json"
-                                ]
-                            },
-                            {
-                                "url": "http://json.schemastore.org/lerna",
-                                "description": "Babel configuration",
-                                "fileMatch": [
-                                    ".babelrc.json",
-                                    ".babelrc",
-                                    "babel.config.json"
-                                ]
-                            },
-                            {
-                                "url": "http://json.schemastore.org/eslintrc",
-                                "description": "ESLint config",
-                                "fileMatch": [
-                                    ".eslintrc.json",
-                                    ".eslintrc"
-                                ]
-                            },
-                            {
-                                "url": "http://json.schemastore.org/prettierrc",
-                                "description": "Prettier config",
-                                "fileMatch": [
-                                    ".prettierrc",
-                                    ".prettierrc.json",
-                                    "prettier.config.json"
-                                ]
-                            }
-                        ],
-                        "validate": {
-                            "enable": true
-                        }
-                    }
+  "config": {
+    "theme.colorscheme": "kanagawa",
+    "terminal.jobs": [
+      {
+        "command": "lazygit"
+      },
+      {
+        "command": "htop"
+      },
+      {
+        "command": "node"
+      },
+      {
+        "command": "glow"
+      },
+      {
+        "command": "ranger",
+        "keymap": "<leader>e"
+      }
+    ],
+    "language.parsers": [
+      "bash",
+      "lua",
+      "html",
+      "css",
+      "scss",
+      "dockerfile",
+      "dot",
+      "json",
+      "jsdoc",
+      "yaml",
+      "javascript",
+      "typescript",
+      "tsx",
+      "graphql",
+      "markdown",
+      "pug"
+    ],
+    "language": {
+      "lua": {
+        "format": ["stylua"],
+        "server": ["lua_ls"]
+      },
+      "javascript,typescript,typescriptreact": {
+        "format": ["prettier"],
+        "server": ["tsserver", "eslint"]
+      },
+      "css,less,scss": {
+        "format": ["prettier"],
+        "server": ["cssls"]
+      },
+      "html": {
+        "format": ["prettier"],
+        "server": ["html", "emmet_ls"]
+      },
+      "sh": {
+        "format": ["shfmt"],
+        "server": ["bashls"]
+      },
+      "dockerfile": {
+        "server": ["dockerls"]
+      },
+      "yaml": {
+        "format": ["prettier"],
+        "server": [
+          {
+            "name": "yamlls",
+            "capabilities": {
+              "textDocument": {
+                "foldingRange": {
+                  "dynamicRegistration": false,
+                  "lineFoldingOnly": true
                 }
+              }
             },
-            {
-                "capabilities": {
-                    "textDocument": {
-                        "foldingRange": {
-                            "dynamicRegistration": false,
-                            "lineFoldingOnly": true
-                        }
-                    }
-                },
-                "name": "yamlls",
-                "settings": {
-                    "schemas": {
-                        "https://json.schemastore.org/github-workflow.json": "/.github/workflows/*"
-                    }
-                }
-            },
-            {
-                "name": "tsserver"
-            },
-            {
-                "name": "cssmodules_ls"
-            },
-            {
-                "name": "eslint"
-            },
-            {
-                "name": "gopls"
-            },
-            {
-                "name": "graphql"
+            "settings": {
+              "schemas": {
+                "https://json.schemastore.org/github-workflow.json": "/.github/workflows/*"
+              }
             }
+          }
         ]
-    }
+      },
+      "json": {
+        "format": ["prettier"],
+        "server": [
+          {
+            "name": "jsonls",
+            "settings": {
+              "json": {
+                "schemas": [
+                  {
+                    "url": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
+                    "name": "Sumneko Lua Settings",
+                    "fileMatch": [".luarc.json", ".luarc.jsonc"]
+                  },
+                  {
+                    "url": "https://json.schemastore.org/package.json",
+                    "description": "Node project's package file",
+                    "fileMatch": ["package.json"]
+                  },
+                  {
+                    "url": "http://json.schemastore.org/tsconfig",
+                    "description": "TypeScript compiler configuration file",
+                    "fileMatch": ["tsconfig.json", "tsconfig.*.json"]
+                  },
+                  {
+                    "url": "http://json.schemastore.org/lerna",
+                    "description": "Lerna config",
+                    "fileMatch": ["lerna.json"]
+                  },
+                  {
+                    "url": "http://json.schemastore.org/lerna",
+                    "description": "Babel configuration",
+                    "fileMatch": [
+                      ".babelrc.json",
+                      ".babelrc",
+                      "babel.config.json"
+                    ]
+                  },
+                  {
+                    "url": "http://json.schemastore.org/eslintrc",
+                    "description": "ESLint config",
+                    "fileMatch": [".eslintrc.json", ".eslintrc"]
+                  },
+                  {
+                    "url": "http://json.schemastore.org/prettierrc",
+                    "description": "Prettier config",
+                    "fileMatch": [
+                      ".prettierrc",
+                      ".prettierrc.json",
+                      "prettier.config.json"
+                    ]
+                  }
+                ],
+                "validate": {
+                  "enable": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "language.servers": [
+      {
+        "name": "lua_ls"
+      },
+      {
+        "name": "bashls"
+      },
+      {
+        "name": "html"
+      },
+      {
+        "name": "cssls"
+      },
+      {
+        "name": "emmet_ls"
+      },
+      {
+        "name": "dockerls"
+      },
+      {
+        "name": "jsonls",
+        "settings": {
+          "json": {
+            "schemas": [
+              {
+                "url": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
+                "name": "Sumneko Lua Settings",
+                "fileMatch": [".luarc.json", ".luarc.jsonc"]
+              },
+              {
+                "url": "https://json.schemastore.org/package.json",
+                "description": "Node project's package file",
+                "fileMatch": ["package.json"]
+              },
+              {
+                "url": "http://json.schemastore.org/tsconfig",
+                "description": "TypeScript compiler configuration file",
+                "fileMatch": ["tsconfig.json", "tsconfig.*.json"]
+              },
+              {
+                "url": "http://json.schemastore.org/lerna",
+                "description": "Lerna config",
+                "fileMatch": ["lerna.json"]
+              },
+              {
+                "url": "http://json.schemastore.org/lerna",
+                "description": "Babel configuration",
+                "fileMatch": [".babelrc.json", ".babelrc", "babel.config.json"]
+              },
+              {
+                "url": "http://json.schemastore.org/eslintrc",
+                "description": "ESLint config",
+                "fileMatch": [".eslintrc.json", ".eslintrc"]
+              },
+              {
+                "url": "http://json.schemastore.org/prettierrc",
+                "description": "Prettier config",
+                "fileMatch": [
+                  ".prettierrc",
+                  ".prettierrc.json",
+                  "prettier.config.json"
+                ]
+              }
+            ],
+            "validate": {
+              "enable": true
+            }
+          }
+        }
+      },
+      {
+        "capabilities": {
+          "textDocument": {
+            "foldingRange": {
+              "dynamicRegistration": false,
+              "lineFoldingOnly": true
+            }
+          }
+        },
+        "name": "yamlls",
+        "settings": {
+          "schemas": {
+            "https://json.schemastore.org/github-workflow.json": "/.github/workflows/*"
+          }
+        }
+      },
+      {
+        "name": "tsserver"
+      },
+      {
+        "name": "cssmodules_ls"
+      },
+      {
+        "name": "eslint"
+      },
+      {
+        "name": "gopls"
+      },
+      {
+        "name": "graphql"
+      }
+    ]
+  }
 }
