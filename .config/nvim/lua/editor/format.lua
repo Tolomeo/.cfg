@@ -6,7 +6,7 @@ local settings = require("settings")
 local Format = Module:extend({
 	plugins = {
 		-- Formatter
-		{ "sbdchd/neoformat" },
+		{ "mhartington/formatter.nvim" },
 		-- Folds
 		{ "kevinhwang91/nvim-ufo", dependencies = "kevinhwang91/promise-async" },
 		-- Comments
@@ -22,14 +22,33 @@ end
 
 function Format.setup_formatter()
 	local keymap = settings.keymap
-	-- Enable basic formatting when a filetype is not found
-	vim.g.neoformat_basic_format_retab = 1
-	vim.g.neoformat_basic_format_align = 1
-	vim.g.neoformat_basic_format_trim = 1
-	-- Have Neoformat look for a formatter executable in the node_modules/.bin directory in the current working directory or one of its parents
-	vim.g.neoformat_try_node_exe = 1
+	local formatters = settings.config["language.formatters"]
+
+	require("formatter").setup({
+		filetype = fn.ireduce(fn.entries(formatters), function(_formatter_setup_filetype, entry)
+			local formatter_name, filetypes = entry[1], entry[2]
+
+			for _, filetype in ipairs(filetypes) do
+				if not _formatter_setup_filetype[filetype] then
+					_formatter_setup_filetype[filetype] = {}
+				end
+
+				table.insert(
+					_formatter_setup_filetype[filetype],
+					require("formatter.filetypes." .. filetype)[formatter_name]
+				)
+			end
+
+			return _formatter_setup_filetype
+		end, {
+			["*"] = {
+				require("formatter.filetypes.any").remove_trailing_whitespace,
+			},
+		}),
+	})
+
 	-- Mappings
-	key.nmap({ keymap["language.format"], "<cmd>Neoformat<Cr>" })
+	key.nmap({ keymap["language.format"], "<cmd>Format<Cr>" })
 end
 
 function Format:setup_folds()

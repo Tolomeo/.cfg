@@ -1,4 +1,5 @@
 local Module = require("_shared.module")
+local fn = require("_shared.fn")
 local fs = require("_shared.fs")
 local key = require("_shared.key")
 local settings = require("settings")
@@ -45,6 +46,9 @@ function Config:setup()
 	require("lazy").setup(self:list_plugins())
 
 	require("mason").setup()
+	-- TODO: check for formatters already present and avoid to install
+	-- IDEA: should we delay until the filetype is opened?
+	-- vim.fn.execute(string.format("MasonInstall %s", table.concat(fn.keys(settings.config["language.formatters"]), " ")))
 end
 
 return Config:new()

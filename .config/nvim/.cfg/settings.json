@@ -34,8 +34,13 @@
             "typescript",
             "tsx",
             "graphql",
-            "markdown"
+            "markdown",
+						"pug"
         ],
+				"language.formatters": {
+					"stylua": ["lua"],
+					"prettier": ["javascript", "typescript", "typescriptreact"]
+				},
         "language.servers": [
             {
                 "name": "lua_ls"
@@ -147,6 +152,9 @@
             },
             {
                 "name": "eslint"
+            },
+            {
+                "name": "gopls"
             },
             {
                 "name": "graphql"

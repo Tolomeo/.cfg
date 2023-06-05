@@ -152,6 +152,14 @@ function Fn.keys(tbl)
 	return keys
 end
 
+function Fn.entries(tbl)
+	local entries = {}
+	for key, value in Fn.kpairs(tbl) do
+		table.insert(entries, { key, value })
+	end
+	return entries
+end
+
 --- Returns an array of a given table's numbered-keyed property names.
 ---@param tbl table
 ---@return table
