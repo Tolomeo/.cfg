@@ -28,24 +28,20 @@ local Syntax = Module:extend({
 
 function Syntax:setup()
 	local config = settings.config
-	local install_syntaxes = fn.keys(fn.ireduce(fn.values(config.language), function(_syntaxes, language_config)
-		local language_syntaxes = language_config.syntax
 
-		if not language_syntaxes then
-			return _syntaxes
-		end
-
-		for _, language_syntax in ipairs(language_syntaxes) do
-			if not _syntaxes[language_syntax] then
-				_syntaxes[language_syntax] = true
-			end
-		end
+	local syntaxes = fn.reduce(fn.keys(config.language), function(_syntaxes, filetypes)
+		fn.push(
+			_syntaxes,
+			unpack(fn.imap(fn.split(filetypes, ","), function(filetype)
+				return require("nvim-treesitter.parsers").ft_to_lang(fn.trim(filetype))
+			end))
+		)
 
 		return _syntaxes
-	end, {}))
+	end, {})
 
 	require("nvim-treesitter.configs").setup({
-		ensure_installed = install_syntaxes,
+		ensure_installed = syntaxes,
 		sync_install = true,
 		highlight = {
 			enable = true, -- false will disable the whole extension

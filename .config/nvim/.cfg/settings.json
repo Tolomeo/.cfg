@@ -22,37 +22,29 @@
     "language": {
       "lua": {
         "format": ["stylua"],
-        "server": ["lua_ls"],
-        "syntax": ["lua"]
+        "server": ["lua_ls"]
       },
       "javascript,typescript,typescriptreact": {
         "format": ["prettier"],
-        "server": ["tsserver", "eslint"],
-        "syntax": ["javascript", "typescript", "tsx", "jsdoc"]
+        "server": ["tsserver", "eslint"]
       },
       "css,scss": {
         "format": ["prettier"],
-        "server": ["cssls"],
-        "syntax": ["css", "scss"]
+        "server": ["cssls"]
       },
       "html": {
         "format": ["prettier"],
-        "server": ["html", "emmet_ls"],
-        "syntax": ["html"]
+        "server": ["html", "emmet_ls"]
       },
       "markdown": {
-        "format": ["prettier"],
-        "server": ["remark_ls"],
-        "syntax": ["markdown"]
+        "format": ["prettier"]
       },
       "sh": {
         "format": ["shfmt"],
-        "server": ["bashls"],
-        "syntax": ["bash"]
+        "server": ["bashls"]
       },
       "dockerfile": {
-        "server": ["dockerls"],
-        "syntax": ["dockerfile"]
+        "server": ["dockerls"]
       },
       "yaml": {
         "format": ["prettier"],
