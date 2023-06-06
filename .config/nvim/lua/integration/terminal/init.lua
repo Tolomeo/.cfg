@@ -60,7 +60,7 @@ function Terminal:toggle_command(cmd)
 	local current_buffer_command = jobs:find_command_index_by_buffer(vim.api.nvim_get_current_buf())
 
 	if current_buffer_command then
-		jobs:startinsert()
+		vim.fn.execute("buffer#")
 		return
 	end
 
@@ -89,7 +89,7 @@ function Terminal:toggle()
 	local current_buffer_job = jobs:find_index_by_buffer(vim.api.nvim_get_current_buf())
 
 	if current_buffer_job then
-		jobs:startinsert()
+		vim.fn.execute("buffer#")
 		return
 	end
 
