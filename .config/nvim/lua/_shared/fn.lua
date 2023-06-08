@@ -102,6 +102,16 @@ function Fn.ifind(tbl, func)
 	return nil
 end
 
+function Fn.kfind(tbl, func)
+	for key, item in Fn.kpairs(tbl) do
+		if func(item, key) then
+			return item
+		end
+	end
+
+	return nil
+end
+
 function Fn.find_last_index(tbl, func)
 	for index = #tbl, 1, -1 do
 		if func(tbl[index], index) then
@@ -139,6 +149,12 @@ function Fn.imap(tbl, func)
 		table.insert(new_tbl, func(value, index))
 		return new_tbl
 	end, {})
+end
+
+function Fn.ieach(tbl, func)
+	for index, value in ipairs(tbl) do
+		func(value, index, tbl)
+	end
 end
 
 --- Returns an array of a given table's string-keyed property names.
@@ -220,6 +236,16 @@ function Fn.ifilter(tbl, func)
 	end, {})
 end
 
+function Fn.kfilter(tbl, func)
+	return Fn.kreduce(tbl, function(a, v, k)
+		if func(v, k) then
+			a[k] = v
+		end
+
+		return a
+	end, {})
+end
+
 function Fn.split(str, delimiter)
 	local result = {}
 	local pattern = string.format("([^%s]+)", delimiter)
@@ -229,6 +255,15 @@ function Fn.split(str, delimiter)
 	end
 
 	return result
+end
+
+function Fn.switch(value)
+	return function(cases)
+		if cases[value] ~= nil then
+			return true, cases[value]()
+		end
+		return false, nil
+	end
 end
 
 return Fn

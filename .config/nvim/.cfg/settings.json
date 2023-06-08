@@ -1,6 +1,7 @@
 {
   "config": {
     "theme.colorscheme": "kanagawa",
+    "workspace.root": [".git", ".cfg"],
     "terminal.jobs": [
       {
         "command": "lazygit"

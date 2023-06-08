@@ -60,4 +60,8 @@ function Fs.mkdirSync(path, mode)
 	return uv.fs_mkdir(path, mode)
 end
 
+function Fs.statSync(path)
+	return uv.fs_stat(path)
+end
+
 return Fs
