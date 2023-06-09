@@ -9,10 +9,10 @@ local Finder = Module:extend({
 	plugins = {
 		{ "nvim-telescope/telescope.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
 		{ "nvim-telescope/telescope-project.nvim", dependencies = { "nvim-telescope/telescope.nvim" } },
-		{
+		--[[ {
 			"folke/todo-comments.nvim",
 			dependencies = "nvim-lua/plenary.nvim",
-		},
+		}, ]]
 	},
 })
 
@@ -46,7 +46,7 @@ function Finder:setup()
 	})
 
 	-- Todo comments
-	require("todo-comments").setup({})
+	-- require("todo-comments").setup({})
 
 	key.nmap(
 		{ keymap["find.files"], fn.bind(self.find, self, "files") },
@@ -55,8 +55,8 @@ function Finder:setup()
 		{ keymap["find.text_in_directory"], fn.bind(self.find, self, "text_in_directory") },
 		{ keymap["find.about_vim"], fn.bind(self.find, self, "about_vim") },
 		{ keymap["find.spelling_suggestions"], fn.bind(self.find, self, "spelling_suggestions") },
-		{ keymap["find.buffers"], fn.bind(self.find, self, "buffers") },
-		{ keymap["find.todos"], fn.bind(self.find, self, "todos") }
+		{ keymap["find.buffers"], fn.bind(self.find, self, "buffers") }
+		-- { keymap["find.todos"], fn.bind(self.find, self, "todos") }
 	)
 end
 
@@ -90,9 +90,9 @@ Finder.pickers = setmetatable({
 	projects = function()
 		require("telescope").extensions.project.project({ display_type = "full" })
 	end,
-	todos = function()
+	--[[ todos = function()
 		key.input(":TodoTelescope<CR>")
-	end,
+	end, ]]
 	about_vim = function()
 		return TabbedPicker:new({
 			{ prompt_title = "Docs", find = require("telescope.builtin").help_tags },

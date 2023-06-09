@@ -151,9 +151,22 @@ function Fn.imap(tbl, func)
 	end, {})
 end
 
+function Fn.kmap(tbl, func)
+	return Fn.kreduce(tbl, function(new_tbl, value, key)
+		table.insert(new_tbl, func(value, key))
+		return new_tbl
+	end, {})
+end
+
 function Fn.ieach(tbl, func)
 	for index, value in ipairs(tbl) do
 		func(value, index, tbl)
+	end
+end
+
+function Fn.keach(tbl, func)
+	for key, value in Fn.kpairs(tbl) do
+		func(value, key, tbl)
 	end
 end
 
@@ -212,7 +225,7 @@ end
 
 function Fn.merge(...)
 	return Fn.reduce({ ... }, function(target, source)
-		return vim.tbl_extend("force", target, source)
+			return vim.tbl_extend("force", target, source)
 	end, {})
 end
 
