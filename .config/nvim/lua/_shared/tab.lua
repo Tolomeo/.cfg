@@ -9,8 +9,9 @@ M.create = validator.f.arguments({
 	vim.api.nvim_command("tabnew")
 
 	local tab = vim.api.nvim_get_current_tabpage()
+	config[1] = tab
 
-	M.update(tab, config)
+	M.update(config)
 
 	vim.api.nvim_command("tabnext -")
 
@@ -18,14 +19,18 @@ M.create = validator.f.arguments({
 end
 
 M.update = validator.f.arguments({
-	"number",
 	validator.f.shape({
+		"number",
 		vars = validator.f.optional(validator.f.shape({})),
 	}),
-}) .. function(tab, config)
-	config = fn.merge({ vars = {} }, config)
+}) .. function(config)
+	local tab = config[1]
+	local tab_options = fn.kreduce(config, function(_tab_options, value, key)
+		_tab_options[key] = value
+		return _tab_options
+	end, { vars = {} })
 
-	fn.keach(config.vars, function(var_value, var_name)
+	fn.keach(tab_options.vars, function(var_value, var_name)
 		vim.api.nvim_tabpage_set_var(tab, var_name, var_value)
 	end)
 
@@ -36,6 +41,31 @@ M.cd = validator.f.arguments({
 	"string",
 }) .. function(path)
 	return vim.api.nvim_command(string.format("tcd %s", path))
+end
+
+M.get = validator.f.arguments({ validator.f.shape({
+	"number",
+	vars = validator.f.optional("table"),
+}) }) .. function(options)
+	local tabpage = options[1]
+	local tab = {
+		tabpage = tabpage,
+		number = vim.api.nvim_tabpage_get_number(tabpage),
+	}
+
+	if options.vars then
+		tab.vars = fn.ireduce(options.vars, function(tab_vars, var_name)
+			local ok, var_value = pcall(vim.api.nvim_tabpage_get_var, tabpage, var_name)
+
+			if ok then
+				tab_vars[var_name] = var_value
+			end
+
+			return tab_vars
+		end, {})
+	end
+
+	return tab
 end
 
 return M

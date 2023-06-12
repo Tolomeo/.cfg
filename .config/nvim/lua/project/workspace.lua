@@ -4,6 +4,7 @@ local fn = require("_shared.fn")
 local fs = require("_shared.fs")
 local bf = require("_shared.buffer")
 local tb = require("_shared.tab")
+local pt = require("_shared.path")
 local settings = require("settings")
 
 local Workspace = Module:extend({
@@ -62,7 +63,7 @@ function Workspace:on_vim_enter()
 
 	fn.ieach(directory_args, function(directory_path)
 		self:create(directory_path)
-		bf.delete({ bf.get_by_name({ directory_path }), force = true })
+		bf.delete({ bf.get_id_by_name({ directory_path }), force = true })
 	end)
 
 	fn.ieach(buffer_args, function(buffer_path)
@@ -76,28 +77,24 @@ function Workspace:on_vim_enter()
 			buffer_workspaces = self:get_by_root(root)
 		end
 
-		bf.update({ bf.get_by_name({ buffer_path }), vars = { workspaces = fn.keys(buffer_workspaces) } })
+		bf.update({ bf.get_id_by_name({ buffer_path }), vars = { workspaces = fn.keys(buffer_workspaces) } })
 	end)
 
 	self:on_tab_enter()
 end
 
 function Workspace:on_tab_enter()
-	vim.schedule(function()
-		local tab = tostring(vim.api.nvim_get_current_tabpage())
-		local buffers = bf.get_buffers({ vars = { "workspaces" } })
+	local tab = tostring(vim.api.nvim_get_current_tabpage())
+	local buffers = fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
+		return buffer.vars.workspaces ~= nil
+	end)
 
-		fn.ieach(buffers, function(buffer)
-			if buffer.vars.workspaces == nil then
-				return
-			end
+	fn.ieach(buffers, function(buffer)
+		local buflisted = fn.ifind(buffer.vars.workspaces, function(ws)
+			return ws == tab
+		end) ~= nil
 
-			local buflisted = fn.ifind(buffer.vars.workspaces, function(ws)
-				return ws == tab
-			end) ~= nil
-
-			bf.update({ buffer.bufnr, options = { buflisted = buflisted } })
-		end)
+		bf.update({ buffer.bufnr, options = { buflisted = buflisted } })
 	end)
 end
 
@@ -111,8 +108,11 @@ function Workspace:create(root, tab, dashboard)
 end
 
 function Workspace:create_dashboard(tab, buf)
+	local workspace_root = string.gsub(tb.get({ tab, vars = { "workspace" } }).vars.workspace, "/$", "")
+	local workspace_name = string.format("ws:%d:%s", tab, pt.shorten({ workspace_root }))
+
 	local config = {
-		name = string.format("ws:%d", tab),
+		name = workspace_name,
 		options = { buftype = "nofile", swapfile = false, buflisted = true },
 		vars = { workspaces = { tostring(tab) } },
 	}
@@ -135,7 +135,8 @@ function Workspace:create_tab(root, tab)
 	local config = { vars = { workspace = root } }
 
 	if tab then
-		return tb.update(tab, config)
+		config[1] = tab
+		return tb.update(config)
 	end
 
 	return tb.create(config)

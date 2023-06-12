@@ -39,7 +39,7 @@ M.update = validator.f.arguments({
 	return buf
 end
 
-M.get_by_name = validator.f.arguments({
+M.get_id_by_name = validator.f.arguments({
 	validator.f.shape({
 		"string",
 	}),
@@ -50,34 +50,40 @@ M.get_by_name = validator.f.arguments({
 	return bufnr ~= -1 and bufnr or nil
 end
 
-M.get_buffers = validator.f.arguments({
-	validator.f.optional(validator.f.shape({
+M.get = validator.f.arguments({
+	validator.f.shape({
+		"number",
 		vars = validator.f.optional(validator.f.list({ "string" })),
-	})),
+	}),
+}) .. function(config)
+	local bufnr = config[1]
+	local buffer = { bufnr = bufnr, name = vim.api.nvim_buf_get_name(bufnr) }
+
+	if config.vars then
+		buffer.vars = fn.ireduce(config.vars, function(buffer_vars, var_name)
+			local ok, var_value = pcall(vim.api.nvim_buf_get_var, bufnr, var_name)
+
+			if ok then
+				buffer_vars[var_name] = var_value
+			end
+
+			return buffer_vars
+		end, {})
+	end
+
+	return buffer
+end
+
+M.get_all = validator.f.arguments({
+	validator.f.optional(validator.f.shape({})),
 }) .. function(options)
-	options = fn.merge({}, options)
-
 	return fn.imap(vim.api.nvim_list_bufs(), function(bufnr)
-		local buffer = { bufnr = bufnr, name = vim.api.nvim_buf_get_name(bufnr) }
-
-		if options.vars then
-			buffer.vars = fn.ireduce(options.vars, function(buffer_vars, var_name)
-				local ok, var_value = pcall(vim.api.nvim_buf_get_var, bufnr, var_name)
-
-				if ok then
-					buffer_vars[var_name] = var_value
-				end
-
-				return buffer_vars
-			end, {})
-		end
-
-		return buffer
+		return M.get(fn.merge({ bufnr }, options))
 	end)
 end
 
 M.find_by_name = function(name)
-	local buf = fn.ifind(M.get_buffers(), function(buffer)
+	local buf = fn.ifind(M.get_all(), function(buffer)
 		return buffer.name == name
 	end)
 
