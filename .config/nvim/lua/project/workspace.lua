@@ -67,7 +67,7 @@ function Workspace:on_vim_enter()
 	end)
 
 	fn.ieach(buffer_args, function(buffer_path)
-		local dir_path = vim.fs.dirname(buffer_path)
+		local dir_path = fs.dirname(buffer_path)
 		local root = self:find_root(dir_path, cwd)
 
 		local buffer_workspaces = self:get_by_root(root)
@@ -84,7 +84,7 @@ function Workspace:on_vim_enter()
 end
 
 function Workspace:on_tab_enter()
-	local tab = tostring(vim.api.nvim_get_current_tabpage())
+	local tab = tostring(tb.get_current().tabpage)
 	local buffers = fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
 		return buffer.vars.workspaces ~= nil
 	end)
@@ -145,13 +145,13 @@ end
 function Workspace:find_root(dir_start, dir_stop)
 	local config = settings.config
 
-	local root_file = vim.fs.find(config["workspace.root"], { path = dir_start, upward = true, stop = dir_stop })[1]
+	local root_file = fs.find(config["workspace.root"], { path = dir_start, upward = true, stop = dir_stop })[1]
 
 	if not root_file then
 		return dir_stop
 	end
 
-	return vim.fn.fnamemodify(vim.fs.dirname(root_file), ":p")
+	return pt.format({ fs.dirname(root_file), ":p" })
 end
 
 return Workspace:new()

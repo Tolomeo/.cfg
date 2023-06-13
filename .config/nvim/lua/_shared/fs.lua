@@ -1,9 +1,13 @@
 ---@see https://github.com/luvit/luvit/blob/master/deps/fs.lua
 local uv = vim.loop
 
-local Fs = {}
-
 local function noop() end
+
+local Fs = setmetatable({}, {
+	__index = function(_, method)
+		return vim.fs[method]
+	end,
+})
 
 function Fs.existsSync(path)
 	local stat, err = uv.fs_stat(path)

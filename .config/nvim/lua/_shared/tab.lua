@@ -68,4 +68,11 @@ M.get = validator.f.arguments({ validator.f.shape({
 	return tab
 end
 
+M.get_current = function(options)
+	options = options and options or {}
+	options[1] = vim.api.nvim_get_current_tabpage()
+
+	return M.get(options)
+end
+
 return M
