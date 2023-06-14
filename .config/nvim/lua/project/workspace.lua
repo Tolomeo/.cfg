@@ -6,17 +6,11 @@ local bf = require("_shared.buffer")
 local tb = require("_shared.tab")
 local pt = require("_shared.path")
 local settings = require("settings")
+local str = require("_shared.str")
 
-local Workspace = Module:extend({
-	plugins = {
-		{ "https://github.com/backdround/tabscope.nvim" },
-	},
-	list = {},
-})
+local Workspace = Module:extend({})
 
 function Workspace:setup()
-	-- require("tabscope").setup({})
-
 	au.group({
 		"Workspace",
 	}, {
@@ -33,6 +27,43 @@ function Workspace:setup()
 		function()
 			print("tab new entered")
 		end,
+	}, {
+		{ "BufNew" },
+		"*",
+		fn.bind(self.on_buf_new, self),
+	}, {
+		"TermOpen",
+		"*",
+		fn.bind(self.on_term_open, self),
+	}, {
+		"BufNewFile",
+		"*",
+		function()
+			vim.print("buf new file")
+		end,
+	})
+end
+
+function Workspace:get_all()
+	return fn.ifilter(tb.get_all({ vars = { "workspace" } }), function(tab)
+		return tab.vars.workspace ~= nil
+	end)
+end
+
+function Workspace:on_term_open(evt)
+	local buffer = bf.get({ evt.buf })
+
+	self:term_to_workspace(buffer)
+end
+
+function Workspace:term_to_workspace(buffer)
+	local current_ws = tb.get_current({ vars = { "workspace" } })
+
+	bf.update({
+		buffer.bufnr,
+		vars = {
+			workspaces = { current_ws.tabpage },
+		},
 	})
 end
 
@@ -67,7 +98,7 @@ function Workspace:on_vim_enter()
 	end)
 
 	fn.ieach(buffer_args, function(buffer_path)
-		local dir_path = fs.dirname(buffer_path)
+		local dir_path = pt.dirname({ buffer_path })
 		local root = self:find_root(dir_path, cwd)
 
 		local buffer_workspaces = self:get_by_root(root)
@@ -77,21 +108,73 @@ function Workspace:on_vim_enter()
 			buffer_workspaces = self:get_by_root(root)
 		end
 
-		bf.update({ bf.get_id_by_name({ buffer_path }), vars = { workspaces = fn.keys(buffer_workspaces) } })
+		bf.update({
+			bf.get_id_by_name({ buffer_path }),
+			vars = { workspaces = fn.imap(buffer_workspaces, function(ws)
+				return ws.tabpage
+			end) },
+		})
 	end)
 
 	self:on_tab_enter()
 end
 
+function Workspace:on_buf_new(evt)
+	local buffer = bf.get({ evt.buf })
+
+	self:buffer_to_workspace(buffer)
+end
+
+function Workspace:buffer_to_workspace(buffer)
+	if bf.is_unnamed(buffer) then
+		return
+	end
+
+	local current_ws = tb.get_current({ vars = { "workspace" } })
+	local buffer_workspaces = fn.imap(
+		fn.ifilter(self:get_all(), function(ws)
+			return str.starts_with(buffer.name, ws.vars.workspace)
+		end),
+		function(buf_ws)
+			return buf_ws.tabpage
+		end
+	)
+
+	if #buffer_workspaces < 1 then
+		return
+	end
+
+	bf.update({
+		buffer.bufnr,
+		vars = {
+			workspaces = buffer_workspaces,
+		},
+	})
+
+	if fn.iincludes(buffer_workspaces, current_ws.tabpage) then
+		return
+	end
+
+	tb.go_to(buffer_workspaces[1])
+	self:on_tab_enter()
+end
+
 function Workspace:on_tab_enter()
-	local tab = tostring(tb.get_current().tabpage)
-	local buffers = fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
+	local tab = tb.get_current({ vars = { "workspace" } })
+
+	self:toggle_workspace_buffers(tab)
+	tb.cd(tab.vars.workspace)
+end
+
+function Workspace:toggle_workspace_buffers(tab)
+	local ws_id = tab.tabpage
+	local ws_buffers = fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
 		return buffer.vars.workspaces ~= nil
 	end)
 
-	fn.ieach(buffers, function(buffer)
+	fn.ieach(ws_buffers, function(buffer)
 		local buflisted = fn.ifind(buffer.vars.workspaces, function(ws)
-			return ws == tab
+			return ws == ws_id
 		end) ~= nil
 
 		bf.update({ buffer.bufnr, options = { buflisted = buflisted } })
@@ -102,9 +185,7 @@ function Workspace:create(root, tab, dashboard)
 	tab = tab and tab or self:create_tab(root)
 	dashboard = dashboard and dashboard or self:create_dashboard(tab, bf.find_by_name(""))
 
-	self.list[tostring(tab)] = { root = root, dashboard = dashboard }
-
-	return self.list[tab], tab
+	return root, tab, dashboard
 end
 
 function Workspace:create_dashboard(tab, buf)
@@ -114,7 +195,7 @@ function Workspace:create_dashboard(tab, buf)
 	local config = {
 		name = workspace_name,
 		options = { buftype = "nofile", swapfile = false, buflisted = true },
-		vars = { workspaces = { tostring(tab) } },
+		vars = { workspaces = { tab } },
 	}
 
 	if buf then
@@ -126,8 +207,8 @@ function Workspace:create_dashboard(tab, buf)
 end
 
 function Workspace:get_by_root(root)
-	return fn.kfilter(self.list, function(workspace)
-		return workspace.root == root
+	return fn.ifilter(tb.get_all({ vars = { "workspace" } }), function(ws)
+		return ws.vars.workspace == root
 	end)
 end
 
@@ -145,13 +226,13 @@ end
 function Workspace:find_root(dir_start, dir_stop)
 	local config = settings.config
 
-	local root_file = fs.find(config["workspace.root"], { path = dir_start, upward = true, stop = dir_stop })[1]
+	local root_file = fs.find({ config["workspace.root"], path = dir_start, upward = true, stop = dir_stop })[1]
 
 	if not root_file then
 		return dir_stop
 	end
 
-	return pt.format({ fs.dirname(root_file), ":p" })
+	return pt.format({ pt.dirname({ root_file }), ":p" })
 end
 
 return Workspace:new()

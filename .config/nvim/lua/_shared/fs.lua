@@ -1,13 +1,10 @@
 ---@see https://github.com/luvit/luvit/blob/master/deps/fs.lua
+local fn = require("_shared.fn")
 local uv = vim.loop
 
 local function noop() end
 
-local Fs = setmetatable({}, {
-	__index = function(_, method)
-		return vim.fs[method]
-	end,
-})
+local Fs = {}
 
 function Fs.existsSync(path)
 	local stat, err = uv.fs_stat(path)
@@ -66,6 +63,16 @@ end
 
 function Fs.statSync(path)
 	return uv.fs_stat(path)
+end
+
+function Fs.find(args)
+	local what = args[1]
+	local options = fn.kreduce(args, function(_options, value, name)
+		_options[name] = value
+		return _options
+	end, {})
+
+	return vim.fs.find(what, options)
 end
 
 return Fs

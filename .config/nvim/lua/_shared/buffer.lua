@@ -1,6 +1,12 @@
 local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 
+local validate_buffer = validator.f.shape({
+	bufnr = "number",
+	name = "string",
+	vars = validator.f.optional("table"),
+})
+
 local M = {}
 
 M.create = validator.f.arguments({
@@ -103,6 +109,12 @@ M.delete = validator.f.arguments({
 	end, { force = false })
 
 	return vim.api.nvim_buf_delete(buf, options)
+end
+
+M.is_unnamed = validator.f.arguments({
+	validate_buffer,
+}) .. function(buffer)
+	return buffer.name == ""
 end
 
 return M

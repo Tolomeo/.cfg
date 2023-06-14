@@ -68,11 +68,23 @@ M.get = validator.f.arguments({ validator.f.shape({
 	return tab
 end
 
+M.get_all = validator.f.arguments({
+	"table",
+}) .. function(options)
+	return fn.imap(vim.api.nvim_list_tabpages(), function(tabpage)
+		return M.get(fn.merge({ tabpage }, options))
+	end)
+end
+
 M.get_current = function(options)
 	options = options and options or {}
 	options[1] = vim.api.nvim_get_current_tabpage()
 
 	return M.get(options)
+end
+
+M.go_to = function(tab)
+	return vim.fn.execute(string.format("tabnext %s", tab))
 end
 
 return M

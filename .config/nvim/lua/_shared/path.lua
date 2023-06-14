@@ -23,4 +23,10 @@ M.format = validator.f.arguments({
 	return vim.fn.fnamemodify(path, mods)
 end
 
+M.dirname = function(args)
+	local path = args[1]
+
+	return vim.fs.dirname(path)
+end
+
 return M

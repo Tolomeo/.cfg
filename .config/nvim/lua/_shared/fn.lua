@@ -225,7 +225,7 @@ end
 
 function Fn.merge(...)
 	return Fn.reduce({ ... }, function(target, source)
-			return vim.tbl_extend("force", target, source)
+		return vim.tbl_extend("force", target, source)
 	end, {})
 end
 
@@ -277,6 +277,14 @@ function Fn.switch(value)
 		end
 		return false, nil
 	end
+end
+
+function Fn.iincludes(tbl, search)
+	local found = Fn.ifind(tbl, function(item)
+		return item == search
+	end)
+
+	return found and true or false
 end
 
 return Fn
