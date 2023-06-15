@@ -60,6 +60,7 @@ M.get = validator.f.arguments({
 	validator.f.shape({
 		"number",
 		vars = validator.f.optional(validator.f.list({ "string" })),
+		options = validator.f.optional(validator.f.list({ "string" })),
 	}),
 }) .. function(config)
 	local bufnr = config[1]
@@ -77,14 +78,42 @@ M.get = validator.f.arguments({
 		end, {})
 	end
 
+	if config.options then
+		buffer.options = fn.ireduce(config.options, function(buffer_options, option_name)
+			local ok, option_value = pcall(vim.api.nvim_buf_get_option, bufnr, option_name)
+
+			if ok then
+				buffer_options[option_name] = option_value
+			end
+
+			return buffer_options
+		end, {})
+	end
+
 	return buffer
 end
 
+M.get_current = validator.f.arguments({
+	validator.f.optional("table"),
+}) .. function(args)
+	args = fn.merge({}, args, { vim.api.nvim_get_current_buf() })
+
+	return M.get(args)
+end
+
 M.get_all = validator.f.arguments({
-	validator.f.optional(validator.f.shape({})),
+	validator.f.optional("table"),
 }) .. function(options)
 	return fn.imap(vim.api.nvim_list_bufs(), function(bufnr)
 		return M.get(fn.merge({ bufnr }, options))
+	end)
+end
+
+M.get_listed = validator.f.arguments({
+	validator.f.optional("table"),
+}) .. function(args)
+	return fn.ifilter(M.get_all(args), function(buffer)
+		return vim.api.nvim_buf_get_option(buffer.bufnr, "buflisted")
 	end)
 end
 
@@ -94,6 +123,12 @@ M.find_by_name = function(name)
 	end)
 
 	return buf and buf.bufnr or nil
+end
+
+M.find_by_pattern = function(pattern)
+	return fn.ifind(M.get_all(), function(buffer)
+		return string.match(buffer.name, pattern)
+	end)
 end
 
 M.delete = validator.f.arguments({

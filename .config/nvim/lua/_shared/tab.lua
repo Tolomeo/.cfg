@@ -1,5 +1,6 @@
 local fn = require("_shared.fn")
 local validator = require("_shared.validator")
+local win = require("_shared.window")
 
 local M = {}
 
@@ -85,6 +86,14 @@ end
 
 M.go_to = function(tab)
 	return vim.fn.execute(string.format("tabnext %s", tab))
+end
+
+M.get_windows = function(args)
+	local tab = args[1]
+
+	return fn.imap(vim.api.nvim_tabpage_list_wins(tab), function(winnr)
+		return win.get({ winnr })
+	end)
 end
 
 return M

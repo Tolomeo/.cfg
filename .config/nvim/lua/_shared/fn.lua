@@ -287,4 +287,55 @@ function Fn.iincludes(tbl, search)
 	return found and true or false
 end
 
+function Fn.rotateRight(tbl, offset)
+	local length = #tbl
+	local rotated = {}
+
+	for i = offset, length do
+		table.insert(rotated, tbl[i])
+	end
+
+	for i = 1, offset - 1 do
+		table.insert(rotated, tbl[i])
+	end
+
+	return rotated
+end
+
+function Fn.rotateLeft(tbl, offset)
+	local length = #tbl
+	local rotated = {}
+
+	for i = offset, 1, -1 do
+		table.insert(rotated, tbl[i])
+	end
+
+	for i = length, offset + 1, -1 do
+		table.insert(rotated, tbl[i])
+	end
+
+	return rotated
+end
+
+function Fn.tail(tbl)
+	local tail = {}
+
+	for i = 2, #tbl do
+		table.insert(tail, tbl[i])
+	end
+
+	return tail
+end
+
+function Fn.reverse(tbl)
+	local reversed = {}
+	local length = #tbl
+
+	for i = length, 1, -1 do
+		table.insert(reversed, tbl[i])
+	end
+
+	return reversed
+end
+
 return Fn
