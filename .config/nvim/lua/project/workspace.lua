@@ -5,12 +5,17 @@ local fs = require("_shared.fs")
 local bf = require("_shared.buffer")
 local tb = require("_shared.tab")
 local pt = require("_shared.path")
-local settings = require("settings")
 local str = require("_shared.str")
+local key = require("_shared.key")
+local settings = require("settings")
 
 local Workspace = Module:extend({})
 
 function Workspace:setup()
+	local keymap = settings.keymap
+
+	key.nmap({ keymap["tab.next"], "<Cmd>tabnext<Cr>" }, { keymap["tab.prev"], "<Cmd>tabprevious<Cr>" })
+
 	au.group({
 		"Workspace",
 	}, {
@@ -28,19 +33,13 @@ function Workspace:setup()
 			print("tab new entered")
 		end,
 	}, {
-		{ "BufNew" },
+		{ "BufNew", "BufNewFile" },
 		"*",
 		fn.bind(self.on_buf_new, self),
 	}, {
 		"TermOpen",
 		"*",
 		fn.bind(self.on_term_open, self),
-	}, {
-		"BufNewFile",
-		"*",
-		function()
-			vim.print("buf new file")
-		end,
 	})
 end
 
@@ -70,66 +69,104 @@ end
 function Workspace:on_vim_enter()
 	local args = vim.fn.argv()
 	local cwd = vim.fn.fnamemodify(vim.loop.cwd(), ":p")
-	local tab = self:create_tab(cwd, vim.api.nvim_get_current_tabpage())
-	local dashboard = self:create_dashboard(tab, bf.find_by_name(""))
+	local initial_tab = vim.api.nvim_get_current_tabpage()
 
-	self:create(cwd, tab, dashboard)
+	tb.update({ initial_tab, vars = { workspace = cwd } })
+	bf.create({
+		name = cwd,
+		vars = { workspaces = { initial_tab } },
+		options = { modifiable = false, readonly = true, buflisted = true },
+	})
 
 	local directory_args = fn.imap(
 		fn.ifilter(args, function(arg)
-			return fs.statSync(arg).type == "directory"
+			local file_stat = fs.statSync(arg)
+
+			if not file_stat then
+				return false
+			end
+
+			return file_stat.type == "directory"
 		end),
 		function(dir_arg)
 			return vim.fn.fnamemodify(dir_arg, ":p")
 		end
 	)
-	local buffer_args = fn.imap(
+	local file_args = fn.imap(
 		fn.ifilter(args, function(arg)
-			return fs.statSync(arg).type == "file"
+			local file_stat = fs.statSync(arg)
+
+			if not file_stat then
+				return false
+			end
+
+			return file_stat.type == "file"
 		end),
-		function(buf_arg)
-			return vim.fn.fnamemodify(buf_arg, ":p")
+		function(file_arg)
+			return vim.fn.fnamemodify(file_arg, ":p")
 		end
 	)
+	--TODO: Take care of not yet existing args
 
 	fn.ieach(directory_args, function(directory_path)
 		self:create(directory_path)
-		bf.delete({ bf.get_id_by_name({ directory_path }), force = true })
 	end)
 
-	fn.ieach(buffer_args, function(buffer_path)
-		local dir_path = pt.dirname({ buffer_path })
-		local root = self:find_root(dir_path, cwd)
-
-		local buffer_workspaces = self:get_by_root(root)
-
-		if not next(buffer_workspaces) then
-			self:create(root)
-			buffer_workspaces = self:get_by_root(root)
-		end
-
-		bf.update({
-			bf.get_id_by_name({ buffer_path }),
-			vars = { workspaces = fn.imap(buffer_workspaces, function(ws)
-				return ws.tabpage
-			end) },
-		})
+	fn.ieach(file_args, function(file_path)
+		self:create_from_file(file_path)
 	end)
 
+	tb.go_to(1)
 	self:on_tab_enter()
+end
+
+function Workspace:create_from_file(file_path)
+	local file_dir = pt.dirname({ file_path })
+	local root_dir = self:find_root(file_dir)
+	local workspaces = self:get_by_root(root_dir)
+
+	if #workspaces < 1 then
+		self:create(root_dir)
+		workspaces = self:get_by_root(root_dir)
+	end
+
+	bf.update({
+		bf.get_id_by_name({ file_path }),
+		vars = { workspaces = fn.imap(workspaces, function(ws)
+			return ws.tabpage
+		end) },
+	})
 end
 
 function Workspace:on_buf_new(evt)
 	local buffer = bf.get({ evt.buf })
 
-	self:buffer_to_workspace(buffer)
-end
-
-function Workspace:buffer_to_workspace(buffer)
 	if bf.is_unnamed(buffer) then
 		return
 	end
 
+	local file_stat = fs.statSync(buffer.name)
+
+	if not file_stat then
+		return
+	end
+
+	fn.switch(file_stat.type)({
+		file = function()
+			self:on_file_buf_new(buffer)
+		end,
+		directory = function()
+			self:on_directory_buf_new(buffer)
+		end,
+	})
+end
+
+function Workspace:on_directory_buf_new(buffer)
+	self:create(buffer.name)
+	self:on_tab_enter()
+end
+
+function Workspace:on_file_buf_new(buffer)
 	local current_ws = tb.get_current({ vars = { "workspace" } })
 	local buffer_workspaces = fn.imap(
 		fn.ifilter(self:get_all(), function(ws)
@@ -162,48 +199,37 @@ end
 function Workspace:on_tab_enter()
 	local tab = tb.get_current({ vars = { "workspace" } })
 
-	self:toggle_workspace_buffers(tab)
+	self:display_workspace_buffers(tab)
 	tb.cd(tab.vars.workspace)
 end
 
-function Workspace:toggle_workspace_buffers(tab)
+function Workspace:display_workspace_buffers(tab)
 	local ws_id = tab.tabpage
 	local ws_buffers = fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
 		return buffer.vars.workspaces ~= nil
 	end)
 
 	fn.ieach(ws_buffers, function(buffer)
-		local buflisted = fn.ifind(buffer.vars.workspaces, function(ws)
-			return ws == ws_id
-		end) ~= nil
-
-		bf.update({ buffer.bufnr, options = { buflisted = buflisted } })
+		bf.update({ buffer.bufnr, options = { buflisted = fn.iincludes(buffer.vars.workspaces, ws_id) } })
 	end)
 end
 
-function Workspace:create(root, tab, dashboard)
-	tab = tab and tab or self:create_tab(root)
-	dashboard = dashboard and dashboard or self:create_dashboard(tab, bf.find_by_name(""))
-
-	return root, tab, dashboard
-end
-
-function Workspace:create_dashboard(tab, buf)
-	local workspace_root = string.gsub(tb.get({ tab, vars = { "workspace" } }).vars.workspace, "/$", "")
-	local workspace_name = string.format("ws:%d:%s", tab, pt.shorten({ workspace_root }))
-
-	local config = {
-		name = workspace_name,
-		options = { buftype = "nofile", swapfile = false, buflisted = true },
-		vars = { workspaces = { tab } },
-	}
-
-	if buf then
-		config[1] = buf
-		return bf.update(config)
+function Workspace:create(root, tab)
+	if not tab then
+		vim.fn.execute(string.format("tabnew %s", root))
+		tab = vim.api.nvim_get_current_tabpage()
 	end
 
-	return bf.create(config)
+	local dashboard = bf.get_id_by_name({ root })
+
+	tb.update({ tab, vars = { workspace = root } })
+	bf.update({
+		dashboard,
+		vars = { workspaces = { tab } },
+		options = { modifiable = false, readonly = true },
+	})
+
+	return tab, dashboard
 end
 
 function Workspace:get_by_root(root)
@@ -212,24 +238,13 @@ function Workspace:get_by_root(root)
 	end)
 end
 
-function Workspace:create_tab(root, tab)
-	local config = { vars = { workspace = root } }
-
-	if tab then
-		config[1] = tab
-		return tb.update(config)
-	end
-
-	return tb.create(config)
-end
-
 function Workspace:find_root(dir_start, dir_stop)
 	local config = settings.config
 
 	local root_file = fs.find({ config["workspace.root"], path = dir_start, upward = true, stop = dir_stop })[1]
 
 	if not root_file then
-		return dir_stop
+		return dir_start
 	end
 
 	return pt.format({ pt.dirname({ root_file }), ":p" })

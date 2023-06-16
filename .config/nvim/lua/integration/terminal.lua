@@ -36,9 +36,9 @@ function Terminal:setup()
 		fn.bind(self.menu, self),
 	})
 
-	for _, user_job in ipairs(config["terminal.jobs"]) do
+	fn.ieach(config["terminal.jobs"], function(user_job)
 		if not user_job.keymap then
-			goto continue
+			return
 		end
 
 		key.nmap({
@@ -47,9 +47,7 @@ function Terminal:setup()
 				self:toggle(user_job.command)
 			end,
 		})
-
-		::continue::
-	end
+	end)
 end
 
 function Terminal:create(cmd)
@@ -66,7 +64,7 @@ function Terminal:toggle(cmd)
 		return self:create(cmd)
 	end
 
-	local current_buffer = bf.get({ 0 })
+	local current_buffer = bf.get_current()
 
 	if cmd_buffer.bufnr == current_buffer.bufnr then
 		vim.fn.execute("buffer#")

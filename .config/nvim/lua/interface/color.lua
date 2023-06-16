@@ -42,9 +42,11 @@ function Color:setup()
 				variablebuiltinStyle = { italic = false },
 				transparent = true,
 				globalStatus = true,
-				overrides = {
-					TelescopeBorder = { link = "TelescopeNormal" },
-				},
+				overrides = function()
+					return {
+						TelescopeBorder = { link = "TelescopeNormal" },
+					}
+				end,
 			})
 		end,
 	})[colorscheme_name]

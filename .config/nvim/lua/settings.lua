@@ -159,6 +159,9 @@ local defaults = {
 		["buffer.macro.repeat.last"] = "Q",
 		-- Easy select all of file
 		["buffer.select.all"] = "<leader>%",
+		-- Tabs navigation
+		["tab.next"] = "}<Tab>",
+		["tab.prev"] = "{<Tab>",
 		-- Dropdowns and context menus
 		["dropdown.open"] = "<C-Space>",
 		["dropdown.item.next"] = "<Tab>",

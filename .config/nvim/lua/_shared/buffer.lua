@@ -20,8 +20,8 @@ M.update = validator.f.arguments({
 	validator.f.shape({
 		"number",
 		name = validator.f.optional("string"),
-		options = validator.f.optional(validator.f.shape({})),
-		vars = validator.f.optional(validator.f.shape({})),
+		options = validator.f.optional("table"),
+		vars = validator.f.optional("table"),
 	}),
 }) .. function(config)
 	local buf = config[1]
@@ -29,6 +29,8 @@ M.update = validator.f.arguments({
 		_options[key] = value
 		return _options
 	end, { options = {}, vars = {} })
+
+	-- vim.print(config, buf_options)
 
 	if buf_options.name then
 		vim.api.nvim_buf_set_name(buf, buf_options.name)
