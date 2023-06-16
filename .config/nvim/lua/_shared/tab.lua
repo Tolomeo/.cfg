@@ -70,10 +70,26 @@ M.get = validator.f.arguments({ validator.f.shape({
 end
 
 M.get_all = validator.f.arguments({
-	"table",
+	validator.f.optional("table"),
 }) .. function(options)
 	return fn.imap(vim.api.nvim_list_tabpages(), function(tabpage)
 		return M.get(fn.merge({ tabpage }, options))
+	end)
+end
+
+M.get_by_number = validator.f.arguments({
+	validator.f.shape({
+		"number",
+	}),
+}) .. function(args)
+	local num = args[1]
+	local options = fn.kreduce(args, function(_options, option_value, option_name)
+		_options[option_name] = option_value
+		return _options
+	end, {})
+
+	return fn.ifind(M.get_all(options), function(tab)
+		return tab.number == num
 	end)
 end
 

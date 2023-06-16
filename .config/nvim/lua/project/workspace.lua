@@ -27,11 +27,9 @@ function Workspace:setup()
 		"*",
 		fn.bind(self.on_tab_enter, self),
 	}, {
-		"TabNewEntered",
+		"TabClosed",
 		"*",
-		function()
-			print("tab new entered")
-		end,
+		fn.bind(self.on_tab_closed, self),
 	}, {
 		{ "BufNew", "BufNewFile" },
 		"*",
@@ -41,6 +39,25 @@ function Workspace:setup()
 		"*",
 		fn.bind(self.on_term_open, self),
 	})
+end
+
+function Workspace:on_tab_closed()
+	local tabs = fn.imap(tb.get_all(), function(tab)
+		return tab.tabpage
+	end)
+	local buffers = fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
+		return buffer.vars.workspaces ~= nil
+	end)
+
+	fn.ieach(buffers, function(buffer)
+		local buffer_workspaces = fn.iintersection(buffer.vars.workspaces, tabs)
+
+		if #buffer_workspaces < 1 then
+			return bf.delete({ buffer.bufnr })
+		end
+
+		bf.update({ buffer.bufnr, vars = { workspaces = buffer_workspaces } })
+	end)
 end
 
 function Workspace:get_all()
