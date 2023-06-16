@@ -217,6 +217,11 @@ function Workspace:on_tab_enter()
 	local tab = tb.get_current({ vars = { "workspace" } })
 
 	self:display_workspace_buffers(tab)
+
+	if not tab.vars.workspace then
+		return
+	end
+
 	tb.cd(tab.vars.workspace)
 end
 
