@@ -42,9 +42,7 @@ function Workspace:setup()
 end
 
 function Workspace:on_tab_closed()
-	local tabs = fn.imap(tb.get_all(), function(tab)
-		return tab.tabpage
-	end)
+	local tabs = tb.list()
 	local buffers = fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
 		return buffer.vars.workspaces ~= nil
 	end)
@@ -53,7 +51,9 @@ function Workspace:on_tab_closed()
 		local buffer_workspaces = fn.iintersection(buffer.vars.workspaces, tabs)
 
 		if #buffer_workspaces < 1 then
-			return bf.delete({ buffer.bufnr })
+			--TODO: handle buf modified cancel
+			bf.delete({ buffer.bufnr })
+			return
 		end
 
 		bf.update({ buffer.bufnr, vars = { workspaces = buffer_workspaces } })
@@ -61,7 +61,7 @@ function Workspace:on_tab_closed()
 end
 
 function Workspace:get_all()
-	return fn.ifilter(tb.get_all({ vars = { "workspace" } }), function(tab)
+	return fn.ifilter(tb.get_list({ vars = { "workspace" } }), function(tab)
 		return tab.vars.workspace ~= nil
 	end)
 end
@@ -86,14 +86,14 @@ end
 function Workspace:on_vim_enter()
 	local args = vim.fn.argv()
 	local cwd = vim.fn.fnamemodify(vim.loop.cwd(), ":p")
-	local initial_tab = vim.api.nvim_get_current_tabpage()
+	local initial_tab = tb.current()
 
 	tb.update({ initial_tab, vars = { workspace = cwd } })
-	vim.print(bf.create({
+	bf.create({
 		name = cwd,
 		vars = { workspaces = { initial_tab } },
 		options = { modifiable = false, readonly = true, buflisted = true },
-	}))
+	})
 
 	local directory_args = fn.imap(
 		fn.ifilter(args, function(arg)
@@ -148,7 +148,7 @@ function Workspace:create_from_file(file_path)
 	end
 
 	bf.update({
-		bf.get_id_by_name({ file_path }),
+		bf.get_handle_by_name({ file_path }),
 		vars = { workspaces = fn.imap(workspaces, function(ws)
 			return ws.tabpage
 		end) },
@@ -184,6 +184,7 @@ function Workspace:on_directory_buf_new(buffer)
 end
 
 function Workspace:on_file_buf_new(buffer)
+	--TODO: what happens when I open a file in a tab that is not a workspace?
 	local current_ws = tb.get_current({ vars = { "workspace" } })
 	local buffer_workspaces = fn.imap(
 		fn.ifilter(self:get_all(), function(ws)
@@ -237,12 +238,9 @@ function Workspace:display_workspace_buffers(tab)
 end
 
 function Workspace:create(root, tab)
-	if not tab then
-		vim.fn.execute(string.format("tabnew %s", root))
-		tab = vim.api.nvim_get_current_tabpage()
-	end
+	tab = tab and tab or tb.create({ root })
 
-	local dashboard = bf.get({ bf.get_id_by_name({ root }), vars = { "workspaces" } })
+	local dashboard = bf.get({ bf.get_handle_by_name({ root }), vars = { "workspaces" } })
 	local dashboard_workspaces = dashboard.vars.workspaces or {}
 	dashboard_workspaces = fn.iunion(dashboard_workspaces, { tab })
 
@@ -257,7 +255,7 @@ function Workspace:create(root, tab)
 end
 
 function Workspace:get_by_root(root)
-	return fn.ifilter(tb.get_all({ vars = { "workspace" } }), function(ws)
+	return fn.ifilter(tb.get_list({ vars = { "workspace" } }), function(ws)
 		return ws.vars.workspace == root
 	end)
 end

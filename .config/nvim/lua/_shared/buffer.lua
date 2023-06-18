@@ -1,4 +1,3 @@
-local Module = require("_shared.Module")
 local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 
@@ -49,15 +48,15 @@ Buffer.update = validator.f.arguments({
 	return buf
 end
 
-Buffer.get_id_by_name = validator.f.arguments({
+Buffer.get_handle_by_name = validator.f.arguments({
 	validator.f.shape({
 		"string",
 	}),
 }) .. function(options)
 	local name = options[1]
-	local bufnr = vim.fn.bufnr(name)
+	local handle = vim.fn.bufnr(name)
 
-	return bufnr ~= -1 and bufnr or nil
+	return handle ~= -1 and handle or nil
 end
 
 Buffer.get = validator.f.arguments({

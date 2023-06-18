@@ -2,31 +2,41 @@ local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 local win = require("_shared.window")
 
-local M = {}
+local Tab = {}
 
-M.create = validator.f.arguments({
-	validator.f.shape({}),
-}) .. function(config)
-	vim.api.nvim_command("tabnew")
+Tab.create = validator.f.arguments({
+	validator.f.shape({
+		validator.f.optional("string"),
+	}),
+}) .. function(args)
+	local files = fn.imap(args, function(file)
+		return file
+	end)
+	local config = fn.kreduce(args, function(_config, config_value, config_name)
+		_config[config_name] = config_value
+		return _config
+	end, {})
 
-	local tab = vim.api.nvim_get_current_tabpage()
-	config[1] = tab
+	vim.api.nvim_command(string.format("tabnew %s", table.concat(files, " ")))
 
-	M.update(config)
+	local handle = vim.api.nvim_get_current_tabpage()
+	config[1] = handle
+
+	Tab.update(config)
 
 	vim.api.nvim_command("tabnext -")
 
-	return tab
+	return handle
 end
 
-M.update = validator.f.arguments({
+Tab.update = validator.f.arguments({
 	validator.f.shape({
 		"number",
 		vars = validator.f.optional(validator.f.shape({})),
 	}),
-}) .. function(config)
-	local tab = config[1]
-	local tab_options = fn.kreduce(config, function(_tab_options, value, key)
+}) .. function(args)
+	local tab = args[1]
+	local tab_options = fn.kreduce(args, function(_tab_options, value, key)
 		_tab_options[key] = value
 		return _tab_options
 	end, { vars = {} })
@@ -38,13 +48,13 @@ M.update = validator.f.arguments({
 	return tab
 end
 
-M.cd = validator.f.arguments({
+Tab.cd = validator.f.arguments({
 	"string",
 }) .. function(path)
 	return vim.api.nvim_command(string.format("tcd %s", path))
 end
 
-M.get = validator.f.arguments({ validator.f.shape({
+Tab.get = validator.f.arguments({ validator.f.shape({
 	"number",
 	vars = validator.f.optional("table"),
 }) }) .. function(options)
@@ -69,15 +79,19 @@ M.get = validator.f.arguments({ validator.f.shape({
 	return tab
 end
 
-M.get_all = validator.f.arguments({
+Tab.list = vim.api.nvim_list_tabpages
+
+Tab.current = vim.api.nvim_get_current_tabpage
+
+Tab.get_list = validator.f.arguments({
 	validator.f.optional("table"),
 }) .. function(options)
 	return fn.imap(vim.api.nvim_list_tabpages(), function(tabpage)
-		return M.get(fn.merge({ tabpage }, options))
+		return Tab.get(fn.merge({ tabpage }, options))
 	end)
 end
 
-M.get_by_number = validator.f.arguments({
+Tab.get_by_number = validator.f.arguments({
 	validator.f.shape({
 		"number",
 	}),
@@ -88,23 +102,23 @@ M.get_by_number = validator.f.arguments({
 		return _options
 	end, {})
 
-	return fn.ifind(M.get_all(options), function(tab)
+	return fn.ifind(Tab.get_list(options), function(tab)
 		return tab.number == num
 	end)
 end
 
-M.get_current = function(options)
+Tab.get_current = function(options)
 	options = options and options or {}
 	options[1] = vim.api.nvim_get_current_tabpage()
 
-	return M.get(options)
+	return Tab.get(options)
 end
 
-M.go_to = function(tab)
+Tab.go_to = function(tab)
 	return vim.fn.execute(string.format("tabnext %s", tab))
 end
 
-M.get_windows = function(args)
+Tab.get_windows = function(args)
 	local tab = args[1]
 
 	return fn.imap(vim.api.nvim_tabpage_list_wins(tab), function(winnr)
@@ -112,4 +126,4 @@ M.get_windows = function(args)
 	end)
 end
 
-return M
+return Tab
