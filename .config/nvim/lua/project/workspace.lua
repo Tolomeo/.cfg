@@ -89,11 +89,11 @@ function Workspace:on_vim_enter()
 	local initial_tab = vim.api.nvim_get_current_tabpage()
 
 	tb.update({ initial_tab, vars = { workspace = cwd } })
-	bf.create({
+	vim.print(bf.create({
 		name = cwd,
 		vars = { workspaces = { initial_tab } },
 		options = { modifiable = false, readonly = true, buflisted = true },
-	})
+	}))
 
 	local directory_args = fn.imap(
 		fn.ifilter(args, function(arg)
@@ -242,12 +242,14 @@ function Workspace:create(root, tab)
 		tab = vim.api.nvim_get_current_tabpage()
 	end
 
-	local dashboard = bf.get_id_by_name({ root })
+	local dashboard = bf.get({ bf.get_id_by_name({ root }), vars = { "workspaces" } })
+	local dashboard_workspaces = dashboard.vars.workspaces or {}
+	dashboard_workspaces = fn.iunion(dashboard_workspaces, { tab })
 
 	tb.update({ tab, vars = { workspace = root } })
 	bf.update({
-		dashboard,
-		vars = { workspaces = { tab } },
+		dashboard.bufnr,
+		vars = { workspaces = dashboard_workspaces },
 		options = { modifiable = false, readonly = true },
 	})
 

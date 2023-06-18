@@ -356,4 +356,23 @@ function Fn.iintersection(tbl1, tbl2)
 	return result
 end
 
+function Fn.iunion(tbl1, tbl2)
+	local union = {}
+	local seen = {}
+
+	for _, element in ipairs(tbl1) do
+		union[#union + 1] = element
+		seen[element] = true
+	end
+
+	for _, element in ipairs(tbl2) do
+		if not seen[element] then
+			union[#union + 1] = element
+			seen[element] = true
+		end
+	end
+
+	return union
+end
+
 return Fn
