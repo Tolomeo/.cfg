@@ -52,11 +52,11 @@ function Workspace:on_tab_closed()
 
 		if #buffer_workspaces < 1 then
 			--TODO: handle buf modified cancel
-			bf.delete({ buffer.bufnr })
+			bf.delete({ buffer.handle })
 			return
 		end
 
-		bf.update({ buffer.bufnr, vars = { workspaces = buffer_workspaces } })
+		bf.update({ buffer.handle, vars = { workspaces = buffer_workspaces } })
 	end)
 end
 
@@ -76,9 +76,9 @@ function Workspace:term_to_workspace(buffer)
 	local current_ws = tb.get_current({ vars = { "workspace" } })
 
 	bf.update({
-		buffer.bufnr,
+		buffer.handle,
 		vars = {
-			workspaces = { current_ws.tabpage },
+			workspaces = { current_ws.handle },
 		},
 	})
 end
@@ -150,7 +150,7 @@ function Workspace:create_from_file(file_path)
 	bf.update({
 		bf.get_handle_by_name({ file_path }),
 		vars = { workspaces = fn.imap(workspaces, function(ws)
-			return ws.tabpage
+			return ws.handle
 		end) },
 	})
 end
@@ -191,7 +191,7 @@ function Workspace:on_file_buf_new(buffer)
 			return str.starts_with(buffer.name, ws.vars.workspace)
 		end),
 		function(buf_ws)
-			return buf_ws.tabpage
+			return buf_ws.handle
 		end
 	)
 
@@ -200,13 +200,13 @@ function Workspace:on_file_buf_new(buffer)
 	end
 
 	bf.update({
-		buffer.bufnr,
+		buffer.handle,
 		vars = {
 			workspaces = buffer_workspaces,
 		},
 	})
 
-	if fn.iincludes(buffer_workspaces, current_ws.tabpage) then
+	if fn.iincludes(buffer_workspaces, current_ws.handle) then
 		return
 	end
 
@@ -227,13 +227,13 @@ function Workspace:on_tab_enter()
 end
 
 function Workspace:display_workspace_buffers(tab)
-	local ws_id = tab.tabpage
+	local ws_id = tab.handle
 	local ws_buffers = fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
 		return buffer.vars.workspaces ~= nil
 	end)
 
 	fn.ieach(ws_buffers, function(buffer)
-		bf.update({ buffer.bufnr, options = { buflisted = fn.iincludes(buffer.vars.workspaces, ws_id) } })
+		bf.update({ buffer.handle, options = { buflisted = fn.iincludes(buffer.vars.workspaces, ws_id) } })
 	end)
 end
 
@@ -246,9 +246,9 @@ function Workspace:create(root, tab)
 
 	tb.update({ tab, vars = { workspace = root } })
 	bf.update({
-		dashboard.bufnr,
+		dashboard.handle,
 		vars = { workspaces = dashboard_workspaces },
-		options = { modifiable = false, readonly = true },
+		options = { modifiable = false, readonly = true, swapfile = false },
 	})
 
 	return tab, dashboard

@@ -2,7 +2,7 @@ local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 
 local validate_buffer = validator.f.shape({
-	bufnr = "number",
+	handle = "number",
 	name = "string",
 	vars = validator.f.optional("table"),
 })
@@ -70,12 +70,12 @@ Buffer.get = validator.f.arguments({
 		options = validator.f.optional(validator.f.list({ "string" })),
 	}),
 }) .. function(config)
-	local bufnr = config[1]
-	local buffer = { bufnr = bufnr, name = vim.api.nvim_buf_get_name(bufnr) }
+	local handle = config[1]
+	local buffer = { handle = handle, name = vim.api.nvim_buf_get_name(handle) }
 
 	if config.vars then
 		buffer.vars = fn.ireduce(config.vars, function(buffer_vars, var_name)
-			local ok, var_value = pcall(vim.api.nvim_buf_get_var, bufnr, var_name)
+			local ok, var_value = pcall(vim.api.nvim_buf_get_var, handle, var_name)
 
 			if ok then
 				buffer_vars[var_name] = var_value
@@ -87,7 +87,7 @@ Buffer.get = validator.f.arguments({
 
 	if config.options then
 		buffer.options = fn.ireduce(config.options, function(buffer_options, option_name)
-			local ok, option_value = pcall(vim.api.nvim_buf_get_option, bufnr, option_name)
+			local ok, option_value = pcall(vim.api.nvim_buf_get_option, handle, option_name)
 
 			if ok then
 				buffer_options[option_name] = option_value
@@ -111,8 +111,8 @@ end
 Buffer.get_all = validator.f.arguments({
 	validator.f.optional("table"),
 }) .. function(options)
-	return fn.imap(Buffer.list(), function(bufnr)
-		return Buffer.get(fn.merge({ bufnr }, options))
+	return fn.imap(Buffer.list(), function(handle)
+		return Buffer.get(fn.merge({ handle }, options))
 	end)
 end
 
@@ -120,7 +120,7 @@ Buffer.get_listed = validator.f.arguments({
 	validator.f.optional("table"),
 }) .. function(args)
 	return fn.ifilter(Buffer.get_all(args), function(buffer)
-		return vim.api.nvim_buf_get_option(buffer.bufnr, "buflisted")
+		return vim.api.nvim_buf_get_option(buffer.handle, "buflisted")
 	end)
 end
 
@@ -129,7 +129,7 @@ Buffer.find_by_name = function(name)
 		return buffer.name == name
 	end)
 
-	return buf and buf.bufnr or nil
+	return buf and buf.handle or nil
 end
 
 Buffer.find_by_pattern = function(pattern)
