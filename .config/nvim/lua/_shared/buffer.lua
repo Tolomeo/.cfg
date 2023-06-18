@@ -9,6 +9,10 @@ local validate_buffer = validator.f.shape({
 
 local Buffer = {}
 
+Buffer.current = vim.api.nvim_get_current_buf
+
+Buffer.list = vim.api.nvim_list_bufs
+
 Buffer.create = validator.f.arguments({
 	validator.f.optional("table"),
 }) .. function(args)
@@ -99,7 +103,7 @@ end
 Buffer.get_current = validator.f.arguments({
 	validator.f.optional("table"),
 }) .. function(args)
-	args = fn.merge({}, args, { vim.api.nvim_get_current_buf() })
+	args = fn.merge({}, args, { Buffer.current() })
 
 	return Buffer.get(args)
 end
@@ -107,7 +111,7 @@ end
 Buffer.get_all = validator.f.arguments({
 	validator.f.optional("table"),
 }) .. function(options)
-	return fn.imap(vim.api.nvim_list_bufs(), function(bufnr)
+	return fn.imap(Buffer.list(), function(bufnr)
 		return Buffer.get(fn.merge({ bufnr }, options))
 	end)
 end
