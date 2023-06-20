@@ -64,12 +64,44 @@ function Workspace:on_tab_leave()
 	})
 end
 
-function Workspace:on_ws_closed(ws)
+function Workspace:on_ws_closed(closed_ws)
 	local ws_buffers = fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
-		return buffer.vars.workspaces and fn.iincludes(buffer.vars.workspaces, ws.handle)
+		return buffer.vars.workspaces and fn.iincludes(buffer.vars.workspaces, closed_ws.handle)
+	end)
+	local ws_buffers_deletion_failed = fn.ireduce(ws_buffers, function(_cancelled, buffer)
+		local buffer_workspaces = fn.ifilter(buffer.vars.workspaces, function(buffer_workspace)
+			return buffer_workspace ~= closed_ws.handle
+		end)
+
+		bf.update({ buffer.handle, vars = { workspaces = buffer_workspaces } })
+
+		if #buffer_workspaces > 1 then
+			return _cancelled
+		end
+
+		local buffer_deletion_success = pcall(bf.delete, { buffer.handle })
+
+		if buffer_deletion_success then
+			return _cancelled
+		end
+
+		table.insert(_cancelled, buffer)
+		return _cancelled
+	end, {})
+
+	if not next(ws_buffers_deletion_failed) then
+		return
+	end
+
+	local tab = self:create(closed_ws.vars.workspace)
+
+	fn.ieach(ws_buffers_deletion_failed, function(buffer)
+		bf.update({ buffer.handle, vars = { workspaces = fn.iunion(buffer.vars.workspaces, { tab }) } })
 	end)
 
-	fn.ieach(ws_buffers, function(buffer)
+	self:on_tab_enter()
+
+	--[[ fn.ieach(ws_buffers, function(buffer)
 		local buffer_workspaces = fn.ifilter(buffer.vars.workspaces, function(buffer_workspace)
 			return buffer_workspace ~= ws.handle
 		end)
@@ -81,7 +113,7 @@ function Workspace:on_ws_closed(ws)
 		end
 
 		bf.update({ buffer.handle, vars = { workspaces = buffer_workspaces } })
-	end)
+	end) ]]
 end
 
 function Workspace:get_all()
@@ -262,20 +294,27 @@ function Workspace:display_workspace_buffers(tab)
 end
 
 function Workspace:create(root, tab)
-	tab = tab and tab or tb.create({ root })
+	if not tab then
+		tab = tb.create({ root })
+	end
 
-	local dashboard = bf.get({ bf.get_handle_by_name({ root }), vars = { "workspaces" } })
-	local dashboard_workspaces = dashboard.vars.workspaces or {}
-	dashboard_workspaces = fn.iunion(dashboard_workspaces, { tab })
+	local dashboard = bf.get_handle_by_name({ root })
+
+	if not dashboard then
+		dashboard = bf.create({ name = root })
+	end
+
+	local dashboard_buffer = bf.get({ dashboard, vars = { "workspaces" } })
+	local dashboard_workspaces = fn.iunion((dashboard_buffer.vars.workspaces or {}), { tab })
 
 	tb.update({ tab, vars = { workspace = root } })
 	bf.update({
-		dashboard.handle,
+		dashboard_buffer.handle,
 		vars = { workspaces = dashboard_workspaces },
 		options = { modifiable = false, readonly = true, swapfile = false },
 	})
 
-	return tab, dashboard
+	return tab, dashboard_buffer
 end
 
 function Workspace:get_by_root(root)

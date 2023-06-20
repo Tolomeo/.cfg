@@ -13,24 +13,16 @@ Tab.create = validator.f.arguments({
 		validator.f.optional("string"),
 	}),
 }) .. function(args)
-	local files = fn.imap(args, function(file)
-		return file
-	end)
-	local config = fn.kreduce(args, function(_config, config_value, config_name)
+	local file = args[1] and args[1] or ""
+
+	vim.api.nvim_command(string.format("tabnew %s", file))
+
+	local update_args = fn.kreduce(args, function(_config, config_value, config_name)
 		_config[config_name] = config_value
 		return _config
-	end, {})
+	end, { Tab.current() })
 
-	vim.api.nvim_command(string.format("tabnew %s", table.concat(files, " ")))
-
-	local handle = Tab.current()
-	config[1] = handle
-
-	Tab.update(config)
-
-	vim.api.nvim_command("tabnext -")
-
-	return handle
+	return Tab.update(update_args)
 end
 
 Tab.update = validator.f.arguments({
