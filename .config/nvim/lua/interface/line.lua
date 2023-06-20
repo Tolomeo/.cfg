@@ -8,36 +8,10 @@ local Line = Module:extend({
 			dependencies = { "kyazdani42/nvim-web-devicons", lazy = true },
 		},
 		{ "arkav/lualine-lsp-progress" },
-		{
-			"kdheepak/tabline.nvim",
-			dependencies = {
-				{ "nvim-lualine/lualine.nvim", lazy = true },
-				{ "kyazdani42/nvim-web-devicons", lazy = true },
-			},
-		},
 	},
 })
 
 function Line:setup()
-	self:setup_status()
-	self:setup_tab()
-end
-
-function Line:setup_tab()
-	local config = settings.config
-
-	require("tabline").setup({
-		enable = true,
-		options = {
-			component_separators = { config["icon.component.left"], config["icon.component.right"] },
-			section_separators = { config["icon.section.left"], config["icon.section.right"] },
-			show_tabs_always = true, -- this shows tabs only when there are more than one tab or if the first tab is named
-			modified_icon = "~ ", -- change the default modified icon
-		},
-	})
-end
-
-function Line:setup_status()
 	local opt = settings.opt
 	local config = settings.config
 

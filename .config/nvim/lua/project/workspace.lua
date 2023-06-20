@@ -9,12 +9,33 @@ local str = require("_shared.str")
 local key = require("_shared.key")
 local settings = require("settings")
 
-local Workspace = Module:extend({})
+local Workspace = Module:extend({
+	plugins = {
+		{
+			"kdheepak/tabline.nvim",
+			dependencies = {
+				{ "nvim-lualine/lualine.nvim", lazy = true },
+				{ "kyazdani42/nvim-web-devicons", lazy = true },
+			},
+		},
+	},
+})
 
 function Workspace:setup()
 	local keymap = settings.keymap
+	local config = settings.config
 
 	key.nmap({ keymap["tab.next"], "<Cmd>tabnext<Cr>" }, { keymap["tab.prev"], "<Cmd>tabprevious<Cr>" })
+
+	require("tabline").setup({
+		enable = true,
+		options = {
+			component_separators = { config["icon.component.left"], config["icon.component.right"] },
+			section_separators = { config["icon.section.left"], config["icon.section.right"] },
+			show_tabs_always = true, -- this shows tabs only when there are more than one tab or if the first tab is named
+			modified_icon = "~ ", -- change the default modified icon
+		},
+	})
 
 	au.group({
 		"Workspace",
@@ -43,7 +64,7 @@ end
 
 function Workspace:on_vim_enter()
 	local args = vim.fn.argv()
-	local cwd = vim.fn.fnamemodify(vim.loop.cwd(), ":p")
+	local cwd = pt.format({ vim.loop.cwd(), ":p" })
 	local initial_tab = tb.current()
 
 	self:create(cwd, initial_tab)
@@ -59,7 +80,7 @@ function Workspace:on_vim_enter()
 			return file_stat.type == "directory"
 		end),
 		function(dir_arg)
-			return vim.fn.fnamemodify(dir_arg, ":p")
+			return pt.format({ dir_arg, ":p" })
 		end
 	)
 	local file_args = fn.imap(
@@ -73,7 +94,7 @@ function Workspace:on_vim_enter()
 			return file_stat.type == "file"
 		end),
 		function(file_arg)
-			return vim.fn.fnamemodify(file_arg, ":p")
+			return pt.format({ file_arg, ":p" })
 		end
 	)
 	--TODO: Take care of not yet existing args
@@ -97,7 +118,7 @@ function Workspace:on_tab_enter()
 		return
 	end
 
-	self:display_buffers(current_ws)
+	self:toggle_buffers(current_ws)
 
 	if not current_ws.vars.workspace then
 		return
@@ -214,6 +235,7 @@ function Workspace:on_file_buf_new(buffer)
 		},
 	})
 
+	--TODO: find the best match to open the buffer in (closest ws root)
 	if fn.iincludes(buffer_workspaces, current_ws.handle) then
 		return
 	end
@@ -248,10 +270,14 @@ function Workspace:create(root, tab)
 		dashboard = bf.create({ name = root })
 	end
 
+	local root_name = string.gsub(root, "/$", "")
+
+	tb.update({ tab, vars = { workspace = root } })
+	require("tabline").tab_rename(pt.shorten({ root_name }))
+
 	local dashboard_buffer = bf.get({ dashboard, vars = { "workspaces" } })
 	local dashboard_workspaces = fn.iunion((dashboard_buffer.vars.workspaces or {}), { tab })
 
-	tb.update({ tab, vars = { workspace = root } })
 	bf.update({
 		dashboard_buffer.handle,
 		vars = { workspaces = dashboard_workspaces },
@@ -322,7 +348,7 @@ function Workspace:get_buffers_by_ws(ws_handle)
 	end)
 end
 
-function Workspace:display_buffers(ws)
+function Workspace:toggle_buffers(ws)
 	local ws_id = ws.handle
 	local ws_buffers = self:get_buffers()
 
