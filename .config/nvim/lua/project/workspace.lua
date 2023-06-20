@@ -46,12 +46,7 @@ function Workspace:on_vim_enter()
 	local cwd = vim.fn.fnamemodify(vim.loop.cwd(), ":p")
 	local initial_tab = tb.current()
 
-	tb.update({ initial_tab, vars = { workspace = cwd } })
-	bf.create({
-		name = cwd,
-		vars = { workspaces = { initial_tab } },
-		options = { modifiable = false, readonly = true, buflisted = true },
-	})
+	self:create(cwd, initial_tab)
 
 	local directory_args = fn.imap(
 		fn.ifilter(args, function(arg)
@@ -96,21 +91,25 @@ function Workspace:on_vim_enter()
 end
 
 function Workspace:on_tab_enter()
-	local tab = tb.get_current({ vars = { "workspace" } })
+	local current_ws = self:get_current()
 
-	self:display_workspace_buffers(tab)
-
-	if not tab.vars.workspace then
+	if not current_ws then
 		return
 	end
 
-	tb.cd(tab.vars.workspace)
+	self:display_buffers(current_ws)
+
+	if not current_ws.vars.workspace then
+		return
+	end
+
+	tb.cd(current_ws.vars.workspace)
 end
 
 function Workspace:on_tab_leave()
-	local ws = tb.get_current({ vars = { "workspace" } })
+	local leaving_ws = self:get_current()
 
-	if ws.vars.workspace == nil then
+	if not leaving_ws then
 		return
 	end
 
@@ -118,12 +117,10 @@ function Workspace:on_tab_leave()
 		"TabEnter",
 		"*",
 		function()
-			local closed = fn.ifind(tb.list(), function(tab_handle)
-				return tab_handle == ws.handle
-			end) == nil
+			local ws = self:get(leaving_ws.handle)
 
-			if closed then
-				self:on_ws_closed(ws)
+			if not ws then
+				self:on_ws_closed(leaving_ws)
 			end
 		end,
 		once = true,
@@ -131,17 +128,14 @@ function Workspace:on_tab_leave()
 end
 
 function Workspace:on_ws_closed(closed_ws)
-	local ws_buffers = fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
-		return buffer.vars.workspaces and fn.iincludes(buffer.vars.workspaces, closed_ws.handle)
-	end)
+	local ws_buffers = self:get_buffers_by_ws(closed_ws.handle)
 	local ws_buffers_deletion_failed = fn.ireduce(ws_buffers, function(_cancelled, buffer)
 		local buffer_workspaces = fn.ifilter(buffer.vars.workspaces, function(buffer_workspace)
 			return buffer_workspace ~= closed_ws.handle
 		end)
 
-		bf.update({ buffer.handle, vars = { workspaces = buffer_workspaces } })
-
-		if #buffer_workspaces > 1 then
+		if next(buffer_workspaces) then
+			bf.update({ buffer.handle, vars = { workspaces = buffer_workspaces } })
 			return _cancelled
 		end
 
@@ -159,10 +153,10 @@ function Workspace:on_ws_closed(closed_ws)
 		return
 	end
 
-	local tab = self:create(closed_ws.vars.workspace)
+	local ws_tab = self:create(closed_ws.vars.workspace)
 
 	fn.ieach(ws_buffers_deletion_failed, function(buffer)
-		bf.update({ buffer.handle, vars = { workspaces = fn.iunion(buffer.vars.workspaces, { tab }) } })
+		bf.update({ buffer.handle, vars = { workspaces = { ws_tab } } })
 	end)
 
 	self:on_tab_enter()
@@ -198,6 +192,7 @@ end
 
 function Workspace:on_file_buf_new(buffer)
 	--TODO: what happens when I open a file in a tab that is not a workspace?
+	--TODO: replace with self:get_current()
 	local current_ws = tb.get_current({ vars = { "workspace" } })
 	local buffer_workspaces = fn.imap(
 		fn.ifilter(self:get_all(), function(ws)
@@ -208,7 +203,7 @@ function Workspace:on_file_buf_new(buffer)
 		end
 	)
 
-	if #buffer_workspaces < 1 then
+	if not next(buffer_workspaces) then
 		return
 	end
 
@@ -303,17 +298,33 @@ function Workspace:get_current()
 	return current_tab
 end
 
+function Workspace:get(ws_handle)
+	return fn.ifind(self:get_all(), function(ws)
+		return ws.handle == ws_handle
+	end)
+end
+
 function Workspace:get_by_root(root)
-	return fn.ifilter(tb.get_list({ vars = { "workspace" } }), function(ws)
+	return fn.ifilter(self:get_all(), function(ws)
 		return ws.vars.workspace == root
 	end)
 end
 
-function Workspace:display_workspace_buffers(tab)
-	local ws_id = tab.handle
-	local ws_buffers = fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
+function Workspace:get_buffers()
+	return fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
 		return buffer.vars.workspaces ~= nil
 	end)
+end
+
+function Workspace:get_buffers_by_ws(ws_handle)
+	return fn.ifilter(self:get_buffers(), function(buffer)
+		return fn.iincludes(buffer.vars.workspaces, ws_handle)
+	end)
+end
+
+function Workspace:display_buffers(ws)
+	local ws_id = ws.handle
+	local ws_buffers = self:get_buffers()
 
 	fn.ieach(ws_buffers, function(buffer)
 		bf.update({ buffer.handle, options = { buflisted = fn.iincludes(buffer.vars.workspaces, ws_id) } })
