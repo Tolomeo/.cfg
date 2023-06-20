@@ -27,9 +27,9 @@ function Workspace:setup()
 		"*",
 		fn.bind(self.on_tab_enter, self),
 	}, {
-		"TabClosed",
+		"TabLeave",
 		"*",
-		fn.bind(self.on_tab_closed, self),
+		fn.bind(self.on_tab_leave, self),
 	}, {
 		{ "BufNew", "BufNewFile" },
 		"*",
@@ -41,14 +41,38 @@ function Workspace:setup()
 	})
 end
 
-function Workspace:on_tab_closed()
-	local tabs = tb.list()
-	local buffers = fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
-		return buffer.vars.workspaces ~= nil
+function Workspace:on_tab_leave()
+	local ws = tb.get_current({ vars = { "workspace" } })
+
+	if ws.vars.workspace == nil then
+		return
+	end
+
+	au.command({
+		"TabEnter",
+		"*",
+		function()
+			local closed = fn.ifind(tb.list(), function(tab_handle)
+				return tab_handle == ws.handle
+			end) == nil
+
+			if closed then
+				self:on_ws_closed(ws)
+			end
+		end,
+		once = true,
+	})
+end
+
+function Workspace:on_ws_closed(ws)
+	local ws_buffers = fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
+		return buffer.vars.workspaces and fn.iincludes(buffer.vars.workspaces, ws.handle)
 	end)
 
-	fn.ieach(buffers, function(buffer)
-		local buffer_workspaces = fn.iintersection(buffer.vars.workspaces, tabs)
+	fn.ieach(ws_buffers, function(buffer)
+		local buffer_workspaces = fn.ifilter(buffer.vars.workspaces, function(buffer_workspace)
+			return buffer_workspace ~= ws.handle
+		end)
 
 		if #buffer_workspaces < 1 then
 			--TODO: handle buf modified cancel
