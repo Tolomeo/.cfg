@@ -9,6 +9,8 @@ local str = require("_shared.str")
 local key = require("_shared.key")
 local settings = require("settings")
 
+local nvim_cwd = pt.format({ vim.loop.cwd(), ":p" })
+
 local Workspace = Module:extend({
 	plugins = {
 		{
@@ -44,6 +46,10 @@ function Workspace:setup()
 		"*",
 		fn.bind(self.on_vim_enter, self),
 	}, {
+		"TabNewEntered",
+		"*",
+		fn.bind(self.on_tab_new_entered, self),
+	}, {
 		"TabEnter",
 		"*",
 		fn.bind(self.on_tab_enter, self),
@@ -64,10 +70,9 @@ end
 
 function Workspace:on_vim_enter()
 	local args = vim.fn.argv()
-	local cwd = pt.format({ vim.loop.cwd(), ":p" })
 	local initial_tab = tb.current()
 
-	self:create(cwd, initial_tab)
+	self:create(nvim_cwd, initial_tab)
 
 	local directory_args = fn.imap(
 		fn.ifilter(args, function(arg)
@@ -111,19 +116,42 @@ function Workspace:on_vim_enter()
 	self:on_tab_enter()
 end
 
+function Workspace:on_tab_new_entered(evt)
+	local file = evt.file
+	local tab = tb.current()
+
+	if file == "" then
+		self:create(nvim_cwd, tab)
+		self:on_tab_enter()
+		return
+	end
+
+	local file_stat = fs.statSync(file)
+
+	if not file_stat then
+		return
+	end
+
+	fn.switch(file_stat.type)({
+		file = function()
+			self:create_from_file(file, tab)
+		end,
+		directory = function()
+			self:create(file, tab)
+		end,
+	})
+
+	self:on_tab_enter()
+end
+
 function Workspace:on_tab_enter()
 	local current_ws = self:get_current()
 
 	if not current_ws then
-		return
+		return self:hide_buffers()
 	end
 
 	self:toggle_buffers(current_ws)
-
-	if not current_ws.vars.workspace then
-		return
-	end
-
 	tb.cd(current_ws.vars.workspace)
 end
 
@@ -186,7 +214,13 @@ end
 function Workspace:on_buf_new(evt)
 	local buffer = bf.get({ evt.buf })
 
-	if bf.is_unnamed(buffer) then
+	if buffer.name == "" then
+		return
+	end
+
+	local current_ws = self:get_current()
+
+	if not current_ws then
 		return
 	end
 
@@ -260,17 +294,18 @@ function Workspace:on_term_open(evt)
 end
 
 function Workspace:create(root, tab)
+	root = pt.format({ root, ":p" })
+	local root_name = string.gsub(root, "/$", "")
+
 	if not tab then
 		tab = tb.create({ root })
 	end
 
-	local dashboard = bf.get_handle_by_name({ root })
+	local dashboard = bf.get_handle_by_name({ root_name })
 
 	if not dashboard then
-		dashboard = bf.create({ name = root })
+		dashboard = bf.create({ name = root_name })
 	end
-
-	local root_name = string.gsub(root, "/$", "")
 
 	tb.update({ tab, vars = { workspace = root } })
 	require("tabline").tab_rename(pt.shorten({ root_name }))
@@ -284,26 +319,24 @@ function Workspace:create(root, tab)
 		options = { modifiable = false, readonly = true, swapfile = false },
 	})
 
-	return tab, dashboard_buffer
+	return tab, dashboard
 end
 
-function Workspace:create_from_file(file_path)
+function Workspace:create_from_file(file_path, tab)
 	local file_dir = pt.dirname({ file_path })
 	local root_dir = self:find_root(file_dir)
-	local workspaces = self:get_by_root(root_dir)
 
-	if not next(workspaces) then
-		self:create(root_dir)
-		workspaces = self:get_by_root(root_dir)
-	end
+	local ws_tab = self:create(root_dir, tab)
 
-	local buffer = bf.get_handle_by_name({ file_path })
-	local buffer_workspaces = fn.imap(workspaces, function(ws)
+	local file_handle = bf.get_handle_by_name({ file_path })
+	local file_buffer = bf.get({ file_handle, vars = { "workspaces" } })
+	local root_workspaces = fn.imap(self:get_by_root(root_dir), function(ws)
 		return ws.handle
 	end)
+	local buffer_workspaces = fn.iunion(fn.iunion((file_buffer.vars.workspaces or {}), root_workspaces), { ws_tab })
 
 	bf.update({
-		buffer,
+		file_handle,
 		vars = { workspaces = buffer_workspaces },
 	})
 end
@@ -349,11 +382,18 @@ function Workspace:get_buffers_by_ws(ws_handle)
 end
 
 function Workspace:toggle_buffers(ws)
-	local ws_id = ws.handle
 	local ws_buffers = self:get_buffers()
 
 	fn.ieach(ws_buffers, function(buffer)
-		bf.update({ buffer.handle, options = { buflisted = fn.iincludes(buffer.vars.workspaces, ws_id) } })
+		bf.update({ buffer.handle, options = { buflisted = fn.iincludes(buffer.vars.workspaces, ws.handle) } })
+	end)
+end
+
+function Workspace:hide_buffers()
+	local ws_buffers = self:get_buffers()
+
+	fn.ieach(ws_buffers, function(buffer)
+		bf.update({ buffer.handle, options = { buflisted = false } })
 	end)
 end
 

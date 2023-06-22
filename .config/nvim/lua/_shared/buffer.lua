@@ -35,8 +35,6 @@ Buffer.update = validator.f.arguments({
 		return _options
 	end, { options = {}, vars = {} })
 
-	-- vim.print(config, buf_options)
-
 	if buf_options.name then
 		vim.api.nvim_buf_set_name(buf, buf_options.name)
 	end
@@ -58,9 +56,11 @@ Buffer.get_handle_by_name = validator.f.arguments({
 	}),
 }) .. function(options)
 	local name = options[1]
-	local handle = vim.fn.bufnr(name)
+	local buffers = Buffer.list()
 
-	return handle ~= -1 and handle or nil
+	return fn.ifind(buffers, function(buffer_handle)
+		return vim.api.nvim_buf_get_name(buffer_handle) == name
+	end)
 end
 
 Buffer.get = validator.f.arguments({
