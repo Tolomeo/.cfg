@@ -13,7 +13,7 @@ M.get = validator.f.arguments({
 	local winnr = args[1]
 	local win = {
 		winnr = winnr,
-		bufnr = vim.api.nvim_win_get_buf(winnr),
+		buffer = vim.api.nvim_win_get_buf(winnr),
 	}
 
 	if args.vars then

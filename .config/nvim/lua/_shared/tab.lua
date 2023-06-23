@@ -8,6 +8,8 @@ Tab.list = vim.api.nvim_list_tabpages
 
 Tab.current = vim.api.nvim_get_current_tabpage
 
+Tab.window = vim.api.nvim_tabpage_get_win
+
 Tab.create = validator.f.arguments({
 	validator.f.shape({
 		validator.f.optional("string"),
@@ -50,6 +52,14 @@ Tab.cd = validator.f.arguments({
 	return vim.api.nvim_command(string.format("tcd %s", path))
 end
 
+Tab.get_list = validator.f.arguments({
+	validator.f.optional("table"),
+}) .. function(options)
+	return fn.imap(Tab.list(), function(handle)
+		return Tab.get(fn.merge({ handle }, options))
+	end)
+end
+
 Tab.get = validator.f.arguments({ validator.f.shape({
 	"number",
 	vars = validator.f.optional("table"),
@@ -75,27 +85,19 @@ Tab.get = validator.f.arguments({ validator.f.shape({
 	return tab
 end
 
-Tab.get_list = validator.f.arguments({
-	validator.f.optional("table"),
-}) .. function(options)
-	return fn.imap(Tab.list(), function(handle)
-		return Tab.get(fn.merge({ handle }, options))
-	end)
-end
-
 Tab.get_by_number = validator.f.arguments({
 	validator.f.shape({
 		"number",
 	}),
 }) .. function(args)
-	local num = args[1]
-	local options = fn.kreduce(args, function(_options, option_value, option_name)
+	local number = args[1]
+	local get_list_args = fn.kreduce(args, function(_options, option_value, option_name)
 		_options[option_name] = option_value
 		return _options
 	end, {})
 
-	return fn.ifind(Tab.get_list(options), function(tab)
-		return tab.number == num
+	return fn.ifind(Tab.get_list(get_list_args), function(tab)
+		return tab.number == number
 	end)
 end
 
@@ -113,8 +115,8 @@ end
 Tab.get_windows = function(args)
 	local tab = args[1]
 
-	return fn.imap(vim.api.nvim_tabpage_list_wins(tab), function(winnr)
-		return win.get({ winnr })
+	return fn.imap(vim.api.nvim_tabpage_list_wins(tab), function(window_handle)
+		return win.get({ window_handle })
 	end)
 end
 

@@ -66,13 +66,13 @@ function Terminal:toggle(cmd)
 
 	local current_buffer = bf.get_current()
 
-	if cmd_buffer.bufnr == current_buffer.bufnr then
+	if cmd_buffer.handle == current_buffer.handle then
 		vim.fn.execute("buffer#")
 		return
 	end
 
 	local displayed_cmd = fn.ifind(tb.get_windows({ 0 }), function(window)
-		return window.bufnr == cmd_buffer.bufnr
+		return window.buffer == cmd_buffer.handle
 	end)
 
 	if displayed_cmd then
@@ -80,7 +80,7 @@ function Terminal:toggle(cmd)
 		return
 	end
 
-	return vim.api.nvim_command(string.format("buffer %s", cmd_buffer.bufnr))
+	return vim.api.nvim_command(string.format("buffer %s", cmd_buffer.handle))
 end
 
 function Terminal:next(cmd)
@@ -96,14 +96,18 @@ function Terminal:next(cmd)
 
 	local current_buffer = bf.get_current()
 	local current_buffer_index = fn.find_index(buffers, function(buffer)
-		return buffer.bufnr == current_buffer.bufnr
+		return buffer.handle == current_buffer.handle
 	end)
 	local buffers_rotation = fn.tail(fn.rotateRight(buffers, current_buffer_index))
 	local next_buffer = fn.ifind(buffers_rotation, function(buffer)
 		return string.match(buffer.name, "^term://.+//%d+:" .. cmd .. "$")
 	end)
 
-	return vim.api.nvim_command(string.format("buffer %s", next_buffer.bufnr))
+	if not next_buffer then
+		return
+	end
+
+	return vim.api.nvim_command(string.format("buffer %s", next_buffer.handle))
 end
 
 function Terminal:prev(cmd)
@@ -119,14 +123,18 @@ function Terminal:prev(cmd)
 	buffers = fn.reverse(buffers)
 	local current_buffer = bf.get_current()
 	local current_buffer_index = fn.find_index(buffers, function(buffer)
-		return buffer.bufnr == current_buffer.bufnr
+		return buffer.handle == current_buffer.handle
 	end)
 	local buffers_rotation = fn.tail(fn.rotateRight(buffers, current_buffer_index))
 	local next_buffer = fn.ifind(buffers_rotation, function(buffer)
 		return string.match(buffer.name, "^term://.+//%d+:" .. cmd .. "$")
 	end)
 
-	return vim.api.nvim_command(string.format("buffer %s", next_buffer.bufnr))
+	if not next_buffer then
+		return
+	end
+
+	return vim.api.nvim_command(string.format("buffer %s", next_buffer.handle))
 end
 
 function Terminal:get_actions()
@@ -166,7 +174,7 @@ function Terminal:get_actions()
 				command = ":terminal " .. user_job.command,
 				keymap = user_job.keymap,
 				handler = function()
-					self:toggle_command(user_job.command)
+					self:toggle(user_job.command)
 				end,
 			}
 		end)),
