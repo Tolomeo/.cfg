@@ -71,48 +71,38 @@ end
 
 function Workspace:on_vim_enter()
 	local arglist = ar.arglist()
-	local p_flag = ar.find({ "-p" }) ~= nil
+	-- local p_flag = ar.find({ "-p" }) ~= nil
 	local initial_tab = tb.current()
 
 	self:create(nvim_cwd, initial_tab)
 
-	local directory_args = fn.ifilter(arglist, function(arg)
-		local file_stat = fs.statSync(arg)
-
-		if not file_stat then
-			return false
-		end
-
-		return file_stat.type == "directory"
-	end)
-	local file_args = fn.ifilter(arglist, function(arg)
-		local file_stat = fs.statSync(arg)
-
-		if not file_stat then
-			return false
-		end
-
-		return file_stat.type == "file"
-	end)
-
 	--TODO: Take care of not yet existing args
+
 	-- if p_flag then
-	fn.ieach(arglist, function(arg)
+	fn.ireduce(arglist, function(_workspaces, arg)
 		local file_stat = fs.statSync(arg)
 
 		if not file_stat then
 			return
 		end
 
-		fn.switch(file_stat.type)({
+		local _, root = fn.switch(file_stat.type)({
 			directory = function()
-				self:create(arg)
+				return arg
 			end,
 			file = function()
-				self:create(self:find_buffer_root(arg))
+				return self:find_buffer_root(arg)
 			end,
 		})
-	end)
+
+		if root and not _workspaces[root] then
+			_workspaces[root] = self:create(root)
+		end
+
+		return _workspaces
+	end, { [nvim_cwd] = initial_tab })
+	-- else
+	-- end
 
 	fn.ieach(arglist, function(arg)
 		local file_stat = fs.statSync(arg)
@@ -125,15 +115,6 @@ function Workspace:on_vim_enter()
 			self:update_buffer_workspaces(arg)
 		end
 	end)
-	--[[ fn.ieach(directory_args, function(directory_path)
-		self:create(directory_path)
-	end)
-
-	fn.ieach(file_args, function(file_path)
-		self:create_from_file(file_path)
-	end) ]]
-	-- else
-	-- end
 
 	tb.go_to(1)
 	self:on_tab_enter()
