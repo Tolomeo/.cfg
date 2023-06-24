@@ -1,5 +1,6 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
+local ar = require("_shared.args")
 local fn = require("_shared.fn")
 local fs = require("_shared.fs")
 local bf = require("_shared.buffer")
@@ -69,41 +70,33 @@ function Workspace:setup()
 end
 
 function Workspace:on_vim_enter()
-	local args = vim.fn.argv()
+	local arglist = ar.arglist()
+	local p_flag = ar.find({ "-p" }) ~= nil
 	local initial_tab = tb.current()
 
 	self:create(nvim_cwd, initial_tab)
 
-	local directory_args = fn.imap(
-		fn.ifilter(args, function(arg)
-			local file_stat = fs.statSync(arg)
+	local directory_args = fn.ifilter(arglist, function(arg)
+		local file_stat = fs.statSync(arg)
 
-			if not file_stat then
-				return false
-			end
-
-			return file_stat.type == "directory"
-		end),
-		function(dir_arg)
-			return pt.format({ dir_arg, ":p" })
+		if not file_stat then
+			return false
 		end
-	)
-	local file_args = fn.imap(
-		fn.ifilter(args, function(arg)
-			local file_stat = fs.statSync(arg)
 
-			if not file_stat then
-				return false
-			end
+		return file_stat.type == "directory"
+	end)
+	local file_args = fn.ifilter(arglist, function(arg)
+		local file_stat = fs.statSync(arg)
 
-			return file_stat.type == "file"
-		end),
-		function(file_arg)
-			return pt.format({ file_arg, ":p" })
+		if not file_stat then
+			return false
 		end
-	)
+
+		return file_stat.type == "file"
+	end)
+
 	--TODO: Take care of not yet existing args
-
+	-- if p_flag then
 	fn.ieach(directory_args, function(directory_path)
 		self:create(directory_path)
 	end)
@@ -111,6 +104,7 @@ function Workspace:on_vim_enter()
 	fn.ieach(file_args, function(file_path)
 		self:create_from_file(file_path)
 	end)
+	-- end
 
 	tb.go_to(1)
 	self:on_tab_enter()
@@ -326,14 +320,16 @@ function Workspace:create_from_file(file_path, tab)
 	local file_dir = pt.dirname({ file_path })
 	local root_dir = self:find_root(file_dir)
 
-	local ws_tab = self:create(root_dir, tab)
+	self:create(root_dir, tab)
 
 	local file_handle = bf.get_handle_by_name({ file_path })
-	local file_buffer = bf.get({ file_handle, vars = { "workspaces" } })
-	local root_workspaces = fn.imap(self:get_by_root(root_dir), function(ws)
-		return ws.handle
-	end)
-	local buffer_workspaces = fn.iunion(fn.iunion((file_buffer.vars.workspaces or {}), root_workspaces), { ws_tab })
+	local buffer_workspaces = fn.ireduce(self:get_all(), function(_buffer_workspaces, ws)
+		if str.starts_with(file_path, ws.vars.workspace) then
+			table.insert(_buffer_workspaces, ws.handle)
+		end
+
+		return _buffer_workspaces
+	end, {})
 
 	bf.update({
 		file_handle,
