@@ -97,13 +97,42 @@ function Workspace:on_vim_enter()
 
 	--TODO: Take care of not yet existing args
 	-- if p_flag then
-	fn.ieach(directory_args, function(directory_path)
+	fn.ieach(arglist, function(arg)
+		local file_stat = fs.statSync(arg)
+
+		if not file_stat then
+			return
+		end
+
+		fn.switch(file_stat.type)({
+			directory = function()
+				self:create(arg)
+			end,
+			file = function()
+				self:create(self:find_buffer_root(arg))
+			end,
+		})
+	end)
+
+	fn.ieach(arglist, function(arg)
+		local file_stat = fs.statSync(arg)
+
+		if not file_stat then
+			return
+		end
+
+		if file_stat.type == "file" then
+			self:update_buffer_workspaces(arg)
+		end
+	end)
+	--[[ fn.ieach(directory_args, function(directory_path)
 		self:create(directory_path)
 	end)
 
 	fn.ieach(file_args, function(file_path)
 		self:create_from_file(file_path)
-	end)
+	end) ]]
+	-- else
 	-- end
 
 	tb.go_to(1)
@@ -317,24 +346,10 @@ function Workspace:create(root, tab)
 end
 
 function Workspace:create_from_file(file_path, tab)
-	local file_dir = pt.dirname({ file_path })
-	local root_dir = self:find_root(file_dir)
+	local root_dir = self:find_buffer_root(file_path)
 
 	self:create(root_dir, tab)
-
-	local file_handle = bf.get_handle_by_name({ file_path })
-	local buffer_workspaces = fn.ireduce(self:get_all(), function(_buffer_workspaces, ws)
-		if str.starts_with(file_path, ws.vars.workspace) then
-			table.insert(_buffer_workspaces, ws.handle)
-		end
-
-		return _buffer_workspaces
-	end, {})
-
-	bf.update({
-		file_handle,
-		vars = { workspaces = buffer_workspaces },
-	})
+	self:update_buffer_workspaces(file_path)
 end
 
 function Workspace:get_all()
@@ -393,16 +408,33 @@ function Workspace:hide_buffers()
 	end)
 end
 
-function Workspace:find_root(dir_start, dir_stop)
+function Workspace:find_buffer_root(file_path)
+	local path_start = pt.dirname({ file_path })
 	local config = settings.config
 
-	local root_file = fs.find({ config["workspace.root"], path = dir_start, upward = true, stop = dir_stop })[1]
+	local root_file = fs.find({ config["workspace.root"], path = path_start, upward = true })[1]
 
 	if not root_file then
-		return dir_start
+		return path_start
 	end
 
 	return pt.format({ pt.dirname({ root_file }), ":p" })
+end
+
+function Workspace:update_buffer_workspaces(file_path)
+	local buffer_handle = bf.get_handle_by_name({ file_path })
+	local buffer_workspaces = fn.ireduce(self:get_all(), function(_buffer_workspaces, ws)
+		if str.starts_with(file_path, ws.vars.workspace) then
+			table.insert(_buffer_workspaces, ws.handle)
+		end
+
+		return _buffer_workspaces
+	end, {})
+
+	bf.update({
+		buffer_handle,
+		vars = { workspaces = buffer_workspaces },
+	})
 end
 
 return Workspace:new()
