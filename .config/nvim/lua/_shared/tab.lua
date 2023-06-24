@@ -10,6 +10,12 @@ Tab.current = vim.api.nvim_get_current_tabpage
 
 Tab.window = vim.api.nvim_tabpage_get_win
 
+Tab.number = vim.api.nvim_tabpage_get_number
+
+Tab.buffer = function(tab_handle)
+	return win.buffer(Tab.window(tab_handle))
+end
+
 Tab.create = validator.f.arguments({
 	validator.f.shape({
 		validator.f.optional("string"),

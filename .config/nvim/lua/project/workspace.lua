@@ -71,38 +71,60 @@ end
 
 function Workspace:on_vim_enter()
 	local arglist = ar.arglist()
-	-- local p_flag = ar.find({ "-p" }) ~= nil
+	local p = ar.find({ "-p" }) ~= nil
 	local initial_tab = tb.current()
 
 	self:create(nvim_cwd, initial_tab)
 
 	--TODO: Take care of not yet existing args
 
-	-- if p_flag then
-	fn.ireduce(arglist, function(_workspaces, arg)
-		local file_stat = fs.statSync(arg)
+	if p then
+		fn.ieach(tb.list(), function(tab_handle)
+			local buffer = bf.get({ tb.buffer(tab_handle) })
 
-		if not file_stat then
-			return
-		end
+			if buffer.name == "" then
+				return
+			end
 
-		local _, root = fn.switch(file_stat.type)({
-			directory = function()
-				return arg
-			end,
-			file = function()
-				return self:find_buffer_root(arg)
-			end,
-		})
+			local file_stat = fs.statSync(buffer.name)
 
-		if root and not _workspaces[root] then
-			_workspaces[root] = self:create(root)
-		end
+			if not file_stat then
+				return
+			end
 
-		return _workspaces
-	end, { [nvim_cwd] = initial_tab })
-	-- else
-	-- end
+			fn.switch(file_stat.type)({
+				directory = function()
+					self:create(buffer.name, tab_handle)
+				end,
+				file = function()
+					self:create(self:find_buffer_root(buffer.name), tab_handle)
+				end,
+			})
+		end)
+	else
+		fn.ireduce(arglist, function(_workspaces, arg)
+			local file_stat = fs.statSync(arg)
+
+			if not file_stat then
+				return
+			end
+
+			local _, root = fn.switch(file_stat.type)({
+				directory = function()
+					return arg
+				end,
+				file = function()
+					return self:find_buffer_root(arg)
+				end,
+			})
+
+			if root and not _workspaces[root] then
+				_workspaces[root] = self:create(root)
+			end
+
+			return _workspaces
+		end, { [nvim_cwd] = initial_tab })
+	end
 
 	fn.ieach(arglist, function(arg)
 		local file_stat = fs.statSync(arg)
@@ -312,7 +334,7 @@ function Workspace:create(root, tab)
 	end
 
 	tb.update({ tab, vars = { workspace = root } })
-	require("tabline").tab_rename(pt.shorten({ root_name }))
+	self:update_tab_name(tab, pt.shorten({ root_name }))
 
 	local dashboard_buffer = bf.get({ dashboard, vars = { "workspaces" } })
 	local dashboard_workspaces = fn.iunion((dashboard_buffer.vars.workspaces or {}), { tab })
@@ -359,6 +381,16 @@ function Workspace:get_by_root(root)
 	return fn.ifilter(self:get_all(), function(ws)
 		return ws.vars.workspace == root
 	end)
+end
+
+function Workspace:update_tab_name(tab, name)
+	-- https://github.com/kdheepak/tabline.nvim/blob/main/lua/tabline.lua#L139
+	local tabline = require("tabline")
+	tabline._new_tab_data(tb.number(tab))
+	local data = vim.t[tab].tabline_data
+	data.name = name
+	vim.t[tab].tabline_data = data
+	vim.cmd([[redrawtabline]])
 end
 
 function Workspace:get_buffers()

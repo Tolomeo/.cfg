@@ -1,9 +1,11 @@
 local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 
-local M = {}
+local Window = {}
 
-M.get = validator.f.arguments({
+Window.buffer = vim.api.nvim_win_get_buf
+
+Window.get = validator.f.arguments({
 	validator.f.shape({
 		"number",
 		vars = validator.f.optional("table"),
@@ -43,4 +45,4 @@ M.get = validator.f.arguments({
 	return win
 end
 
-return M
+return Window
