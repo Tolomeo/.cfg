@@ -7,39 +7,13 @@ local bf = require("_shared.buffer")
 local tb = require("_shared.tab")
 local pt = require("_shared.path")
 local str = require("_shared.str")
-local key = require("_shared.key")
 local settings = require("settings")
 
 local nvim_cwd = pt.format({ vim.loop.cwd(), ":p" })
 
-local Workspace = Module:extend({
-	plugins = {
-		{
-			"kdheepak/tabline.nvim",
-			dependencies = {
-				{ "nvim-lualine/lualine.nvim", lazy = true },
-				{ "kyazdani42/nvim-web-devicons", lazy = true },
-			},
-		},
-	},
-})
+local Workspace = Module:extend({})
 
 function Workspace:setup()
-	local keymap = settings.keymap
-	local config = settings.config
-
-	key.nmap({ keymap["tab.next"], "<Cmd>tabnext<Cr>" }, { keymap["tab.prev"], "<Cmd>tabprevious<Cr>" })
-
-	require("tabline").setup({
-		enable = true,
-		options = {
-			component_separators = { config["icon.component.left"], config["icon.component.right"] },
-			section_separators = { config["icon.section.left"], config["icon.section.right"] },
-			show_tabs_always = true, -- this shows tabs only when there are more than one tab or if the first tab is named
-			modified_icon = "~ ", -- change the default modified icon
-		},
-	})
-
 	au.group({
 		"Workspace",
 	}, {
@@ -334,7 +308,7 @@ function Workspace:create(root, tab)
 	end
 
 	tb.update({ tab, vars = { workspace = root } })
-	self:update_tab_name(tab, pt.shorten({ root_name }))
+	require("interface.line"):set_tab_name(tab, pt.shorten({ root_name }))
 
 	local dashboard_buffer = bf.get({ dashboard, vars = { "workspaces" } })
 	local dashboard_workspaces = fn.iunion((dashboard_buffer.vars.workspaces or {}), { tab })
@@ -381,16 +355,6 @@ function Workspace:get_by_root(root)
 	return fn.ifilter(self:get_all(), function(ws)
 		return ws.vars.workspace == root
 	end)
-end
-
-function Workspace:update_tab_name(tab, name)
-	-- https://github.com/kdheepak/tabline.nvim/blob/main/lua/tabline.lua#L139
-	local tabline = require("tabline")
-	tabline._new_tab_data(tb.number(tab))
-	local data = vim.t[tab].tabline_data
-	data.name = name
-	vim.t[tab].tabline_data = data
-	vim.cmd([[redrawtabline]])
 end
 
 function Workspace:get_buffers()
