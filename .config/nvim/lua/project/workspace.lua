@@ -199,6 +199,7 @@ function Workspace:on_file_buf_new(buffer)
 	)
 
 	if not next(buffer_workspaces) then
+		self:create_from_file(buffer.name)
 		return
 	end
 
