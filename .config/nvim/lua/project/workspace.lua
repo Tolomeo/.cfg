@@ -29,10 +29,6 @@ function Workspace:setup()
 		"*",
 		fn.bind(self.on_tab_enter, self),
 	}, {
-		"TabLeave",
-		"*",
-		fn.bind(self.on_tab_leave, self),
-	}, {
 		{ "BufNew", "BufNewFile" },
 		"*",
 		fn.bind(self.on_buf_new, self),
@@ -155,62 +151,6 @@ function Workspace:on_tab_enter()
 	tb.cd(current_ws.vars.workspace)
 end
 
-function Workspace:on_tab_leave()
-	local leaving_ws = self:get_current()
-
-	if not leaving_ws then
-		return
-	end
-
-	au.command({
-		"TabEnter",
-		"*",
-		function()
-			local ws = self:get(leaving_ws.handle)
-
-			if not ws then
-				self:on_ws_closed(leaving_ws)
-			end
-		end,
-		once = true,
-	})
-end
-
-function Workspace:on_ws_closed(closed_ws)
-	local ws_buffers = self:get_buffers_by_ws(closed_ws.handle)
-	local ws_buffers_deletion_failed = fn.ireduce(ws_buffers, function(_cancelled, buffer)
-		local buffer_workspaces = fn.ifilter(buffer.vars.workspaces, function(buffer_workspace)
-			return buffer_workspace ~= closed_ws.handle
-		end)
-
-		if next(buffer_workspaces) then
-			bf.update({ buffer.handle, vars = { workspaces = buffer_workspaces } })
-			return _cancelled
-		end
-
-		local buffer_deletion_success = pcall(bf.delete, { buffer.handle })
-
-		if buffer_deletion_success then
-			return _cancelled
-		end
-
-		table.insert(_cancelled, buffer)
-		return _cancelled
-	end, {})
-
-	if not next(ws_buffers_deletion_failed) then
-		return
-	end
-
-	local ws_tab = self:create(closed_ws.vars.workspace)
-
-	fn.ieach(ws_buffers_deletion_failed, function(buffer)
-		bf.update({ buffer.handle, vars = { workspaces = { ws_tab } } })
-	end)
-
-	self:on_tab_enter()
-end
-
 function Workspace:on_buf_new(evt)
 	local buffer = bf.get({ evt.buf })
 
@@ -301,14 +241,34 @@ function Workspace:create(root, tab)
 		tab = tb.create({ root })
 	end
 
-	local dashboard = bf.get_handle_by_name({ root_name })
-
-	if not dashboard then
-		dashboard = bf.create({ name = root_name })
-	end
-
 	tb.update({ tab, vars = { workspace = root } })
 	require("interface.line"):set_tab_name(tab, pt.shorten({ root_name }))
+
+	local dashboard = self:create_dashboard(tab, root_name)
+
+	local command_id
+	command_id = au.command({
+		"TabClosed",
+		"*",
+		function()
+			local ws_closed = not fn.iincludes(tb.list(), tab)
+
+			if ws_closed then
+				self:delete(tab, root)
+				au.delete_command(command_id)
+			end
+		end,
+	})
+
+	return tab, dashboard
+end
+
+function Workspace:create_dashboard(tab, name)
+	local dashboard = bf.get_handle_by_name({ name })
+
+	if not dashboard then
+		dashboard = bf.create({ name = name })
+	end
 
 	local dashboard_buffer = bf.get({ dashboard, vars = { "workspaces" } })
 	local dashboard_workspaces = fn.iunion((dashboard_buffer.vars.workspaces or {}), { tab })
@@ -319,7 +279,7 @@ function Workspace:create(root, tab)
 		options = { modifiable = false, readonly = true, swapfile = false },
 	})
 
-	return tab, dashboard
+	return dashboard
 end
 
 function Workspace:create_from_file(file_path, tab)
@@ -327,6 +287,43 @@ function Workspace:create_from_file(file_path, tab)
 
 	self:create(root_dir, tab)
 	self:update_buffer_workspaces(file_path)
+end
+
+function Workspace:delete(tab, root)
+	local ws_buffers = self:get_buffers_by_ws(tab)
+	local ws_buffers_deletion_failed = fn.ireduce(ws_buffers, function(_cancelled, buffer)
+		local buffer_workspaces = fn.ifilter(buffer.vars.workspaces, function(buffer_workspace)
+			return buffer_workspace ~= tab
+		end)
+
+		if next(buffer_workspaces) then
+			bf.update({ buffer.handle, vars = { workspaces = buffer_workspaces } })
+			return _cancelled
+		end
+
+		local buffer_deletion_success = pcall(bf.delete, { buffer.handle })
+
+		if buffer_deletion_success then
+			return _cancelled
+		end
+
+		table.insert(_cancelled, buffer)
+		return _cancelled
+	end, {})
+
+	if not next(ws_buffers_deletion_failed) then
+		return
+	end
+
+	vim.schedule(function()
+		local ws_tab = self:create(root)
+
+		fn.ieach(ws_buffers_deletion_failed, function(buffer)
+			bf.update({ buffer.handle, vars = { workspaces = { ws_tab } } })
+		end)
+
+		self:on_tab_enter()
+	end)
 end
 
 function Workspace:get_all()

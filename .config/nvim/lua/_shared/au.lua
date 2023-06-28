@@ -68,4 +68,6 @@ M.command = validator.f.arguments({ validate_command })
 		return vim.api.nvim_create_autocmd(event, opts)
 	end
 
+M.delete_command = vim.api.nvim_del_autocmd
+
 return M
