@@ -187,21 +187,19 @@ end
 
 function Workspace:on_file_buf_new(buffer)
 	--TODO: what happens when I open a file in a tab that is not a workspace?
-	--TODO: replace with self:get_current()
-	local current_ws = tb.get_current({ vars = { "workspace" } })
-	local buffer_workspaces = fn.imap(
-		fn.ifilter(self:get_all(), function(ws)
-			return str.starts_with(buffer.name, ws.vars.workspace)
-		end),
-		function(buf_ws)
-			return buf_ws.handle
-		end
-	)
+	local workspaces = self:get_all()
+	local parent_workspaces = fn.ifilter(workspaces, function(ws)
+		return str.starts_with(buffer.name, ws.vars.workspace)
+	end)
 
-	if not next(buffer_workspaces) then
+	if not next(parent_workspaces) then
 		self:create_from_file(buffer.name)
 		return
 	end
+
+	local buffer_workspaces = fn.imap(parent_workspaces, function(ws)
+		return ws.handle
+	end)
 
 	bf.update({
 		buffer.handle,
@@ -210,12 +208,15 @@ function Workspace:on_file_buf_new(buffer)
 		},
 	})
 
-	--TODO: find the best match to open the buffer in (closest ws root)
-	if fn.iincludes(buffer_workspaces, current_ws.handle) then
-		return
-	end
+	local closest_parent = fn.ireduce(parent_workspaces, function(_closest_parent, ws)
+		if #ws.vars.workspace > #_closest_parent.vars.workspace then
+			return ws
+		end
 
-	tb.go_to(buffer_workspaces[1])
+		return _closest_parent
+	end, parent_workspaces[1])
+
+	tb.go_to(closest_parent.handle)
 	self:on_tab_enter()
 end
 
