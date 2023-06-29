@@ -273,9 +273,9 @@ end
 function Fn.switch(value)
 	return function(cases)
 		if cases[value] ~= nil then
-			return true, cases[value]()
+			return value, cases[value]()
 		end
-		return false, nil
+		return nil
 	end
 end
 

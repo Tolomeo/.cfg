@@ -42,61 +42,74 @@ end
 function Workspace:on_vim_enter()
 	local arglist = ar.arglist()
 	local p = ar.find({ "-p" }) ~= nil
-	local initial_tab = tb.current()
 
-	self:create(nvim_cwd, initial_tab)
+	local initial_tabs = tb.list()
+	local initial_workspaces = fn.ireduce(arglist, function(_initial_workspaces, arg)
+		local file_stat = fs.statSync(arg)
 
-	--TODO: Take care of not yet existing args
+		if not file_stat then
+			return
+		end
 
-	if p then
-		fn.ieach(tb.list(), function(tab_handle)
-			local buffer = bf.get({ tb.buffer(tab_handle) })
+		local _, root = fn.switch(file_stat.type)({
+			directory = function()
+				return arg
+			end,
+			file = function()
+				return self:find_buffer_root(arg)
+			end,
+		})
 
-			if buffer.name == "" then
-				return
-			end
+		if not root then
+			return _initial_workspaces
+		end
 
-			local file_stat = fs.statSync(buffer.name)
+		if p then
+			table.insert(_initial_workspaces, root)
+		elseif not _initial_workspaces[root] then
+			table.insert(_initial_workspaces, root)
+		end
 
-			if not file_stat then
-				return
-			end
+		_initial_workspaces[root] = true
 
-			fn.switch(file_stat.type)({
-				directory = function()
-					self:create(buffer.name, tab_handle)
-				end,
-				file = function()
-					self:create(self:find_buffer_root(buffer.name), tab_handle)
-				end,
-			})
-		end)
-	else
-		fn.ireduce(arglist, function(_workspaces, arg)
-			local file_stat = fs.statSync(arg)
+		return _initial_workspaces
+	end, { nvim_cwd, [nvim_cwd] = { [nvim_cwd] = true } })
 
-			if not file_stat then
-				return
-			end
+	fn.ieach(initial_workspaces, function(initial_workspace, initial_workspace_number)
+		self:create(initial_workspace, initial_tabs[initial_workspace_number])
+	end)
 
-			local _, root = fn.switch(file_stat.type)({
-				directory = function()
-					return arg
-				end,
-				file = function()
-					return self:find_buffer_root(arg)
-				end,
-			})
+	local initial_buffers = bf.get_all()
 
-			if root and not _workspaces[root] then
-				_workspaces[root] = self:create(root)
-			end
+	fn.ieach(initial_buffers, function(buffer)
+		if buffer.name == "" then
+			return
+		end
 
-			return _workspaces
-		end, { [nvim_cwd] = initial_tab })
-	end
+		local file_stat = fs.statSync(buffer.name)
 
-	fn.ieach(arglist, function(arg)
+		if not file_stat then
+			return
+		end
+
+		fn.switch(file_stat.type)({
+			file = function()
+				self:update_buffer_workspaces(buffer.name)
+			end,
+			directory = function()
+				local root = pt.format({ buffer.name, ":p" })
+				local buffer_workspaces = fn.imap(self:get_by_root(root), function(ws)
+					return ws.handle
+				end)
+
+				self:update_buffer_workspaces(buffer.name, buffer_workspaces)
+			end,
+		})
+	end)
+
+	vim.print(bf.get_all({ vars = { "workspaces" } }))
+
+	--[[ fn.ieach(arglist, function(arg)
 		local file_stat = fs.statSync(arg)
 
 		if not file_stat then
@@ -106,7 +119,7 @@ function Workspace:on_vim_enter()
 		if file_stat.type == "file" then
 			self:update_buffer_workspaces(arg)
 		end
-	end)
+	end) ]]
 
 	tb.go_to(1)
 	self:on_tab_enter()
@@ -241,6 +254,9 @@ function Workspace:create(root, tab)
 
 	if not tab then
 		tab = tb.create({ root })
+	else
+		tb.go_to(tab)
+		vim.fn.execute(string.format("edit %s", root))
 	end
 
 	tb.update({ tab, vars = { workspace = root } })
@@ -397,15 +413,16 @@ function Workspace:find_buffer_root(file_path)
 	return pt.format({ pt.dirname({ root_file }), ":p" })
 end
 
-function Workspace:update_buffer_workspaces(file_path)
+function Workspace:update_buffer_workspaces(file_path, workspaces)
 	local buffer_handle = bf.get_handle_by_name({ file_path })
-	local buffer_workspaces = fn.ireduce(self:get_all(), function(_buffer_workspaces, ws)
-		if str.starts_with(file_path, ws.vars.workspace) then
-			table.insert(_buffer_workspaces, ws.handle)
-		end
+	local buffer_workspaces = workspaces
+		or fn.ireduce(self:get_all(), function(_buffer_workspaces, ws)
+			if str.starts_with(file_path, ws.vars.workspace) then
+				table.insert(_buffer_workspaces, ws.handle)
+			end
 
-		return _buffer_workspaces
-	end, {})
+			return _buffer_workspaces
+		end, {})
 
 	bf.update({
 		buffer_handle,
