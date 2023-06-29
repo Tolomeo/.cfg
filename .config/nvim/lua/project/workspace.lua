@@ -43,8 +43,8 @@ function Workspace:on_vim_enter()
 	local arglist = ar.arglist()
 	local p = ar.find({ "-p" }) ~= nil
 
-	local initial_tabs = tb.list()
-	local initial_workspaces = fn.ireduce(arglist, function(_initial_workspaces, arg)
+	local initial_workspaces = next(arglist) and {} or { nvim_cwd, [nvim_cwd] = true }
+	initial_workspaces = fn.ireduce(arglist, function(_initial_workspaces, arg)
 		local file_stat = fs.statSync(arg)
 
 		if not file_stat then
@@ -73,7 +73,9 @@ function Workspace:on_vim_enter()
 		_initial_workspaces[root] = true
 
 		return _initial_workspaces
-	end, { nvim_cwd, [nvim_cwd] = { [nvim_cwd] = true } })
+	end, initial_workspaces)
+
+	local initial_tabs = tb.list()
 
 	fn.ieach(initial_workspaces, function(initial_workspace, initial_workspace_number)
 		self:create(initial_workspace, initial_tabs[initial_workspace_number])
