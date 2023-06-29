@@ -96,30 +96,8 @@ function Workspace:on_vim_enter()
 			file = function()
 				self:update_buffer_workspaces(buffer.name)
 			end,
-			directory = function()
-				local root = pt.format({ buffer.name, ":p" })
-				local buffer_workspaces = fn.imap(self:get_by_root(root), function(ws)
-					return ws.handle
-				end)
-
-				self:update_buffer_workspaces(buffer.name, buffer_workspaces)
-			end,
 		})
 	end)
-
-	vim.print(bf.get_all({ vars = { "workspaces" } }))
-
-	--[[ fn.ieach(arglist, function(arg)
-		local file_stat = fs.statSync(arg)
-
-		if not file_stat then
-			return
-		end
-
-		if file_stat.type == "file" then
-			self:update_buffer_workspaces(arg)
-		end
-	end) ]]
 
 	tb.go_to(1)
 	self:on_tab_enter()
@@ -259,10 +237,16 @@ function Workspace:create(root, tab)
 		vim.fn.execute(string.format("edit %s", root))
 	end
 
+	local dashboard = bf.get({ bf.get_handle_by_name({ root_name }), vars = { "workspaces" } })
+
+	bf.update({
+		dashboard.handle,
+		vars = { workspaces = fn.iunion((dashboard.vars.workspaces or {}), { tab }) },
+		options = { modifiable = false, readonly = true, swapfile = false },
+	})
+
 	tb.update({ tab, vars = { workspace = root } })
 	require("interface.line"):set_tab_name(tab, pt.shorten({ root_name }))
-
-	local dashboard = self:create_dashboard(tab, root_name)
 
 	local command_id
 	command_id = au.command({
@@ -278,7 +262,7 @@ function Workspace:create(root, tab)
 		end,
 	})
 
-	return tab, dashboard
+	return tab
 end
 
 function Workspace:create_dashboard(tab, name)
@@ -413,16 +397,15 @@ function Workspace:find_buffer_root(file_path)
 	return pt.format({ pt.dirname({ root_file }), ":p" })
 end
 
-function Workspace:update_buffer_workspaces(file_path, workspaces)
+function Workspace:update_buffer_workspaces(file_path)
 	local buffer_handle = bf.get_handle_by_name({ file_path })
-	local buffer_workspaces = workspaces
-		or fn.ireduce(self:get_all(), function(_buffer_workspaces, ws)
-			if str.starts_with(file_path, ws.vars.workspace) then
-				table.insert(_buffer_workspaces, ws.handle)
-			end
+	local buffer_workspaces = fn.ireduce(self:get_all(), function(_buffer_workspaces, ws)
+		if str.starts_with(file_path, ws.vars.workspace) then
+			table.insert(_buffer_workspaces, ws.handle)
+		end
 
-			return _buffer_workspaces
-		end, {})
+		return _buffer_workspaces
+	end, {})
 
 	bf.update({
 		buffer_handle,
