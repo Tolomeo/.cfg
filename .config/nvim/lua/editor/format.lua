@@ -51,7 +51,7 @@ function Format:setup_formatter()
 			return _language_formatters
 		end
 
-		for _, filetype in ipairs(fn.split(filetypes, ",")) do
+		for _, filetype in ipairs(str.split(filetypes, ",")) do
 			filetype = str.trim(filetype)
 
 			_language_formatters[filetype] = arr.map(filetypes_config.format, function(formatter_name)

@@ -36,7 +36,7 @@ function Syntax:setup()
 	local syntaxes = tbl.reduce(map.keys(config.language), function(_syntaxes, filetypes)
 		arr.push(
 			_syntaxes,
-			unpack(arr.map(fn.split(filetypes, ","), function(filetype)
+			unpack(arr.map(str.split(filetypes, ","), function(filetype)
 				return require("nvim-treesitter.parsers").ft_to_lang(str.trim(filetype))
 			end))
 		)

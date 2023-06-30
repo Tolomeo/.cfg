@@ -1,5 +1,4 @@
 local arr = require("_shared.array")
-local tbl = require("_shared.table")
 
 local Fn = {}
 
@@ -16,17 +15,6 @@ function Fn.bind(func, ...)
 
 		return func(arr.unpack(boundArgs, callArgs))
 	end
-end
-
-function Fn.split(str, delimiter)
-	local result = {}
-	local pattern = string.format("([^%s]+)", delimiter)
-
-	for word in string.gmatch(str, pattern) do
-		table.insert(result, word)
-	end
-
-	return result
 end
 
 function Fn.switch(value)

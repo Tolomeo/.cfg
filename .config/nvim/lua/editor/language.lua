@@ -4,6 +4,7 @@ local key = require("_shared.key")
 local fn = require("_shared.fn")
 local map = require("_shared.map")
 local tbl = require("_shared.table")
+local str = require("_shared.str")
 local settings = require("settings")
 
 local Language = Module:extend({
@@ -113,7 +114,7 @@ function Language:setup_servers()
 
 		for _, language_server in ipairs(language_servers) do
 			local language_server_setup = tbl.merge(language_server_default_setup, {
-				filetypes = fn.split(filetypes, ","),
+				filetypes = str.split(filetypes, ","),
 			})
 
 			if type(language_server) == "string" then
