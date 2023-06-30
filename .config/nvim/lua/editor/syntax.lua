@@ -1,6 +1,7 @@
 local Module = require("_shared.module")
 local fn = require("_shared.fn")
 local arr = require("_shared.array")
+local tbl = require("_shared.table")
 local map = require("_shared.map")
 local settings = require("settings")
 
@@ -31,7 +32,7 @@ local Syntax = Module:extend({
 function Syntax:setup()
 	local config = settings.config
 
-	local syntaxes = fn.reduce(map.keys(config.language), function(_syntaxes, filetypes)
+	local syntaxes = tbl.reduce(map.keys(config.language), function(_syntaxes, filetypes)
 		arr.push(
 			_syntaxes,
 			unpack(arr.map(fn.split(filetypes, ","), function(filetype)

@@ -1,5 +1,5 @@
 local Module = require("_shared.module")
-local fn = require("_shared.fn")
+local tbl = require("_shared.table")
 local map = require("_shared.map")
 local fs = require("_shared.fs")
 local key = require("_shared.key")
@@ -55,7 +55,7 @@ function Config:setup_packages()
 		install_root_dir = packages_install_path,
 	})
 
-	local install_formatters = fn.reduce(languages, function(_install_formatters, language_config)
+	local install_formatters = tbl.reduce(languages, function(_install_formatters, language_config)
 		if language_config.format == nil then
 			return _install_formatters
 		end

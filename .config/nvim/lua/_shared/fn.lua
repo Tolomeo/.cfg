@@ -1,19 +1,7 @@
 local arr = require("_shared.array")
-local map = require("_shared.map")
+local tbl = require("_shared.table")
 
 local Fn = {}
-
---- Executes a user-supplied "reducer" callback function on each element of the table, in order, passing in the return value from the calculation on the preceding element
----@param tbl table the table to loop against
----@param func function the reducer callback
----@param acc any the accumulator initial value
----@return any
-function Fn.reduce(tbl, func, acc)
-	for i, v in pairs(tbl) do
-		acc = func(acc, v, i)
-	end
-	return acc
-end
 
 --- Creates a new function that, when called,
 ---has its arguments preceded by any provided ones
@@ -31,13 +19,13 @@ function Fn.bind(func, ...)
 end
 
 function Fn.merge(...)
-	return Fn.reduce({ ... }, function(target, source)
+	return tbl.reduce({ ... }, function(target, source)
 		return vim.tbl_extend("force", target, source)
 	end, {})
 end
 
 function Fn.merge_deep(...)
-	return Fn.reduce({ ... }, function(target, source)
+	return tbl.reduce({ ... }, function(target, source)
 		return vim.tbl_deep_extend("force", target, source)
 	end, {})
 end
