@@ -159,16 +159,6 @@ function Fn.switch(value)
 	end
 end
 
-function Fn.tail(tbl)
-	local tail = {}
-
-	for i = 2, #tbl do
-		table.insert(tail, tbl[i])
-	end
-
-	return tail
-end
-
 function Fn.reverse(tbl)
 	local reversed = {}
 	local length = #tbl

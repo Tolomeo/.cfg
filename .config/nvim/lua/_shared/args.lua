@@ -1,9 +1,8 @@
 local validator = require("_shared.validator")
-local fn = require("_shared.fn")
 local arr = require("_shared.array")
 local pt = require("_shared.path")
 
-local nvim_args = fn.tail(vim.v.argv)
+local nvim_args = arr.tail(vim.v.argv)
 
 local Args = {}
 
