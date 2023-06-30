@@ -1,3 +1,4 @@
+local arr = require("_shared.array")
 local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 
@@ -74,7 +75,7 @@ Buffer.get = validator.f.arguments({
 	local buffer = { handle = handle, name = vim.api.nvim_buf_get_name(handle) }
 
 	if config.vars then
-		buffer.vars = fn.ireduce(config.vars, function(buffer_vars, var_name)
+		buffer.vars = arr.reduce(config.vars, function(buffer_vars, var_name)
 			local ok, var_value = pcall(vim.api.nvim_buf_get_var, handle, var_name)
 
 			if ok then
@@ -86,7 +87,7 @@ Buffer.get = validator.f.arguments({
 	end
 
 	if config.options then
-		buffer.options = fn.ireduce(config.options, function(buffer_options, option_name)
+		buffer.options = arr.reduce(config.options, function(buffer_options, option_name)
 			local ok, option_value = pcall(vim.api.nvim_buf_get_option, handle, option_name)
 
 			if ok then

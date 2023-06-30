@@ -1,3 +1,5 @@
+local arr = require("_shared.array")
+
 local Fn = {}
 
 --- https://github.com/lunarmodules/Penlight/blob/master/lua/pl/utils.lua
@@ -18,33 +20,6 @@ function Fn.kpairs(t)
 		end
 		return index, value
 	end
-end
-
----Acts like unpack, but accepts multiple arguments
----@generic T
----@param ... T[]
----@return ...T
----@see http://lua-users.org/lists/lua-l/2004-08/msg00354.html
-function Fn.unpack(...)
-	local ret = {}
-	for _, tbl in ipairs({ ... }) do
-		for _, rec in ipairs(tbl) do
-			table.insert(ret, rec)
-		end
-	end
-	return unpack(ret)
-end
-
---- Executes a user-supplied "reducer" callback function on each element of the table indexed with a numeric key, in order, passing in the return value from the calculation on the preceding element
----@param tbl table the table to loop against
----@param func function the reducer callback
----@param acc any the accumulator initial value
----@return any
-function Fn.ireduce(tbl, func, acc)
-	for i, v in ipairs(tbl) do
-		acc = func(acc, v, i)
-	end
-	return acc
 end
 
 --- Executes a user-supplied "reducer" callback function on each key element of the table indexed with a string key, in order, passing in the return value from the calculation on the preceding element
@@ -145,7 +120,7 @@ end
 ---@param func function
 ---@return table
 function Fn.imap(tbl, func)
-	return Fn.ireduce(tbl, function(new_tbl, value, index)
+	return arr.reduce(tbl, function(new_tbl, value, index)
 		table.insert(new_tbl, func(value, index))
 		return new_tbl
 	end, {})
@@ -219,7 +194,7 @@ function Fn.bind(func, ...)
 	return function(...)
 		local callArgs = { ... }
 
-		return func(Fn.unpack(boundArgs, callArgs))
+		return func(arr.unpack(boundArgs, callArgs))
 	end
 end
 
@@ -240,7 +215,7 @@ function Fn.trim(str)
 end
 
 function Fn.ifilter(tbl, func)
-	return Fn.ireduce(tbl, function(a, v, i)
+	return arr.reduce(tbl, function(a, v, i)
 		if func(v, i) then
 			table.insert(a, v)
 		end

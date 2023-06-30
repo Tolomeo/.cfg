@@ -1,4 +1,5 @@
 local fn = require("_shared.fn")
+local arr = require("_shared.array")
 local validator = require("_shared.validator")
 local win = require("_shared.window")
 
@@ -77,7 +78,7 @@ Tab.get = validator.f.arguments({ validator.f.shape({
 	}
 
 	if options.vars then
-		tab.vars = fn.ireduce(options.vars, function(tab_vars, var_name)
+		tab.vars = arr.reduce(options.vars, function(tab_vars, var_name)
 			local ok, var_value = pcall(vim.api.nvim_tabpage_get_var, handle, var_name)
 
 			if ok then

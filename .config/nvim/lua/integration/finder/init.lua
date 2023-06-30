@@ -1,6 +1,7 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
 local fn = require("_shared.fn")
+local arr = require("_shared.array")
 local validator = require("_shared.validator")
 local settings = require("settings")
 local TabbedPicker = require("integration.finder._tabbed_picker")
@@ -179,7 +180,7 @@ Finder.create_menu = validator.f.arguments({
 		separator = " ",
 		items = {
 			-- calculating the max with needed for the column
-			fn.ireduce(menu, function(item, result)
+			arr.reduce(menu, function(item, result)
 				item.width = math.max(item.width, #result[1])
 				return item
 			end, { width = 10 }),

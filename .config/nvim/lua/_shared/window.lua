@@ -1,4 +1,5 @@
 local fn = require("_shared.fn")
+local arr = require("_shared.array")
 local validator = require("_shared.validator")
 
 local Window = {}
@@ -19,7 +20,7 @@ Window.get = validator.f.arguments({
 	}
 
 	if args.vars then
-		win.vars = fn.ireduce(args.vars, function(tab_vars, var_name)
+		win.vars = arr.reduce(args.vars, function(tab_vars, var_name)
 			local ok, var_value = pcall(vim.api.nvim_tabpage_get_var, winnr, var_name)
 
 			if ok then
@@ -31,7 +32,7 @@ Window.get = validator.f.arguments({
 	end
 
 	if args.options then
-		win.options = fn.ireduce(args.options, function(win_options, option_name)
+		win.options = arr.reduce(args.options, function(win_options, option_name)
 			local ok, option_value = pcall(vim.api.nvim_win_get_option, winnr, option_name)
 
 			if ok then

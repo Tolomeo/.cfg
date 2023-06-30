@@ -6,6 +6,7 @@ local fs = require("_shared.fs")
 local bf = require("_shared.buffer")
 local tb = require("_shared.tab")
 local pt = require("_shared.path")
+local arr = require("_shared.array")
 local str = require("_shared.str")
 local settings = require("settings")
 
@@ -44,7 +45,7 @@ function Workspace:on_vim_enter()
 	local p = ar.find({ "-p" }) ~= nil
 
 	local initial_workspaces = next(arglist) and {} or { nvim_cwd, [nvim_cwd] = true }
-	initial_workspaces = fn.ireduce(arglist, function(_initial_workspaces, arg)
+	initial_workspaces = arr.reduce(arglist, function(_initial_workspaces, arg)
 		local file_stat = fs.statSync(arg)
 
 		if not file_stat then
@@ -207,7 +208,7 @@ function Workspace:on_file_buf_new(buffer)
 		},
 	})
 
-	local closest_parent = fn.ireduce(parent_workspaces, function(_closest_parent, ws)
+	local closest_parent = arr.reduce(parent_workspaces, function(_closest_parent, ws)
 		if #ws.vars.workspace > #_closest_parent.vars.workspace then
 			return ws
 		end
@@ -280,7 +281,7 @@ end
 
 function Workspace:delete(tab, root)
 	local ws_buffers = self:get_buffers_by_ws(tab)
-	local ws_buffers_deletion_failed = fn.ireduce(ws_buffers, function(_cancelled, buffer)
+	local ws_buffers_deletion_failed = arr.reduce(ws_buffers, function(_cancelled, buffer)
 		local buffer_workspaces = fn.ifilter(buffer.vars.workspaces, function(buffer_workspace)
 			return buffer_workspace ~= tab
 		end)
@@ -386,7 +387,7 @@ end
 
 function Workspace:update_buffer_workspaces(file_path)
 	local buffer_handle = bf.get_handle_by_name({ file_path })
-	local buffer_workspaces = fn.ireduce(self:get_all(), function(_buffer_workspaces, ws)
+	local buffer_workspaces = arr.reduce(self:get_all(), function(_buffer_workspaces, ws)
 		if str.starts_with(file_path, ws.vars.workspace) then
 			table.insert(_buffer_workspaces, ws.handle)
 		end
