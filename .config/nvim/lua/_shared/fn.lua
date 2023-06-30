@@ -1,26 +1,7 @@
 local arr = require("_shared.array")
+local map = require("_shared.map")
 
 local Fn = {}
-
---- https://github.com/lunarmodules/Penlight/blob/master/lua/pl/utils.lua
---- An iterator over all non-integer keys (inverse of `ipairs`).
---- This uses `pairs` under the hood, so any value that is iterable using `pairs`
---- will work with this function.
----@param t table  the table to iterate over
----@return string
-function Fn.kpairs(t)
-	local index
-	return function()
-		local value
-		while true do
-			index, value = next(t, index)
-			if type(index) ~= "number" or math.floor(index) ~= index then
-				break
-			end
-		end
-		return index, value
-	end
-end
 
 --- Executes a user-supplied "reducer" callback function on each key element of the table indexed with a string key, in order, passing in the return value from the calculation on the preceding element
 ---@param tbl table the table to loop against
@@ -49,7 +30,7 @@ function Fn.reduce(tbl, func, acc)
 end
 
 function Fn.kfind(tbl, func)
-	for key, item in Fn.kpairs(tbl) do
+	for key, item in map.pairs(tbl) do
 		if func(item, key) then
 			return item
 		end
@@ -66,7 +47,7 @@ function Fn.kmap(tbl, func)
 end
 
 function Fn.keach(tbl, func)
-	for key, value in Fn.kpairs(tbl) do
+	for key, value in map.pairs(tbl) do
 		func(value, key, tbl)
 	end
 end
@@ -76,7 +57,7 @@ end
 ---@return table
 function Fn.keys(tbl)
 	local keys = {}
-	for key, _ in Fn.kpairs(tbl) do
+	for key, _ in map.pairs(tbl) do
 		table.insert(keys, key)
 	end
 	return keys
@@ -84,7 +65,7 @@ end
 
 function Fn.values(tbl)
 	local values = {}
-	for _, value in Fn.kpairs(tbl) do
+	for _, value in map.pairs(tbl) do
 		table.insert(values, value)
 	end
 	return values
@@ -92,7 +73,7 @@ end
 
 function Fn.entries(tbl)
 	local entries = {}
-	for key, value in Fn.kpairs(tbl) do
+	for key, value in map.pairs(tbl) do
 		table.insert(entries, { key, value })
 	end
 	return entries

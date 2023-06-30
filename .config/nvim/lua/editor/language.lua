@@ -2,6 +2,7 @@ local Module = require("_shared.module")
 local au = require("_shared.au")
 local key = require("_shared.key")
 local fn = require("_shared.fn")
+local map = require("_shared.map")
 local settings = require("settings")
 
 local Language = Module:extend({
@@ -102,7 +103,7 @@ function Language:setup_servers()
 
 	require("neodev").setup()
 
-	for filetypes, language_config in fn.kpairs(language_configs) do
+	for filetypes, language_config in map.pairs(language_configs) do
 		local language_servers = language_config.server
 
 		if not language_servers then

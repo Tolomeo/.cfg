@@ -1,6 +1,7 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
 local arr = require("_shared.array")
+local map = require("_shared.map")
 local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 local key = require("_shared.key")
@@ -165,7 +166,7 @@ function Location:_setup_keymaps()
 			local buffer = autocmd.buf
 			local actions = self:actions()
 
-			for mode, mode_actions in fn.kpairs(actions) do
+			for mode, mode_actions in map.pairs(actions) do
 				local mode_keymaps = arr.map(mode_actions, function(mode_action)
 					return { mode_action.keymap, mode_action.handler, buffer = buffer }
 				end)
