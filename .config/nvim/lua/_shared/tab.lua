@@ -1,5 +1,6 @@
 local fn = require("_shared.fn")
 local arr = require("_shared.array")
+local map = require("_shared.map")
 local validator = require("_shared.validator")
 local win = require("_shared.window")
 
@@ -26,7 +27,7 @@ Tab.create = validator.f.arguments({
 
 	vim.api.nvim_command(string.format("tabnew %s", file))
 
-	local update_args = fn.kreduce(args, function(_config, config_value, config_name)
+	local update_args = map.reduce(args, function(_config, config_value, config_name)
 		_config[config_name] = config_value
 		return _config
 	end, { Tab.current() })
@@ -41,7 +42,7 @@ Tab.update = validator.f.arguments({
 	}),
 }) .. function(args)
 	local tab = args[1]
-	local tab_options = fn.kreduce(args, function(_tab_options, value, key)
+	local tab_options = map.reduce(args, function(_tab_options, value, key)
 		_tab_options[key] = value
 		return _tab_options
 	end, { vars = {} })
@@ -98,7 +99,7 @@ Tab.get_by_number = validator.f.arguments({
 	}),
 }) .. function(args)
 	local number = args[1]
-	local get_list_args = fn.kreduce(args, function(_options, option_value, option_name)
+	local get_list_args = map.reduce(args, function(_options, option_value, option_name)
 		_options[option_name] = option_value
 		return _options
 	end, {})

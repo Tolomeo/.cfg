@@ -3,20 +3,6 @@ local map = require("_shared.map")
 
 local Fn = {}
 
---- Executes a user-supplied "reducer" callback function on each key element of the table indexed with a string key, in order, passing in the return value from the calculation on the preceding element
----@param tbl table the table to loop against
----@param func function the reducer callback
----@param acc any the accumulator initial value
----@return any
-function Fn.kreduce(tbl, func, acc)
-	for i, v in pairs(tbl) do
-		if type(i) == "string" then
-			acc = func(acc, v, i)
-		end
-	end
-	return acc
-end
-
 --- Executes a user-supplied "reducer" callback function on each element of the table, in order, passing in the return value from the calculation on the preceding element
 ---@param tbl table the table to loop against
 ---@param func function the reducer callback
@@ -40,7 +26,7 @@ function Fn.kfind(tbl, func)
 end
 
 function Fn.kmap(tbl, func)
-	return Fn.kreduce(tbl, function(new_tbl, value, key)
+	return map.reduce(tbl, function(new_tbl, value, key)
 		table.insert(new_tbl, func(value, key))
 		return new_tbl
 	end, {})
@@ -111,7 +97,7 @@ function Fn.trim(str)
 end
 
 function Fn.kfilter(tbl, func)
-	return Fn.kreduce(tbl, function(a, v, k)
+	return map.reduce(tbl, function(a, v, k)
 		if func(v, k) then
 			a[k] = v
 		end

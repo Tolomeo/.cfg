@@ -1,4 +1,4 @@
-local fn = require("_shared.fn")
+local map = require("_shared.map")
 
 --- Generates a validation map for a list
 ---@param list table the list value
@@ -24,7 +24,7 @@ end
 ---@param validators_dict table dictionary of validators to use for the validation
 ---@return table
 local get_dict_validation_map = function(dict, validators_dict)
-	return fn.kreduce(validators_dict, function(dict_validation, validator, key)
+	return map.reduce(validators_dict, function(dict_validation, validator, key)
 		local value = dict[key]
 		local err = type(validator) == "function" and "correct value for key '" .. key .. "'" or nil
 

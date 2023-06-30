@@ -1,5 +1,6 @@
 ---@see https://github.com/luvit/luvit/blob/master/deps/fs.lua
-local fn = require("_shared.fn")
+local map = require("_shared.map")
+
 local uv = vim.loop
 
 local function noop() end
@@ -67,7 +68,7 @@ end
 
 function Fs.find(args)
 	local what = args[1]
-	local options = fn.kreduce(args, function(_options, value, name)
+	local options = map.reduce(args, function(_options, value, name)
 		_options[name] = value
 		return _options
 	end, {})

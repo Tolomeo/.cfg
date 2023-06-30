@@ -1,4 +1,5 @@
 local arr = require("_shared.array")
+local map = require("_shared.map")
 local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 
@@ -31,7 +32,7 @@ Buffer.update = validator.f.arguments({
 	}),
 }) .. function(config)
 	local buf = config[1]
-	local buf_options = fn.kreduce(config, function(_options, value, key)
+	local buf_options = map.reduce(config, function(_options, value, key)
 		_options[key] = value
 		return _options
 	end, { options = {}, vars = {} })
@@ -146,7 +147,7 @@ Buffer.delete = validator.f.arguments({
 	}),
 }) .. function(config)
 	local buf = config[1]
-	local options = fn.kreduce(config, function(_options, value, key)
+	local options = map.reduce(config, function(_options, value, key)
 		_options[key] = value
 		return _options
 	end, { force = false })

@@ -106,7 +106,7 @@ end
 --[[ --- Returns a tree structure of all modules
 ---@return table
 function Module:list_modules()
-	return fn.kreduce(
+	return map.reduce(
 		self.modules,
 		function(_modules, module, module_name)
 			_modules[module_name] = module:list_modules()

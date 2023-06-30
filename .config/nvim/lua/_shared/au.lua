@@ -1,5 +1,6 @@
 local fn = require("_shared.fn")
 local arr = require("_shared.array")
+local map = require("_shared.map")
 local validator = require("_shared.validator")
 
 ---@class Au
@@ -34,7 +35,7 @@ M.group = validator.f.arguments({
 	validator.f.optional(validate_command),
 }) .. function(group, ...)
 	local name = group[1]
-	local opts = fn.kreduce(group, function(o, v, k)
+	local opts = map.reduce(group, function(o, v, k)
 		o[k] = v
 		return o
 	end, { clear = true })
@@ -54,7 +55,7 @@ end
 M.command = validator.f.arguments({ validate_command })
 	.. function(config)
 		local event, selector, handler = config[1], config[2], config[3]
-		local opts = fn.kreduce(config, function(o, v, k)
+		local opts = map.reduce(config, function(o, v, k)
 			o[k] = v
 			return o
 		end, {})

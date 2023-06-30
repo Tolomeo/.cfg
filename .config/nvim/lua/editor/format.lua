@@ -2,6 +2,7 @@ local Module = require("_shared.module")
 local key = require("_shared.key")
 local fn = require("_shared.fn")
 local arr = require("_shared.array")
+local map = require("_shared.map")
 local settings = require("settings")
 
 local Format = Module:extend({
@@ -44,7 +45,7 @@ function Format:setup_formatter()
 	local language_configs = settings.config["language"]
 	local formatter_defaults = self:get_defaults()
 
-	local language_formatters = fn.kreduce(language_configs, function(_language_formatters, filetypes_config, filetypes)
+	local language_formatters = map.reduce(language_configs, function(_language_formatters, filetypes_config, filetypes)
 		if filetypes_config.format == nil then
 			return _language_formatters
 		end
