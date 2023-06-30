@@ -109,16 +109,14 @@ function Workspace:on_tab_new_entered(evt)
 	local file = evt.file
 	local current_tab = tb.current()
 
+	if file == "" then
+		return
+	end
+
 	vim.schedule(function()
 		local current_ws = self:get(current_tab)
 
 		if current_ws then
-			return
-		end
-
-		if file == "" then
-			self:create(nvim_cwd, current_tab)
-			self:on_tab_enter()
 			return
 		end
 
@@ -275,29 +273,8 @@ function Workspace:create(root, tab)
 	return tab
 end
 
-function Workspace:create_dashboard(tab, name)
-	local dashboard = bf.get_handle_by_name({ name })
-
-	if not dashboard then
-		dashboard = bf.create({ name = name })
-	end
-
-	local dashboard_buffer = bf.get({ dashboard, vars = { "workspaces" } })
-	local dashboard_workspaces = fn.iunion((dashboard_buffer.vars.workspaces or {}), { tab })
-
-	bf.update({
-		dashboard_buffer.handle,
-		vars = { workspaces = dashboard_workspaces },
-		options = { modifiable = false, readonly = true, swapfile = false },
-	})
-
-	return dashboard
-end
-
 function Workspace:create_from_file(file_path, tab)
-	local root_dir = self:find_buffer_root(file_path)
-
-	self:create(root_dir, tab)
+	self:create(self:find_buffer_root(file_path), tab)
 	self:update_buffer_workspaces(file_path)
 end
 
