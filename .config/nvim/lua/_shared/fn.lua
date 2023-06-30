@@ -98,17 +98,6 @@ function Fn.entries(tbl)
 	return entries
 end
 
---- Returns an array of a given table's numbered-keyed property names.
----@param tbl table
----@return table
-function Fn.indexes(tbl)
-	local indexes = {}
-	for key, _ in ipairs(tbl) do
-		table.insert(indexes, key)
-	end
-	return indexes
-end
-
 --- Creates a new function that, when called,
 ---has its arguments preceded by any provided ones
 ---@param func function
