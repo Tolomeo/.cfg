@@ -37,7 +37,7 @@ function Terminal:setup()
 		fn.bind(self.menu, self),
 	})
 
-	fn.ieach(config["terminal.jobs"], function(user_job)
+	arr.each(config["terminal.jobs"], function(user_job)
 		if not user_job.keymap then
 			return
 		end

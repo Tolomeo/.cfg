@@ -78,13 +78,13 @@ function Workspace:on_vim_enter()
 
 	local initial_tabs = tb.list()
 
-	fn.ieach(initial_workspaces, function(initial_workspace, initial_workspace_number)
+	arr.each(initial_workspaces, function(initial_workspace, initial_workspace_number)
 		self:create(initial_workspace, initial_tabs[initial_workspace_number])
 	end)
 
 	local initial_buffers = bf.get_all()
 
-	fn.ieach(initial_buffers, function(buffer)
+	arr.each(initial_buffers, function(buffer)
 		if buffer.name == "" then
 			return
 		end
@@ -308,7 +308,7 @@ function Workspace:delete(tab, root)
 	vim.schedule(function()
 		local ws_tab = self:create(root)
 
-		fn.ieach(ws_buffers_deletion_failed, function(buffer)
+		arr.each(ws_buffers_deletion_failed, function(buffer)
 			bf.update({ buffer.handle, vars = { workspaces = { ws_tab } } })
 		end)
 
@@ -359,7 +359,7 @@ end
 function Workspace:toggle_buffers(ws)
 	local ws_buffers = self:get_buffers()
 
-	fn.ieach(ws_buffers, function(buffer)
+	arr.each(ws_buffers, function(buffer)
 		bf.update({ buffer.handle, options = { buflisted = fn.iincludes(buffer.vars.workspaces, ws.handle) } })
 	end)
 end
@@ -367,7 +367,7 @@ end
 function Workspace:hide_buffers()
 	local ws_buffers = self:get_buffers()
 
-	fn.ieach(ws_buffers, function(buffer)
+	arr.each(ws_buffers, function(buffer)
 		bf.update({ buffer.handle, options = { buflisted = false } })
 	end)
 end

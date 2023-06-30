@@ -65,12 +65,6 @@ function Fn.kmap(tbl, func)
 	end, {})
 end
 
-function Fn.ieach(tbl, func)
-	for index, value in ipairs(tbl) do
-		func(value, index, tbl)
-	end
-end
-
 function Fn.keach(tbl, func)
 	for key, value in Fn.kpairs(tbl) do
 		func(value, key, tbl)
