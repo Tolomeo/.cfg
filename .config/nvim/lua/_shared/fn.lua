@@ -15,14 +15,6 @@ function Fn.reduce(tbl, func, acc)
 	return acc
 end
 
-function Fn.entries(tbl)
-	local entries = {}
-	for key, value in map.pairs(tbl) do
-		table.insert(entries, { key, value })
-	end
-	return entries
-end
-
 --- Creates a new function that, when called,
 ---has its arguments preceded by any provided ones
 ---@param func function
