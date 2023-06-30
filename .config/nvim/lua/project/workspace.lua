@@ -209,7 +209,7 @@ function Workspace:on_file_buf_new(buffer)
 		return _closest_parent
 	end, parent_workspaces[1])
 
-	tb.go_to(closest_parent.handle)
+	tb.go_to(tb.number(closest_parent.handle))
 	self:on_tab_enter()
 end
 
@@ -232,10 +232,12 @@ function Workspace:create(root, tab)
 	root = pt.format({ root, ":p" })
 	local root_name = string.gsub(root, "/$", "")
 
+	vim.print(root, tab)
+
 	if not tab then
 		tab = tb.create({ root })
 	else
-		tb.go_to(tab)
+		tb.go_to(tb.number(tab))
 		vim.fn.execute(string.format("edit %s", root))
 	end
 
@@ -318,6 +320,8 @@ function Workspace:delete(tab, root)
 	if not next(ws_buffers_deletion_failed) then
 		return
 	end
+
+	vim.print(ws_buffers_deletion_failed)
 
 	vim.schedule(function()
 		local ws_tab = self:create(root)
