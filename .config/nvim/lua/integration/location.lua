@@ -1,5 +1,6 @@
 local Module = require("_shared.module")
 local au = require("_shared.au")
+local arr = require("_shared.array")
 local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 local key = require("_shared.key")
@@ -165,7 +166,7 @@ function Location:_setup_keymaps()
 			local actions = self:actions()
 
 			for mode, mode_actions in fn.kpairs(actions) do
-				local mode_keymaps = fn.imap(mode_actions, function(mode_action)
+				local mode_keymaps = arr.map(mode_actions, function(mode_action)
 					return { mode_action.keymap, mode_action.handler, buffer = buffer }
 				end)
 
@@ -309,7 +310,7 @@ function Location:actions_menu()
 	local is_loclist = self:is_loclist()
 	local menu = vim.tbl_extend(
 		"error",
-		fn.imap(actions, function(action)
+		arr.map(actions, function(action)
 			return { action.name, action.keymap, handler = action.handler }
 		end),
 		{

@@ -62,7 +62,7 @@ end
 Tab.get_list = validator.f.arguments({
 	validator.f.optional("table"),
 }) .. function(options)
-	return fn.imap(Tab.list(), function(handle)
+	return arr.map(Tab.list(), function(handle)
 		return Tab.get(fn.merge({ handle }, options))
 	end)
 end
@@ -122,7 +122,7 @@ end
 Tab.get_windows = function(args)
 	local tab = args[1]
 
-	return fn.imap(vim.api.nvim_tabpage_list_wins(tab), function(window_handle)
+	return arr.map(vim.api.nvim_tabpage_list_wins(tab), function(window_handle)
 		return win.get({ window_handle })
 	end)
 end

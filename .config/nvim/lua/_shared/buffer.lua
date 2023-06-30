@@ -112,7 +112,7 @@ end
 Buffer.get_all = validator.f.arguments({
 	validator.f.optional("table"),
 }) .. function(options)
-	return fn.imap(Buffer.list(), function(handle)
+	return arr.map(Buffer.list(), function(handle)
 		return Buffer.get(fn.merge({ handle }, options))
 	end)
 end

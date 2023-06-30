@@ -1,6 +1,7 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
 local fn = require("_shared.fn")
+local arr = require("_shared.array")
 local settings = require("settings")
 
 local Format = Module:extend({
@@ -51,7 +52,7 @@ function Format:setup_formatter()
 		for _, filetype in ipairs(fn.split(filetypes, ",")) do
 			filetype = fn.trim(filetype)
 
-			_language_formatters[filetype] = fn.imap(filetypes_config.format, function(formatter_name)
+			_language_formatters[filetype] = arr.map(filetypes_config.format, function(formatter_name)
 				return formatter_defaults[filetype][formatter_name]
 			end)
 		end

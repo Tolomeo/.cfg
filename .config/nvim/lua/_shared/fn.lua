@@ -58,18 +58,6 @@ function Fn.kfind(tbl, func)
 	return nil
 end
 
---- Creates a new table populated with the results of calling a provided functions
----on every numeric indexed element in the calling table
----@param tbl table
----@param func function
----@return table
-function Fn.imap(tbl, func)
-	return arr.reduce(tbl, function(new_tbl, value, index)
-		table.insert(new_tbl, func(value, index))
-		return new_tbl
-	end, {})
-end
-
 function Fn.kmap(tbl, func)
 	return Fn.kreduce(tbl, function(new_tbl, value, key)
 		table.insert(new_tbl, func(value, key))

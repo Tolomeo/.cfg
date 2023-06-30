@@ -10,7 +10,7 @@ local Args = {}
 Args.argv = vim.fn.argv
 
 Args.arglist = function()
-	return fn.imap(Args.argv(), function(arg)
+	return arr.map(Args.argv(), function(arg)
 		return pt.format({ arg, ":p" })
 	end)
 end

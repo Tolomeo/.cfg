@@ -1,4 +1,5 @@
 local fn = require("_shared.fn")
+local arr = require("_shared.array")
 local validator = require("_shared.validator")
 
 ---@class Au
@@ -40,7 +41,7 @@ M.group = validator.f.arguments({
 	local autocmds = { ... }
 
 	local group_id = vim.api.nvim_create_augroup(name, opts)
-	local commands_ids = fn.imap(autocmds, function(autocmd)
+	local commands_ids = arr.map(autocmds, function(autocmd)
 		autocmd.group = group_id
 		return M.command(autocmd)
 	end)

@@ -1,6 +1,7 @@
 local Module = require("_shared.module")
 local key = require("_shared.key")
 local fn = require("_shared.fn")
+local arr = require("_shared.array")
 local settings = require("settings")
 
 local Git = Module:extend({
@@ -29,7 +30,7 @@ function Git:setup()
 		on_attach = function(buffer)
 			local keymap = settings.keymap
 			local actions = self:actions()
-			local mappings = fn.imap(actions, function(action)
+			local mappings = arr.map(actions, function(action)
 				return { action.keymap, action.handler, buffer = buffer }
 			end)
 
@@ -83,7 +84,7 @@ function Git:actions_context_menu()
 	local actions = self:actions()
 	local menu = vim.tbl_extend(
 		"error",
-		fn.imap(actions, function(action)
+		arr.map(actions, function(action)
 			return { action.name, action.keymap, handler = action.handler }
 		end),
 		{

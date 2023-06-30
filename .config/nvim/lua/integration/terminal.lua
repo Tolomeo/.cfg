@@ -169,7 +169,7 @@ function Terminal:get_actions()
 				self:create(command)
 			end,
 		},
-		unpack(fn.imap(config["terminal.jobs"], function(user_job)
+		unpack(arr.map(config["terminal.jobs"], function(user_job)
 			return {
 				name = "Launch " .. user_job.command,
 				command = ":terminal " .. user_job.command,
@@ -191,7 +191,7 @@ function Terminal:menu(options)
 	local actions = self:get_actions()
 	arr.push(
 		menu,
-		unpack(fn.imap(actions, function(action)
+		unpack(arr.map(actions, function(action)
 			return {
 				action.name,
 				fn.trim(table.concat({ action.keymap or "", action.command or "" }, " ")),

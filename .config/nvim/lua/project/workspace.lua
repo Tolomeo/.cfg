@@ -197,7 +197,7 @@ function Workspace:on_file_buf_new(buffer)
 		return
 	end
 
-	local buffer_workspaces = fn.imap(parent_workspaces, function(ws)
+	local buffer_workspaces = arr.map(parent_workspaces, function(ws)
 		return ws.handle
 	end)
 

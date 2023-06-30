@@ -33,7 +33,7 @@ function Syntax:setup()
 	local syntaxes = fn.reduce(fn.keys(config.language), function(_syntaxes, filetypes)
 		arr.push(
 			_syntaxes,
-			unpack(fn.imap(fn.split(filetypes, ","), function(filetype)
+			unpack(arr.map(fn.split(filetypes, ","), function(filetype)
 				return require("nvim-treesitter.parsers").ft_to_lang(fn.trim(filetype))
 			end))
 		)

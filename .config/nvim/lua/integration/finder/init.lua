@@ -202,7 +202,7 @@ Finder.create_menu = validator.f.arguments({
 	end
 
 	local finder = require("telescope.finders").new_table({
-		results = fn.imap(menu, function(menu_item)
+		results = arr.map(menu, function(menu_item)
 			return menu_item
 		end),
 		entry_maker = entry_maker,
