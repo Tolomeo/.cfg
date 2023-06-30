@@ -73,14 +73,6 @@ function Fn.kfind(tbl, func)
 	return nil
 end
 
-function Fn.find_last_index(tbl, func)
-	for index = #tbl, 1, -1 do
-		if func(tbl[index], index) then
-			return index
-		end
-	end
-end
-
 function Fn.slice(tbl, startIndex, endIndex)
 	local sliced = {}
 	endIndex = endIndex or #tbl
