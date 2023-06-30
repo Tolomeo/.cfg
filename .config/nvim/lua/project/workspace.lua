@@ -262,7 +262,7 @@ function Workspace:create(root, tab)
 		"TabClosed",
 		"*",
 		function()
-			local ws_closed = not fn.iincludes(tb.list(), tab)
+			local ws_closed = not arr.includes(tb.list(), tab)
 
 			if ws_closed then
 				self:delete(tab, root)
@@ -352,7 +352,7 @@ end
 
 function Workspace:get_buffers_by_ws(ws_handle)
 	return arr.filter(self:get_buffers(), function(buffer)
-		return fn.iincludes(buffer.vars.workspaces, ws_handle)
+		return arr.includes(buffer.vars.workspaces, ws_handle)
 	end)
 end
 
@@ -360,7 +360,7 @@ function Workspace:toggle_buffers(ws)
 	local ws_buffers = self:get_buffers()
 
 	arr.each(ws_buffers, function(buffer)
-		bf.update({ buffer.handle, options = { buflisted = fn.iincludes(buffer.vars.workspaces, ws.handle) } })
+		bf.update({ buffer.handle, options = { buflisted = arr.includes(buffer.vars.workspaces, ws.handle) } })
 	end)
 end
 

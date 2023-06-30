@@ -159,14 +159,6 @@ function Fn.switch(value)
 	end
 end
 
-function Fn.iincludes(tbl, search)
-	local found = arr.find(tbl, function(item)
-		return item == search
-	end)
-
-	return found and true or false
-end
-
 function Fn.rotateRight(tbl, offset)
 	local length = #tbl
 	local rotated = {}
