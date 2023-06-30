@@ -188,7 +188,7 @@ end
 function Workspace:on_file_buf_new(buffer)
 	--TODO: what happens when I open a file in a tab that is not a workspace?
 	local workspaces = self:get_all()
-	local parent_workspaces = fn.ifilter(workspaces, function(ws)
+	local parent_workspaces = arr.filter(workspaces, function(ws)
 		return str.starts_with(buffer.name, ws.vars.workspace)
 	end)
 
@@ -282,7 +282,7 @@ end
 function Workspace:delete(tab, root)
 	local ws_buffers = self:get_buffers_by_ws(tab)
 	local ws_buffers_deletion_failed = arr.reduce(ws_buffers, function(_cancelled, buffer)
-		local buffer_workspaces = fn.ifilter(buffer.vars.workspaces, function(buffer_workspace)
+		local buffer_workspaces = arr.filter(buffer.vars.workspaces, function(buffer_workspace)
 			return buffer_workspace ~= tab
 		end)
 
@@ -317,7 +317,7 @@ function Workspace:delete(tab, root)
 end
 
 function Workspace:get_all()
-	return fn.ifilter(tb.get_list({ vars = { "workspace" } }), function(tab)
+	return arr.filter(tb.get_list({ vars = { "workspace" } }), function(tab)
 		return tab.vars.workspace ~= nil
 	end)
 end
@@ -339,19 +339,19 @@ function Workspace:get(ws_handle)
 end
 
 function Workspace:get_by_root(root)
-	return fn.ifilter(self:get_all(), function(ws)
+	return arr.filter(self:get_all(), function(ws)
 		return ws.vars.workspace == root
 	end)
 end
 
 function Workspace:get_buffers()
-	return fn.ifilter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
+	return arr.filter(bf.get_all({ vars = { "workspaces" } }), function(buffer)
 		return buffer.vars.workspaces ~= nil
 	end)
 end
 
 function Workspace:get_buffers_by_ws(ws_handle)
-	return fn.ifilter(self:get_buffers(), function(buffer)
+	return arr.filter(self:get_buffers(), function(buffer)
 		return fn.iincludes(buffer.vars.workspaces, ws_handle)
 	end)
 end

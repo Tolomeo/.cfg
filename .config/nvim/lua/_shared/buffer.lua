@@ -120,7 +120,7 @@ end
 Buffer.get_listed = validator.f.arguments({
 	validator.f.optional("table"),
 }) .. function(args)
-	return fn.ifilter(Buffer.get_all(args), function(buffer)
+	return arr.filter(Buffer.get_all(args), function(buffer)
 		return vim.api.nvim_buf_get_option(buffer.handle, "buflisted")
 	end)
 end

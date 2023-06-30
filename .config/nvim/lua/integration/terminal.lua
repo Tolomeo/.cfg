@@ -87,7 +87,7 @@ end
 function Terminal:next(cmd)
 	-- `term://{cwd}//{pid}:{cmd}`
 	local buffers = bf.get_listed()
-	local term_buffers = fn.ifilter(buffers, function(buffer)
+	local term_buffers = arr.filter(buffers, function(buffer)
 		return string.match(buffer.name, "^term://.+//%d+:" .. cmd .. "$")
 	end)
 
@@ -113,7 +113,7 @@ end
 
 function Terminal:prev(cmd)
 	local buffers = bf.get_listed()
-	local term_buffers = fn.ifilter(buffers, function(buffer)
+	local term_buffers = arr.filter(buffers, function(buffer)
 		return string.match(buffer.name, "^term://.+//%d+:" .. cmd .. "$")
 	end)
 
