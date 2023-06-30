@@ -107,30 +107,38 @@ end
 
 function Workspace:on_tab_new_entered(evt)
 	local file = evt.file
-	local tab = tb.current()
+	local current_tab = tb.current()
 
-	if file == "" then
-		self:create(nvim_cwd, tab)
+	vim.schedule(function()
+		local current_ws = self:get(current_tab)
+
+		if current_ws then
+			return
+		end
+
+		if file == "" then
+			self:create(nvim_cwd, current_tab)
+			self:on_tab_enter()
+			return
+		end
+
+		local file_stat = fs.statSync(file)
+
+		if not file_stat then
+			return
+		end
+
+		fn.switch(file_stat.type)({
+			file = function()
+				self:create_from_file(file, current_tab)
+			end,
+			directory = function()
+				self:create(file, current_tab)
+			end,
+		})
+
 		self:on_tab_enter()
-		return
-	end
-
-	local file_stat = fs.statSync(file)
-
-	if not file_stat then
-		return
-	end
-
-	fn.switch(file_stat.type)({
-		file = function()
-			self:create_from_file(file, tab)
-		end,
-		directory = function()
-			self:create(file, tab)
-		end,
-	})
-
-	self:on_tab_enter()
+	end)
 end
 
 function Workspace:on_tab_enter()
@@ -232,8 +240,6 @@ function Workspace:create(root, tab)
 	root = pt.format({ root, ":p" })
 	local root_name = string.gsub(root, "/$", "")
 
-	vim.print(root, tab)
-
 	if not tab then
 		tab = tb.create({ root })
 	else
@@ -320,8 +326,6 @@ function Workspace:delete(tab, root)
 	if not next(ws_buffers_deletion_failed) then
 		return
 	end
-
-	vim.print(ws_buffers_deletion_failed)
 
 	vim.schedule(function()
 		local ws_tab = self:create(root)
