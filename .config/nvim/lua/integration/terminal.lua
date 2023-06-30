@@ -1,6 +1,7 @@
 local Module = require("_shared.module")
 local bf = require("_shared.buffer")
 local fn = require("_shared.fn")
+local arr = require("_shared.array")
 local tb = require("_shared.tab")
 local key = require("_shared.key")
 local settings = require("settings")
@@ -95,7 +96,7 @@ function Terminal:next(cmd)
 	end
 
 	local current_buffer = bf.get_current()
-	local current_buffer_index = fn.find_index(buffers, function(buffer)
+	local current_buffer_index = arr.find_index(buffers, function(buffer)
 		return buffer.handle == current_buffer.handle
 	end)
 	local buffers_rotation = fn.tail(fn.rotateRight(buffers, current_buffer_index))
@@ -122,7 +123,7 @@ function Terminal:prev(cmd)
 
 	buffers = fn.reverse(buffers)
 	local current_buffer = bf.get_current()
-	local current_buffer_index = fn.find_index(buffers, function(buffer)
+	local current_buffer_index = arr.find_index(buffers, function(buffer)
 		return buffer.handle == current_buffer.handle
 	end)
 	local buffers_rotation = fn.tail(fn.rotateRight(buffers, current_buffer_index))

@@ -48,20 +48,6 @@ function Fn.reduce(tbl, func, acc)
 	return acc
 end
 
---- Returns the index of the first element in the array that satisfies the provided testing function
----@param tbl table the table to loop against
----@param func function callback returning true or false
----@return number|nil
-function Fn.find_index(tbl, func)
-	for index, item in ipairs(tbl) do
-		if func(item, index) then
-			return index
-		end
-	end
-
-	return nil
-end
-
 --- Returns the first element in the array that satisfies the provided testing function
 ---@generic V
 ---@param tbl table<number, V> the table to loop against
