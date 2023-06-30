@@ -2,6 +2,7 @@ local Module = require("_shared.module")
 local bf = require("_shared.buffer")
 local fn = require("_shared.fn")
 local arr = require("_shared.array")
+local str = require("_shared.str")
 local tb = require("_shared.tab")
 local key = require("_shared.key")
 local settings = require("settings")
@@ -194,7 +195,7 @@ function Terminal:menu(options)
 		unpack(arr.map(actions, function(action)
 			return {
 				action.name,
-				fn.trim(table.concat({ action.keymap or "", action.command or "" }, " ")),
+				str.trim(table.concat({ action.keymap or "", action.command or "" }, " ")),
 				handler = action.handler,
 			}
 		end))

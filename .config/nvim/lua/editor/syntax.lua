@@ -2,6 +2,7 @@ local Module = require("_shared.module")
 local fn = require("_shared.fn")
 local arr = require("_shared.array")
 local tbl = require("_shared.table")
+local str = require("_shared.str")
 local map = require("_shared.map")
 local settings = require("settings")
 
@@ -36,7 +37,7 @@ function Syntax:setup()
 		arr.push(
 			_syntaxes,
 			unpack(arr.map(fn.split(filetypes, ","), function(filetype)
-				return require("nvim-treesitter.parsers").ft_to_lang(fn.trim(filetype))
+				return require("nvim-treesitter.parsers").ft_to_lang(str.trim(filetype))
 			end))
 		)
 

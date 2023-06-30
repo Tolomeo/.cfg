@@ -18,10 +18,6 @@ function Fn.bind(func, ...)
 	end
 end
 
-function Fn.trim(str)
-	return (string.gsub(str, "^%s*(.-)%s*$", "%1"))
-end
-
 function Fn.split(str, delimiter)
 	local result = {}
 	local pattern = string.format("([^%s]+)", delimiter)
