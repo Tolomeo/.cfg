@@ -159,24 +159,6 @@ function Fn.switch(value)
 	end
 end
 
-function Fn.iintersection(tbl1, tbl2)
-	local result = {}
-
-	local counts = {}
-	for _, element in ipairs(tbl1) do
-		counts[element] = (counts[element] or 0) + 1
-	end
-
-	for _, element in ipairs(tbl2) do
-		if counts[element] and counts[element] > 0 then
-			table.insert(result, element)
-			counts[element] = counts[element] - 1
-		end
-	end
-
-	return result
-end
-
 function Fn.iunion(tbl1, tbl2)
 	local union = {}
 	local seen = {}
