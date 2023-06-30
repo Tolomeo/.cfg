@@ -15,16 +15,6 @@ function Fn.reduce(tbl, func, acc)
 	return acc
 end
 
-function Fn.kfind(tbl, func)
-	for key, item in map.pairs(tbl) do
-		if func(item, key) then
-			return item
-		end
-	end
-
-	return nil
-end
-
 function Fn.kmap(tbl, func)
 	return map.reduce(tbl, function(new_tbl, value, key)
 		table.insert(new_tbl, func(value, key))
