@@ -15,17 +15,6 @@ function Fn.reduce(tbl, func, acc)
 	return acc
 end
 
---- Returns an array of a given table's string-keyed property names.
----@param tbl table
----@return table
-function Fn.keys(tbl)
-	local keys = {}
-	for key, _ in map.pairs(tbl) do
-		table.insert(keys, key)
-	end
-	return keys
-end
-
 function Fn.values(tbl)
 	local values = {}
 	for _, value in map.pairs(tbl) do

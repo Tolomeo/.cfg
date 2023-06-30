@@ -1,5 +1,6 @@
 local Module = require("_shared.module")
 local fn = require("_shared.fn")
+local map = require("_shared.map")
 local fs = require("_shared.fs")
 local key = require("_shared.key")
 local settings = require("settings")
@@ -79,7 +80,7 @@ function Config:setup_packages()
 
 	-- IDEA: should we delay until the filetype is opened?
 	if next(install_formatters) then
-		vim.fn.execute(string.format("MasonInstall %s", table.concat(fn.keys(install_formatters), " ")))
+		vim.fn.execute(string.format("MasonInstall %s", table.concat(map.keys(install_formatters), " ")))
 	end
 end
 

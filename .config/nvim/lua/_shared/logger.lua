@@ -1,5 +1,6 @@
 local validator = require("_shared.validator")
 local fn = require("_shared.fn")
+local map = require("_shared.map")
 
 local M = {}
 
@@ -8,7 +9,7 @@ local M = {}
 ---@type fun(message: string, level: string | nil, options: table | nil): nil
 M.log = validator.f.arguments({
 	"string",
-	validator.f.optional(validator.f.one_of(fn.keys(vim.log.levels))),
+	validator.f.optional(validator.f.one_of(map.keys(vim.log.levels))),
 	validator.f.optional("table"),
 }) .. function(message, level, options)
 	level = level or "INFO"
@@ -21,7 +22,7 @@ end
 ---@type fun(message: string, level: string | nil, options: table | nil): nil
 M.log_once = validator.f.arguments({
 	"string",
-	validator.f.optional(validator.f.one_of(fn.keys(vim.log.levels))),
+	validator.f.optional(validator.f.one_of(map.keys(vim.log.levels))),
 	validator.f.optional("table"),
 }) .. function(message, level, options)
 	level = level or "INFO"
