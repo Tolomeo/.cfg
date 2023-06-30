@@ -15,14 +15,6 @@ function Fn.reduce(tbl, func, acc)
 	return acc
 end
 
-function Fn.values(tbl)
-	local values = {}
-	for _, value in map.pairs(tbl) do
-		table.insert(values, value)
-	end
-	return values
-end
-
 function Fn.entries(tbl)
 	local entries = {}
 	for key, value in map.pairs(tbl) do
