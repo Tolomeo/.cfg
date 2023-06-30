@@ -2,6 +2,7 @@ local Object = require("_shared.object")
 local key = require("_shared.key")
 local fn = require("_shared.fn")
 local arr = require("_shared.array")
+local tbl = require("_shared.table")
 local validator = require("_shared.validator")
 local settings = require("settings")
 
@@ -117,7 +118,7 @@ end
 
 function TabbedPicker:find(options)
 	options = options or {}
-	options = fn.merge(options, self:get_options({ initial_mode = "normal" }))
+	options = tbl.merge(options, self:get_options({ initial_mode = "normal" }))
 
 	local picker = self[self.current]
 	return picker.find(options)

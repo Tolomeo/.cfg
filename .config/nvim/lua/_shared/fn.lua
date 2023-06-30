@@ -18,18 +18,6 @@ function Fn.bind(func, ...)
 	end
 end
 
-function Fn.merge(...)
-	return tbl.reduce({ ... }, function(target, source)
-		return vim.tbl_extend("force", target, source)
-	end, {})
-end
-
-function Fn.merge_deep(...)
-	return tbl.reduce({ ... }, function(target, source)
-		return vim.tbl_deep_extend("force", target, source)
-	end, {})
-end
-
 function Fn.trim(str)
 	return (string.gsub(str, "^%s*(.-)%s*$", "%1"))
 end

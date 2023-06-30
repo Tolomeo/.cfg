@@ -4,6 +4,7 @@ local key = require("_shared.key")
 local validator = require("_shared.validator")
 local settings = require("settings")
 local fn = require("_shared.fn")
+local tbl = require("_shared.table")
 
 local Window = Module:extend({})
 
@@ -166,7 +167,7 @@ function Window:modal_config()
 	local height = math.ceil(math.min(vim.o.lines, math.max(20, vim.o.lines - 10)))
 	local col = (math.ceil(vim.o.columns - width) / 2) - 1
 	local row = (math.ceil(vim.o.lines - height) / 2) - 1
-	local config = fn.merge(self:float_config(), {
+	local config = tbl.merge(self:float_config(), {
 		col = col,
 		row = row,
 		width = width,

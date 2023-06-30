@@ -1,5 +1,6 @@
 local arr = require("_shared.array")
 local map = require("_shared.map")
+local tbl = require("_shared.table")
 local fn = require("_shared.fn")
 local validator = require("_shared.validator")
 
@@ -18,7 +19,7 @@ Buffer.list = vim.api.nvim_list_bufs
 Buffer.create = validator.f.arguments({
 	validator.f.optional("table"),
 }) .. function(args)
-	args = fn.merge({}, args)
+	args = tbl.merge({}, args)
 	args[1] = vim.api.nvim_create_buf(true, false)
 	return Buffer.update(args)
 end
@@ -105,7 +106,7 @@ end
 Buffer.get_current = validator.f.arguments({
 	validator.f.optional("table"),
 }) .. function(args)
-	args = fn.merge({}, args, { Buffer.current() })
+	args = tbl.merge({}, args, { Buffer.current() })
 
 	return Buffer.get(args)
 end
@@ -114,7 +115,7 @@ Buffer.get_all = validator.f.arguments({
 	validator.f.optional("table"),
 }) .. function(options)
 	return arr.map(Buffer.list(), function(handle)
-		return Buffer.get(fn.merge({ handle }, options))
+		return Buffer.get(tbl.merge({ handle }, options))
 	end)
 end
 

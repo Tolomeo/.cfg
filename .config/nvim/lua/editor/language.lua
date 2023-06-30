@@ -3,6 +3,7 @@ local au = require("_shared.au")
 local key = require("_shared.key")
 local fn = require("_shared.fn")
 local map = require("_shared.map")
+local tbl = require("_shared.table")
 local settings = require("settings")
 
 local Language = Module:extend({
@@ -111,14 +112,14 @@ function Language:setup_servers()
 		end
 
 		for _, language_server in ipairs(language_servers) do
-			local language_server_setup = fn.merge(language_server_default_setup, {
+			local language_server_setup = tbl.merge(language_server_default_setup, {
 				filetypes = fn.split(filetypes, ","),
 			})
 
 			if type(language_server) == "string" then
 				require("lspconfig")[language_server].setup(language_server_setup)
 			elseif type(language_server) == "table" then
-				require("lspconfig")[language_server.name].setup(fn.merge_deep(language_server_setup, language_server))
+				require("lspconfig")[language_server.name].setup(tbl.merge_deep(language_server_setup, language_server))
 			end
 		end
 

@@ -1,6 +1,7 @@
 local fn = require("_shared.fn")
 local arr = require("_shared.array")
 local map = require("_shared.map")
+local tbl = require("_shared.table")
 local validator = require("_shared.validator")
 local win = require("_shared.window")
 
@@ -64,7 +65,7 @@ Tab.get_list = validator.f.arguments({
 	validator.f.optional("table"),
 }) .. function(options)
 	return arr.map(Tab.list(), function(handle)
-		return Tab.get(fn.merge({ handle }, options))
+		return Tab.get(tbl.merge({ handle }, options))
 	end)
 end
 

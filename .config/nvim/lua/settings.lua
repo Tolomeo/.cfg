@@ -1,5 +1,5 @@
 local fs = require("_shared.fs")
-local fn = require("_shared.fn")
+local tbl = require("_shared.table")
 
 local defaults = {
 	opt = {
@@ -411,7 +411,7 @@ function Settings:get_user_settings()
 end
 
 function Settings:init()
-	local settings = fn.merge_deep(defaults, self:get_user_settings())
+	local settings = tbl.merge_deep(defaults, self:get_user_settings())
 
 	for opt_name, opt_value in pairs(settings.opt) do
 		self.opt[opt_name] = opt_value

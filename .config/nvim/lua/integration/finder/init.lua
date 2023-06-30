@@ -2,6 +2,7 @@ local Module = require("_shared.module")
 local key = require("_shared.key")
 local fn = require("_shared.fn")
 local arr = require("_shared.array")
+local tbl = require("_shared.table")
 local validator = require("_shared.validator")
 local settings = require("settings")
 local TabbedPicker = require("integration.finder._tabbed_picker")
@@ -21,7 +22,7 @@ function Finder:setup()
 	local keymap = settings.keymap
 
 	require("telescope").setup({
-		defaults = fn.merge(self:get_default_theme(), {
+		defaults = tbl.merge(self:get_default_theme(), {
 			mappings = {
 				i = {
 					[keymap["window.cursor.down"]] = require("telescope.actions").move_selection_next,
@@ -238,7 +239,7 @@ end
 function Finder:create_context_menu(menu, options)
 	options = options or {}
 
-	return self:create_menu(menu, fn.merge(self:get_cursor_theme(), options))
+	return self:create_menu(menu, tbl.merge(self:get_cursor_theme(), options))
 end
 
 return Finder:new()
