@@ -15,13 +15,6 @@ function Fn.reduce(tbl, func, acc)
 	return acc
 end
 
-function Fn.kmap(tbl, func)
-	return map.reduce(tbl, function(new_tbl, value, key)
-		table.insert(new_tbl, func(value, key))
-		return new_tbl
-	end, {})
-end
-
 function Fn.keach(tbl, func)
 	for key, value in map.pairs(tbl) do
 		func(value, key, tbl)
