@@ -86,18 +86,6 @@ function Map.entries(tbl)
 	return entries
 end
 
-function Map.merge(...)
-	return Map.reduce({ ... }, function(target, source)
-		return vim.tbl_extend("force", target, source)
-	end, {})
-end
-
-function Map.merge_deep(...)
-	return Map.reduce({ ... }, function(target, source)
-		return vim.tbl_deep_extend("force", target, source)
-	end, {})
-end
-
 function Map.filter(tbl, func)
 	return Map.reduce(tbl, function(a, v, k)
 		if func(v, k) then

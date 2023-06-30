@@ -46,16 +46,6 @@ function Fn.trim(str)
 	return (string.gsub(str, "^%s*(.-)%s*$", "%1"))
 end
 
-function Fn.kfilter(tbl, func)
-	return map.reduce(tbl, function(a, v, k)
-		if func(v, k) then
-			a[k] = v
-		end
-
-		return a
-	end, {})
-end
-
 function Fn.split(str, delimiter)
 	local result = {}
 	local pattern = string.format("([^%s]+)", delimiter)
