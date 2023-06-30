@@ -121,7 +121,7 @@ function Terminal:prev(cmd)
 		return
 	end
 
-	buffers = fn.reverse(buffers)
+	buffers = arr.reverse(buffers)
 	local current_buffer = bf.get_current()
 	local current_buffer_index = arr.find_index(buffers, function(buffer)
 		return buffer.handle == current_buffer.handle

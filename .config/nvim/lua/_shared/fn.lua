@@ -159,17 +159,6 @@ function Fn.switch(value)
 	end
 end
 
-function Fn.reverse(tbl)
-	local reversed = {}
-	local length = #tbl
-
-	for i = length, 1, -1 do
-		table.insert(reversed, tbl[i])
-	end
-
-	return reversed
-end
-
 function Fn.iintersection(tbl1, tbl2)
 	local result = {}
 
