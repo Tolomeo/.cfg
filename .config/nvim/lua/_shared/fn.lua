@@ -58,17 +58,6 @@ function Fn.kfind(tbl, func)
 	return nil
 end
 
-function Fn.slice(tbl, startIndex, endIndex)
-	local sliced = {}
-	endIndex = endIndex or #tbl
-
-	for index = startIndex, endIndex do
-		table.insert(sliced, tbl[index])
-	end
-
-	return sliced
-end
-
 function Fn.push(tbl, ...)
 	for _, value in ipairs({ ... }) do
 		table.insert(tbl, value)
