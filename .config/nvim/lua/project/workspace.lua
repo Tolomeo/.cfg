@@ -250,7 +250,7 @@ function Workspace:create(root, tab)
 
 	bf.update({
 		dashboard.handle,
-		vars = { workspaces = fn.iunion((dashboard.vars.workspaces or {}), { tab }) },
+		vars = { workspaces = arr.union((dashboard.vars.workspaces or {}), { tab }) },
 		options = { modifiable = false, readonly = true, swapfile = false },
 	})
 
