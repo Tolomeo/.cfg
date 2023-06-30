@@ -47,7 +47,7 @@ Tab.update = validator.f.arguments({
 		return _tab_options
 	end, { vars = {} })
 
-	fn.keach(tab_options.vars, function(var_value, var_name)
+	map.each(tab_options.vars, function(var_value, var_name)
 		vim.api.nvim_tabpage_set_var(tab, var_name, var_value)
 	end)
 

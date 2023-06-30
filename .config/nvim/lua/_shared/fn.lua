@@ -15,12 +15,6 @@ function Fn.reduce(tbl, func, acc)
 	return acc
 end
 
-function Fn.keach(tbl, func)
-	for key, value in map.pairs(tbl) do
-		func(value, key, tbl)
-	end
-end
-
 --- Returns an array of a given table's string-keyed property names.
 ---@param tbl table
 ---@return table

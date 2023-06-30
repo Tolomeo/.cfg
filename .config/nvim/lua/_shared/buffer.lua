@@ -41,11 +41,11 @@ Buffer.update = validator.f.arguments({
 		vim.api.nvim_buf_set_name(buf, buf_options.name)
 	end
 
-	fn.keach(buf_options.options, function(option_value, option_name)
+	map.each(buf_options.options, function(option_value, option_name)
 		vim.api.nvim_buf_set_option(buf, option_name, option_value)
 	end)
 
-	fn.keach(buf_options.vars, function(var_value, var_name)
+	map.each(buf_options.vars, function(var_value, var_name)
 		vim.api.nvim_buf_set_var(buf, var_name, var_value)
 	end)
 
