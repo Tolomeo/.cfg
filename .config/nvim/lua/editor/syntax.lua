@@ -1,5 +1,6 @@
 local Module = require("_shared.module")
 local fn = require("_shared.fn")
+local arr = require("_shared.array")
 local settings = require("settings")
 
 local Syntax = Module:extend({
@@ -30,7 +31,7 @@ function Syntax:setup()
 	local config = settings.config
 
 	local syntaxes = fn.reduce(fn.keys(config.language), function(_syntaxes, filetypes)
-		fn.push(
+		arr.push(
 			_syntaxes,
 			unpack(fn.imap(fn.split(filetypes, ","), function(filetype)
 				return require("nvim-treesitter.parsers").ft_to_lang(fn.trim(filetype))

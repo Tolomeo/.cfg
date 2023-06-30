@@ -1,6 +1,7 @@
 local Object = require("_shared.object")
 local key = require("_shared.key")
 local fn = require("_shared.fn")
+local arr = require("_shared.array")
 local validator = require("_shared.validator")
 local settings = require("settings")
 
@@ -18,7 +19,7 @@ TabbedPicker.constructor = validator.f.arguments({
 	validator.f.instance_of(TabbedPicker),
 	validator.f.list({ validator.f.shape({ prompt_title = "string", find = "function" }) }),
 }) .. function(self, tabs)
-		fn.push(self, unpack(tabs))
+		arr.push(self, unpack(tabs))
 		self.current = 1
 
 		return self.current

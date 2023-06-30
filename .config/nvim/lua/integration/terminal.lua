@@ -189,7 +189,7 @@ function Terminal:menu(options)
 	local menu = {}
 
 	local actions = self:get_actions()
-	fn.push(
+	arr.push(
 		menu,
 		unpack(fn.imap(actions, function(action)
 			return {

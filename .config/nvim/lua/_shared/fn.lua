@@ -58,14 +58,6 @@ function Fn.kfind(tbl, func)
 	return nil
 end
 
-function Fn.push(tbl, ...)
-	for _, value in ipairs({ ... }) do
-		table.insert(tbl, value)
-	end
-
-	return tbl
-end
-
 --- Creates a new table populated with the results of calling a provided functions
 ---on every numeric indexed element in the calling table
 ---@param tbl table
