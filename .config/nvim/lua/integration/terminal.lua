@@ -57,7 +57,7 @@ end
 
 function Terminal:toggle(cmd)
 	-- `term://{cwd}//{pid}:{cmd}`
-	local cmd_buffer = fn.ifind(bf.get_listed(), function(buffer)
+	local cmd_buffer = arr.find(bf.get_listed(), function(buffer)
 		return string.match(buffer.name, "^term://.+//%d+:" .. cmd .. "$")
 	end)
 
@@ -72,7 +72,7 @@ function Terminal:toggle(cmd)
 		return
 	end
 
-	local displayed_cmd = fn.ifind(tb.get_windows({ 0 }), function(window)
+	local displayed_cmd = arr.find(tb.get_windows({ 0 }), function(window)
 		return window.buffer == cmd_buffer.handle
 	end)
 
@@ -100,7 +100,7 @@ function Terminal:next(cmd)
 		return buffer.handle == current_buffer.handle
 	end)
 	local buffers_rotation = fn.tail(fn.rotateRight(buffers, current_buffer_index))
-	local next_buffer = fn.ifind(buffers_rotation, function(buffer)
+	local next_buffer = arr.find(buffers_rotation, function(buffer)
 		return string.match(buffer.name, "^term://.+//%d+:" .. cmd .. "$")
 	end)
 
@@ -127,7 +127,7 @@ function Terminal:prev(cmd)
 		return buffer.handle == current_buffer.handle
 	end)
 	local buffers_rotation = fn.tail(fn.rotateRight(buffers, current_buffer_index))
-	local next_buffer = fn.ifind(buffers_rotation, function(buffer)
+	local next_buffer = arr.find(buffers_rotation, function(buffer)
 		return string.match(buffer.name, "^term://.+//%d+:" .. cmd .. "$")
 	end)
 

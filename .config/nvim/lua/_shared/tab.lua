@@ -103,7 +103,7 @@ Tab.get_by_number = validator.f.arguments({
 		return _options
 	end, {})
 
-	return fn.ifind(Tab.get_list(get_list_args), function(tab)
+	return arr.find(Tab.get_list(get_list_args), function(tab)
 		return tab.number == number
 	end)
 end

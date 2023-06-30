@@ -333,7 +333,7 @@ function Workspace:get_current()
 end
 
 function Workspace:get(ws_handle)
-	return fn.ifind(self:get_all(), function(ws)
+	return arr.find(self:get_all(), function(ws)
 		return ws.handle == ws_handle
 	end)
 end

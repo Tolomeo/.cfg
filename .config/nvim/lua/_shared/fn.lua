@@ -48,21 +48,6 @@ function Fn.reduce(tbl, func, acc)
 	return acc
 end
 
---- Returns the first element in the array that satisfies the provided testing function
----@generic V
----@param tbl table<number, V> the table to loop against
----@param func function callback returning true or false
----@return V | nil
-function Fn.ifind(tbl, func)
-	for index, item in ipairs(tbl) do
-		if func(item, index) then
-			return item
-		end
-	end
-
-	return nil
-end
-
 function Fn.kfind(tbl, func)
 	for key, item in Fn.kpairs(tbl) do
 		if func(item, key) then
@@ -233,7 +218,7 @@ function Fn.switch(value)
 end
 
 function Fn.iincludes(tbl, search)
-	local found = Fn.ifind(tbl, function(item)
+	local found = arr.find(tbl, function(item)
 		return item == search
 	end)
 

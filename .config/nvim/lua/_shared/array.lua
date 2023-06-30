@@ -152,7 +152,7 @@ end
 ---@param search any
 ---@return boolean
 function Array.includes(tbl, search)
-	local found = Array.ifind(tbl, function(item)
+	local found = Array.find(tbl, function(item)
 		return item == search
 	end)
 

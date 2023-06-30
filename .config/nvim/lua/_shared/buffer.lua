@@ -59,7 +59,7 @@ Buffer.get_handle_by_name = validator.f.arguments({
 	local name = options[1]
 	local buffers = Buffer.list()
 
-	return fn.ifind(buffers, function(buffer_handle)
+	return arr.find(buffers, function(buffer_handle)
 		return vim.api.nvim_buf_get_name(buffer_handle) == name
 	end)
 end
@@ -126,7 +126,7 @@ Buffer.get_listed = validator.f.arguments({
 end
 
 Buffer.find_by_name = function(name)
-	local buf = fn.ifind(Buffer.get_all(), function(buffer)
+	local buf = arr.find(Buffer.get_all(), function(buffer)
 		return buffer.name == name
 	end)
 
@@ -134,7 +134,7 @@ Buffer.find_by_name = function(name)
 end
 
 Buffer.find_by_pattern = function(pattern)
-	return fn.ifind(Buffer.get_all(), function(buffer)
+	return arr.find(Buffer.get_all(), function(buffer)
 		return string.match(buffer.name, pattern)
 	end)
 end

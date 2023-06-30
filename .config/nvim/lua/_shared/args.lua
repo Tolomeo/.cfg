@@ -1,5 +1,6 @@
 local validator = require("_shared.validator")
 local fn = require("_shared.fn")
+local arr = require("_shared.array")
 local pt = require("_shared.path")
 
 local nvim_args = fn.tail(vim.v.argv)
@@ -21,7 +22,7 @@ Args.find = validator.f.arguments({
 }) .. function(args)
 	local name = args[1]
 
-	return fn.ifind(nvim_args, function(arg)
+	return arr.find(nvim_args, function(arg)
 		return arg == name
 	end)
 end
