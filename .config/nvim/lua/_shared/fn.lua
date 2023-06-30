@@ -159,36 +159,6 @@ function Fn.switch(value)
 	end
 end
 
-function Fn.rotateRight(tbl, offset)
-	local length = #tbl
-	local rotated = {}
-
-	for i = offset, length do
-		table.insert(rotated, tbl[i])
-	end
-
-	for i = 1, offset - 1 do
-		table.insert(rotated, tbl[i])
-	end
-
-	return rotated
-end
-
-function Fn.rotateLeft(tbl, offset)
-	local length = #tbl
-	local rotated = {}
-
-	for i = offset, 1, -1 do
-		table.insert(rotated, tbl[i])
-	end
-
-	for i = length, offset + 1, -1 do
-		table.insert(rotated, tbl[i])
-	end
-
-	return rotated
-end
-
 function Fn.tail(tbl)
 	local tail = {}
 
