@@ -22,7 +22,7 @@ local Editor = Module:extend({
 		-- Highlighting command ranges
 		{ "winston0410/range-highlight.nvim", dependencies = "winston0410/cmd-parser.nvim" },
 		-- Indentation
-		{ "lukas-reineke/indent-blankline.nvim" },
+		{ "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
 	},
 })
 
@@ -168,14 +168,7 @@ function Editor:setup_highlights()
 end
 
 function Editor.setup_indent_lines()
-	require("indent_blankline").setup({
-		space_char_blankline = " ",
-		show_current_context = true,
-		show_current_context_start = true,
-		use_treesitter = true,
-		strict_tabs = true,
-		context_char = "┃",
-	})
+	require("ibl").setup()
 end
 
 function Editor.setup_pairs()

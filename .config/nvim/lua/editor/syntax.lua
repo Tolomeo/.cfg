@@ -103,13 +103,13 @@ function Syntax:setup()
 				["<leader>dF"] = "@class.outer",
 			},
 		},
-		context_commentstring = {
-			enable = true,
-		},
 	})
 
 	-- Autotag
 	require("nvim-ts-autotag").setup()
+
+	-- commentstrings
+	require("ts_context_commentstring").setup({})
 
 	require("neogen").setup({})
 end
