@@ -14,16 +14,16 @@ config checkout
 # If there are conflicts given by already existing files
 # move them into cfg-backup directory
 if [ $? = 0 ]; then
-	echo "Checked out cfg";
+	echo "Checked out cfg"
 else
 	echo "Removing zsh deps"
 	# These folders give problems
 	rm -Rf $HOME/.zsh/pure/
 	rm -Rf $HOME/.zsh/zsh-syntax-highlighting/
 
-	echo "Backing up pre-existent files";
-	config checkout 2>&1 | egrep "^\s+." | awk  '{ sub(/^[ \t]+/, ""); print }' | xargs -I{} mv {} $HOME/.cfg-backup/
-fi;
+	echo "Backing up pre-existent files"
+	config checkout 2>&1 | egrep "^\s+." | awk '{ sub(/^[ \t]+/, ""); print }' | xargs -I{} mv {} $HOME/.cfg-backup/
+fi
 
 # Okay, checkout
 config checkout
@@ -45,7 +45,10 @@ echo "3. Installing Homebrew"
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # adding homebrew to PATH
-(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> $HOME/.zprofile
+(
+	echo
+	echo 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+) >>$HOME/.zprofile
 
 # adding homebrew to PATH for the current session
 eval "$(/opt/homebrew/bin/brew shellenv)"
