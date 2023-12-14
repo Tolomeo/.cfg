@@ -1,6 +1,6 @@
 {
   "config": {
-    "theme.colorscheme": "kanagawa",
+    "theme.colorscheme": "everforest",
     "workspace.root": [".git", ".cfg"],
     "terminal.jobs": [
       {
@@ -31,7 +31,20 @@
       },
       "css,scss": {
         "format": ["prettier"],
-        "server": ["cssls"]
+        "server": [
+          {
+            "name": "cssls",
+            "settings": {
+              "css": {
+                "validate": true,
+                "lint": {
+                  "unknownAtRules": "ignore"
+                }
+              }
+            }
+          },
+          { "name": "tailwindcss" }
+        ]
       },
       "html": {
         "format": ["prettier"],
